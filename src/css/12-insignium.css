@@ -1,0 +1,379 @@
+
+  /* ============ [§C23] INSIGNIUM & TITELBAND ============ */
+  /* Das Zeichen legt sich UM den Avatar, nie auf ihn: die Mitte gehört
+     dem Gesicht. Ausgerichtet wird deshalb am REIF, nicht an der SVG-Box —
+     die ist mit Schwinge deutlich breiter und etwas höher.
+
+     Ohne Band ist die viewBox "-22 -22 144 144" und QUADRATISCH auf den
+     Reifmittelpunkt zentriert: waagerecht wie senkrecht sitzt er bei 50 %,
+     translate(-50%,-50%) reicht also.
+     Mit Band ist sie "-40 -33 180 155", Reifmitte bei (50,50):
+       waagerecht  (50+40)/180 = 50,00 %  → schon mittig, kein Versatz
+       senkrecht   (50+33)/155 = 53,55 %  → 3,55 % nach oben schieben
+     Der Reif misst 85 der 144 Einheiten — 59,0 % der Kantenlänge, innen
+     52,1 %. Der Avatar bekommt 46 %, damit ein schmaler dunkler Sitz
+     bleibt. */
+  .ins{display:block}
+
+  /* ── Der Avatar im Wappen [§C27] ──────────────────────────────────
+     Ein Bauteil für alle Listen: Rangliste, Podest der Ewigen Tafel,
+     Nebenwertungen. Die Größe steuert --rav, alles andere rechnet sich
+     daraus — dann hat ein Wappen in der Zeile dieselben Verhältnisse wie
+     eines auf dem Podest, und es gibt nur eine Stelle, an der diese
+     Verhältnisse stehen.
+     Ohne Band ist die viewBox 132 Einheiten breit, der Reif hat den
+     Radius 40. Der Reif misst also 60,6 % der Breite, der Lorbeer reicht
+     bis 77 %. Der Avatar bekommt 46 %: der Reif bleibt als Metallband
+     sichtbar. Deckt der Avatar ihn zu, bleibt vom Wappen nur ein
+     Blätterrand am Rand. */
+  .rav{--rav:52px;position:relative;flex-shrink:0;
+    width:var(--rav);height:var(--rav);
+    display:inline-grid;place-items:center;isolation:isolate}
+  /* Kein CSS-Filter auf dem Zeichen. Safari rechnet ein SVG unter
+     `filter` in CSS-Pixeln und skaliert das Ergebnis hoch: auf dem Telefon
+     stand jedes Wappen mit Treppenkanten da, als wäre es ausgeschnitten. Den
+     Schatten bringt die Zeichnung selbst mit (die Kopie unter ihr) [§C30]. */
+  .rav > svg.ins{position:absolute;left:50%;top:50%;
+    width:100%;height:auto;transform:translate(-50%,-50%);
+    z-index:0;pointer-events:none}
+  .rav > .av,.rav > .rav-av{position:relative;z-index:1;
+    width:calc(var(--rav) * .46);height:calc(var(--rav) * .46);
+    border-radius:50%;display:grid;place-items:center;overflow:hidden;
+    font-family:'Archivo Black',sans-serif;color:#0a0c0b;
+    font-size:calc(var(--rav) * .155);line-height:1}
+  .rav > .av .em,.rav > .rav-av .em{font-size:calc(var(--rav) * .25);line-height:1}
+  /* Die Glut sitzt auf dem Reif, nicht um den Kranz — Herleitung in
+     15-zeichen.css [§C26]. Der Weichzeichner ist Maßstabsausgleich. */
+  .rav .zn-fx{left:50%;top:50%;
+    width:calc(var(--rav) * .930);height:calc(var(--rav) * .930);
+    transform:translate(-50%,-60%);
+    filter:blur(calc(var(--rav) * .021))}
+  .rav.zn-l1 .zn-fx{opacity:.82}
+  .rav.zn-l2 .zn-fx{opacity:.92}
+  .rav.zn-l3 .zn-fx{opacity:1}
+  /* Wie im Profilkopf: die Hülle in der Rangfarbe (`--zn-c` setzt
+     `insAvWrap`), ein Schein in derselben Farbe und ein heller Kern. Orange
+     mit warmem Kern war in der Zeile ein zweites Feuer neben dem des
+     Profils. Der Schein ist kräftiger als dort, weil vom Feuer in einer
+     Zeile nur der Streifen über dem Reif zu sehen ist. */
+  .rav.zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 3px rgba(var(--zn-rgb,255,143,74),.6))}
+  .rav.zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 4px rgba(var(--zn-rgb,255,143,74),.7))}
+  .rav.zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 5px rgba(var(--zn-rgb,255,143,74),.8))}
+  .rav .zn-fx .zk{fill:#fff;opacity:.38;filter:none}
+  /* Der Hof. In einer Zeile ist vom Feuer nur ein schmaler Streifen über
+     dem Reif zu sehen — zu wenig, um „der brennt gerade" auf einen Blick zu
+     sagen. Der Hof trägt diese Aussage: er hat keine Kante, kann also nicht
+     zacken, und er bleibt in der Box, kann also nirgends überstehen.
+     Er liegt HINTER allem (z-index -1): auf 0 stünde er als später
+     erzeugtes Element vor dem Wappen und tönte das Metall kupfern.
+     Isolation auf .rav hält ihn trotzdem im Bauteil. Sein Mittelpunkt
+     sitzt etwas höher als der Reif — Wärme steigt. */
+  .rav.zn::after{content:"";position:absolute;left:50%;top:45%;
+    width:88%;height:88%;transform:translate(-50%,-50%);
+    border-radius:50%;z-index:-1;pointer-events:none;opacity:0;
+    background:radial-gradient(closest-side,
+      var(--zn-c,#ff8f4a) 0,transparent 66%)}
+  /* Beide Maße hängen am REIF, nicht an der Kachel: er misst jetzt 59,0 %
+     der Kantenlänge statt 62,9 %, also rücken Glut und Hof um denselben
+     Faktor 0,93 zusammen. Ohne das stand die Flamme seitlich über ihn
+     hinaus und in der Ranglistenzeile als Kragen um das ganze Zeichen. */
+  .rav.zn-l1::after{opacity:.18}
+  .rav.zn-l2::after{opacity:.25}
+  .rav.zn-l3::after{opacity:.33}
+  /* Die Sterne sitzen UNTER DER RAUTE. Auf dem Band lagen sie bei 77,8 %
+     der Höhe, und dort steht jetzt in jedem Zeichen die Raute des Bildes
+     [§C30]: die Titel lagen als goldener Fleck auf dem Stein. Die Spitze der
+     Raute endet bei 90,5 %, darunter ist bis zum Rand der Kachel Platz. */
+  .rav .zn-ti{bottom:auto;top:calc(var(--rav) * .95);
+    transform:translate(-50%,-50%)}
+
+  /* ── Dasselbe Wappen mit Banner [§C27] ────────────────────────────
+     Auf dem Podest der Ewigen Tafel trägt das Wappen Schwingen und Schild,
+     wie im Spielerprofil: dort geht es um die Laufbahn, und Titel und
+     Ligaposition sind genau das. Der REIF bleibt dabei exakt so groß wie
+     ohne Banner — er ist die Bezugsform, an der alle Maße hängen. Mit Band
+     ist die viewBox 144 statt 132 Einheiten breit, also muss das SVG um
+     144/132 = 109,09 % wachsen, damit die 80 Einheiten Reif dieselbe Zahl
+     Pixel messen.
+     Senkrecht liegen 83 der 155 Einheiten über der Reifmitte, also 53,55 %
+     statt 50 % — das SVG rückt um 3,55 % seiner eigenen Höhe nach oben.
+     Die Höhe des SVG ist 1,25 · 155/180 = 1,076 Kantenlängen; oben steht es
+     damit 7,6 % der Kantenlänge über die Kachel hinaus, unten gar nicht.
+     Diese 7,6 % sind der Streifen der Titelsterne über dem Kristall des
+     Ordenssterns. Unten reicht die Box bis 122, weil die untere Spitze des
+     Sterns bis 120,7 reicht. */
+  .rav.rav-band > svg.ins{width:125%;
+    transform:translate(-50%,-50%) translateY(-3.548%)}
+
+  /* Die Zeichnung ragt oben und unten über den 108px-Avatar hinaus. Der
+     Rand wird aus der Breite gerechnet, damit der Name nicht in den Ranken
+     steht, wenn --ins-w sich ändert. Von den 155 Einheiten der Bandbox
+     liegen 83 über der Reifmitte und 72 darunter — bezogen auf die BREITE
+     von 180 sind das 0,461 und 0,400. Der Avatar deckt davon je 54px ab.
+
+     --ins-w ist breiter als früher, weil die Schwinge weiter ausgreift und
+     der Reif trotzdem größer bleiben muss als der 108px-Avatar: innen misst
+     er 75/180 der Breite, bei 290px also 121px. Bei 242px wären es 101px —
+     der Avatar stünde vor seiner eigenen Fassung.
+
+     --feuerluft kommt aus 15-zeichen.css: das Feuer ist das einzige, was
+     noch über die Bandbox hinausschlägt, und es braucht dafür Platz, den
+     das Zeichen allein nicht braucht. */
+  .pp-av-wrap{--ins-w:min(306px,84vw);
+    margin-top:calc(var(--ins-w) * .461 - 54px + var(--feuerluft, 0px));
+    margin-bottom:calc(var(--ins-w) * .400 - 40px)}
+  .pp-av-wrap .ins{position:absolute;left:50%;top:50%;
+    width:var(--ins-w);height:auto;z-index:0;pointer-events:none;
+    transform:translate(-50%,-50%) translateY(-3.548%)}
+  /* Auch hier kein Filter: der Profilkopf ist die größte Stelle, an der das
+     Zeichen steht, und dort sah man die Treppenkanten am deutlichsten. */
+  .pp-av-wrap .pp-av-ring{z-index:1}
+
+  /* ── Laufbahn-Sheet [§13.10] ───────────────────────────────────────
+     Die Vitrine: eine Stufe groß in der Mitte, die anderen schiebt man
+     heran. Hier stand erst eine Fortschrittsstange mit einer einzigen
+     Beschriftung, danach eine Leiter aus fünf gleich kleinen Stationen —
+     bei 42 px war von einem Lorbeerkranz nur noch ein Kringel übrig,
+     obwohl genau diese Form der Grund ist, warum jemand sammelt.
+
+     Vor der ersten und hinter der letzten Karte steht je die halbe
+     Restbreite: nur so kann die erste und die letzte Karte in der MITTE
+     einrasten statt am Rand. Das waren zuerst Prozente im padding des
+     Bands. Das Band ist aber so breit wie sein Inhalt (max-content), und
+     Safari rechnet Prozente darin beim Bemessen als null: das Band blieb
+     um die Polsterung zu schmal, die Karten liefen rechts hinaus, und am
+     Telefon ließ sich der Ordensstern nie in die Mitte schieben — Chromium
+     rechnet anders, der Test war grün. Jetzt sind es zwei leere Glieder
+     des Bands, deren Breite gegen den Scrollbereich rechnet (cqw), nicht
+     gegen das Band; davor ein Rückfall über die Breite des Fensters. */
+  .lb-karus{overflow-x:auto;scrollbar-width:none;margin-top:10px;container-type:inline-size;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .lb-karus::-webkit-scrollbar{display:none}
+  .lb-k-band{display:flex;width:max-content;padding:4px 0 2px}
+  .lb-k-band::before,.lb-k-band::after{content:"";
+    flex:0 0 calc((min(100vw, 520px) - 196px) / 2);flex:0 0 calc((100cqw - 156px) / 2)}
+  /* Antippbar, nicht nur schiebbar — deshalb der Zeigefinger und nicht die
+     Greifhand: die Karte ist ein Ziel. */
+  .lb-k{flex:0 0 156px;scroll-snap-align:center;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:4px}
+  /* Der Zeichenplatz hat eine feste Höhe: der Ordensstern baut höher als der
+     glatte Reif, und ohne festen Platz sprängen die Beschriftungen beim
+     Schieben von Karte zu Karte auf eine andere Höhe. */
+  .lb-k-ins{height:132px;display:grid;place-items:center}
+  /* Offene Stufen sind entfärbt: man sieht, dass es sie gibt — und dass man
+     sie nicht hat. Ein ausgeblendetes Zeichen sähe nach Fehler aus. */
+  .lb-k-ins svg.ins{width:60px;height:60px;filter:grayscale(1);opacity:.28;
+    transition:width .22s,height .22s,opacity .22s}
+  .lb-k.erreicht .lb-k-ins svg.ins{filter:none;opacity:.55}
+  .lb-k.jetzt .lb-k-ins svg.ins{filter:none;opacity:.85}
+  /* Die Karte in der Mitte ist die, die man ansieht — sie bekommt den Platz.
+     Getragen oder nicht entscheidet die FARBE, nicht die Größe: sonst wären
+     zwei Aussagen auf derselben Achse. */
+  .lb-k.fokus .lb-k-ins svg.ins{width:130px;height:130px;opacity:1;filter:none}
+  /* In der Mitte zeigt auch eine offene Stufe ihre Farbe, etwas leiser: man
+     soll sehen können, worauf man zuläuft [§C30]. Entfärbt bleiben nur die
+     Nachbarn am Rand. */
+  .lb-k.fokus.offen .lb-k-ins svg.ins{filter:none;opacity:.72}
+  /* Beschriftet wird nur die Karte in der Mitte. Die Nachbarn ragen absichtlich
+     halb ins Bild — mit Text hieß das ein abgeschnittenes „erbring" am Rand,
+     und ein halbes Wort liest sich als Fehler, nicht als Andeutung. Der Platz
+     bleibt trotzdem stehen, sonst springt beim Schieben die Höhe. */
+  .lb-k-n,.lb-k-p,.lb-k-grad{opacity:0;transition:opacity .18s}
+  .lb-k.fokus .lb-k-n,.lb-k.fokus .lb-k-p,
+  .lb-k.fokus .lb-k-grad{opacity:1}
+  .lb-k-n{font-size:14px;font-weight:700;line-height:1.15;text-align:center;
+    color:var(--ink2);height:17px}
+  /* Nur die getragene Stufe steht in der Rangfarbe [§C25]. */
+  .lb-k.jetzt .lb-k-n{color:var(--ak)}
+  .lb-k-p{font-family:'Sometype Mono',monospace;font-size:9.5px;color:var(--muted);
+    height:25px;line-height:12.5px;text-align:center;white-space:nowrap}
+
+  /* Die drei Grade einer Stufe. Sie sind das, was zwischen zwei Schwellen
+     passiert — ohne sie stünde das Zeichen hunderte Punkte lang still. */
+  /* Knöpfe, keine Marken: jeder Grad hat sein Bild und zeigt es oben. Der
+     gezeigte trägt einen Rahmen, der eigene einen Punkt. */
+  .lb-k-grad{display:flex;gap:4px;margin-top:3px}
+  .lb-k-grad button{font-family:'Sometype Mono',monospace;font-style:normal;
+    font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1;
+    color:var(--faint);border:1px solid var(--line);border-radius:5px;background:none;
+    padding:4px 6px;min-width:22px;text-align:center;cursor:pointer;position:relative}
+  .lb-k-grad button.an{color:var(--ink2);border-color:var(--line2);
+    background:var(--surface2)}
+  .lb-k.jetzt .lb-k-grad button.an{color:var(--ak);border-color:rgba(var(--ak-rgb),.45);
+    background:rgba(var(--ak-rgb),.10)}
+  .lb-k-grad button.zeigt{border-color:var(--ak);color:var(--ink)}
+  .lb-k-grad button.hier::after{content:"";position:absolute;right:-3px;top:-3px;
+    width:6px;height:6px;border-radius:50%;background:var(--ak)}
+
+  /* ── Alle Stufen [§C30] ────────────────────────────────────────────
+     Jede Stufe eine Zeile, jedes Feld ein Knopf mit seinem Bild. Erreicht
+     steht voll da, das eigene gerahmt, was noch kommt leise, aber in Farbe:
+     entfärbt sähe man nicht, wie es aussehen wird, und genau das ist die
+     Frage dieser Liste. */
+  .lb-alle{display:grid;gap:4px;margin-top:8px}
+  .lb-alle-z{display:grid;grid-template-columns:minmax(0,96px) minmax(0,1fr);
+    align-items:center;gap:6px}
+  .lb-alle-n b{display:block;font-size:12px;font-weight:600;color:var(--ink2);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lb-alle-n span{font-family:'Sometype Mono',monospace;font-size:9.5px;color:var(--faint)}
+  .lb-alle-f{display:flex;gap:3px;min-width:0}
+  .lb-feld{flex:1 1 0;min-width:0;max-width:52px;aspect-ratio:1;padding:1px;
+    border:1px solid transparent;border-radius:10px;background:none;cursor:pointer}
+  .lb-feld svg.ins{display:block;width:100%;height:100%;opacity:.38}
+  .lb-feld.da svg.ins{opacity:1}
+  .lb-feld.jetzt{border-color:rgba(var(--ak-rgb),.6);background:rgba(var(--ak-rgb),.10)}
+
+  /* ── Die zweite Leiter: die Aura [§C36] ───────────────────────────
+     Zehn Stufen in zwei Reihen zu fünf, jede in derselben Fläche: nur so
+     sieht man, dass das Licht wächst und nicht der Kasten. Bewusst klein —
+     die Vitrine darüber ist die Hauptsache. Was noch nicht erreicht ist,
+     steht leise und nicht entfärbt: ein Filter über einem Zeichen kostet
+     in jedem Bild [§C30]. */
+  .lb-auren{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px 5px;margin-top:9px}
+  .lb-au{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+  .lb-au-b{position:relative;display:block;width:100%;aspect-ratio:1;line-height:0}
+  .lb-au-b img{position:absolute;inset:0;width:100%;height:100%}
+  /* Das Zeichen nimmt in der Aura 70 % der Fläche ein, wie im Wappen. */
+  .lb-au-b .lb-au-i{inset:15%;width:70%;height:70%}
+  .lb-au.offen .lb-au-b{opacity:.22}
+  .lb-au.erreicht .lb-au-b{opacity:.6}
+  .lb-au-p{font-family:'Sometype Mono',monospace;font-size:9px;color:var(--faint)}
+  .lb-au.erreicht .lb-au-p{color:var(--muted)}
+  .lb-au.jetzt .lb-au-p{color:var(--gold)}
+  .lb-au-fuss{margin-top:6px;padding:0 2px;font-size:11px;color:var(--muted);
+    text-align:right}
+
+  /* ── Die Aura im Wappen [§C36] ─────────────────────────────────────
+     Sie ist größer als die Bandbox und darf über sie hinausleuchten. Die
+     Box bleibt, wie sie ist — sonst rückte jede Stelle, an der das Banner
+     steht, und das Gesicht säße nicht mehr in seiner Fassung. */
+  .rav.rav-band > svg.ins,.pp-av-wrap svg.ins{overflow:visible}
+
+  /* Im Profilkopf bewegt: drei Bilder übereinander, gemessen am Zeichen —
+     die Aura ist 1/0,7 so breit wie das Zeichen, und das Zeichen ist
+     170,45 der 180 Einheiten der Bandbox breit. Bewegt werden nur
+     `transform` und Deckkraft, beides rechnet die Grafikkarte; die
+     Unschärfe in den Strahlen wird nie neu gemalt. */
+  .pp-av-wrap .aura{position:absolute;left:50%;top:50%;z-index:0;pointer-events:none;
+    width:calc(var(--ins-w) * 1.3528);aspect-ratio:1;transform:translate(-50%,-50%)}
+  .aura img{position:absolute;inset:0;width:100%;height:100%;display:block}
+  @media (prefers-reduced-motion:no-preference){
+    .aura .a-schein{animation:auraAtem 7.5s ease-in-out infinite}
+    .aura .a-strahl{animation:auraKreis 80s linear infinite;will-change:transform}
+    .aura .a-gegen{animation:auraKreis 62s linear infinite reverse;will-change:transform}
+  }
+  @keyframes auraKreis{to{transform:rotate(360deg)}}
+  @keyframes auraAtem{0%,100%{opacity:.77}50%{opacity:1}}
+
+  /* Wie weit man in der getragenen Stufe ist. Ein Strich, keine Zahl: die
+     Zahl steht schon in der Zeile darüber [§C-Doppelung]. */
+  .lb-spur{height:2px;border-radius:1px;background:var(--line);
+    margin:7px 2px 0;overflow:hidden}
+  .lb-spur i{display:block;height:100%;background:var(--ak);
+    box-shadow:0 0 10px rgba(var(--ak-rgb),.45);
+    transition:width .5s cubic-bezier(.2,.8,.2,1)}
+
+  /* Der Stand in einer Zeile: die Zahl, ihr Name, und was noch fehlt. */
+  .lb-stand{display:flex;align-items:baseline;gap:7px;margin-top:6px;
+    padding:0 2px}
+  .lb-st-p{font-family:'Archivo Black',sans-serif;font-size:22px;color:var(--ink);
+    letter-spacing:-.02em}
+  .lb-st-l{font-size:11px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.10em;font-family:'Sometype Mono',monospace}
+  .lb-st-n{margin-left:auto;font-size:11.5px;color:var(--ak)}
+
+  /* Drei gleich breite Kacheln: mit `1fr` zog „Monatschroniken" seine
+     Spalte auf, und die Rekorde standen in einer halb so breiten daneben.
+     Das lange Wort passt dafür mit 9,5 px und schmalerem Rand hinein. */
+  .lb-teile{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .lb-teil{border:1px solid var(--line);border-radius:var(--r-sm);
+    background:var(--surface);padding:11px 3px;text-align:center}
+  .lb-t-n{font-family:'Archivo Black',sans-serif;font-size:21px;color:var(--ink)}
+  .lb-t-l{font-size:9.5px;font-weight:700;color:var(--ink2);margin-top:3px;letter-spacing:-.01em;
+    white-space:nowrap}
+  .lb-t-s{font-size:9.5px;color:var(--muted);margin-top:1px}
+
+  /* Das Buch: jeder Posten mit dem Grund, warum er so viel wiegt.
+     Kein Rat, sondern die Rechnung — deshalb steht am Ende eine Summe. */
+  .lb-buch{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+  .lb-grp + .lb-grp{border-top:1px solid var(--line)}
+  .lb-grp-k{display:flex;justify-content:space-between;align-items:baseline;
+    padding:9px 13px 7px;background:var(--surface2);
+    font-family:'Sometype Mono',monospace;font-size:9.5px;letter-spacing:.10em;
+    text-transform:uppercase;color:var(--muted)}
+  .lb-grp-k .num{font-family:'Archivo Black',sans-serif;font-size:13px;
+    letter-spacing:0;text-transform:none;color:var(--ink2)}
+  /* Der Rest einer Gruppe klappt unter ihren fünf Posten auf; der Knopf
+     steht als letzte Zeile im Buch, nicht als zweiter Kasten darin. */
+  .lb-rest{margin-top:0}
+  .lb-rest.open{display:block}
+  .lb-grp .chron-more{margin:0;border:0;border-top:1px solid var(--line);border-radius:0;
+    padding:9px 13px}
+
+  /* Die Rechnung öffnet sich aus dem Buch in ein eigenes Blatt. Im Buch
+     bleibt nur ein ruhiger, gut treffbarer Verweis; im Blatt stehen die drei
+     Klassen weiterhin nebeneinander, jetzt aber mit genug vertikalem Raum. */
+  .lb-regel-auf{width:100%;border:0;border-top:1px solid var(--line);
+    border-radius:0;padding:11px 13px;background:var(--bg);color:var(--ink);
+    display:flex;align-items:center;justify-content:space-between;text-align:left}
+  .lb-regel-auf span{display:flex;flex-direction:column;gap:2px}
+  .lb-regel-auf b{font-size:11.5px;letter-spacing:.02em}
+  .lb-regel-auf em{font-style:normal;font-size:10px;color:var(--muted)}
+  .lb-regel-auf>svg{width:16px;height:16px;color:var(--muted)}
+  .lb-regel-auf:active{background:var(--surface2)}
+  .lb-regel-intro{margin:18px 1px 12px;color:var(--ink2);font-size:12px;
+    line-height:1.55}
+  .lb-regeln{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;
+    padding:0;background:transparent}
+  .lb-regeln span{min-width:0;min-height:148px;padding:12px 9px;border:1px solid var(--line);
+    border-radius:8px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+  .lb-regeln b{font-size:10.5px;line-height:1.2;white-space:nowrap}
+  .lb-regeln strong{font-size:10.5px;line-height:1.35;color:var(--ink);font-weight:700}
+  .lb-regeln em{font-family:'Sometype Mono',monospace;font-size:9.5px;
+    line-height:1.52;font-style:normal;color:var(--muted);white-space:normal}
+  .lb-regeln .legendary b{color:var(--gold)}
+  .lb-regeln .rare b{color:var(--purple)}
+  .lb-regeln .common b{color:var(--acid)}
+  .lb-regelblatt .pp-sec-title{margin-top:18px}
+  .lb-regel-liste{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+  /* Die rechte Spalte hat eine feste Breite: mit `auto` war sie je Zeile so
+     breit wie ihr längster Text, und die Startwerte standen untereinander
+     versetzt — die Liste ist nach ihnen geordnet, also müssen sie fluchten. */
+  .lb-regel-z{display:grid;grid-template-columns:minmax(0,1fr) 96px;
+    gap:3px 12px;padding:11px 12px;background:var(--surface)}
+  .lb-regel-z+.lb-regel-z{border-top:1px solid var(--line)}
+  .lb-regel-z>span{grid-row:1/3;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .lb-regel-z b{font-size:12px;color:var(--ink)}
+  .lb-regel-z em{font-size:9.5px;line-height:1.35;font-style:normal;color:var(--muted)}
+  .lb-regel-z strong{font-family:'Archivo Black',sans-serif;font-size:12px;color:var(--ink2);
+    text-align:right}
+  .lb-regel-z strong i{font-family:'Sometype Mono',monospace;font-size:8px;
+    text-transform:uppercase;font-style:normal;color:var(--muted)}
+  .lb-regel-z small{font-family:'Sometype Mono',monospace;font-size:9px;
+    text-align:right;color:var(--muted)}
+  .lb-regel-note{margin-top:10px;line-height:1.5}
+  /* Der Startwert als Balken gegen den höchsten: die Gewichtung der Liste
+     auf einen Blick, in der Farbe der Klasse wie die Karten darüber. */
+  .lb-regel-z{position:relative}
+  .lb-regel-b{grid-column:1/-1;display:block;height:3px;border-radius:2px;
+    background:var(--line);overflow:hidden;margin-top:5px}
+  .lb-regel-b::before{content:'';display:block;height:100%;width:var(--w);
+    border-radius:inherit;background:var(--muted)}
+  .lb-regel-z[data-kl="legendary"] .lb-regel-b::before{background:var(--gold)}
+  .lb-regel-z[data-kl="rare"] .lb-regel-b::before{background:var(--purple)}
+
+  .lb-q{display:flex;align-items:baseline;gap:10px;padding:8px 13px;
+    background:var(--surface);border-top:1px solid var(--line)}
+  .lb-q[data-chron]{cursor:pointer}
+  .lb-q[data-chron]:active{background:var(--surface2)}
+  .lb-q.leer{color:var(--faint);font-size:12px;font-style:italic}
+  .lb-q .n{flex:1;min-width:0;font-size:12.5px;color:var(--ink);
+    display:flex;flex-direction:column;gap:2px}
+  .lb-q .n em{font-style:normal;color:var(--muted);font-size:10.5px;
+    line-height:1.4;white-space:normal;overflow:visible}
+  .lb-q .p{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--ink2)}
+
+  .lb-summe{display:flex;justify-content:space-between;align-items:baseline;
+    padding:11px 13px;border-top:1px solid var(--line2);
+    background:var(--surface2);font-size:12px;color:var(--ink2)}
+  .lb-summe .num{font-family:'Archivo Black',sans-serif;font-size:19px;color:var(--ink)}

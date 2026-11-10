@@ -1,0 +1,55 @@
+  /* ════════════════════════════════════════════════════════════════════════
+   *  CSS der Liga. Jede Datei in src/css/ deckt einen zusammenhängenden
+   *  Block ab; die Reihenfolge der Präfixe ist die Reihenfolge im Bau, und
+   *  später geladene Regeln gewinnen. Welche Datei welchen Abschnitt [§Cn]
+   *  trägt, steht in der Landkarte von CLAUDE.md §3 (von Wächter 6 und 7
+   *  geprüft), die Banner jeder Datei in docs/anker.md.
+   *  Neue Sections: eigene Datei mit Präfix ODER Banner
+   *    [§Cn] (slash-stern) ============ NAME ============ (stern-slash)
+   *  setzen — und in der Landkarte eintragen.
+   * ════════════════════════════════════════════════════════════════════════ */
+  :root{
+    --bg:#0a0c0b; --bg2:#0f1311; --surface:#141a16; --surface2:#1a221d;
+    --surface3:#222b25; --line:#28332b; --line2:#34423a;
+    --ink:#eef3ef; --ink2:#b9c4bd; --muted:#717f76; --faint:#4a554e;
+    --acid:#BEF264; --acid2:#A3E635; --acid-deep:#1A2E08;
+    --orange:#ff7849; --blue:#56b4e8; --red:#f0566a; --gold:#f7cf4a; --purple:#a78bfa;
+    /* Die drei Metalle [§C26]. Platz 1, 2, 3 tragen sie überall gleich —
+       Rangliste, Podeste, Medaillen, Recap. Vorher stand Silber an fünf
+       Stellen in vier Tönen und --bronze war gar nicht erst definiert. */
+    --silber:#C2C9D0; --bronze:#C08457;
+    --r:18px; --r-sm:12px;
+    /* Die Strichstärke der Zeichen [§C27]. Sie stand an 78 Stellen und in
+       13 Werten zwischen 1 und 3,4 — dieselbe Krone war in der Liga dünner
+       als im Blatt. Zeichen ab 18 px setzen --strich:1.75, das Motiv der
+       Stories 1.4, sonst gilt dieser Wert. */
+    --strich:2;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bot:env(safe-area-inset-bottom,0px);
+    --shadow:0 12px 40px -8px rgba(0,0,0,.6);
+    --shadow-acid:0 8px 28px -6px rgba(190,242,100,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  /* Knöpfe reagieren ohne Doppeltipp-Zoom-Geste. Nur die Bedienfläche,
+     nicht die Seite: natives Scrollen und Zwei-Finger-Zoom bleiben frei. */
+  button,[role="button"]{touch-action:manipulation}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+    outline:2px solid var(--acid2);outline-offset:2px}
+  html,body{overscroll-behavior-y:none}
+  body{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    background:var(--bg); color:var(--ink);
+    min-height:100vh; line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  /* ambient glow */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(700px circle at 85% -5%,rgba(190,242,100,.07),transparent 55%),
+      radial-gradient(600px circle at 10% 105%,rgba(255,120,73,.055),transparent 55%);
+  }
+  .num{font-family:'Sometype Mono',monospace;font-variant-numeric:tabular-nums}
+  .display{font-family:'Archivo Black',sans-serif;letter-spacing:-.02em}
+

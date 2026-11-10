@@ -1,0 +1,209 @@
+  /* ============ [§C26] DAS ZEICHEN ============ */
+  /* Sterne unten = Ligatitel, Feuer hinten = laufende Serie. Sonst nichts.
+     Beides liegt absolut über bzw. hinter dem Avatar, damit keine Zeile
+     ihre Höhe ändert, wenn ein Spieler zu brennen anfängt. */
+
+  .zn{position:relative;display:inline-grid;place-items:center;flex-shrink:0;
+    isolation:isolate}
+  .zn > .av{position:relative;z-index:1}
+
+  /* ── Das Feuer ────────────────────────────────────────────────────
+     Der Maßstab ist fest verdrahtet: 30 Zeichen-Einheiten sind eine halbe
+     Avatarbreite, der Avatarmittelpunkt liegt auf (50|60). Daraus folgt die
+     Box — 100 Einheiten sind 1,667 Avatarbreiten, und der Mittelpunkt muss
+     bei 50% bzw. 60% davon liegen. Wer hier etwas ändert, verschiebt die
+     Flamme gegen den Avatar.
+     Gedeckelt ist damit auch, wie weit das Feuer schlagen darf: die längste
+     Spitze liegt bei rund 47 Einheiten ab Mitte, also 31 px bei einem 40er
+     Avatar. Der Innenabstand einer Ranglistenzeile ist 13 px — die Flamme
+     bleibt darin, statt in die Zeile darüber zu ragen. */
+  .zn-fx{position:absolute;left:-33.3%;top:-50%;width:166.7%;height:166.7%;
+    z-index:0;pointer-events:none;overflow:visible;
+    /* Der Verlauf steckt in der Maske, nicht in der Füllung: ein <gradient>
+       bräuchte eine id, und dieselbe id käme in einer Liste dutzendfach vor —
+       dann zöge das Profilfeuer die Farbe der ersten Zeile. Die Maske gehört
+       dagegen jedem Element für sich.
+       ACHTUNG ellipse, nicht circle: ein circle darf laut Spec nur eine
+       Länge als Radius tragen, kein Prozent. Chromium verwirft dann die
+       ganze Deklaration — mask-image wird none, und die Flamme hört als
+       harte Zackenkante auf, statt auszulaufen. Genau das war der Fall.
+       Die Stopps zählen am Gradientenstrahl, nicht an der Box: der Strahl
+       ist 52 Einheiten lang, also liegt die Avatarkante (30 Einheiten) bei
+       58 % und die längste Spitze (48,5) bei 93 %.
+       Der Verlauf begann früher schon an der Avatarkante auszulaufen — und
+       damit genau dort, wo das Feuer überhaupt erst sichtbar wird: alles
+       innerhalb der Kante deckt der Avatar ab. Übrig blieb ein brauner
+       Hauch. Jetzt bleibt das Feuer bis 80 % voll deckend, und nur die
+       letzten Millimeter der Spitzen laufen aus. */
+    -webkit-mask-image:radial-gradient(ellipse 52% 52% at 50% 60%,
+      #000 0 80%,rgba(0,0,0,.88) 89%,rgba(0,0,0,.5) 95%,transparent 100%);
+    mask-image:radial-gradient(ellipse 52% 52% at 50% 60%,
+      #000 0 80%,rgba(0,0,0,.88) 89%,rgba(0,0,0,.5) 95%,transparent 100%);
+    /* Die Zungen sind Polygone. Ohne diesen Hauch Unschärfe enden sie als
+       Kante statt als Schein — der Rest der Weichzeichnung rechnet sich
+       je Bauteil aus dessen Größe. */
+    filter:blur(.9px)}
+  .zn-fx .zf{fill:var(--zn-c,#ff8f4a);opacity:0}
+  /* Der Kern ist warmweiß, egal welche Farbe die Hülle trägt — heiß ist
+     heiß. Im Profil wird er weiß und blass: dort gilt die Rangfarbe
+     [§C25], und Weiß ist keine zweite Meinung, sondern Helligkeit. */
+  .zn-fx .zk{fill:#ffdca8}
+  .zn-fx .zf.f1{opacity:1}
+
+  /* Durchscheinend, damit das Feuer die Liste nicht übertönt. Je höher
+     die Stufe, desto mehr darf es. */
+  .zn-l1 .zn-fx{opacity:.85}
+  .zn-l2 .zn-fx{opacity:.92}
+  .zn-l3 .zn-fx{opacity:1}
+  /* Der Schein gehört zum Feuer, nicht zur höchsten Stufe: eine Flamme
+     ohne Hof ist eine Zeichnung von einer Flamme. Er wächst mit der Stufe.
+     Er sitzt auf den Pfaden, nicht auf der Box — damit ihn dieselbe Maske
+     beschneidet und nichts über den Rand blüht. */
+  .zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 2.5px rgba(255,143,74,.55))}
+  .zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 3.5px rgba(255,143,74,.65))}
+  .zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 4.5px rgba(255,120,73,.75))}
+  .zn-rang.zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 2.5px rgba(var(--ak-rgb),.45))}
+  .zn-rang.zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 3.5px rgba(var(--ak-rgb),.55))}
+  .zn-rang.zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 4.5px rgba(var(--ak-rgb),.65))}
+
+  /* ── Stop-Motion ──────────────────────────────────────────────────
+     Keine Interpolation: die Bilder werden hart geschaltet, wie bei einer
+     Daumenkino-Seite. steps(1,end) hält jedes Bild bis zum nächsten Schritt.
+     Zwei Bilder bei Stufe 1 und 2, drei bei Stufe 3 — und dort schneller. */
+  @media (prefers-reduced-motion: no-preference){
+    .zn-l1 .zn-fx .zf.f1{animation:zn-a2 1.6s steps(1,end) infinite}
+    .zn-l1 .zn-fx .zf.f2{animation:zn-b2 1.6s steps(1,end) infinite}
+    .zn-l2 .zn-fx .zf.f1{animation:zn-a2 1.15s steps(1,end) infinite}
+    .zn-l2 .zn-fx .zf.f2{animation:zn-b2 1.15s steps(1,end) infinite}
+    .zn-l3 .zn-fx .zf.f1{animation:zn-a3 .66s steps(1,end) infinite}
+    .zn-l3 .zn-fx .zf.f2{animation:zn-b3 .66s steps(1,end) infinite}
+    .zn-l3 .zn-fx .zf.f3{animation:zn-c3 .66s steps(1,end) infinite}
+  }
+  @keyframes zn-a2{0%,49.9%{opacity:1}50%,100%{opacity:0}}
+  @keyframes zn-b2{0%,49.9%{opacity:0}50%,100%{opacity:1}}
+  @keyframes zn-a3{0%,33.2%{opacity:1}33.3%,100%{opacity:0}}
+  @keyframes zn-b3{0%,33.2%{opacity:0}33.3%,66.5%{opacity:1}66.6%,100%{opacity:0}}
+  @keyframes zn-c3{0%,66.5%{opacity:0}66.6%,100%{opacity:1}}
+
+  /* ── Das Titelband ────────────────────────────────────────────────
+     Unterhalb des Avatars, mittig, mit dunkler Kontur, damit die Sterne
+     sich vom Untergrund lösen — egal worauf sie liegen. */
+  /* Die Kontur trägt `.zs-k`, kein `filter` an der Leiste: der machte sie zu
+     einer eigenen Ebene unter jedem Wappen [§C43]. */
+  .zn-ti{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);
+    z-index:2;line-height:0;pointer-events:none}
+  .zn-ti .zs-k{fill:none;stroke:var(--bg);stroke-width:3.2;stroke-linejoin:round}
+  .zn-ti .zs{fill:var(--gold)}
+  .zn-ti .zn-ti-n{fill:var(--gold);font-family:'Sometype Mono',monospace;
+    font-size:8px;font-weight:700}
+
+  /* ── Im Profil trägt das Feuer die Rangfarbe ──────────────────────
+     [§C25] Eine Seite, eine Farbe. Orange wäre dort eine zweite Meinung. */
+  .zn-rang{--zn-c:var(--ak)}
+  .zn-rang.zn-l1 .zn-fx{opacity:.30}
+  .zn-rang.zn-l2 .zn-fx{opacity:.40}
+  .zn-rang.zn-l3 .zn-fx{opacity:.52}
+
+  /* Große Zeichen (Profilkopf, Recap-Held) brauchen ein größeres Band. */
+  .zn-gross .zn-ti{bottom:-7px;transform:translateX(-50%) scale(1.5)}
+  .zn-gross .zn-ti .zs-k{stroke-width:2.6}
+
+  /* ── Die Serie in den Formpunkten [§C26] ─────────────────────────────
+     Dieselbe Aussage wie das Feuer am Avatar, an der Stelle, an der man die
+     Serie ABLIEST: die Punkte, die zu ihr gehören, tragen eine Flamme.
+
+     KEIN zweites Feuer-SVG. Fünf Punkte je Zeile mal zwölf Zeilen wären
+     sechzig gezeichnete Feuer mit je bis zu siebzehn Zungen — auf einem
+     Telefon ist das eine Zumutung, und in sieben Pixel Breite sähe man
+     davon ohnehin nichts. Zwei Pseudo-Elemente, die sich im Takt
+     abwechseln, sind an dieser Größe nicht davon zu unterscheiden und
+     kosten nichts: kein Element, kein Bild, keine Zeitgeber.
+
+     Der Punkt bleibt grün. Grün und Rot sagen die Richtung [§C25] — eine
+     orange Flamme DARÜBER sagt etwas anderes und darf ihn nicht einfärben.
+
+     Die Höhe ist gedeckelt: die Flamme steht 4 px über dem Punkt, und 5 px
+     Luft hat die Punktzeile nach oben. Beide Bilder sind gleich hoch —
+     geflackert wird über die FORM, nicht über die Länge, sonst stieße das
+     höhere Bild in die Zeile darüber. tests/zeichen misst das nach. */
+  .form-dots .dot.glut{position:relative}
+  .form-dots .dot.glut::before,.form-dots .dot.glut::after{
+    content:"";position:absolute;left:50%;bottom:6px;height:5px;
+    pointer-events:none;
+    /* Hell unten am Punkt, ausklingend nach oben: eine Flamme ist an ihrem
+       Fuß am heißesten. Andersherum war es ein Tropfen mit harter Oberkante,
+       und die Unschärfe hätte diese Kante über die Zeile darüber getragen. */
+    background:linear-gradient(0deg,#ffdca8,var(--orange) 50%,rgba(255,143,74,0));
+    filter:blur(.5px)}
+  /* Sie SITZT auf dem Punkt, sie ersetzt ihn nicht: einen Pixel Fuß im
+     Punkt, vier darüber. Vorher lag sie mit ihrem hellen Fuß mitten auf dem
+     Grün — von weitem war der Punkt orange, und Grün heißt in dieser App
+     „gewonnen" und sonst nichts [§C25]. Schmaler als der Punkt, damit sein
+     Rand links und rechts stehen bleibt. */
+  .form-dots .dot.glut::before{width:5px;margin-left:-2.5px;
+    border-radius:52% 48% 45% 55% / 70% 70% 30% 30%}
+  .form-dots .dot.glut::after{width:3.8px;margin-left:-2.2px;opacity:0;
+    border-radius:44% 56% 50% 50% / 66% 66% 34% 34%;transform:rotate(-8deg)}
+  /* Derselbe Takt wie die kleine Flamme am Avatar — zwei Bilder, harte
+     Schnitte, kein Weichzeichnen dazwischen. Stop-Motion, kein Zeitgeber. */
+  @media (prefers-reduced-motion:no-preference){
+    .form-dots .dot.glut::before{animation:zn-a2 1.15s steps(1,end) infinite}
+    .form-dots .dot.glut::after{animation:zn-b2 1.15s steps(1,end) infinite}
+  }
+
+  /* ── Das Feuer im Profilkopf ──────────────────────────────────────
+     Eigene Zeichnung, eigene Box. Die Zeilen-Flamme ist für einen 40er
+     Avatar geschnitten; bei 242 px wurde daraus ein Hufeisen — ein heller
+     Bogen mit ein paar Zacken oben. Herleitung steht bei ZN_GEO_PROFIL in
+     09c-zeichen.js.
+
+     Der Maßstab hängt am AVATARRING, weil dort der Fuß der Zungen liegt und
+     nur eine deckende Fläche ihn verbergen kann. Der Ring misst 108 px bei
+     --ins-w 242, also 0,2231 der Wappenbreite; 30 Zeichen-Einheiten sind
+     dieser Radius, also ist eine Einheit 0,007438 · --ins-w und die 100
+     Einheiten breite Box misst 0,7438 · --ins-w. Sie ist 150 Einheiten hoch,
+     also das 1,5-fache: 1,1157 · --ins-w.
+
+     Senkrecht liegt die Mitte der Zeichnung bei 110 der 150 Einheiten, also
+     bei 73,333 % der Box — genau darum wird sie verschoben. Wer hier eine
+     Zahl ändert, verschiebt die Flamme gegen den Kopf.
+
+     Keine Maske. Eine radiale Maske schnitt das Feuer früher kreisrund aus,
+     und genau diesen Kreis sah man als Kante um den Kopf. Sie ist auch nicht
+     mehr nötig: der Fuß liegt bei 26 Einheiten und damit unter dem
+     30 Einheiten großen Ring, seitlich ist bei 47 Schluss und der Lorbeer
+     reicht bis 47,6.
+
+     Der Weichzeichner ist kein Effekt, sondern Maßstabsausgleich: ohne ihn
+     enden die Zungen bei dieser Größe als harte Dreiecke statt als Schein. */
+  /* Die Maße hängen am REIF, und der misst in der neuen Bandbox 40 von 180
+     Einheiten statt 41,5 von 144 — bezogen auf --ins-w also 0,771 mal so
+     viel. Alle drei Zahlen sind mit diesem Faktor mitgezogen; ohne das
+     stand das Feuer breiter da als das Zeichen, das es umgeben soll. */
+  .pp-av-wrap .zn-fx.pp-feuer{
+    left:50%; top:50%;
+    width:calc(var(--ins-w) * .6020); height:calc(var(--ins-w) * .9030);
+    transform:translate(-50%,-73.333%);
+    filter:blur(calc(var(--ins-w) * .0058));
+    -webkit-mask-image:none; mask-image:none}
+  /* Über dem Zeichen ist der Platz zu Ende: .pp-header hat 32 px
+     Innenabstand und overflow:hidden, und die Bandbox des Zeichens füllt
+     ihn genau aus. Die beiden oberen Stufen schlagen weiter hinaus als das,
+     die kleinste nicht — also rückt der Kopf nach unten, und zwar nur dort,
+     wo ein Feuer brennt: neunzehn von zwanzig Profilen zahlen dafür nichts.
+     Ohne das schnitt die Kartenkante die Flamme waagerecht ab; die bisher
+     größte Stufe stand mit 1,4 px vor derselben Kante. */
+  .pp-av-wrap.zn-l2{--feuerluft:6px}
+  .pp-av-wrap.zn-l3{--feuerluft:20px}
+
+  /* Im Profil trägt das Feuer die Rangfarbe und muss sich gegen ein sehr
+     helles Wappen behaupten — deshalb deutlich mehr Deckkraft als in der
+     Zeile. Es soll erkennbar sein, nicht dezent. */
+  .pp-av-wrap.zn-l1 .zn-fx{opacity:.80}
+  .pp-av-wrap.zn-l2 .zn-fx{opacity:.90}
+  .pp-av-wrap.zn-l3 .zn-fx{opacity:1}
+  .pp-av-wrap .zn-fx .zf{filter:drop-shadow(0 0 6px rgba(var(--ak-rgb),.5))}
+  /* Der Kern war ausgeblendet, solange die Maske ohnehin nur einen schmalen
+     Streifen übrig ließ. Jetzt steht der ganze Flammenkörper da, und eine
+     hellere Innenzunge macht aus der Silhouette wieder Feuer. */
+  .pp-av-wrap .zn-fx .zk{fill:#fff;opacity:.30;filter:none}

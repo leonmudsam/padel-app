@@ -1,0 +1,518 @@
+  /* ============ [§C22] SAISON-TITEL & CHRONIK ============ */
+  /* Jede Plakette bekommt ihren Ton über --tt (Farbe) und --ttr (RGB-Tripel
+     für Flächen). Damit reicht EINE Regel für alle sieben Titel-Töne. */
+  .tplates{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .tplate{display:flex;align-items:center;gap:12px;background:var(--surface);
+    border:1px solid var(--line);border-left:3px solid var(--tt,var(--line2));
+    border-radius:14px;padding:11px 13px;position:relative;overflow:hidden}
+  .tplate.clickable{cursor:pointer}
+  .tplate.clickable:active{transform:scale(.985)}
+  .tplate-ic{width:42px;height:42px;flex:0 0 auto;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(var(--ttr,52,66,58),.13);color:var(--tt,var(--ink2));font-size:19px}
+  .tplate-ic .ic,.tplate-ic svg{width:20px;height:20px}
+  .tplate-b{min-width:0;flex:1}
+  .tplate-t{font-family:'Archivo Black',sans-serif;font-size:14.5px;letter-spacing:-.02em;
+    line-height:1.15;color:var(--tt,var(--ink))}
+  .tplate-w{display:flex;align-items:center;gap:6px;margin-top:3px;
+    font-size:12.5px;font-weight:700;color:var(--ink2)}
+  .tplate-e{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+  /* Meister-Plakette: mittig, mit Strahlen die nach unten auslaufen */
+  .tplate.hero{flex-direction:column;text-align:center;padding:18px 16px 16px;
+    border-left-width:1px;border-color:rgba(var(--ttr),.4);
+    background:linear-gradient(180deg,rgba(var(--ttr),.10),var(--surface) 70%)}
+  .tplate.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-conic-gradient(from 0deg at 50% -16%,
+      rgba(var(--ttr),.13) 0deg 4deg,transparent 4deg 13deg);
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 58%);
+    mask-image:linear-gradient(180deg,#000,transparent 58%)}
+  .tplate.hero>*{position:relative;z-index:1}
+  .tplate.hero .tplate-ic{width:50px;height:50px;border-radius:50%}
+  .tplate.hero .tplate-ic .ic,.tplate.hero .tplate-ic svg{width:24px;height:24px}
+  .tplate.hero .tplate-t{font-size:23px;margin-top:9px}
+  .tplate-w .av{width:19px;height:19px;font-size:9px;border-radius:7px}
+  .tplate.hero .tplate-w{justify-content:center;font-size:14px;color:var(--ink)}
+  .tplate.hero .tplate-e{font-size:11px}
+
+  .tnote{font-size:11.5px;color:var(--muted);border-left:2px solid var(--line2);
+    padding:2px 0 2px 10px;margin:10px 0;line-height:1.45}
+  .tempty{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:11px 13px;font-size:13px;color:var(--ink2);margin-top:8px}
+  .tempty span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;
+    font-family:'Sometype Mono',monospace}
+  .tunawarded{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  /* Drei Spalten fuer Zeichen, Namen und Bedingung, darunter ueber die ganze
+     Breite die Zeile „Am naechsten dran". Sie steht unter der Bedingung und
+     nicht daneben: nebeneinander bleiben von beidem zwei Woerter je Zeile. */
+  .tun{display:grid;grid-template-columns:18px auto 1fr;align-items:center;gap:4px 9px;
+    padding:7px 11px;border:1px dashed var(--line2);border-radius:11px;opacity:.62}
+  .tun .i{color:var(--faint);display:flex}
+  .tun .i svg{width:15px;height:15px}
+  .tun .n{font-size:12px;font-weight:700;color:var(--ink2);white-space:nowrap}
+  .tun .c{font-size:10px;color:var(--muted);text-align:right;line-height:1.3;
+    font-family:'Sometype Mono',monospace}
+  .tun .w{grid-column:1 / -1;font-size:10px;color:var(--faint);cursor:pointer;
+    border-top:1px solid var(--line);padding-top:5px;margin-top:1px;
+    font-family:'Sometype Mono',monospace}
+  .tun .w b{color:var(--ink2);font-weight:700}
+
+  /* Titel-Pille im Profilkopf */
+  .pp-title-row{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px}
+  /* Der Beiname als Banner: ein Band mit Kanten oben und unten, dahinter
+     an jeder Seite ein Ende mit Schwalbenschwanz, eine Stufe tiefer und
+     gefaltet — zum Band hin fällt das Ende in den Schatten, als liefe es
+     hinter ihm herum. Das Band trägt einen Lichthof in seinem Gold, die
+     Schrift einen Schein. Die Größe ist die der Pille davor.
+     Beim Öffnen des Profils entrollt es sich aus der Mitte, danach schieben
+     sich die Enden heraus; hin und wieder zieht ein Glanz darüber. Nur
+     `transform` und Deckkraft, jede Bewegung an ihrem eigenen Element
+     [§C43]. Vorher stand das Band einfach da, flach, mit Enden in derselben
+     Farbe wie das Band selbst: es las sich als Schild, nicht als Titel.
+     Band und Enden sind deckend: unter der Tönung liegt ein Grund aus
+     dunklem Gold (`color-mix`). Die Tönung allein war durchscheinend, und
+     durch das Band sah man den Kopf des Profils mit seiner Rangfarbe — es
+     las sich als Glas, nicht als Stoff. Die Enden sind dunkler als das Band:
+     sie sind seine Rückseite. Innen an Ober- und Unterkante läuft eine Naht
+     aus einer feinen, durchgezogenen Linie; gestrichelt sah die Kante schon
+     einmal aus wie ein Knopf, der lädt. */
+  .pp-banner{position:relative;display:inline-flex;isolation:isolate;padding:0 11px}
+  .pp-banner::before,.pp-banner::after{content:"";position:absolute;top:4px;bottom:-4px;width:24px;z-index:-1;
+    box-shadow:inset 0 1px 0 rgba(var(--ttr,247,207,74),.45),inset 0 -1px 0 rgba(var(--ttr,247,207,74),.2)}
+  .pp-banner::before{left:0;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,7px 50%);
+    background:linear-gradient(90deg,transparent 46%,rgba(0,0,0,.55)),
+      linear-gradient(180deg,rgba(var(--ttr,247,207,74),.30),rgba(var(--ttr,247,207,74),.10)),
+      color-mix(in srgb,rgb(var(--ttr,247,207,74)) 9%,#080907)}
+  .pp-banner::after{right:0;clip-path:polygon(0 0,100% 0,calc(100% - 7px) 50%,100% 100%,0 100%);
+    background:linear-gradient(270deg,transparent 46%,rgba(0,0,0,.55)),
+      linear-gradient(180deg,rgba(var(--ttr,247,207,74),.30),rgba(var(--ttr,247,207,74),.10)),
+      color-mix(in srgb,rgb(var(--ttr,247,207,74)) 9%,#080907)}
+  .pp-title-pill{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:7px;
+    font-size:12.5px;font-weight:700;padding:5px 14px;border-radius:2px;color:var(--tt,var(--gold));
+    text-shadow:0 0 12px rgba(var(--ttr,247,207,74),.45);
+    background:linear-gradient(180deg,rgba(var(--ttr,247,207,74),.32),rgba(var(--ttr,247,207,74),.10) 52%,rgba(var(--ttr,247,207,74),.22)),
+      color-mix(in srgb,rgb(var(--ttr,247,207,74)) 12%,#0b0c09);
+    box-shadow:inset 0 1px 0 rgba(var(--ttr,247,207,74),.85),inset 0 -1px 0 rgba(var(--ttr,247,207,74),.55),
+      0 6px 14px -6px rgba(0,0,0,.85),0 0 22px -6px rgba(var(--ttr,247,207,74),.6)}
+  .pp-title-pill::before{content:"";position:absolute;left:5px;right:5px;top:2px;bottom:2px;pointer-events:none;
+    border-top:1px solid rgba(var(--ttr,247,207,74),.28);border-bottom:1px solid rgba(var(--ttr,247,207,74),.2)}
+  .pp-title-pill::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;pointer-events:none;
+    background:linear-gradient(100deg,transparent,rgba(255,244,210,.32),transparent);
+    transform:translateX(-120%);animation:ppBannerGlanz 7.5s ease-in-out 1.4s infinite}
+  @keyframes ppBannerGlanz{0%{transform:translateX(-120%)}22%,100%{transform:translateX(330%)}}
+  @keyframes ppBannerAuf{from{transform:scaleX(.15);opacity:0}}
+  @keyframes ppBannerEndeL{from{transform:translateX(12px);opacity:0}}
+  @keyframes ppBannerEndeR{from{transform:translateX(-12px);opacity:0}}
+  @media (prefers-reduced-motion:no-preference){
+    .pp-title-pill{animation:ppBannerAuf .6s cubic-bezier(.2,.9,.3,1) .2s both}
+    .pp-banner::before{animation:ppBannerEndeL .45s cubic-bezier(.2,.8,.3,1) .6s both}
+    .pp-banner::after{animation:ppBannerEndeR .45s cubic-bezier(.2,.8,.3,1) .6s both}
+  }
+  @media (prefers-reduced-motion:reduce){.pp-title-pill::after{animation:none;opacity:0}}
+  .pp-title-pill .i{display:flex}
+  .pp-title-pill .i svg{width:14px;height:14px}
+  /* Unter dem Band der Monat, gerahmt von zwei Strichen im Gold des Titels. */
+  .pp-title-sub{display:flex;align-items:center;gap:7px;font-size:9.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted)}
+  .pp-title-sub::before,.pp-title-sub::after{content:"";width:16px;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(247,207,74,.55))}
+  .pp-title-sub::after{background:linear-gradient(270deg,transparent,rgba(247,207,74,.55))}
+
+  /* Chronik-Streifen */
+  .chron-strip{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .chron-strip::-webkit-scrollbar{display:none}
+  .chron-cell{flex:0 0 auto;width:78px;border:1px solid var(--line);border-radius:13px;
+    background:var(--surface);padding:9px 5px;text-align:center;cursor:pointer}
+  .chron-cell:active{transform:scale(.97)}
+  .chron-cell .m{font-family:'Sometype Mono',monospace;font-size:9px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted)}
+  .chron-cell .i{height:22px;margin:6px auto 5px;color:var(--faint);
+    display:flex;align-items:center;justify-content:center}
+  .chron-cell .i svg{width:21px;height:21px}
+  .chron-cell .n{font-size:9.5px;font-weight:700;line-height:1.35;color:var(--ink2);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chron-cell{border-color:rgba(var(--ttr),.45);
+    background:linear-gradient(180deg,rgba(var(--ttr),.08),var(--surface))}
+  .chron-cell .i,.chron-cell .n{color:var(--tt)}
+  /* Der laufende Monat steht vorn im Streifen und soll das auch zeigen:
+     breiter, heller, mit einer Marke. Ein gestrichelter Rand allein ging
+     zwischen elf abgeschlossenen Monaten unter. */
+  .chron-cell.live{width:92px;border-color:rgba(var(--ttr),.85);
+    background:linear-gradient(180deg,rgba(var(--ttr),.20),rgba(var(--ttr),.05));
+    box-shadow:0 0 0 1px rgba(var(--ttr),.35), 0 6px 18px -8px rgba(var(--ttr),.5);
+    position:relative}
+  .chron-cell.live .m{color:var(--tt)}
+  .chron-cell.live .i svg{width:24px;height:24px}
+  .chron-cell.live::after{content:"läuft";position:absolute;left:50%;bottom:-7px;
+    transform:translateX(-50%);padding:1px 7px;border-radius:6px;
+    font-family:'Sometype Mono',monospace;font-size:8px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;
+    color:var(--bg);background:var(--tt)}
+  .chron-strip{padding-bottom:8px}
+  .chron-one .n .shared{margin-left:7px;padding:1px 6px;border-radius:6px;
+    font-family:'Sometype Mono',monospace;font-size:8.5px;font-weight:700;
+    letter-spacing:.04em;text-transform:uppercase;vertical-align:1px;
+    color:var(--tt);background:rgba(var(--ttr),.14);border:1px solid rgba(var(--ttr),.3)}
+  /* Alle Rekorde eines Spielers untereinander, mit dem Abstand, den vorher
+     nur der aufgeklappte Rest trug. */
+  .chron-alle{display:flex;flex-direction:column;gap:8px}
+  /* Im Profil stehen zwei Rekorde offen; der Rest klappt unter ihnen auf,
+     und der Knopf darunter nennt, wie viele es sind. */
+  .chron-rest{display:none;margin-top:8px}
+  .chron-rest.open{display:flex}
+  .chron-more{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;
+    margin-top:8px;padding:9px 12px;border:1px dashed var(--line);border-radius:12px;
+    background:transparent;color:var(--muted);cursor:pointer;
+    font-family:'Sometype Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase}
+  .chron-more:active{transform:scale(.99);background:var(--surface)}
+  .chron-more svg{width:14px;height:14px;transition:transform .18s ease}
+  .chron-more.open svg{transform:rotate(180deg)}
+  .chron-honors{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}
+  .chron-honor{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;
+    padding:4px 11px;border-radius:20px;color:var(--tt);
+    background:rgba(var(--ttr),.10);border:1px solid rgba(var(--ttr),.4)}
+  .chron-honor .i{display:flex}
+  .chron-honor .i svg{width:13px;height:13px}
+  .chron-honor b{font-family:'Sometype Mono',monospace;font-size:10px;opacity:.75}
+
+  /* Liga-Chronik-Matrix */
+  /* Die Matrix steht in einer Karte: frei auf dem Grund stand sie wie eine
+     Liste ohne Rand, und die stehende Namensspalte hatte keinen Hintergrund,
+     von dem sie sich abhob. */
+  /* Ihr eigener Stapel [§C43]: die stehende Namensspalte (z-index 2) gehörte
+     sonst dem Stapel des Reiters und läge außerhalb des runden Rands. */
+  .lchron-wrap{overflow-x:auto;margin-top:12px;-webkit-overflow-scrolling:touch;
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;isolation:isolate}
+  /* table-layout:fixed — sonst ignoriert der Browser die Spaltenbreiten und
+     die Namensspalte frisst so viel Platz, dass die erste Saison abgeschnitten
+     wird. Mit fester Aufteilung passen vier Saisons ohne Scrollen aufs Handy. */
+  .lchron{border-collapse:collapse;width:100%;table-layout:fixed}
+  .lchron th{font-family:'Sometype Mono',monospace;font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);font-weight:500;padding:9px 4px 7px;
+    text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom}
+  /* Der Monat und darunter, wie viele Einträge er trägt: eine Spalte voller
+     Zellen und eine mit zwei sahen im Kopf gleich aus. */
+  .lchron th .lc-m{display:block}
+  /* Das Jahr steht leise hinter dem Monat, im selben Kopf: eine eigene
+     Zeile hätte jede Spalte um eine Zeile höher gemacht, für zwei Ziffern. */
+  .lchron th .lc-j{margin-left:.3em;color:var(--faint);letter-spacing:.04em}
+  .lchron th .lc-z{display:block;margin-top:3px;font-size:13px;font-weight:700;
+    letter-spacing:0;color:var(--ink)}
+  /* Die laufende Spalte ist getönt: ihre Zellen können bis zum Monatsende
+     noch wechseln. Gestrichelt allein war das nur an den gefüllten Zellen zu
+     sehen, nicht an der Spalte. */
+  .lchron th.live,.lchron td.live{background:rgba(190,242,100,.045)}
+  .lchron th.live .lc-m{color:var(--acid)}
+  .lchron th:first-child{text-align:left;padding-left:10px}
+  .lchron th[data-season-table]{cursor:pointer}
+  .lchron td{padding:4px 3px;text-align:center;border-bottom:1px solid var(--line)}
+  .lchron th:not(:first-child),.lchron td:not(.who){width:64px}
+  .lchron tr:last-child td{border-bottom:none}
+  /* Namensspalte bleibt stehen, während die Saisons seitlich durchlaufen —
+     ohne das verliert man beim Scrollen die Zeile, zu der eine Zelle gehört. */
+  .lchron th:first-child,.lchron td.who{position:sticky;left:0;z-index:2;
+    background:var(--surface);box-shadow:1px 0 0 var(--line)}
+  /* Namensspalte gedeckelt, damit vier Saisons ohne Seitwärts-Scrollen aufs
+     Handy passen — lange Namen laufen mit Auslassungspunkten aus.
+     Die 10 px links sind kein Geschmack: der Avatar saß vorher auf 2 px und
+     damit bündig auf der Kante des Inhaltsbereichs, während alles andere auf
+     der Seite 16 px Abstand hält. Das sah aus, als wäre die Spalte
+     abgeschnitten. Die Saisonspalten geben die 8 px ab (64 statt 66), damit
+     insgesamt nicht mehr Platz gebraucht wird als vorher. */
+  .lchron th:first-child,.lchron td.who{max-width:112px;width:112px}
+  .lchron td.who{text-align:left;white-space:nowrap;cursor:pointer;padding-left:10px;padding-right:8px}
+  .lchron td.who .w{display:flex;align-items:center;gap:8px;
+    font-size:12.5px;font-weight:700;color:var(--ink)}
+  .lchron td.who .av{--av:24px;font-size:9.5px;border-radius:8px}
+  .lchron td.who .wt{display:flex;flex-direction:column;min-width:0;gap:2px}
+  .lchron td.who .wt > span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .lchron td.who .wt small{font-family:'Sometype Mono',monospace;font-size:9.5px;
+    font-weight:500;color:var(--muted)}
+  /* Wie viele Zellen der Zeile golden, lila, metallen und rot sind, je eine
+     Zahl in ihrer Farbe mit einem Punkt davor [§C39]. */
+  .lchron td.who .lc-zahl{display:flex;gap:7px}
+  .lc-zahl b{display:inline-flex;align-items:center;gap:3px;font-weight:700;color:var(--kz)}
+  .lc-zahl b::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--kz)}
+  .lc-zahl b[data-kl="legendaer"]{--kz:var(--gold)}
+  .lc-zahl b[data-kl="selten"]{--kz:var(--purple)}
+  .lc-zahl b[data-kl="besonders"]{--kz:#c3ced9}
+  .lc-zahl b[data-kl="schatten"]{--kz:var(--red)}
+  /* Im Kopf der Spalte, wie sich ihre Einträge auf die Stufen verteilen. */
+  .lchron th .lc-st{display:flex;width:36px;height:3px;margin:5px auto 0;border-radius:2px;overflow:hidden;
+    background:var(--line)}
+  .lc-st i{display:block;height:100%}
+  .lc-st i[data-kl="legendaer"]{background:var(--gold)}
+  .lc-st i[data-kl="selten"]{background:var(--purple)}
+  .lc-st i[data-kl="besonders"]{background:#9aa7b5}
+  .lc-st i[data-kl="schatten"]{background:var(--red)}
+  .lchron tbody tr:active td{background:var(--surface2)}
+  .lc-dash{color:var(--faint);font-family:'Sometype Mono',monospace;font-size:12px}
+  /* Die Legende: dieselben drei Stärken wie die Zellen und die gestrichelte
+     Kante der laufenden Spalte, ohne einen Satz dazu. */
+  .lchron-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 2px 0;
+    font-family:'Sometype Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--muted)}
+  .lchron-lg span{display:inline-flex;align-items:center;gap:6px}
+  .lchron-lg span::before{content:"";width:14px;height:10px;border-radius:4px;
+    background:rgba(var(--kr),.2);box-shadow:inset 0 0 0 1px rgba(var(--kr),.45)}
+  .lchron-lg span b{font-weight:700;color:var(--ink2)}
+  .lchron-lg [data-kl="legendaer"]{--kr:247,207,74}
+  .lchron-lg [data-kl="selten"]{--kr:167,139,250}
+  .lchron-lg [data-kl="besonders"]{--kr:154,167,181}
+  .lchron-lg [data-kl="schatten"]{--kr:240,86,106}
+  .lchron-lg .live::before{background:none;box-shadow:none;outline:1px dashed rgba(190,242,100,.55);outline-offset:-1px}
+  .ruhe-ende .lchron-wrap{margin-top:4px}
+  .lc-cell{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:6px 3px;border-radius:11px;background:rgba(var(--ttr),.11);cursor:pointer;
+    width:60px;margin:0 auto;overflow:hidden;isolation:isolate}
+  /* Was derselbe Spieler im selben Monat noch hält: klein in der Ecke. */
+  .lc-mehr{position:absolute;top:3px;right:4px;font-style:normal;font-size:8px;font-weight:700;
+    line-height:1;color:var(--tt);opacity:.85}
+  .lc-cell.live{outline:1px dashed rgba(var(--ttr),.55);outline-offset:-1px}
+  .lc-cell .i{display:flex;color:var(--tt)}
+  .lc-cell .i svg{width:16px;height:16px}
+  .lc-cell .n{font-size:8.5px;font-weight:700;line-height:1.35;color:var(--tt);
+    max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Die Stufe als Farbe (`--tt` aus `chronikTon`) und als Gewicht [§C39]:
+     Gold mit Verlauf, Rahmen und Schein, Lila mit Rahmen, Metall flach, Rot
+     mit Rahmen. Vorher trug die Zelle die Farbe ihrer Disziplin und die
+     Klasse nur als Stärke: eine besondere Können-Chronik stand golden neben
+     einer legendären Fügung in Lila. Auch die schwächste bleibt deutlich
+     sichtbar: eine fast leere Zelle liest sich als Fehler. */
+  .lc-cell[data-kl="legendaer"]{background:linear-gradient(160deg,rgba(var(--ttr),.3),rgba(var(--ttr),.12));
+    box-shadow:inset 0 0 0 1px rgba(var(--ttr),.55),0 0 10px rgba(var(--ttr),.16)}
+  .lc-cell[data-kl="selten"]{background:rgba(var(--ttr),.16);
+    box-shadow:inset 0 0 0 1px rgba(var(--ttr),.34)}
+  .lc-cell[data-kl="besonders"]{background:rgba(var(--ttr),.1)}
+  .lc-cell[data-kl="schatten"]{background:rgba(var(--ttr),.12);
+    box-shadow:inset 0 0 0 1px rgba(var(--ttr),.28)}
+  /* Gold glänzt: alle sechs Sekunden zieht ein Lichtband schräg über die
+     Zelle, jede in ihrem eigenen Takt (negative Verzögerung, kein Warten)
+     [§C43]. Nur Verschiebung, auf einem eigenen Element. */
+  .lc-cell[data-kl="legendaer"]::after{content:"";position:absolute;inset:-20% auto -20% -60%;width:45%;
+    background:linear-gradient(100deg,transparent,rgba(255,236,170,.55),transparent);
+    transform:translateX(0) skewX(-18deg);pointer-events:none;
+    animation:lcGlanz 6s ease-in-out infinite;animation-delay:calc(var(--k, 0) * -1.3s)}
+  @keyframes lcGlanz{0%,72%{transform:translateX(0) skewX(-18deg)}92%,100%{transform:translateX(420%) skewX(-18deg)}}
+  @media (prefers-reduced-motion:reduce){.lc-cell[data-kl="legendaer"]::after{animation:none;display:none}}
+  .chron-cell[data-kl="legendaer"]{border-color:rgba(var(--ttr),.7);
+    background:linear-gradient(180deg,rgba(var(--ttr),.16),var(--surface))}
+  .chron-cell[data-kl="besonders"]{border-color:rgba(var(--ttr),.3);
+    background:linear-gradient(180deg,rgba(var(--ttr),.05),var(--surface))}
+  .chron-cell[data-kl="schatten"]{border-color:rgba(var(--ttr),.4);
+    background:linear-gradient(180deg,rgba(var(--ttr),.08),var(--surface))}
+  .tplate[data-kl="legendaer"]{border-left-width:4px}
+  .tplate[data-kl="besonders"]{border-left-width:2px}
+  /* Die Klasse in Worten, neben dem Namen. Metall, weil sie niemanden
+     auszeichnet — sie sagt nur, wie selten die Bedingung zutrifft. */
+  .tplate-kl{font-family:'Sometype Mono',monospace;font-size:8.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.13em;color:var(--muted);
+    margin-left:7px;vertical-align:1px;white-space:nowrap}
+  /* Der Beiname im Kopf des Blatts. Er bricht auf eine EIGENE Zeile
+     innerhalb des Kopfs (`flex-basis:100%`): als Pille rechts neben der
+     Bedingung blieb auf dem Telefon fuer beide je die halbe Breite, und
+     die Bedingung ist der laengere Satz. Metall, kein Gold — der Beiname
+     zeichnet niemanden aus [§C25]. */
+  .chron-hero{flex-wrap:wrap}
+  .chron-kose{flex:0 0 100%;display:flex;align-items:baseline;gap:8px;
+    margin-top:2px;padding-top:9px;border-top:1px solid rgba(var(--ttr),.16)}
+  .chron-kose i{font-family:'Sometype Mono',monospace;font-size:8.5px;
+    font-weight:700;font-style:normal;text-transform:uppercase;
+    letter-spacing:.13em;color:var(--muted);white-space:nowrap}
+  .chron-kose b{font-size:12.5px;font-weight:700;color:var(--ink);
+    margin-left:auto;text-align:right}
+
+  /* Die Zahlenreihe im Chronik-Blatt steht direkt unter der Bedingung. */
+  .chron-hero + .rcp-z{margin:-2px 0 12px}
+
+  /* Einstieg in die Liga-Chronik (Awards-Tab) */
+  .chron-entry{display:flex;align-items:center;gap:12px;background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;
+    margin-bottom:14px;cursor:pointer}
+  .chron-entry:active{transform:scale(.99)}
+  .chron-entry .ce-ic{width:38px;height:38px;flex:0 0 auto;border-radius:12px;
+    background:rgba(247,207,74,.13);color:var(--gold);
+    display:flex;align-items:center;justify-content:center}
+  .chron-entry .ce-ic svg{width:19px;height:19px}
+  .chron-entry .ce-b{flex:1;min-width:0}
+  .chron-entry .ce-t{font-size:13.5px;font-weight:700;color:var(--ink)}
+  .chron-entry .ce-s{font-size:11px;color:var(--muted);font-family:'Sometype Mono',monospace}
+  .chron-entry .ce-marks{display:flex;gap:4px;align-items:center}
+  .chron-entry .ce-marks .mk{width:16px;height:16px;display:flex}
+  .chron-entry .ce-marks .mk svg{width:16px;height:16px}
+
+  /* Titel-Marke neben dem Namen (Rangliste) */
+  /* Ihr Schein ist ein Lichthof dahinter, kein `filter`: die Marke steht in
+     jeder Zeile der Rangliste, und ein `filter` machte jede zu einer eigenen
+     Ebene, die Safari spät oder gar nicht zeichnete [§C43]. */
+  .tmark{display:inline-flex;align-items:center;gap:1px;margin-left:6px;
+    vertical-align:-2px;color:var(--tt);pointer-events:none;flex:0 0 auto;
+    background:radial-gradient(closest-side,rgba(var(--ttr),.3),transparent)}
+  .tmark svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  .tmark i{font-family:'Sometype Mono',monospace;font-size:9px;font-style:normal;
+    line-height:1;opacity:.85;letter-spacing:-.02em}
+  .tmark.lg{vertical-align:-3px}
+  .tmark.lg svg{width:16px;height:16px}
+  .tmark.lg i{font-size:10px}
+  /* Mehrfach-Meister: derselbe Stil, nur ein Hauch heller. */
+  .tmark.honor{background:radial-gradient(closest-side,rgba(var(--ttr),.5),transparent)}
+  /* Laufende Saison: gestrichelter Ring — dieser Eintrag kann noch kippen. */
+  .tmark.live{border:1px dashed rgba(var(--ttr),.42);border-radius:50%;
+    padding:1.5px;margin-left:5px;filter:none;opacity:.72}
+  .tmark.live svg{width:11px;height:11px;}
+  .tmark.live.lg svg{width:12px;height:12px}
+  /* In der Ranglistenzeile steht die Marke in ihrer Kachel [§C27]: ein
+     loses Zeichen von 16 px neben einem Namen in 15 px Schrift las sich
+     als Strich, nicht als Titel. Getönt in der Farbe des Titels, ohne den
+     Schein, den die Kachel ersetzt. */
+  .rname .tmark{justify-content:center;min-width:20px;height:20px;padding:0 3px;gap:2px;
+    border-radius:6px;vertical-align:-4px;filter:none;
+    background:rgba(var(--ttr),.13);box-shadow:inset 0 0 0 1px rgba(var(--ttr),.28)}
+  .rname .tmark.live{border:0;padding:0 3px;opacity:.85;
+    background:none;box-shadow:inset 0 0 0 1px rgba(var(--ttr),.42)}
+  .rname .tmark.live svg,.rname .tmark.live.lg svg{width:12px;height:12px}
+
+  /* ── Der eine Liga-Rekord: eine Karte, keine Liste ────────────────── */
+  .chron-one{display:flex;align-items:center;gap:12px;
+    background:linear-gradient(100deg,rgba(var(--ttr),.11),rgba(var(--ttr),.02) 62%,var(--surface));
+    border:1px solid rgba(var(--ttr),.24);border-radius:14px;padding:12px 13px;
+    cursor:pointer;position:relative;overflow:hidden}
+  .chron-one:active{transform:scale(.99)}
+  .chron-one::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+    background:var(--tt);box-shadow:0 0 10px rgba(var(--ttr),.7)}
+  .chron-one .ic{width:36px;height:36px;flex:0 0 auto;border-radius:12px;
+    display:grid;place-items:center;color:var(--tt);
+    background:rgba(var(--ttr),.13);box-shadow:inset 0 0 0 1px rgba(var(--ttr),.18)}
+  .chron-one .ic svg{width:19px;height:19px;fill:none;stroke:currentColor;
+    --strich:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .chron-one .ic.av{background:none;box-shadow:none}
+  .chron-one .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .chron-one .tx .n{font-family:'Archivo Black',sans-serif;font-size:14px;
+    letter-spacing:-.01em;color:var(--tt);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Mit der Marke „zu zweit gehalten" bricht die Zeile um: in einer Zeile
+     stand bei 360 px „ZU ZWEIT GEHALT…", und ein halbes Wort liest sich als
+     Fehler. Die Marke selbst bleibt ganz. */
+  .chron-one .tx .n:has(.shared){white-space:normal;display:flex;flex-wrap:wrap;
+    align-items:center;gap:3px 7px}
+  .chron-one .tx .n:has(.shared) .shared{margin-left:0;white-space:nowrap}
+  .chron-one .tx .e{font-size:11px;color:var(--ink2);line-height:1.35}
+  .chron-one .go{flex:0 0 auto;color:var(--muted);display:grid;place-items:center;opacity:.7}
+  .chron-one .go svg{width:15px;height:15px}
+  /* Fortschritts-Variante: gestrichelt und gedämpft — noch nicht erreicht. */
+  .chron-one.next{background:var(--surface);border-style:dashed;
+    border-color:rgba(var(--ttr),.30)}
+  .chron-one.next::before{display:none}
+  .chron-one.next .ic{opacity:.75}
+  .chron-one.next .tx .n{font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:13px;color:var(--ink)}
+  .chron-one .tx .bar{display:block;height:3px;border-radius:2px;margin-top:5px;
+    background:rgba(var(--ttr),.15);overflow:hidden}
+  .chron-one .tx .bar i{display:block;height:100%;border-radius:2px;
+    background:var(--tt);opacity:.75}
+  .chrows-empty{font-size:11.5px;color:var(--muted);line-height:1.6;
+    background:var(--surface);border:1px dashed var(--line);
+    border-radius:13px;padding:12px 13px}
+
+  /* Rekord-Liste im Liga-Chronik-Sheet: eine Zeile je Rekord, bewusst schmal */
+  .chlist{display:flex;flex-direction:column;gap:2px;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:13px;padding:5px;overflow:hidden}
+  .chline{display:flex;align-items:center;gap:9px;padding:7px 7px;
+    border-radius:9px;cursor:pointer}
+  .chline:active{background:var(--surface2)}
+  .chline .ic{width:20px;height:20px;flex:0 0 auto;color:var(--tt);display:grid;place-items:center}
+  .chline .ic svg{width:15px;height:15px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  .chline .n{flex:1;min-width:0;font-size:12px;font-weight:600;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Die Halter brechen um, statt zu enden: im Blatt stand „Maxi, Julian…",
+     und welche zwei weiteren den Rekord teilen, sagte nichts — ein Blatt
+     zeigt alles. */
+  .chline .hd{flex:0 1 auto;font-family:'Sometype Mono',monospace;font-size:10.5px;
+    color:var(--tt);max-width:46%;text-align:right;line-height:1.3}
+
+  /* Die Bedingung im Klartext, unter dem Kopf des Blatts. Das Zeichen trägt
+     der Kopf (blattKopfHtml) — hier stand es ein zweites Mal. */
+  .chron-hero{display:flex;align-items:center;gap:12px;margin:14px 0;
+    background:linear-gradient(120deg,rgba(var(--ttr),.13),transparent 70%),var(--surface);
+    border:1px solid rgba(var(--ttr),.22);border-radius:15px;padding:13px 14px}
+  .chron-hero .c{font-size:11.5px;color:var(--ink2);line-height:1.5}
+
+  /* ── Avatar-Status-Ring (§13.7) ───────────────────────────────────── */
+  /* Nur im Spielerprofil. In der Rangliste stünde er doppelt: Team of the
+     Season und Titelverteidiger haben dort schon ihre eigene Karte. */
+  .av.avring{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3.5px var(--tt),
+    0 0 12px rgba(var(--ttr),.45)}
+  .av.avring.av-emoji{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),
+    0 0 0 1.5px var(--bg),0 0 0 3.5px var(--tt),0 0 12px rgba(var(--ttr),.45)}
+  /* Extremzustände pulsieren leicht — nur die, sonst flackert die ganze Liste. */
+  .av.avring.r-blaze,.av.avring.r-abyss{animation:avRingPulse 2.4s ease-in-out infinite}
+  @keyframes avRingPulse{
+    0%,100%{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3.5px var(--tt),0 0 10px rgba(var(--ttr),.4)}
+    50%    {box-shadow:0 0 0 1.5px var(--bg),0 0 0 3.5px var(--tt),0 0 20px rgba(var(--ttr),.85)}}
+  @media (prefers-reduced-motion:reduce){.av.avring{animation:none!important}}
+
+  /* Profilkopf: Ring-Emblem am Avatar + Erklär-Chip unter dem Namen */
+  .pp-av-wrap.has-ring .pp-av-ring{box-shadow:0 0 0 3px var(--bg),
+    0 0 0 5.5px var(--tt),0 0 30px rgba(var(--ttr),.5),0 12px 28px -8px rgba(0,0,0,.6)}
+  /* Lob und Niederlagenserie zugleich: die zweite Farbe liegt als eigener
+     Ring darüber und blendet langsam ein und aus — nur Deckkraft, kein
+     Umfärben, das der Browser bei jedem Bild neu malen müsste. */
+  .pp-av-wrap.ring-zwei .pp-av-ring::after{content:"";position:absolute;inset:0;
+    border-radius:50%;pointer-events:none;opacity:0;
+    box-shadow:0 0 0 3px var(--bg),0 0 0 5.5px var(--tt2),0 0 30px rgba(var(--ttr2),.5);
+    animation:ppRingWechsel 8s ease-in-out 1.2s infinite}
+  @keyframes ppRingWechsel{0%,30%,100%{opacity:0}45%,85%{opacity:1}}
+  /* Die Zeichen sitzen auf dem Ring, ihre Plätze setzt `AV_RING_PLAETZE`.
+     Sie kommen nacheinander, dann läuft hin und wieder ein Licht reihum —
+     einmal um den Ring, danach Ruhe. Ein Puls an jedem Zeichen zugleich
+     hätte den Kopf flackern lassen. Der Schein ist ein Lichthof im
+     Hintergrund, kein Filter [§C43].
+     Kommen und Atmen liegen auf zwei Elementen: zwei Animationen auf
+     `transform` an demselben Element rechnet Chromium nicht mehr auf der
+     Grafikkarte, sondern jedes Bild im Hauptthread — gemessen kostete das
+     offene Profil so 110 statt 10 ms je Sekunde. */
+  .pp-av-mark{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;z-index:3;
+    animation:ppMarkKommt .42s cubic-bezier(.2,.9,.3,1.25) calc(.45s + var(--i,0) * .09s) both}
+  .pp-av-mark > .d{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
+    background:var(--bg);color:var(--tt);
+    box-shadow:0 0 0 2px rgba(var(--ttr),.55),0 0 14px rgba(var(--ttr),.5);
+    animation:ppMarkAtem 7s ease-in-out calc(1.6s + var(--i,0) * .32s) infinite}
+  .pp-av-mark > .d::before{content:"";position:absolute;inset:-8px;border-radius:50%;z-index:-1;
+    background:radial-gradient(circle,rgba(var(--ttr),.55),transparent 68%);opacity:0;
+    animation:ppMarkHof 7s ease-in-out calc(1.6s + var(--i,0) * .32s) infinite}
+  @keyframes ppMarkKommt{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+  @keyframes ppMarkAtem{0%,18%,100%{transform:none}8%{transform:scale(1.12)}}
+  @keyframes ppMarkHof{0%,18%,100%{opacity:0}8%{opacity:1}}
+  .pp-av-mark svg{width:15px;height:15px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  @media (prefers-reduced-motion:reduce){
+    .pp-av-mark,.pp-av-mark > .d,.pp-av-mark > .d::before,.pp-ring-rest .pp-ring-chip{animation:none!important}
+    .pp-av-wrap.ring-zwei .pp-av-ring::after{animation:none}}
+  .pp-ring-chip{display:inline-flex;align-items:center;gap:7px;margin:8px auto 0;
+    padding:5px 11px 5px 8px;border-radius:999px;
+    background:rgba(var(--ttr),.10);border:1px solid rgba(var(--ttr),.28)}
+  /* Mehrere Zustände: die erste Zeile bleibt, wie sie war, und klappt auf.
+     Die übrigen stehen in derselben Form darunter und kommen nacheinander. */
+  .pp-ringe{display:flex;flex-direction:column;align-items:center}
+  button.pp-ring-chip{font:inherit;color:inherit;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;transition:transform .15s}
+  button.pp-ring-chip:active{transform:scale(.97)}
+  .pp-ring-mehr{display:inline-flex;align-items:center;gap:2px;margin-left:2px;
+    padding-left:7px;border-left:1px solid rgba(var(--ttr),.28);
+    font-size:10px;font-weight:700;color:var(--ink2)}
+  .pp-ring-mehr svg{width:12px;height:12px;transition:transform .18s ease}
+  .pp-ringe.open .pp-ring-mehr svg{transform:rotate(180deg)}
+  .pp-ring-rest{display:none;flex-direction:column;align-items:center}
+  .pp-ringe.open .pp-ring-rest{display:flex}
+  .pp-ring-rest .pp-ring-chip{margin-top:6px;
+    animation:ppRingZeile .32s cubic-bezier(.2,.8,.2,1) calc(var(--i,0) * .06s) both}
+  @keyframes ppRingZeile{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .pp-ring-chip .i{display:grid;place-items:center;color:var(--tt)}
+  .pp-ring-chip .i svg{width:14px;height:14px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  .pp-ring-chip b{font-size:11.5px;font-weight:700;color:var(--tt)}
+  .pp-ring-chip .s{font-size:10px;color:var(--ink2)}

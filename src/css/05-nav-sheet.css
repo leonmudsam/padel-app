@@ -1,0 +1,238 @@
+  /* ============ [§C10] HISTORY ============ */
+  .mlist{display:flex;flex-direction:column;gap:7px}
+  .mrow{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;transition:.15s}
+  .mrow:active{background:var(--surface2)}
+  .mrow-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .mteam{flex:1;font-size:13px;font-weight:600;min-width:0;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+  .mteam.r{text-align:right;align-items:flex-end}
+  .mteam.won{color:var(--ink)} .mteam.lost{color:var(--muted);font-weight:500}
+  .mteam-av{display:flex}
+  .mteam-av .av{--av:22px;width:22px;height:22px;font-size:8px;box-shadow:0 0 0 2px var(--surface)}
+  .mteam-av .av+.av{margin-left:-6px}
+  .mteam.lost .mteam-av{opacity:.55}
+  .mscore{font-family:'Archivo Black',sans-serif;font-size:18px;background:var(--bg2);
+    padding:5px 12px;border-radius:10px;flex-shrink:0;color:var(--faint);border:1px solid var(--line)}
+  .mscore em{font-style:normal}.mscore em.w{color:var(--acid)}.mscore i{font-style:normal;margin:0 1px;font-size:14px;vertical-align:2px}
+  .mtag{display:flex;align-items:baseline;gap:8px;padding:12px 2px 2px;font-size:12px}
+  .mtag:first-child{padding-top:0}
+  .mtag b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:13px;color:var(--ink)}
+  .mtag span{font-family:'Sometype Mono',monospace;font-size:10.5px;color:var(--muted)}
+  .mtag em{margin-left:auto;font-style:normal;font-family:'Sometype Mono',monospace;font-size:10px;color:var(--faint)}
+  .mrow-bd{display:flex;gap:3px;align-items:center;margin-top:5px;flex-wrap:wrap}
+  .mrow-bd > span{background:var(--surface3);padding:2px 6px;border-radius:7px;display:inline-flex;align-items:center;gap:4px;color:var(--ink2);font-size:10px}
+  .mrow-fuss{margin-top:6px}
+  .mrow-edit{color:var(--acid2);display:inline-flex;align-items:center;gap:5px}
+  .mdeltas .delta-v{font-size:11px}
+  .tm-row{background:var(--surface);border:1px solid var(--tm-rand,var(--line));border-radius:18px;padding:13px 15px;display:block}
+  .tm-zeile{display:flex;align-items:center;gap:12px}
+  .tm-mitte{flex:1;min-width:0}
+  .tm-name{font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:-.01em;line-height:1.1}
+  .tm-bil{margin-top:4px;font-size:10.5px;color:var(--muted)}
+  .tm-bar{display:flex;height:4px;margin-top:6px;border-radius:2px;overflow:hidden;background:rgba(240,86,106,.45)}
+  .tm-bar i{display:block;height:100%;background:var(--acid);border-radius:2px 0 0 2px}
+  .tm-wert{font-family:'Archivo Black',sans-serif;font-size:20px;line-height:1;flex-shrink:0}
+  .mrow-bot{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;
+    color:var(--muted);font-family:'Sometype Mono',monospace}
+  .mdeltas{display:flex;gap:9px;flex-wrap:wrap}
+  .mdeltas span b{color:var(--ink2);font-weight:600}
+
+  /* ============ [§C11] MODAL / SHEET ============ */
+  /* `transition:.25s` ist `transition:all`, und dieser Vorhang traegt einen
+     `backdrop-filter`: beim Ein- und Ausblenden stand damit jede Eigenschaft
+     zur Animation an, auch der Blur selbst — und der muss in JEDEM Bild alles
+     hinter sich neu rechnen. Genannt wird deshalb die eine Eigenschaft, die
+     sich mit `.show` wirklich aendert. */
+  .sheet-bg{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;
+    transition:opacity .25s}
+  .sheet-bg.show{opacity:1;pointer-events:auto}
+  .sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:101;max-width:520px;margin:0 auto;
+  background:var(--bg2);border-radius:26px 26px 0 0;border:1px solid var(--line);border-bottom:none;
+  padding:10px 20px calc(26px + var(--safe-bot));transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.2,.8,.2,1);max-height:88vh;overflow-y:auto;
+  /* Das Blatt wird verschoben, nicht neu gezeichnet. Ohne diesen Hinweis
+     liegt sein Inhalt in derselben Schicht wie die Seite, und der Browser
+     malt ihn in jedem Bild der Bewegung neu — beim News-Feed waren das
+     gemessen 1612 Knoten. Es gibt genau EIN Blatt, die Schicht kostet also
+     einmal Speicher und nicht je Ansicht. */
+  will-change:transform;
+  touch-action:pan-y;
+  overscroll-behavior-y:contain;
+  user-select:none;
+}
+.sheet.show{transform:translateY(0)}
+.sheet.is-dragging{transition:none !important;}
+  /* Der Inhalt eines Blatts blendet beim Öffnen kurz ein, während das Blatt
+     hereinfährt — eine Viertelsekunde, nur `opacity` und `transform`, und
+     `backwards`, damit danach keine Verschiebung stehen bleibt. */
+  @keyframes blattEin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:no-preference){
+    .sheet.show > :not(.sheet-leiste){animation:blattEin .26s ease-out backwards}}
+
+  .sheet-grab{width:38px;height:4px;border-radius:2px;background:var(--line2);margin:6px auto 16px}
+  /* Griff und Schließen bleiben beim Scrollen oben; der Verlauf dahinter
+     hält den Knopf lesbar, ohne eine Kante zu ziehen. */
+  .sheet-leiste{position:sticky;top:-10px;z-index:6;margin-top:-10px;padding-top:10px;
+    background:linear-gradient(180deg,var(--bg2) 55%,rgba(15,19,17,0))}
+  .sheet-zu{position:absolute;top:8px;right:0;width:34px;height:34px;border-radius:11px;
+    display:grid;place-items:center;cursor:pointer;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line)}
+  .sheet-zu .ic{font-size:15px}
+  .sheet-zu:active{transform:scale(.94)}
+  /* Nudge-Animation: wenn Backdrop-Click während Schutz-Phase blockiert wird,
+     bewegt sich das Sheet kurz, um zu signalisieren: "ich existiere noch". */
+  @keyframes sheetNudge { 0%,100%{transform:translateY(0)} 25%{transform:translateY(-4px)} 75%{transform:translateY(2px)} }
+  .sheet.sheet-nudge{animation:sheetNudge .28s ease-out}
+  /* Pulsierender Grab-Handle im Recap (signalisiert "ich bin wegziehbar") */
+  @keyframes grabPulse { 0%,100%{opacity:.6;transform:scaleX(1)} 50%{opacity:1;transform:scaleX(1.4)} }
+  .sheet-grab.grab-pulse{animation:grabPulse 1.6s ease-in-out 2}
+  @media(prefers-reduced-motion:reduce){
+    .sheet,.sheet-bg{transition:none !important}
+    .sheet.sheet-nudge,.sheet-grab.grab-pulse{animation:none}
+  }
+  .sheet h3{font-family:'Archivo Black',sans-serif;font-size:23px;letter-spacing:-.02em}
+  .sheet-sub{color:var(--muted);font-size:12px;margin-top:3px;font-family:'Sometype Mono',monospace}
+  .dcell .dl{font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+  .dcell .dv{font-family:'Archivo Black',sans-serif;font-size:16px;margin-top:5px}
+  .dcell .dv.sm{font-size:13px}
+  .dcell .dv .u{font-size:11px;color:var(--muted);font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600}
+  .posbar .pl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px}
+  .posbar.drive .pl{color:var(--orange)} .posbar.reves .pl{color:var(--blue)}
+  .posbar .pg{font-size:10px;color:var(--muted);margin-top:3px;font-family:'Sometype Mono',monospace}
+  .ring{position:relative;width:54px;height:54px;margin:0 auto 6px}
+
+  /* Der Kopf eines Abschnitts im Blatt (blattAbschnittHtml) [§C27]. */
+  .blatt-abschn{display:flex;align-items:center;gap:8px;margin:18px 2px 9px;
+    font-family:'Sometype Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted)}
+  .blatt-abschn .ic{font-size:13px;color:var(--faint)}
+  .blatt-abschn em{margin-left:auto;font-style:normal;letter-spacing:.04em;color:var(--faint);white-space:nowrap}
+
+  /* ============ [§C12] BOTTOM NAV ============ */
+  .botnav{position:fixed;left:0;right:0;bottom:0;z-index:50;max-width:520px;margin:0 auto;
+    padding:8px 10px calc(8px + var(--safe-bot));
+    /* Ohne `backdrop-filter`, aus demselben Grund wie die Kopfleiste. */
+    background:linear-gradient(0deg,var(--bg) 70%,rgba(10,12,11,.94) 90%,rgba(10,12,11,.6));
+    display:flex;gap:2px;border-top:1px solid var(--line)}
+  .botnav button{flex:1;background:none;border:none;cursor:pointer;padding:7px 2px;border-radius:13px;
+    display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);transition:.18s;position:relative}
+  /* Das Zeichen des gewählten Reiters sitzt in einer Pille. Der gewählte
+     Reiter unterschied sich nur in der Farbe des Worts und des Strichs — bei
+     Sonne auf dem Telefon war das kaum zu sehen. Die Pille ist Acid, die
+     Farbe des Bedienens. */
+  .botnav button .ic{width:52px;height:28px;border-radius:14px;display:grid;place-items:center}
+  .botnav button .ic svg{width:21px;height:21px;--strich:1.75}
+  .botnav button .lb{font-size:9.5px;font-weight:600;letter-spacing:.01em}
+  .botnav button.on{color:var(--acid)}
+  .botnav button:active{transform:scale(.9)}
+  /* Es ist EINE Pille, die gleitet (`.nav-schlitten`, `_navSchlitten`)
+     [§C27, §C43] — wie der Schlitten im Segmentwähler. Jeder Knopf trug
+     vorher seine eigene, und auf einem langsamen Telefon blieb die alte
+     stehen, bis der neue Reiter gerechnet war; der Schlitten wird nur
+     verschoben und antwortet sofort. Er leuchtet fest in Acid, ein
+     Schatten, der nur beim Wechsel mitfährt; das Zeichen federt einmal. */
+  .nav-schlitten{position:absolute;z-index:-1;top:15px;left:10px;height:28px;width:calc((100% - 28px) / 5);
+    pointer-events:none;will-change:transform;transition:opacity .2s}
+  .nav-schlitten::before{content:"";position:absolute;left:50%;top:0;width:52px;height:28px;margin-left:-26px;border-radius:14px;
+    background:rgba(190,242,100,.12);box-shadow:inset 0 0 0 1px rgba(190,242,100,.32),0 0 16px -2px rgba(190,242,100,.38)}
+  @keyframes reiterStoss{0%{transform:scale(.78)}60%{transform:scale(1.1)}100%{transform:none}}
+  @media(prefers-reduced-motion:no-preference){
+    .botnav button.on .ic svg{animation:reiterStoss .28s cubic-bezier(.2,1.4,.4,1)}}
+
+  /* ============ [§C13] FAB ============ */
+  .fab{position:fixed;z-index:55;right:max(18px,calc(50% - 260px + 18px));
+    bottom:calc(86px + var(--safe-bot));width:58px;height:58px;border-radius:19px;
+    background:linear-gradient(135deg,var(--acid),var(--acid2));border:none;cursor:pointer;
+    display:grid;place-items:center;box-shadow:var(--shadow-acid),0 0 0 5px rgba(190,242,100,.08);
+    transition:.2s;color:var(--acid-deep)}
+  .fab:active{transform:scale(.9) rotate(90deg)}
+
+  /* ============ [§C14] TOAST ============ */
+  /* Der Hinweis: dunkel wie ein Blatt, die Rolle als Zeichenkachel [§C25],
+     darunter die Wirkung. Die volle grüne und rote Fläche war lauter als
+     alles, worüber sie lag. */
+  .toast{position:fixed;left:50%;bottom:calc(100px + var(--safe-bot));z-index:200;
+    transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:10px;width:max-content;max-width:min(92vw,420px);
+    background:rgba(26,34,29,.97);color:var(--ink);padding:9px 14px 9px 9px;border-radius:15px;
+    border:1px solid var(--line2);box-shadow:0 14px 40px -10px rgba(0,0,0,.9);
+    transition:opacity .3s,transform .3s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.mit-akt.show{pointer-events:auto}
+  .toast.err{border-color:rgba(240,86,106,.45)}
+  .toast.ok{border-color:rgba(190,242,100,.35)}
+  .toast-tx{display:flex;flex-direction:column;min-width:0;line-height:1.3}
+  .toast-tx b{font-size:13px;font-weight:700}
+  .toast-tx span{font-size:11.5px;color:var(--muted)}
+  .toast-akt{margin-left:6px;flex-shrink:0;font:700 12px 'Space Grotesk',system-ui,sans-serif;color:var(--acid);
+    background:rgba(190,242,100,.1);border:1px solid rgba(190,242,100,.3);border-radius:10px;padding:7px 10px;cursor:pointer}
+
+  /* Die Bestätigung: über allem, auch über einem offenen Blatt. */
+  .dlg-bg{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;
+    background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s}
+  .dlg-bg.show{opacity:1}
+  .dlg{width:100%;max-width:340px;background:var(--surface);border:1px solid var(--line2);border-radius:22px;
+    padding:20px 18px 18px;text-align:center;box-shadow:0 30px 60px -20px #000;
+    transform:scale(.96);transition:transform .2s}
+  .dlg-bg.show .dlg{transform:scale(1)}
+  .dlg h4{font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:-.01em;margin-top:12px}
+  .dlg p{font-size:13px;color:var(--ink2);line-height:1.5;margin-top:6px}
+  .dlg .blatt-fuss{margin-top:16px}
+  .btn.gefahr{background:rgba(240,86,106,.14);color:var(--red);border:1px solid rgba(240,86,106,.4)}
+
+  /* ─── Achievement-Toast: gestapelt über dem normalen Toast, mit Badge-Icon ─── */
+  .ach-toast{position:fixed;left:50%;bottom:calc(160px + var(--safe-bot));z-index:201;
+    transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,rgba(190,242,100,.14),rgba(247,207,74,.08) 60%,var(--surface) 100%);
+    border:1px solid rgba(190,242,100,.45);
+    padding:11px 14px 11px 11px;border-radius:14px;
+    box-shadow:0 8px 24px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.2);
+    max-width:88vw;min-width:240px;transition:.35s cubic-bezier(.16,1,.3,1)}
+  .ach-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .ach-toast-ic{width:36px;height:36px;border-radius:10px;
+    background:rgba(190,242,100,.16);display:grid;place-items:center;
+    color:var(--acid);flex-shrink:0;font-size:22px;line-height:1;
+    /* Schein ohne `filter`. */
+    box-shadow:0 2px 8px -1px rgba(190,242,100,.3)}
+  .ach-toast-ic svg{width:20px;height:20px;fill:none;stroke:currentColor;--strich:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .ach-toast-text{flex:1;min-width:0}
+  .ach-toast-cat{font-size:9px;text-transform:uppercase;letter-spacing:.14em;
+    color:var(--acid);font-family:'Sometype Mono',monospace;font-weight:700;line-height:1}
+  .ach-toast-name{font-size:13px;font-weight:700;line-height:1.2;margin-top:3px;
+    color:var(--ink);letter-spacing:-.01em}
+  .ach-toast-sub{font-size:10px;color:var(--muted);font-family:'Sometype Mono',monospace;
+    margin-top:3px;letter-spacing:.02em}
+
+
+  /* ── Kopf, Fuß und Bühne eines Blatts [§C27] ─────────────────────── */
+  .blatt-kopf{display:flex;align-items:center;gap:12px;padding:2px 44px 14px 0;
+    border-bottom:1px solid var(--line);margin-bottom:4px}
+  .blatt-kopf h3{font-size:20px;line-height:1.12}
+  .blatt-kopf-t{min-width:0}
+  .blatt-kopf .sheet-sub{text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;margin-top:5px}
+  .blatt-fuss{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:18px}
+  .blatt-fuss.eins{grid-template-columns:minmax(0,1fr)}
+  .blatt-fuss .btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 10px;
+    font-size:13px;border-radius:12px}
+  .blatt-fuss .btn .ic{font-size:15px}
+  .buehne{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;
+    padding:14px 10px 12px;border-radius:16px;margin-top:14px;
+    background:radial-gradient(90% 120% at 20% 0%,rgba(190,242,100,.08),transparent 60%),var(--surface);
+    border:1px solid var(--line)}
+  .buehne-s{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0;cursor:pointer}
+  .buehne-s.nied{opacity:.6}
+  .buehne-marke{height:10px;font-family:'Sometype Mono',monospace;font-size:8.5px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--acid)}
+  .buehne-paar{display:flex}
+  .buehne-paar .av{--av:38px;box-shadow:0 0 0 2px var(--surface)}
+  .buehne-paar .av + .av{margin-left:-10px}
+  .buehne-n{font-size:12px;font-weight:600;color:var(--ink);line-height:1.25;overflow-wrap:anywhere}
+  .buehne-stand{font-family:'Archivo Black',sans-serif;font-size:38px;line-height:1;letter-spacing:-.03em;white-space:nowrap}
+  .buehne-stand i{font-style:normal;color:var(--faint);margin:0 1px}
+  .buehne-stand .buehne-saetze{display:block;margin-top:6px;font-family:'Sometype Mono',monospace;font-size:11.5px;
+    letter-spacing:.02em;color:var(--ink2);text-align:center;white-space:normal}
+  .buehne-zeile{grid-column:1 / -1;text-align:center;font-size:10.5px;color:var(--muted);margin-top:4px}
+  /* Fließtext eines Abschnitts, etwa „So wird gewertet". */
+  .blatt-text{font-size:12.5px;color:var(--ink2);line-height:1.55;padding:0 2px}

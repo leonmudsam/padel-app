@@ -1,0 +1,431 @@
+  /* ============ [§C8] AWARDS ============ */
+  .award-grid{display:flex;flex-direction:column;gap:10px}
+  .award-section{margin-top:20px}
+  .award-section:first-child{margin-top:0}
+  .award-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);
+    font-weight:700;padding:0 2px 10px;display:flex;align-items:center;gap:8px}
+  .award-section-title::after{content:"";flex:1;height:1px;background:var(--line)}
+  .award{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    padding:16px 16px 16px 18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;
+    cursor:pointer;transition:.15s}
+  .award:active{transform:scale(.985);background:var(--surface2)}
+  .award::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;border-radius:2px 0 0 2px;background:var(--line2)}
+  .award.gold::before{background:var(--gold)}
+  .award.acid::before{background:var(--acid)}
+  .award.orange::before{background:var(--line2)}
+  .award.blue::before{background:var(--line2)}
+  .award.purple::before{background:var(--line2)}
+  .award.red::before{background:var(--red)}
+  .award .emoji{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+    background:var(--surface2);flex-shrink:0;color:var(--ink2)}
+  .award .emoji svg{width:20px;height:20px}
+  .award .ai{flex:1;min-width:0}
+  .award .al{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+  .award .an{font-family:'Archivo Black',sans-serif;font-size:16px;margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .award .ad{font-size:11px;color:var(--muted);margin-top:2px}
+  .award .av{font-family:'Archivo Black',sans-serif;font-size:17px;flex-shrink:0;text-align:right;color:var(--ink)}
+  /* Award-Akzentfarben nur noch dezent: Linksstreifen + Icon-Tint, kein farbiger Background */
+  .award.gold .emoji{color:var(--gold)}
+  .award.acid .emoji{color:var(--acid)}
+  .award.orange .emoji{color:var(--ink2)}
+  .award.blue .emoji{color:var(--ink2)}
+  .award.purple .emoji{color:var(--ink2)}
+  .award.red .emoji{color:var(--red)}
+  .awcard-watermark.small{font-size:58px}
+  .awcard.neg .awcard-av-wrap .awcard-skull{position:absolute;top:-3px;right:-3px;
+    width:22px;height:22px;border-radius:50%;background:#dc2626;border:2px solid var(--bg);
+    display:grid;place-items:center;font-size:12px;line-height:1;z-index:3}
+
+  /* ─── HEADLINER: solid acid, dark text, größer ─── */
+  .awcard.hero{background:var(--acid);color:var(--bg);border:1px solid rgba(190,242,100,.5);
+    min-height:108px;padding:18px 20px}
+  .awcard.hero .awcard-watermark{color:var(--bg);opacity:.16;font-size:96px}
+  .awcard.hero .awcard-label{color:rgba(10,12,11,.78);font-size:10.5px;letter-spacing:.2em}
+  .awcard.hero .awcard-name{font-size:26px;color:var(--bg)}
+  .awcard.hero .awcard-stat{color:rgba(10,12,11,.78);font-size:11.5px}
+  .awcard.hero .awcard-av-wrap{width:68px;height:68px}
+  .awcard.hero .awcard-av{width:68px;height:68px;font-size:32px;
+    border-color:rgba(10,12,11,.4);background:linear-gradient(155deg,#ecf6d5,#bedb9e)}
+  .awcard.hero .awcard-av.av-init{color:var(--bg)}
+  .awcard.hero .awcard-crown{background:var(--acid);padding:2px}
+  .awcard.hero .awcard-crown svg{width:16px;height:16px;stroke:var(--bg);filter:none}
+
+  /* ─── Empty state ─── */
+  .awcard.empty{opacity:.55;min-height:0;padding:9px 16px;gap:10px;
+    background:transparent;border:1px solid rgba(255,255,255,.05);
+    box-shadow:none;margin-bottom:6px}
+  .awcard.empty .awcard-info{display:flex;align-items:center;gap:12px;min-width:0}
+  .awcard.empty .awcard-label{margin-bottom:0;font-size:9.5px;color:var(--muted);flex-shrink:0}
+  .awcard.empty .awcard-name{display:none}
+  .awcard.empty .awcard-stat{margin-top:0;font-size:9.5px;color:var(--faint);
+    text-transform:uppercase;letter-spacing:.1em;font-family:'Sometype Mono',monospace;font-weight:500;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .awcard.empty .awcard-watermark{display:none}
+  .awcard.empty .awcard-av-wrap{display:none}
+  .awcard.empty .awcard-crown,.awcard.empty .awcard-skull{display:none}
+
+  /* ─── Section label ─── */
+  .aw-sect{display:flex;align-items:center;gap:8px;margin:24px 4px 12px;letter-spacing:.18em;
+    text-transform:uppercase;font-family:'Sometype Mono',monospace;font-size:10px;font-weight:700;
+    color:var(--muted)}
+  .aw-sect:first-of-type{margin-top:8px}
+  .aw-sect-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+  .aw-sect-line{flex:1;height:1px;background:linear-gradient(to right,var(--line),transparent)}
+  .aw-sect.gold{color:var(--gold)}
+  .aw-sect.blue{color:var(--blue)}
+  .aw-sect.purple{color:var(--purple)}
+  .aw-sect.silber{color:var(--silber)}
+  .aw-sect.red{color:var(--red)}
+
+  /* ─── Schandtafel divider ─── */
+  .aw-shame-divider{margin:32px 4px 14px;display:flex;align-items:center;gap:10px}
+  .aw-shame-divider .line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(240,86,106,.4))}
+  .aw-shame-divider .line.r{background:linear-gradient(to left,transparent,rgba(240,86,106,.4))}
+  .aw-shame-divider .lbl{display:flex;align-items:center;gap:7px;font-family:'Sometype Mono',monospace;
+    font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+  .aw-shame-divider .lbl svg{width:14px;height:14px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ════════════════════════════════════════════════════════════════
+     AWARD-SAMMLER-PODIUM (Top-3 nach Anzahl gewonnener Awards)
+     ════════════════════════════════════════════════════════════════ */
+  /* Der Award-Sammler stand hier als eigenes Podest mit eigenen Klassen,
+     eigenen Größen und drei Balken als Treppe — die unten aus der Karte
+     liefen, weil sie nach dem Innenabstand noch weiterwuchsen. Er benutzt
+     jetzt dasselbe Podest wie die Ewige Tafel (.podest in 02-ranking.css).
+     Zwei Podeste in einer App waren eines zu viel. */
+
+  /* ════════════════════════════════════════════════════════════════
+     TROPHY-VITRINE (Pokal-Schaukasten)
+     ════════════════════════════════════════════════════════════════ */
+  /* Die Farbe kommt von der Gruppe, nicht von der einzelnen Kachel [§C25].
+     Vorher trug jede Kachel ihre eigene: in der Gruppe „Teams" standen Blau,
+     Grün, Orange, Rot und Lila nebeneinander, obwohl der Abschnittspunkt
+     darüber Blau versprach. Jetzt hält die Vitrine --awc, und jede Kachel
+     darin nimmt sie. Die alten Kachelklassen bleiben stehen — sie sind der
+     Schlüssel für das Sheet, nicht für die Farbe. */
+  /* minmax(0,1fr), nicht 1fr: eine Rasterspalte ist von Haus aus mindestens
+     so breit wie ihr längster unteilbarer Inhalt. Standen bei Gleichstand
+     fünf Duonamen auf einer Kachel, wuchs die Spalte mit — die zweite
+     schrumpfte, und die ganze Vitrine stand über dem Bildschirmrand.
+     Mit einer Null als Mindestbreite kürzt der Text, statt zu schieben. */
+  .aw-vitrine{--awc:var(--gold); --awc-rgb:247,207,74;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.02),var(--surface2));
+    border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+  .aw-vitrine.gold  {--awc:var(--gold);  --awc-rgb:247,207,74}
+  .aw-vitrine.blue  {--awc:var(--blue);  --awc-rgb:86,180,232}
+  .aw-vitrine.orange{--awc:var(--orange);--awc-rgb:255,120,73}
+  .aw-vitrine.purple{--awc:var(--purple);--awc-rgb:167,139,250}
+  .aw-vitrine.red   {--awc:var(--red);   --awc-rgb:240,86,106}
+  .aw-vitrine.silber{--awc:var(--silber);--awc-rgb:194,201,208}
+  /* Drei Rollen statt sechs Katalogtoene [§C25]: Gold fuer das Koennen,
+     Blau fuer das, was zu zweit geholt wurde, Rot fuer die Kehrseite. Die
+     Toene stehen AN DER KACHEL und nicht nur am Behaelter — im Profil-Sheet
+     gibt es keinen gefaerbten Behaelter, und dort fiel die Farbe damit ganz
+     aus. */
+  .aw-trophy.ton-pos {--awc:var(--gold); --awc-rgb:247,207,74}
+  .aw-trophy.ton-team{--awc:var(--blue); --awc-rgb:86,180,232}
+  .aw-trophy.ton-neg {--awc:var(--red);  --awc-rgb:240,86,106}
+  .aw-trophy.ton-metall{--awc:var(--silber);--awc-rgb:194,201,208}
+  /* ── Die Kachel [§C8] ────────────────────────────────────────────
+     Drei Fragen, in dieser Reihenfolge: wer hat es, wie viel, woraus.
+     Vorher stand die Zahl ohne Einheit („6,90", „+10", „8er") und ohne
+     Stichprobe in der Mitte; ob 72 % aus fünf oder aus fünfzig Partien
+     kamen, stand erst im Blatt. Der Träger trägt dasselbe Wappen wie in der
+     Ranglistenzeile [§C27], die Kachel misst am Reif (52 px). */
+  .aw-trophy{background-color:var(--bg2);
+    background-image:radial-gradient(120% 80% at 0% 0%,rgba(var(--awc-rgb),.10),transparent 60%);
+    border:1px solid rgba(var(--awc-rgb),.20);border-radius:16px;padding:11px 11px 12px;
+    position:relative;cursor:pointer;transition:transform .15s;min-width:0;
+    display:flex;flex-direction:column;gap:9px;text-align:left}
+  .aw-trophy:active{transform:translateY(-2px)}
+  /* Die Kante oben nennt die Rolle, dort fängt das Auge an. */
+  .aw-trophy::before{content:"";position:absolute;left:14px;right:14px;top:0;height:2px;
+    border-radius:0 0 2px 2px;
+    background:linear-gradient(90deg,transparent,rgba(var(--awc-rgb),.75),transparent)}
+
+  /* Kopf: Zeichenkachel und Name. Der Name bricht um statt abzubrechen —
+     „Längste Siegesser…" stand gekürzt da. */
+  .aw-t-kopf{display:flex;align-items:center;gap:8px;min-width:0}
+  .aw-t-lbl{font-size:11px;font-weight:700;color:var(--ink2);line-height:1.2;min-width:0;letter-spacing:-.005em;
+    overflow-wrap:break-word;hyphens:auto}
+  .aw-t-lbl.lang{font-size:10px;letter-spacing:-.02em}
+  .aw-t-lbl.sehrlang{font-size:9px;letter-spacing:-.025em}
+  /* Gleichauf oder ein Platz unter der Spitze: eine Marke AUF der oberen
+     Kante, nicht im Namen. Im Kopf nahm sie dem Namen ein Drittel der
+     Breite, und „Tageskönig" brach mitten im Wort. */
+  .aw-t-gleich{position:absolute;top:-8px;right:10px;z-index:1;font-family:'Sometype Mono',monospace;
+    font-size:9.5px;font-weight:700;color:var(--ink2);background:var(--surface2);
+    border:1px solid rgba(var(--awc-rgb),.35);border-radius:7px;padding:1px 6px;white-space:nowrap;line-height:1.4}
+
+  /* Der Träger mit Name und Stichprobe daneben. */
+  .aw-t-held{display:flex;align-items:center;gap:9px;min-height:52px;min-width:0}
+  .aw-t-held > .rav, .aw-t-held > .av, .aw-t-held > .aw-t-paar, .aw-t-held > .aw-t-vier,
+  .aw-t-held > .aw-t-leer{flex-shrink:0}
+  .aw-t-held > .av{--av:40px}
+  .aw-t-wer{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+  .aw-t-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2;overflow-wrap:break-word;hyphens:auto}
+  .aw-t-beleg{font-size:10.5px;color:var(--muted);line-height:1.3}
+  .aw-t-leer{width:40px;height:40px;border-radius:50%;
+    border:1px dashed var(--line2);display:grid;place-items:center;
+    color:var(--faint);font-family:'Sometype Mono',monospace;font-size:15px}
+  /* Zwei Gesichter für ein Duo: sie überlappen, damit sie als EIN Ding
+     lesen. Ein Duo hat keinen Rang, also auch kein Wappen [§C27]. */
+  .aw-t-paar{display:inline-flex;align-items:center}
+  .aw-t-paar .av{--av:32px;box-shadow:0 0 0 2px var(--bg2)}
+  .aw-t-paar .av + .av{margin-left:-9px}
+  /* Erzfeinde: vier Spieler. Vier Gesichter passen nicht auf eine halbe
+     Kachel, und drei davon wären dann zu klein, um jemanden zu erkennen. */
+  .aw-t-vier{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+    color:var(--awc);background:rgba(var(--awc-rgb),.10);
+    box-shadow:inset 0 0 0 1px rgba(var(--awc-rgb),.30)}
+  .aw-t-vier svg{width:20px;height:20px}
+
+  /* Die Zahl mit ihrer Sache. Sie steht unten, damit die Zahlen einer
+     Reihe auf einer Linie liegen, egal wie lang die Namen darüber sind. */
+  .aw-t-val{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px;margin-top:auto}
+  .aw-t-val b{font-family:'Archivo Black',sans-serif;font-size:22px;font-weight:400;line-height:1;
+    color:var(--awc);text-shadow:0 0 14px rgba(var(--awc-rgb),.35);letter-spacing:-.02em;white-space:nowrap}
+  .aw-t-val span{font-size:11px;font-weight:600;color:var(--ink2);line-height:1.25}
+
+  /* Der Aufmacher: quer über beide Spalten, der Träger links, die Zahl
+     rechts, darunter die Lage im Feld mit ihrer Skala. */
+  .aw-trophy.gross{grid-column:1 / -1;padding:13px 14px;
+    background-image:radial-gradient(90% 120% at 0% 0%,rgba(var(--awc-rgb),.15),transparent 62%)}
+  .aw-t-zeile{display:flex;align-items:center;gap:12px;min-width:0}
+  .aw-t-zeile .aw-t-held{flex:1}
+  .aw-trophy.gross .aw-t-name{font-size:15px}
+  .aw-trophy.gross .aw-t-val{flex-direction:column;align-items:flex-end;text-align:right;margin-top:0;flex:0 0 auto;max-width:42%}
+  .aw-trophy.gross .aw-t-val b{font-size:30px}
+
+  /* Eine ungerade Kachel nimmt die ganze Reihe, statt unten rechts ein Loch
+     zu lassen — ein leeres Feld liest sich als Fehler, nicht als Ende. */
+  .aw-trophy.allein{grid-column:1 / -1}
+  /* Im Blatt ist das Blatt der Behälter: ein zweiter Kasten darin nahm
+     jeder Kachel 28 px Breite, und die Namen brachen einmal mehr um. */
+  #sheet .aw-vitrine{background:none;border:0;padding:0;gap:12px 8px}
+
+  /* Nicht vergeben: gestrichelt, nicht halbdurchsichtig, und mit einem
+     Satz, was noch fehlt. Eine blasse Kachel liest sich als Ladefehler. */
+  .aw-trophy.empty{background-image:none;background-color:transparent;
+    border-style:dashed;border-color:var(--line2)}
+  .aw-trophy.empty::before{background:none}
+  .aw-trophy.empty .aw-t-lbl{color:var(--muted)}
+  .aw-trophy.empty .aw-t-beleg{font-style:italic;color:var(--faint);font-size:11px}
+
+  /* Die Lage im Feld ist der Beleg (.bl-feld); auf der Kachel tragen die
+     Halter die Farbe ihrer Rolle statt Gold, und der Rand die der Kachel. */
+  .aw-trophy .bl-feld{height:14px}
+  .aw-trophy .bl-feld-bahn{top:6px}
+  .aw-trophy .bl-feld-mitte{top:1px;height:12px}
+  .aw-trophy .bl-feld i{top:4px}
+  .aw-trophy .bl-feld i.er{top:1px;background:var(--awc);
+    box-shadow:0 0 0 2px var(--bg2),0 0 10px rgba(var(--awc-rgb),.6)}
+  .aw-trophy .bl-feld-l{margin-top:-4px}
+  /* Eine Serie als Lauf aus Feldern, in der Farbe der Kachel. */
+  .aw-lauf{display:flex;gap:3px}
+  .aw-lauf i{flex:1;max-width:16px;height:7px;border-radius:3px;background:var(--awc);opacity:.85}
+
+  /* ============ [§C9] AWARDS V2 — DETAIL SHEET ============
+     Kopf, Bühne und Fuß des Award-Blatts sind die gemeinsamen Bauteile des
+     Blatts (05-nav-sheet); hier steht nur, was das Award-Blatt allein hat. */
+  .aw-pod.first .aw-pod-av{width:64px;height:64px;font-size:30px;border-color:var(--gold);box-shadow:0 0 20px rgba(247,207,74,.4)}
+  .aw-pod.second .aw-pod-av{border-color:var(--silber)}
+  .aw-pod.first .aw-pod-pair .aw-pod-av{width:48px;height:48px;font-size:20px;box-shadow:0 0 20px rgba(247,207,74,.4)}
+  .aw-pod.first .aw-pod-name{font-size:14.5px}
+  .aw-pod.first .aw-pod-val{color:var(--gold);font-size:12.5px}
+  .aw-pod-block.gold  {background:linear-gradient(180deg,var(--gold),rgba(247,207,74,.3));color:#1d1700;height:62px}
+  .aw-pod-block.silver{background:linear-gradient(180deg,var(--silber),rgba(194,201,208,.3));color:#1a1f1c;height:48px}
+  .aw-pod-block.bronze{background:linear-gradient(180deg,var(--bronze),rgba(192,132,87,.3));color:#241205;height:36px}
+  .aw-pod.tied .aw-pod-av{width:38px;height:38px;font-size:18px;border:2px solid var(--surface)}
+  .aw-pod.tied.first .aw-pod-av{width:44px;height:44px;font-size:20px;border-color:var(--gold);box-shadow:0 0 14px rgba(247,207,74,.3)}
+  .aw-pod.tied .aw-pod-pair .aw-pod-av{width:32px;height:32px;font-size:14px}
+  .aw-pod.tied.first .aw-pod-pair .aw-pod-av{width:38px;height:38px;font-size:16px}
+  .aw-pod-tied-names .nm{font-family:'Archivo Black',sans-serif;font-size:10.5px;letter-spacing:-.01em;line-height:1.25;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+  .aw-pod.tied.first .aw-pod-tied-names .nm{font-size:12px}
+
+  /* Empty-Slot dezenter „—" Hinweis */
+  .aw-pod.empty .aw-pod-empty-hint{font-family:'Sometype Mono',monospace;font-size:14px;color:var(--faint);margin-bottom:6px}
+
+
+  /* Die Reiter des Awards-Tabs benutzen .ui-switch und .ui-tabs aus
+     01-shell — das Muster gilt app-weit, nicht nur hier. */
+
+  /* ── Rekorde als Reiter ───────────────────────────────────────────
+     Im Blatt war ein Rekord eine dünne Zeile. Als eigener Reiter ist er
+     ein Besitz: Beleg gross, Halter mit Gesicht. */
+  /* Die drei Arten von Rekord bekommen je eine Überschrift. Neunund-
+     zwanzig gleich aussehende Karten in einer Spalte waren eine Liste, in
+     der man nichts wiederfand. */
+  /* ── Wer die Tafel haelt ────────────────────────────────────────
+     Eine Saeule je gewertetem Spieler. Die Zahlen liegen in
+     `chronicleHolders()` laengst vor — gezeigt wurden sie nie, und damit
+     beantwortete der Reiter die Frage nicht, fuer die er da ist. */
+  .rek-besitz{background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:11px 12px 9px;margin-bottom:12px}
+  .rek-bk{display:flex;align-items:baseline;justify-content:space-between;
+    gap:8px;margin-bottom:9px}
+  .rek-bk .l{font-family:'Sometype Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .rek-bk .r{font-size:9.5px;color:var(--muted)}
+  /* Zahl, Säule und Gesicht brauchen zusammen 84 px; bei 62 lief das
+     Gesicht unten aus der Karte. */
+  .rek-saeulen{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;
+    align-items:end;height:84px}
+  .rek-sl{display:flex;flex-direction:column;align-items:center;gap:4px;
+    justify-content:flex-end;height:100%;cursor:pointer;min-width:0}
+  .rek-sl .z{font-size:9px;font-weight:700;color:var(--ink2)}
+  .rek-sl .b{width:100%;border-radius:3px;
+    background:linear-gradient(180deg,var(--gold),#b8952c)}
+  /* Wer nichts haelt, steht gestrichelt da statt zu fehlen: eine Luecke
+     liest sich als Fehler, eine gestrichelte Null als Aussage. */
+  .rek-sl.null .b{background:none;border:1px dashed var(--line2);height:3px}
+  .rek-sl.null .z{color:var(--faint)}
+  .rek-sl .rav,.rek-sl .av{flex:0 0 auto}
+  .rek-sl .av{--av:20px;width:20px;height:20px;font-size:8px;box-shadow:none}
+
+  /* Der Kammerfilter: sechs Felder in zwei Reihen. Als waagerecht
+     scrollende Reiterleiste standen sechs Wörter in 11,5 px eng aneinander,
+     und die letzten beiden lagen hinter dem Rand. */
+  .rek-kammern{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 4px}
+  .rek-kammern button{display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-width:0;
+    padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+    font:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
+  .rek-kammern button.on{color:var(--ink);background:var(--surface2);border-color:var(--line2);
+    box-shadow:inset 0 -2px 0 var(--acid)}
+  /* Die Zahl sagt, wie viele Rekorde in der Kammer stehen. Ohne sie war
+     nicht zu sehen, ob eine Kammer gefuellt ist. */
+  .rek-kammern button .n{font-family:'Sometype Mono',monospace;font-size:11px;color:var(--faint)}
+  .rek-kammern button.on .n{color:var(--ink2)}
+
+  .rek-gruppe{display:flex;align-items:center;gap:8px;color:var(--gold);
+    margin:22px 4px 10px;font-family:'Sometype Mono',monospace;
+    font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.18em}
+  .rek-gruppe:first-child{margin-top:6px}
+  /* Fuenf Kammern, drei Toene. Gold gehoert dem Koennen, der Form und der
+     Bestmarke,
+     Metall der Fuegung [§C35] — sie zeichnet niemanden aus —, Rot der
+     Richtung [§C25]. Als alle fuenfunddreissig Karten golden waren, sagte
+     Gold nichts mehr. */
+  .rek-gruppe.fuegung{color:var(--silber)}
+  .rek-gruppe.shame{color:var(--red)}
+  .rek-g-ic{display:grid;place-items:center;flex-shrink:0}
+  .rek-g-ic svg{width:13px;height:13px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  .rek-g-line{flex:1;height:1px;background:linear-gradient(to right,var(--line),transparent)}
+  .rek-g-z{font-size:11px;color:var(--muted)}
+  .rek-g-sub{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin:-4px 4px 10px;font-size:11px;color:var(--muted)}
+  .rek-g-satz{min-width:0}
+  .rek-g-vorn{display:flex;gap:8px;flex:0 0 auto}
+  .rek-g-vorn>span{display:inline-flex;align-items:center;gap:3px;cursor:pointer}
+  .rek-g-vorn b{font-size:10.5px;color:var(--ink2)}
+  .rek-g-sub.koennen .rek-g-vorn>span:first-child b,
+  .rek-g-sub.form .rek-g-vorn>span:first-child b,
+  .rek-g-sub.mark .rek-g-vorn>span:first-child b{color:var(--gold)}
+
+  .rek-liste{display:flex;flex-direction:column;gap:8px}
+  .rek{display:grid;grid-template-columns:34px 1fr;gap:11px;
+    background:var(--surface);border:1px solid var(--line);
+    border-left:2px solid var(--gold);border-radius:var(--r-sm);padding:11px 12px;
+    cursor:pointer;transition:transform .12s,border-color .12s}
+  .rek:active{transform:scale(.99);border-color:var(--line2)}
+  .rek.fuegung{border-left-color:var(--silber)}
+  .rek.schatten{border-left-color:var(--red)}
+  /* Ein Rekord, den noch niemand geholt hat, wird gestrichelt gezeigt und
+     nicht weggelassen — dieselbe Regel wie bei nicht vergebenen
+     Auszeichnungen. */
+  .rek.offen{background:transparent;border-style:dashed;border-color:var(--line2)}
+  .rek-ic{width:34px;height:34px;flex:0 0 auto;border-radius:11px;
+    background:rgba(247,207,74,.09);border:1px solid rgba(247,207,74,.18);
+    display:grid;place-items:center;color:var(--gold)}
+  .rek.fuegung .rek-ic{background:rgba(194,201,208,.08);
+    border-color:rgba(194,201,208,.16);color:var(--silber)}
+  .rek.schatten .rek-ic{background:rgba(240,86,106,.08);
+    border-color:rgba(240,86,106,.18);color:var(--red)}
+  .rek.offen .rek-ic{background:transparent;border-style:dashed;
+    border-color:var(--line2);color:var(--faint)}
+  .rek-ic svg{width:17px;height:17px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  /* Kein Flex-Container: ein Flex-Kind wird BLOCKIFIZIERT, und damit ist
+     `display:-webkit-box` am Beleg wirkungslos — die Klammer auf zwei Zeilen
+     griff nie, und ein einzelnes „%" stand auf einer dritten Zeile. */
+  .rek-b{min-width:0}
+  /* Der Halter steht auf der NAMENSZEILE, nicht in einer eigenen Spalte
+     ueber die ganze Kartenhoehe: dort wurde er zwischen zwei Zeilen Beleg
+     zusammengequetscht, und in der letzten Karte verdeckte ihn der FAB. */
+  .rek-z1{display:flex;align-items:center;gap:8px;width:100%;min-width:0}
+  .rek-nt{flex:1;min-width:0;font-size:13.5px;font-weight:700;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rek.offen .rek-nt{color:var(--ink2);font-weight:500}
+  .rek.schatten .rek-nt{color:var(--ink2)}
+  .rek-h{display:flex;align-items:center;gap:5px;flex:0 0 auto;max-width:48%}
+  .rek-h .rav,.rek-h .av{flex:0 0 auto}
+  .rek-h .rav+.rav,.rek-h .av+.av{margin-left:-9px}
+  .rek-hn{font-family:'Sometype Mono',monospace;font-size:11px;color:var(--ink2);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rek.offen .rek-hn{font-style:italic;color:var(--faint)}
+  /* Der Beleg ist die Aussage der Karte, also traegt seine Zahl sie auch. */
+  /* Wert und Beleg in einer Reihe: der Wert groß in der Farbe der Kammer,
+     der Rest des Belegs daneben und darunter umbrechend. */
+  .rek-wz{display:flex;align-items:baseline;gap:8px;margin-top:4px;min-width:0}
+  .rek-ev{font-size:11.5px;color:var(--muted);line-height:1.4;min-width:0}
+  .rek-w{flex:0 0 auto;font-family:'Archivo Black',sans-serif;font-size:19px;line-height:1;
+    color:var(--gold);text-shadow:0 0 14px rgba(247,207,74,.28);letter-spacing:-.01em}
+  .rek.fuegung .rek-w{color:var(--silber);text-shadow:none}
+  .rek.schatten .rek-w{color:var(--red);text-shadow:none}
+  .rek.offen .rek-ev{font-style:italic;margin-top:3px}
+  /* Der Feldstreifen: jeder im Rennen ein Punkt, der Halter groß am
+     rechten Ende, daneben der Erste, der ihn nicht hält. */
+  .rek-feld{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+    gap:10px;margin-top:7px}
+  .rek-feld .bl-feld{height:16px}
+  .rek-feld .bl-feld-bahn{top:7px}
+  .rek-feld .bl-feld-mitte{top:2px;height:12px}
+  .rek-feld .bl-feld i{top:5px}
+  .rek-feld .bl-feld i.er{top:2px;width:10px;height:10px;margin-left:-5px}
+  .rek.fuegung .bl-feld i.er{background:var(--silber);box-shadow:none}
+  .rek.schatten .bl-feld i.er{background:var(--red);box-shadow:none}
+  .rek-zw{font-size:10.5px;color:var(--muted);white-space:nowrap;max-width:46vw;
+    overflow:hidden;text-overflow:ellipsis}
+  .rek-zw b{color:var(--ink2);font-weight:700}
+  /* Zeitpunkt, Zeitraum, Grundwert und Stand als Pillenzeile. Sie umbricht,
+     weil „Ganze Laufbahn, alle Sturmspiele" und „100 P Basis" auf 430 Pixeln
+     nicht nebeneinander passen; als eine Zeile mit `nowrap` lief die letzte
+     Pille aus der Karte. */
+  /* Eine leise Zeile statt Pillen: zwei gerahmte Pillen brachen fast immer
+     in zwei Zeilen um und waren lauter als der Wert. */
+  .rek-meta{display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:6px}
+  .rek-p{font-family:'Sometype Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.05em;color:var(--faint);line-height:1.45;max-width:100%}
+  /* Nicht `nowrap`: „Ganze Laufbahn, ausgeglichen angesetzte Partien" ist bei
+     360 px breiter als die Karte und lief rechts aus dem Bildschirm. Abkürzen
+     wäre schlimmer — die Pille ist die einzige Stelle, die den Zeitraum nennt. */
+  .rek-p.zeit{color:var(--ink2)}
+
+  /* Die Faktenzeilen im Rekord-Blatt: Zeitraum, Mindestbasis und die
+     Rechnung fuer die Laufbahn. Saetze und keine Werte — in der Zahlenreihe
+     darueber liefen sie in die Nachbarzelle. */
+  .rek-def{margin-top:12px;display:flex;flex-direction:column;gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    border-radius:var(--r-sm);overflow:hidden}
+  .rek-df{background:var(--surface);display:grid;grid-template-columns:96px 1fr;
+    gap:10px;padding:9px 11px}
+  .rek-df .l{font-family:'Sometype Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding-top:2px}
+  .rek-df .v{font-size:11.5px;color:var(--ink2);line-height:1.45}
+
+  /* Verfolger unter dem Podest im Rekord-Blatt. */
+  .rek-verfolger{margin-top:12px;display:flex;flex-direction:column;gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    border-radius:var(--r-sm);overflow:hidden}
+  .rvf{background:var(--surface);display:grid;
+    grid-template-columns:20px auto 1fr auto;gap:9px;align-items:center;
+    padding:9px 11px;cursor:pointer}
+  .rvf .p{font-size:10px;font-weight:700;color:var(--faint)}
+  .rvf .n{font-size:12px;color:var(--ink2);min-width:0;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .rvf .w{font-size:11.5px;font-weight:700;color:var(--ink2)}

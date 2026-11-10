@@ -1,0 +1,351 @@
+  /* ============ [§C4] SEGMENTED CONTROL — entfallen ============
+     Alle Bedienelemente laufen jetzt über .ui-switch und .ui-tabs
+     (01-shell). Die alten .seg-Regeln standen hier nicht nur ungenutzt
+     herum, sie haben aktiv gestört: im Profil heißt .seg etwas ganz
+     anderes — ein Abschnitt im Abzeichen-Balken — und .pp-bcard-bar .seg
+     überschreibt nur height und background. Rundung, Innenabstand,
+     Rahmen und 14 px Außenabstand kamen bis eben von hier. */
+
+  /* search */
+  .search{position:relative;margin-bottom:14px}
+  .search input{width:100%;font-family:inherit;font-size:14px;background:var(--surface);
+    border:1px solid var(--line);color:var(--ink);padding:13px 14px 13px 40px;border-radius:13px;outline:none;transition:.2s}
+  .search input:focus{border-color:var(--acid2)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+
+  /* ============ [§C5] RANK LIST ============ */
+  .rlist{display:flex;flex-direction:column;gap:8px}
+  /* overflow bleibt sichtbar, seit das Zeichen [§C26] hinter dem Avatar
+     brennt: die Flamme schlägt über die Zeilenkante hinaus. */
+  .rrow{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r);padding:10px 14px;cursor:pointer;transition:.16s;position:relative;overflow:visible}
+  .rrow:active{transform:scale(.985);background:var(--surface2)}
+  /* Die Platzziffer steht in jeder Zeile an derselben Stelle und in
+     derselben Form. Vorher trugen die ersten drei stattdessen eine
+     Metallplakette — neben dem Wappen am Avatar [§C27] war das ein zweites
+     Metallstück in derselben Zeile. Jetzt trägt die Ziffer das Metall,
+     dazu Rand und Fläche der Karte. Ein Strich links an der Kante kam
+     dazu und wieder weg: auf dem Telefon wirkte er wie ein Fehler. */
+  .rrow .pos{font-family:'Archivo Black',sans-serif;font-size:15px;width:22px;text-align:center;
+    color:var(--faint);flex-shrink:0}
+  .rrow.top1 .pos{color:var(--gold)}
+  .rrow.top2 .pos{color:var(--silber)}
+  .rrow.top3 .pos{color:var(--bronze)}
+  /* Das Metall der ersten drei ist eine Veredelung, keine Bewegung [§C27]:
+     ein Rahmen im Verlauf des Metalls (hell an der Ecke oben links, wo das
+     Licht einfällt, dunkler in der Mitte, ein Glanz unten rechts), eine
+     Lichtkante oben in der Fläche und ein weicher Schein unter der Karte.
+     Ein Lichtband, das über die Karte fuhr, stand auf dem Telefon beim
+     Scrollen mitten auf der Karte still und sah kaputt aus; ein fester
+     Glanz steht immer richtig und kostet nach dem ersten Zeichnen nichts.
+     Der Rahmen ist der Hintergrund der Rand-Fläche (`border-box`) unter
+     einer Fläche, die nur bis zum Rand reicht (`padding-box`) — so wird
+     ein Verlauf zum Rahmen, ohne eine zweite Ebene. */
+  .rrow.top1,.rrow.top2,.rrow.top3{border-color:transparent;
+    background:linear-gradient(135deg,rgba(var(--metall),.11),rgba(var(--metall),.02) 45%,var(--surface) 70%) padding-box,
+      linear-gradient(var(--surface),var(--surface)) padding-box,
+      linear-gradient(135deg,rgba(var(--metall-hell),.95),rgba(var(--metall),.30) 30%,rgba(var(--metall),.10) 62%,rgba(var(--metall-hell),.55)) border-box;
+    box-shadow:inset 0 1px 0 rgba(var(--metall-hell),.10),0 12px 28px -20px rgba(var(--metall),.55)}
+  .rrow.top1{--metall:247,207,74;--metall-hell:255,233,166}
+  .rrow.top2{--metall:194,201,208;--metall-hell:236,240,244}
+  .rrow.top3{--metall:192,132,87;--metall-hell:236,184,140}
+  /* Die Ziffer ist Metall mit Glanz: hell oben, satt in der Mitte, dunkler
+     unten. Die Farbe darunter bleibt der Rückfall, wo `background-clip:text`
+     fehlt. */
+  .rrow.top1 .pos,.rrow.top2 .pos,.rrow.top3 .pos{
+    background:linear-gradient(180deg,rgb(var(--metall-hell)) 15%,rgb(var(--metall)) 55%,rgba(var(--metall),.7) 95%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:17px}
+  .rrow.top1:active,.rrow.top2:active,.rrow.top3:active{filter:brightness(1.08)}
+  .medal{position:absolute;left:9px;display:inline-grid;place-items:center}
+  .streak-badge{font-size:12px;margin-left:4px;vertical-align:middle}
+  .elo-gain-bar{display:flex;gap:6px;font-size:10px;font-family:'Sometype Mono',monospace;margin-top:2px}
+  .elo-gain-bar .gain{color:var(--acid)}.elo-gain-bar .loss{color:var(--red)}
+  /* Form und Elo-Bilanz stehen nebeneinander, nicht untereinander: es
+     sind zwei Antworten auf dieselbe Frage („wie lief es zuletzt?"), und
+     zwei Zeilen dafür machen jede Ranglistenzeile um ein Sechstel höher. */
+  .rmid .rzuletzt{display:flex;align-items:center;gap:10px;margin-top:5px;
+    flex-wrap:wrap}
+  .rmid .rzuletzt .form-dots,.rmid .rzuletzt .elo-gain-bar{margin-top:0}
+  .form-dots{display:flex;gap:3px;margin-top:4px}
+  .form-dots .dot{width:7px;height:7px;border-radius:50%}
+  .form-dots .dot.w{background:var(--acid)}.form-dots .dot.l{background:var(--red)}
+  .rank-gap{font-size:9px;color:var(--muted);text-align:center;padding:2px 0;font-family:'Sometype Mono',monospace}
+  /* Die Grundform jedes Gesichts. Es gab nur Regeln je Behälter (.rrow,
+     .nf-face-paar, .rcp-av …), und wo ein Avatar ohne eigenen Behälter
+     stand — der Halter einer Rekordkarte, eine Zeile im Blatt —, war er ein
+     Blockelement: die Initialen klebten oben links und wurden abgeschnitten. */
+  .av{display:inline-grid;place-items:center;flex-shrink:0;line-height:1;overflow:hidden;
+    font-family:'Archivo Black',sans-serif;color:var(--bg);text-transform:uppercase;vertical-align:middle;
+    /* Ohne `--av` ist jede der drei Angaben ungültig und fällt weg — dann
+       misst der Behälter, wie bisher. */
+    width:var(--av);height:var(--av);border-radius:calc(var(--av) / 2);
+    font-size:calc(var(--av) * .36)}
+  .rrow .av{width:40px;height:40px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;
+    font-family:'Archivo Black',sans-serif;font-size:15px;color:var(--bg);text-transform:uppercase}
+  /* Emoji-Avatar: grauer Grund mit Glanz, darauf das Emoji. Glanz und Grund
+     sind zwei Hintergründe desselben Kreises, das Emoji ein gewöhnliches
+     Kind ohne eigene Ebene, sein Schatten ein Textschatten. Der Glanz lag als
+     `::after` (z-index 1) und das Emoji (z-index 2, mit `filter`) je als
+     eigene Ebene über dem Kreis, und der Kreis war kein eigener Stapel: beide
+     gehörten dem Stapel der Karte oder des Fensters. Lief dort irgendeine
+     Bewegung, legte Safari jedes Emoji auf eine eigene Grafikebene, die der
+     runde Ausschnitt des Kreises von außen schneiden muss — und zeichnete sie
+     manchmal gar nicht. Auf dem iPhone standen die Gesichter im Feed, in
+     Stories und Blättern als leere graue Kreise da; in der Monatstabelle, wo
+     jedes Gesicht in einem verschobenen und damit eigenen Stapel liegt, nie.
+     Kein Teil mit eigener Ebene in einem runden Ausschnitt ohne eigenen
+     Stapel [§C43]. */
+  .av.av-emoji{background:linear-gradient(160deg,rgba(255,255,255,.10) 0%,transparent 50%),
+      linear-gradient(155deg,#3a4540,#212824)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+    /* Mittig auch, wo das Emoji größer ist als sein Kreis: dann ragt es
+       nach allen Seiten gleich hinaus, nicht nur nach rechts unten. */
+    place-content:center}
+  .av.av-emoji .em{font-size:1.5em;line-height:1;color:#fff;
+    font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji','Twemoji Mozilla',sans-serif;
+    text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .rmid{flex:1;min-width:0}
+  .rname{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rmeta{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Sometype Mono',monospace;
+    display:flex;gap:8px;align-items:center}
+  .rmeta .wbar{flex:0 0 44px;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
+  .rmeta .wbar i{display:block;height:100%;background:var(--acid)}
+  .rval{text-align:right;flex-shrink:0}
+  /* Die Elo war in jeder Zeile grün — dieselbe Farbe, die daneben „Sieg"
+     heißt. Gold gehört Platz 1, alles andere ist Tinte; die Richtung sagt
+     weiterhin die Gewinn-/Verlust-Leiste darunter. [§C26] */
+  .rval .big{font-family:'Archivo Black',sans-serif;font-size:19px;color:var(--ink);line-height:1}
+  .rval .small{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.08em}
+  .rval .big.neutral{color:var(--ink)}
+  /* Grün und Rot sagen hier ausschließlich die Richtung [§C25]. */
+  .rval .small.plus{color:var(--acid)} .rval .small.minus{color:var(--red)}
+  .rrow.top1 .rval .big{color:var(--gold)}
+
+  .chip{display:inline-flex;align-items:center;font-size:9.5px;padding:2px 7px;border-radius:6px;
+    text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+  .chip .ic{font-size:10px;margin-right:3px}
+  .chip.drive{background:rgba(255,120,73,.16);color:var(--orange)}
+  .chip.reves{background:rgba(86,180,232,.16);color:var(--blue)}
+  .perf-up{color:var(--acid);font-size:11px} .perf-dn{color:var(--red);font-size:11px}
+  .champ-banner{background:linear-gradient(135deg,rgba(247,207,74,.10),rgba(190,242,100,.03));
+    border:1px solid rgba(247,207,74,.22);border-radius:var(--r);padding:22px 18px;margin-bottom:10px;text-align:center;position:relative;overflow:hidden}
+  .champ-banner::before{content:"";position:absolute;right:-12px;top:50%;width:120px;height:120px;
+    transform:translateY(-50%);opacity:.08;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f7cf4a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM5 9a2 2 0 01-2-2V5h4M19 9a2 2 0 002-2V5h-4'/></svg>") center/contain no-repeat}
+  .champ-label{font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:700}
+  .champ-name{font-family:'Archivo Black',sans-serif;font-size:26px;margin:6px 0 4px;letter-spacing:-.02em}
+  .champ-detail{font-size:12px;color:var(--ink2);font-family:'Sometype Mono',monospace}
+  .team-season-card{background:linear-gradient(135deg,rgba(86,180,232,.06),rgba(167,139,250,.03));
+    border:1px solid rgba(86,180,232,.18);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center;position:relative;overflow:hidden}
+  .team-season-card::before{content:"";position:absolute;right:-10px;top:50%;width:88px;height:88px;
+    transform:translateY(-50%);opacity:.08;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2356b4e8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='7' r='3'/><circle cx='17' cy='9' r='2.5'/><path d='M3 20v-1a6 6 0 0112 0v1M15 20v-1a5 5 0 015-1'/></svg>") center/contain no-repeat}
+  .season-countdown{text-align:center;font-size:11px;color:var(--muted);padding:6px 0 10px;font-family:'Sometype Mono',monospace}
+
+  /* === [§C6] SAISON-ÜBERSICHT REDESIGN === */
+  /* Fortschritts-Balken */
+  /* Eine abgeschlossene Saison hat keinen Fortschritt. Der Balken stünde
+     voll da und behauptete, es ginge noch weiter. Stattdessen: was diese
+     Saison war, und dass sie vorbei ist. Metall, kein Acid — hier gibt es
+     nichts mehr zu bedienen und nichts mehr zu gewinnen. */
+  .saison-abgeschlossen{display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:11px 14px;margin-bottom:10px}
+  .saison-abgeschlossen .sa-l{font-family:'Sometype Mono',monospace;
+    font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;
+    color:var(--muted)}
+  .saison-abgeschlossen .sa-v{font-size:13px;font-weight:700;color:var(--ink)}
+  .saison-abgeschlossen .sa-m{margin-left:auto;font-size:11.5px;
+    color:var(--ink2);font-weight:600}
+
+  /* Der laufende Zeitraum: eine Zeile, kein Kasten. Das war eine eigene
+     Karte mit Überschrift, Rahmen und fünf Pixel dickem Balken — dieselbe
+     Bauform wie die Karten mit den eigentlichen Inhalten darunter, und
+     damit sah die Nebenangabe wichtiger aus als die Rangliste.
+     Jetzt: Text links, Faden rechts, zwei Pixel hoch. Der Faden nimmt den
+     Rest der Zeile, damit man den Anteil trotzdem sieht — an einem kurzen
+     Stummel ließe sich nichts ablesen. */
+  .lauf{display:flex;align-items:center;gap:10px;margin:0 2px 12px}
+  .lauf-t{font-family:'Sometype Mono',monospace;font-size:10px;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+    white-space:nowrap}
+  .lauf-t b{color:var(--ink2);font-weight:700}
+  /* Eine Zelle je Tag: gespielt hell, ohne Partie leise, heute gerahmt,
+     was noch kommt als Umriss. */
+  .lauf-z{flex:1;display:grid;grid-template-columns:repeat(var(--g),minmax(0,1fr));gap:2px;height:10px}
+  .lauf-z i{border-radius:2px;background:var(--surface2)}
+  .lauf-z i.v{background:rgba(190,242,100,.2)}
+  .lauf-z i.s{background:var(--acid)}
+  .lauf-z i.h{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--acid)}
+
+  /* ── Die Nebenwertungen [§C28] ────────────────────────────────────
+     Ein Band über der Tabelle, in jedem Zeitraum an derselben Stelle und
+     in derselben Form: eine breite Karte für die Hauptnebenwertung, dann
+     kleine Kacheln. In der Saison führt das Team der Saison, in Woche und
+     Tag der Spieler des Zeitraums.
+     Vorher hatte jeder Reiter hier etwas anderes: die Saison eine schmale
+     Leiste ganz unten unter der Liste, Woche und Tag eine große goldene
+     Heldenkarte darüber, die Ewige Tafel gar nichts. Drei Formen für
+     dieselbe Rolle — und die Leiste unten hat schlicht niemand gesucht. */
+  .nw-hero{position:relative;background:var(--surface);
+    border:1px solid var(--line);border-radius:16px;
+    padding:12px 14px 12px;margin-bottom:10px;overflow:hidden}
+  /* Gold trägt sie nur, wenn sie einen Titel nennt [§C25] — und auch dann
+     nur als Kante und Aufschrift, damit die Tabelle die Hauptsache bleibt. */
+  .nw-hero.gold{border-color:rgba(247,207,74,.30);
+    background:linear-gradient(135deg,rgba(247,207,74,.07),var(--surface) 62%)}
+  .nw-hero.gold::before{content:"";position:absolute;top:-40px;right:-30px;
+    width:130px;height:130px;pointer-events:none;
+    background:radial-gradient(circle,rgba(247,207,74,.13),transparent 70%)}
+  .nw-hero[data-toplist],.nw-hero[data-detail]{cursor:pointer;transition:.16s}
+  .nw-hero[data-toplist]:active,.nw-hero[data-detail]:active{transform:scale(.99)}
+  .nw-h{display:flex;align-items:baseline;justify-content:space-between;
+    gap:10px;position:relative}
+  .nw-h .l{font-family:'Sometype Mono',monospace;font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:700;color:var(--muted)}
+  .nw-hero.gold .nw-h .l{color:var(--gold)}
+  .nw-h .m{font-family:'Sometype Mono',monospace;font-size:9px;color:var(--faint);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nw-body{display:flex;align-items:center;gap:12px;margin-top:9px;position:relative}
+  /* Die Duo-Zeile: zwei Chips statt eines Wappens, sonst dieselbe Zeile
+     wie überall. Die Chips überlappen, damit sie als EIN Ding lesen. */
+  .rrow.duo .sh-chip-pair{flex-shrink:0}
+  .rrow.duo .rname{font-size:15.5px}
+
+  .nw-mid{flex:1;min-width:0}
+  .nw-name{font-family:'Archivo Black',sans-serif;font-size:17px;letter-spacing:-.02em;
+    line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nw-meta{font-family:'Sometype Mono',monospace;font-size:10px;color:var(--muted);
+    margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nw-val{text-align:right;flex-shrink:0}
+  .nw-val .v{font-family:'Archivo Black',sans-serif;font-size:22px;line-height:1;
+    color:var(--gold)}
+  .nw-val .v.minus{color:var(--red)}
+  .nw-val .l{font-family:'Sometype Mono',monospace;font-size:8.5px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-top:4px}
+  .nw-leer{font-family:'Sometype Mono',monospace;font-size:10px;color:var(--muted);
+    margin-top:8px}
+  /* Der Recap-Knopf des abgeschlossenen Zeitraums. Vorher stand er als
+     30-zeiliges Inline-Style-Ungetüm im JavaScript. */
+  .nw-recap{width:100%;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,rgba(190,242,100,.07),rgba(190,242,100,.02));
+    border:1px solid rgba(190,242,100,.26);border-radius:14px;
+    padding:11px 13px;margin-bottom:10px;cursor:pointer;
+    font-family:inherit;color:var(--ink);text-align:left;transition:.16s}
+  .nw-recap:active{transform:scale(.99)}
+  .nw-recap .ic{flex-shrink:0;width:36px;height:36px;border-radius:11px;
+    background:rgba(190,242,100,.12);display:grid;place-items:center;color:var(--acid)}
+  .nw-recap .ic svg{width:18px;height:18px;fill:none;stroke:currentColor;
+    --strich:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .nw-recap .tx{flex:1;min-width:0}
+  .nw-recap .tx b{display:block;font-size:13px;font-weight:700;letter-spacing:-.01em}
+  .nw-recap .tx i{display:block;font-style:normal;font-size:10px;color:var(--muted);
+    font-family:'Sometype Mono',monospace;margin-top:2px}
+  .nw-recap .ch{flex-shrink:0;color:var(--muted);line-height:0}
+  .nw-recap .ch svg{width:16px;height:16px}
+
+  /* Avatarpaare in den Verfolgerzeilen. */
+  .sh-chip-pair{display:flex;flex-shrink:0}
+  .sh-chip-av,.sh-chip-pair .sh-chip-av{width:22px;height:22px;border-radius:50%;
+    display:grid;place-items:center;font-size:11px;border:1.5px solid var(--surface);
+    flex-shrink:0;font-family:'Archivo Black',sans-serif;color:#0a0c0b}
+  .sh-chip-pair .sh-chip-av+.sh-chip-av{margin-left:-7px}
+
+  /* Die Tore je Spiel in der Positionsliste: eine eigene Zeile. Hinter
+     Bilanz, Balken und Quote brach „Ø 8,8 T…" bei 360 px mitten im Wort ab. */
+  /* Eine Bilanz ist eine Zahl und bricht nicht um („81–" über „40"). */
+  .rmeta > span:first-child{white-space:nowrap}
+  .rmeta.rmeta-tore{color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+
+  /* ── Das Podest [§C6] ─────────────────────────────────────────────
+     EIN Podest für die ganze App: Ewige Tafel und Award-Sammler. Drei
+     Karten nebeneinander in Podestreihenfolge — 2, 1, 3. Die Mitte steht
+     höher und trägt Gold, links Silber, rechts Bronze. Vorher gab es eine
+     große Heldenkarte und zwei halbe darunter: drei Formen für dieselbe
+     Aussage, und die Rangfolge musste man sich aus Anordnung und
+     Beschriftung zusammenreimen. Und daneben, im Awards-Tab, stand noch
+     ein zweites Podest mit eigenen Klassen, eigenen Größen und einem
+     Balkendiagramm, das unten aus der Karte lief.
+     Was die Karte trägt, sagt der Inhalt: hier Karriere-Elo, dort die
+     Zahl der Auszeichnungen. Die Form ist dieselbe. */
+  /* minmax(0,…): mit `1fr` war jede Spalte mindestens so breit wie ihr
+     Wappen samt Schwinge, und bei 360 px stand die rechte Karte 4 px im
+     Rand des Blatts. */
+  .podest{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.16fr) minmax(0,1fr);gap:8px;
+    align-items:end;margin-bottom:16px}
+  .pod-karte{--m:var(--silber);--mrgb:194,201,208;
+    position:relative;background:var(--surface);border:1px solid var(--line);
+    border-radius:16px;padding:12px 4px 12px;text-align:center;cursor:pointer;
+    transition:transform .14s,border-color .14s}
+  .pod-karte:active{transform:translateY(-2px)}
+  .pod-karte.gold  {--m:var(--gold);  --mrgb:247,207,74}
+  .pod-karte.silber{--m:var(--silber);--mrgb:194,201,208}
+  .pod-karte.bronze{--m:var(--bronze);--mrgb:192,132,87}
+  /* Der Erste steht höher, ist wärmer hinterlegt und trägt den Rand. */
+  .pod-karte.erster{padding:14px 6px 14px;
+    border-color:rgba(var(--mrgb),.42);
+    background:
+      radial-gradient(120% 80% at 50% -10%,rgba(var(--mrgb),.10),transparent 62%),
+      var(--surface);
+    box-shadow:0 14px 34px -18px rgba(var(--mrgb),.55)}
+  /* Die Ziffer steht in der Ecke, nicht über dem Kopf: dort lag sie unter
+     der Flamme, sobald jemand auf einer Serie ist. */
+  .pod-platz{position:absolute;left:9px;top:7px;z-index:1;
+    font-family:'Sometype Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:.12em;color:var(--m)}
+  /* Der Avatar sitzt im Wappen — dasselbe Bauteil wie in jeder
+     Ranglistenzeile [§C27], hier nur größer. Die Verhältnisse stehen in
+     12-insignium.css; hier steht ausschließlich die Größe. Der eigene
+     Metallring am Avatar fällt weg: zwei Ringe umeinander sind einer zu
+     viel, und das Podestmetall steht schon in der Ziffer. */
+  .pod-av{margin-bottom:9px}
+  .pod-name{font-family:'Archivo Black',sans-serif;font-size:14px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pod-karte.erster .pod-name{font-size:16px}
+  .pod-wert{font-family:'Archivo Black',sans-serif;font-size:22px;line-height:1.1;
+    margin-top:5px;color:var(--ink)}
+  .pod-karte.erster .pod-wert{font-size:30px;color:var(--m)}
+  /* Drei Zahlen nebeneinander, ohne Trennzeichen: sie umbrechen auf den
+     schmalen Karten in eine zweite Zeile, und ein Mittelpunkt, der dabei am
+     Zeilenende hängen bleibt, liest sich als abgeschnitten. Der Abstand
+     trennt genauso gut. Vorher stand hier EINE Zeile mit `nowrap` und
+     Ellipse — die dritte Zahl wäre auf den Seitenkarten stillschweigend
+     verschwunden. */
+  .pod-sub{display:flex;flex-wrap:wrap;justify-content:center;gap:0 7px;
+    font-family:'Sometype Mono',monospace;font-size:9.5px;color:var(--muted);
+    margin-top:4px;line-height:1.5}
+  .pod-leer{visibility:hidden}
+
+  /* ── Der Erste als erste Zeile ────────────────────────────────────
+     Er hatte eine eigene Karte in eigener Form über der Liste, und
+     dazwischen lag noch das Team der Saison. Jetzt ist er dieselbe Zeile
+     wie alle anderen — Platzziffer links, Avatar, Name, Zahl rechts —
+     nur mit einer Aufschrift darüber und wärmer hinterlegt. */
+  .rrow.held:not(.top1){background:
+      radial-gradient(120% 100% at 0% 0%,rgba(247,207,74,.07),transparent 58%),
+      var(--surface)}
+  /* Der Erste ist zugleich Platz 1: sein warmer Schein liegt in der Fläche
+     des Goldrahmens, sonst überdeckte er den Rahmen. */
+  .rrow.held.top1{background:
+      radial-gradient(120% 100% at 0% 0%,rgba(247,207,74,.10),transparent 58%) padding-box,
+      linear-gradient(var(--surface),var(--surface)) padding-box,
+      linear-gradient(135deg,rgba(var(--metall-hell),.95),rgba(var(--metall),.30) 30%,rgba(var(--metall),.10) 62%,rgba(var(--metall-hell),.55)) border-box}
+  .rrow.held .held-label{font-family:'Sometype Mono',monospace;font-size:9px;
+    font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:2px}
+  .rrow.held .rmeta .held-gd{color:var(--muted)}
+  .rrow.held.leer{opacity:.65}
+  .rrow.held .held-av-leer{width:52px;height:52px;border-radius:50%;flex:0 0 auto;
+    background:var(--surface3);color:var(--muted);display:grid;place-items:center;
+    font-family:'Archivo Black',sans-serif;font-size:20px}
+
+  /* Das Rangabzeichen [§C27]. Die Farbe kommt als --rc vom Rang, alles
+     andere steht hier — vorher baute rankBadgeHtml sein ganzes Aussehen
+     im JavaScript zusammen. */
+  .rangab{display:inline-flex;align-items:center;gap:5px;
+    background:var(--surface2);border:1px solid var(--line2);border-radius:20px;
+    padding:3px 10px;font-size:10px;font-weight:700;color:var(--rc,var(--ink))}
+  .rangab svg{width:11px;height:11px;fill:none;stroke:currentColor;
+    stroke-linecap:round;stroke-linejoin:round}
+  .rangab.gross{padding:6px 14px;font-size:13px}
+  .rangab.gross svg{width:14px;height:14px}

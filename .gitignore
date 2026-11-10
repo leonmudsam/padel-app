@@ -1,0 +1,7 @@
+dist/
+node_modules/
+package-lock.json
+.golden/
+
+# Die Kicker-App liegt nur lokal als Vorlage und gehört nicht in dieses Repository.
+/kicker app vorlage/

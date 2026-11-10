@@ -1,0 +1,242 @@
+# Abschnitte im Code
+
+Jede Datei in `src/` mit den Bannern, die sie trägt, in der Reihenfolge
+des Baus. Erzeugt von `node tools/doku.mjs` — nicht von Hand bearbeiten;
+Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
+`§Cnn` bis 24 einer des CSS und ab 25 ein Gesetz in `gesetze/`.
+
+## src/js
+
+- **00-prolog.js**
+  - §0.1
+- **01-update.js**
+  - §0.2 BUILD-VERSION & UPDATE-CHECK
+- **02-icons.js**
+  - §1.1 ICON LIBRARY (SVG line-icons)
+- **03-saison.js**
+  - §1.2 SAISON-SYSTEM (monatlich)
+- **04-cache.js**
+  - §2.1 PERFORMANCE CACHES & INVALIDIERUNG
+  - §2.2 Abgeleitete Sim-Maps (snapMap, historyByMatchId)
+  - §2.3 Streak-Snapshots (für "Serienbrecher"-Badge)
+  - §2.4 Saison-Rank-Snapshots (preRank/postRank pro Match)
+  - §2.4b Saison-Positionsverlauf (für §C21 Position-History-Sheet)
+  - §2.5 Matches-pro-Saison Cache
+  - §2.6 Saison-Rangliste Cache (Saison-End-Stand)
+  - §2.1b Vorwärmen im Leerlauf
+- **05-rang-elo.js**
+  - §2.7 RANG-SYSTEM (Durchschnitts-Saison-Elo)
+  - §2.8 ERWEITERTES ELO + AUTO-POSITION
+  - §2.8a Das Positionsprofil [§C44]
+  - §2.9 POSITIONS-KLASSIFIZIERUNG (7 Stufen)
+- **05b-recap-teile.js** — ohne Banner
+- **06-db.js**
+  - §3.1 DATENBANK-LAYER
+  - §3.1c Erst zeigen, dann nachschreiben
+  - §3.3 Player-of-the-Week / Player-of-the-Day Recap
+- **06b-ruhestand.js** — ohne Banner
+- **06c-stand.js**
+  - §3.1b Der letzte Stand des Geräts
+- **07-positionsverlauf.js**
+  - §3.7 SAISON-POSITIONSVERLAUF (§C21 UI)
+- **07b-rueckblick.js**
+  - §3.8 WOCHEN- UND TAGESRÜCKBLICK
+- **08-stats.js**
+  - §3.4 STATS ENGINE
+- **09-ui-infra.js**
+  - §4.1 AVATAR COLORS & EMOJIS
+  - §4.2 AWARD AVATAR HELPER (Hero/Mini/Li)
+  - §4.3 NAVIGATION (Tabs/Filter/Zurück-Taste)
+  - §4.4 ZEITRÄUME (Saison/Woche/Gesamt)
+- **09c-zeichen.js**
+  - §4.1b DAS ZEICHEN
+- **09d-bewegung.js**
+  - §4.5 BEWEGUNG (Öffnen, Gerüst, Kantenlicht, Aufbau)
+- **10-elo-engine.js**
+  - §3.5 ZENTRALE ELO-ENGINE (simulateElo)
+  - §3.5a DB-First Aggregation (default simulateElo)
+  - §3.5b Was beide Engines gleich buchen
+  - §3.6 Slider-basierte Berechnung (für Match-Eingabe + Recalc)
+- **11-view-ranking.js**
+  - §5.1 VIEW: RANKING
+- **12-view-positionen.js**
+  - §5.2 VIEW: POSITIONS-RANGLISTE
+- **13-view-awards.js**
+  - §5.3 VIEW: AWARDS
+  - §5.3a Award-Hilfsfunktionen (laufende und längste Serien)
+  - §5.3d EIN WERT JE AUSZEICHNUNG
+- **14-top5-listen.js**
+  - §5.3c TOP-5-LISTEN FÜR STATISTIK-KARTEN (v9.16)
+- **15-views-rest.js**
+  - §5.4 VIEW: TEAMS
+  - §5.5 VIEW: HISTORY (Match-Liste mit Filter)
+  - §5.6 VIEW: MATCH-EINGABE
+  - §5.7 VIEW: SETTINGS
+  - §5.8 MATCH PREVIEW & SAVE-LOGIK
+- **15b-einblick.js**
+  - §5.9 — Der Einblick: eine Grafik über einer Rangliste [§C27]
+- **16-sheet-infra.js**
+  - §6.1 DETAIL-SHEET-INFRASTRUKTUR
+- **17-badges.js**
+  - §7.1 Der Katalog der Auszeichnungen
+  - §7.2 Die Klassen
+  - §7.3 Count-Funktionen für die neuen Badges
+  - §7.4 Wer in welcher Partie was geholt hat
+- **17b-fingerabdruck.js**
+  - §13.11 DER FINGERABDRUCK
+- **18-profil.js** — ohne Banner
+- **18a-badge-popover.js**
+  - §8.5 Eine Auszeichnung im Detail (Popover über dem Blatt)
+- **18b-abschied.js** — ohne Banner
+- **19-bilanzen.js**
+  - §9.1 BILANZEN-SHEET (Mitspieler-Liste)
+- **20-bind.js**
+  - §10.1 BIND (globaler Click-Dispatcher)
+- **21-head-to-head.js**
+  - §9.2 HEAD-TO-HEAD PROFIL SHEET
+- **22-team-profil.js**
+  - §9.3 TEAM PROFIL SHEET
+- **23-match-edit.js**
+  - §9.4 MATCH BEARBEITEN
+- **24-lock.js**
+  - §10.2 LOCK-SYSTEM (Settings-Passwort)
+- **25-helpers.js**
+  - §10.3 HELPERS (Achievement-Toasts, Utils)
+- **26-news-konstanten.js**
+  - §11.0 — Konstanten
+  - §11.0d — Wie weit der Feed zurueckreicht
+  - §11.0c — Wie oft dieselbe Auszeichnung Nachricht ist
+  - §11.0b — Wann jemand über sich hinauswächst
+  - §11.0a — Die eine Rangfolge
+  - §11.0h — Badge-Whitelist (v8.1)
+- **26b-story-fakten.js**
+  - §11.0e DIE FAKTEN EINER STORY
+- **26c-news-bausteine.js**
+  - §11.0i — Bausteine des Generators
+  - §11.0f — Unbegrenzte Meilenstein-Leiter (v9.5)
+  - §11.0g — Persönliche Elo-Meilensteine (v9.5)
+- **27-news-generator.js**
+  - §11.1 — Story-Generator
+  - §11.1a Die Ewige Tafel meldet sich
+- **28-news-ambient.js**
+  - §11.1b — Ambiente Fun-Fact-Stories (v8.5, v9.5)
+  - §11.1c Rückblicke mit festem Termin
+- **29-news-cache.js**
+  - §11.2 — Story-Cache (DB-basiert, v8.3) + Display-Konsolidierung
+- **29b-news-sync.js**
+  - §11.8 — Realtime-Subscription auf `stories` (v8.4)
+  - §11.9 — Periodischer News-Auto-Sync (v8.5)
+- **29c-news-worker.js**
+  - §11.8b — Der Story-Generator in einem Worker
+- **30-news-ui.js**
+  - §11.3 — LocalStorage (Read-State)
+  - §11.4 — Header-Badge-Refresh
+  - §11.4b — Toast-Logik (v8.1, erweitert v8.2)
+  - §11.6 — Voller Feed (im Sheet) mit Filter-Pills
+  - §11.6b — Breaking-Erkennung + M2-Karten (v9)
+- **30a-news-karte.js**
+  - §11.6d — Die Bausteine einer Karte im Feed
+- **30b-news-spieltag.js**
+  - §11.6c — Die Karten „Am Spieltag" [§C33]
+- **30c-news-fakt.js** — ohne Banner
+- **30d-news-insignium.js**
+  - §11.6e — Die Insignium-Karte des Tages [§C30, §C33]
+- **30e-news-ehrung.js**
+  - §11.6f DIE EHRUNG
+- **31-news-detail.js**
+  - §11.7 — Story-Detail (dynamisch je Typ)
+- **31a-news-detail-mitte.js**
+  - §11.7a — Die Mitte eines Story-Blatts, je Typ
+- **31b-news-detail-helfer.js**
+  - §11.7b — Detail-Body Helper (v8.1)
+- **32-chronik-katalog.js**
+  - §13.1 Der Disziplinen-Katalog
+- **33-chronik-engine.js**
+  - §13.2 Kontext: EIN Pass über die Saison
+  - §13.3a Einfrieren
+  - §13.3 Vergabe
+  - §13.4 Saisontitel-Historie eines Spielers
+- **34-chronik-rekorde.js**
+  - §13.4b DIE CHRONIK: EINE pro Spieler
+  - §13.4c Titelrennen der laufenden Saison
+- **35-chronik-ui.js**
+  - §13.5 Anzeigen
+  - §13.5b Eine Monatswertung im Detail
+  - §13.6 Marken neben dem Namen (Rangliste)
+  - §13.7 Avatar-Ring: der Zustand von JETZT
+- **35a-insignium-zeichen.js** — ohne Banner
+- **35b-prestige.js**
+  - §13.8 PRESTIGE & INSIGNIUM
+  - §13.9 Das Zeichen: Insignium und Titelband
+  - §13.9b Das Zeichen
+  - §13.10 Die Laufbahn: wo stehe ich, und was fehlt
+- **35c-titel-aura.js** — ohne Banner
+- **36-backup.js**
+  - §12.1 — Datei speichern (iOS-tauglich)
+  - §12.2 — ZIP (schreiben & lesen), ohne Bibliothek
+  - §12.3 — XLSX schreiben
+  - §12.4 — XLSX lesen
+  - §12.5 — CSV (schreiben & lesen)
+  - §12.6 — Tabellen-Aufbau (Export-Format)
+  - §12.7 — Export-Aktionen
+  - §12.8 — Import: Datei einlesen und prüfen
+  - §12.9 — Import-Vorschau + Schreiben
+- **37-boot.js**
+  - §10.4 BOOT (Initialisierung)
+
+## src/css
+
+- **00-tokens.css** — ohne Banner
+- **01-shell.css**
+  - §C1 APP SHELL
+  - §C2 CONTENT
+  - §C3 STAT STRIP
+- **02-ranking.css**
+  - §C5 RANK LIST
+  - §C25 .
+  - §C6 SAISON-ÜBERSICHT REDESIGN
+- **03-match.css**
+  - §C7 MATCH BUILDER
+- **04-awards.css**
+  - §C8 AWARDS
+- **05-nav-sheet.css**
+  - §C10 HISTORY
+  - §C11 MODAL / SHEET
+  - §C27 .
+  - §C12 BOTTOM NAV
+  - §C13 FAB
+  - §C14 TOAST
+  - §C27
+- **06-misc.css**
+  - §C15 MISC
+- **07-icons-profil.css**
+  - §C16 ICON SYSTEM
+  - §C27 .
+- **08-highlights.css**
+  - §C18 WOCHEN-HIGHLIGHTS (Woche-Ansicht)
+- **09-recap.css**
+  - §C20 SEASON RECAP REDESIGN
+  - §C27 .
+- **10-award-sheet.css**
+  - §C21 AWARD SHEET REDESIGN (Winner Hero + Liste)
+  - §C21 SAISON-POSITIONSVERLAUF
+- **11-chronik.css**
+  - §C22 SAISON-TITEL & CHRONIK
+- **12-insignium.css**
+  - §C23 INSIGNIUM & TITELBAND
+  - §C25 .
+- **13-fingerabdruck.css**
+  - §C24 DER FINGERABDRUCK
+- **14-farbgesetz.css**
+  - §C25 DAS FARBGESETZ
+- **15-zeichen.css**
+  - §C26 DAS ZEICHEN
+- **16-spieltag.css**
+  - §C33
+  - §C33
+  - §C33
+  - §C33
+  - §C30
+  - §C33 DAS BILD EINES FUN FACTS
+- **17-bewegung.css**
+  - §C43 BEWEGUNG

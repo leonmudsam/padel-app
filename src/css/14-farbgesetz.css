@@ -1,0 +1,174 @@
+
+  /* ============ [§C25] DAS FARBGESETZ ============ */
+  /* Das Profil hatte keine Farbordnung, sondern elf Karten, von denen
+     jede ihre eigene mitbrachte: die Titelpille den Ton ihrer Disziplin,
+     der Chronikstreifen einen zweiten, der Ringchip Blau, die Rekordkarte
+     einen dritten, die Auszeichnungen vier Seltenheitsfarben, die Rollen
+     Orange und Blau. Zusammen: kein System, sondern Konfetti.
+
+     Vier Regeln, mehr nicht:
+       1 · RANGFARBE  — alles, was „ich" heißt. Kanten, Ringe, Kennzahlen.
+       2 · GOLD       — Titel und heute gehaltene Rekorde. Sonst nirgends.
+       3 · GRÜN / ROT — nur Richtung. Nie eine Kategorie, nie eine Laune.
+       4 · METALL     — alles Übrige. Es tritt zurück, damit 1–3 wirken.
+
+     `--ak` ist die Rangfarbe, `--ak-rgb` dieselbe als Tripel für
+     rgba(). Beide setzt [§7] am `.pp-root`, aus dem Rang des Spielers. */
+
+  /* ── Das Licht kommt vom Zeichen ──────────────────────────────────
+     Kein Farbschleier über der Seite, sondern ein Schein, der genau
+     hinter dem Insignium sitzt und nach unten ausläuft. */
+  .pp-root{position:relative;
+    background:radial-gradient(420px 420px at 50% 210px,
+      rgba(var(--ak-rgb),.16) 0%, rgba(var(--ak-rgb),.05) 45%, transparent 70%);
+    background-repeat:no-repeat}
+  /* Die Laufbahn ist dieselbe Wurzel, aber ohne den Schein: dort steht
+     oben kein Insignium, hinter dem er sitzen könnte. */
+  .pp-root.lb-root{background:none}
+
+  /* Alles Runde bekommt dieselbe Fassung wie der Reif, alles Eckige
+     die helle Oberkante des Metalls. */
+  .pp-root .pp-rd-ring{box-shadow:0 0 0 1px rgba(var(--ak-rgb),.35),0 0 14px rgba(var(--ak-rgb),.10)}
+  .pp-root .pp-rj-dot{box-shadow:0 0 0 1px rgba(var(--ak-rgb),.30)}
+  .pp-root .pp-k,.pp-root .pp-st,.pp-root .pp-rd,.pp-root .pp-pos-c,
+  .pp-root .pp-tr,.pp-root .pp-r{box-shadow:inset 0 1px 0 rgba(var(--ak-rgb),.14)}
+
+  /* ── Die Stufe schreibt die Abschnittskante ───────────────────────
+     Unter jeder Überschrift liegt eine gestrichelte Kante in der
+     Rangfarbe, und mit der Stufe wird sie höher und kräftiger; der
+     Ordensstern trägt sie facettiert. Die Regeln hingen an den Schlüsseln
+     einer früheren Leiter (`kerben`, `strahl`): seit Schildring,
+     Volutenkranz, Zierkranz und Kronenreif eigene tragen, stand unter
+     ihren Überschriften keine Kante, am Reif nur ein Hauch, und gestrichelt
+     war sie allein am Lorbeerreif. Die Grundregel trägt deshalb selbst
+     die Striche; eine Stufe ändert nur Höhe und Kraft. */
+  .pp-root .pp-sec-title{position:relative;padding-bottom:9px;margin-bottom:13px}
+  .pp-root .pp-sec-title::after{content:"";position:absolute;left:0;right:0;bottom:0;
+    height:var(--sk-h,3px);border-radius:2px;
+    background:repeating-linear-gradient(118deg,
+      rgba(var(--ak-rgb),var(--sk-a,.7)) 0 5px,rgba(var(--ak-rgb),.12) 5px 7px)}
+  .pp-root .pp-sec-title .l .ic.svg-ic{color:var(--ak)}
+  .pp-root .pp-sec-title .l > svg{stroke:var(--ak)}
+  .st-reif    .pp-sec-title{--sk-h:2px;--sk-a:.5}
+  .st-schild  .pp-sec-title{--sk-h:2px;--sk-a:.6}
+  .st-volute  .pp-sec-title{--sk-h:3px;--sk-a:.65}
+  .st-zier    .pp-sec-title{--sk-h:3px;--sk-a:.72}
+  .st-lorbeer .pp-sec-title{--sk-h:4px;--sk-a:.8}
+  .st-krone   .pp-sec-title{--sk-h:4px;--sk-a:.85}
+  .st-stern   .pp-sec-title::after{height:5px;
+    background:repeating-linear-gradient(45deg,
+      rgba(var(--ak-rgb),.85) 0 4px,rgba(var(--ak-rgb),.12) 4px 8px)}
+
+  /* ── 2 · Gold gehört den Titeln ───────────────────────────────────
+     Nicht dem Ton, den eine Disziplin zufällig im Katalog trägt. Ein
+     heute gehaltener Rekord und ein Meistertitel sind dasselbe Gold —
+     alles andere ist keins. */
+  /* Diese Tonwerte stehen als style="--tt:…" AM ELEMENT — ein Regelwert
+     ohne !important käme dagegen nicht an. Das !important ist hier keine
+     Notlösung, sondern die Stelle, an der das Gesetz die Einzelmeinung
+     der Komponente überstimmt. */
+  .pp-root .pp-banner{--tt:#f7cf4a!important;--ttr:247,207,74!important}
+  .pp-root .chron-one{--tt:#f7cf4a!important;--ttr:247,207,74!important}
+  .pp-root .tmark{--tt:#f7cf4a!important;--ttr:247,207,74!important}
+  /* Eine Ausnahme, und nur diese: Schattenseiten. „Das Fass ohne Boden" in
+     Gold liest sich wie eine Auszeichnung — genau das war der Fall, seit
+     die Regel darüber alles auf Gold gezwungen hat. Rot ist hier keine
+     zweite Meinung, sondern dieselbe Aussage mit umgekehrtem Vorzeichen. */
+  .pp-root .chron-one.schatten{--tt:#f0566a!important;--ttr:240,86,106!important}
+  .pp-root .tmark.schatten{--tt:#f0566a!important;--ttr:240,86,106!important}
+
+  /* ── 1 · Die Rangfarbe trägt, was „ich" heißt ─────────────────── */
+  /* Die eigene Elo ist die Kennzahl, die „ich" heißt — sie trägt die
+     Rangfarbe. `--acid` bleibt dabei unangetastet: sobald Grün einmal
+     die Rangfarbe wäre, hieße Orange bei einem Einsteiger einmal „Sieg"
+     und einmal „Rang", und Regel 3 wäre nur noch ein Vorsatz. */
+  .pp-root .pp-et-col.now .val{color:var(--ak)}
+  .pp-root .chron-cell.live{--tt:var(--ak)!important;--ttr:var(--ak-rgb)!important}
+  .pp-root .pp-rd.drive{--orange:var(--ak)}
+  .pp-root .pp-posprof{--orange:var(--ak)}
+
+  /* ── 4 · Alles Übrige ist Metall ──────────────────────────────────
+     Der Chronikstreifen wird ruhig — und genau dadurch sticht der
+     laufende Monat überhaupt erst heraus. */
+  .pp-root .chron-cell{--tt:#8f9a93!important;--ttr:143,154,147!important}
+  /* Ein Rekord, den jemand ANSTREBT, ist keiner, den er hält — er trägt
+     deshalb kein Gold, sondern Metall wie alles Unerledigte. */
+  .pp-root .chron-one.next{--tt:#8f9a93!important;--ttr:143,154,147!important}
+  /* Auch Abwehrdominanz ist eine Staerke und behaelt deshalb die Rangfarbe.
+     Metallgrau gehoert nur der schwacheren Rolle, nicht der Positionsart. */
+  .pp-root .pp-rd.reves{--blue:var(--ak)}
+  .pp-root .pp-posprof{--blue:var(--ak)}
+
+  /* ── 3 · Grün und Rot bleiben, wo sie Richtung bedeuten ───────────
+     Sie brauchen keine Regel: `--acid` und `--red` behalten hier ihre
+     Bedeutung, weil das Gesetz sie nicht anfasst. */
+
+  /* Die Auszeichnungen im Profil stehen in ihrer Klasse: Gold legendär,
+     Lila selten, Rot negativ, wie im Blatt der Auszeichnungen und im
+     Popover (07-icons-profil). „Selten" stand hier in der Rangfarbe und war
+     bei jedem goldenen Rang nicht von „legendär" zu unterscheiden; die
+     Leiste darunter sagte damit nicht mehr, welche Klasse wie viel ausmacht.
+     Nur „gewöhnlich" bleibt im Profil Metall statt Grün: es ist die größte
+     Gruppe, und in Grün wäre das Profil bunt, ohne mehr zu sagen. */
+  .pp-root .pp-bmini.common{color:#9AA2AA;border-color:rgba(154,162,170,.28)}
+  .pp-root .pp-bcard-bar .seg.common{background:#7D858D;opacity:.9}
+
+  /* Die vier Beziehungskarten sind ZWEI Paare — bester und schlechtester
+     Mitspieler, Lieblings- und Angstgegner. Sie trugen vier Farben, also
+     hiess Blau einmal „gut" und Orange einmal „schlecht", ohne dass das
+     irgendwo stand. Jetzt heisst Grün gut und Rot schlecht, zweimal. */
+  .pp-root .pp-r-rich.fav{border-left-color:var(--acid);
+    background:linear-gradient(135deg,rgba(190,242,100,.04),var(--surface) 70%)}
+  .pp-root .pp-r-rich.fav .stat .v{color:var(--acid)}
+  .pp-root .pp-r-rich.nem{border-left-color:var(--red);
+    background:linear-gradient(135deg,rgba(240,86,106,.03),var(--surface) 70%)}
+  .pp-root .pp-r-rich.nem .stat .v{color:var(--red)}
+
+  /* ── Der Avatar gehört zum Material ───────────────────────────────
+     Die Scheibe hinter dem Buchstaben war bisher eine Hashfarbe: aus
+     der Spieler-ID gewürfelt, ohne Bedeutung, und sie stieß mit allem
+     zusammen, was um sie herum liegt. Jetzt kommt sie aus dem Rang.
+     Emoji-Avatare behalten ihren dunklen Grund — ein Gesicht auf einer
+     leuchtenden Scheibe liest sich schlechter, nicht besser. */
+  .pp-root .pp-av-inner:not(.icon-av){
+    background:linear-gradient(155deg,
+      color-mix(in srgb,var(--ak) 62%,#252d28),
+      color-mix(in srgb,var(--ak) 24%,#141a16));
+    color:#0a0c0b;text-shadow:none}
+
+  /* ── Nachtrag: die drei letzten grünen Inseln im Profil ───────────
+     Elo-Kurve, Gesamt-Stats und Positions-Profil trugen weiter --acid.
+     Auf einer Seite, die sonst ihre Rangfarbe trägt, sah das aus wie ein
+     vergessener Rest — bei einem Elite-Spieler stand Grün neben Lila.
+     Regel 1: Was „ich" heißt, trägt die Rangfarbe. Regel 3 bleibt dem
+     Vorzeichen: eine negative Tordifferenz ist weiterhin rot. */
+
+  /* Gesamt-Stats */
+  .pp-root .pp-k.f{background:radial-gradient(120% 100% at 50% 0%,
+      rgba(var(--ak-rgb),.09) 0%,transparent 70%),var(--surface);
+    border-color:rgba(var(--ak-rgb),.22)}
+  .pp-root .pp-k.f .v{color:var(--ak)}
+  .pp-root .pp-k.pos .v{color:var(--ak)}
+
+  /* Positions-Profil: der Balken ist die eigene Einstufung. */
+  .pp-root .pp-posprof .pp-fill{
+    background:linear-gradient(90deg,rgba(var(--ak-rgb),.55),var(--ak))}
+  .pp-root .pp-posprof.rechts-seite .pp-fill{
+    background:linear-gradient(270deg,rgba(var(--ak-rgb),.55),var(--ak))}
+  .pp-root .pp-posprof.neutral .pp-fill{
+    background:linear-gradient(90deg,transparent,rgba(var(--ak-rgb),.82),transparent);
+    box-shadow:0 0 12px rgba(var(--ak-rgb),.4)}
+  .pp-root .pp-posprof .pp-thumb{background:var(--ak);
+    box-shadow:0 2px 8px rgba(0,0,0,.5),0 0 0 1px rgba(var(--ak-rgb),.4)}
+  .pp-root .pp-posprof .pph .lf{color:var(--ak)}
+  .pp-root .pp-posprof .pph .rt{color:var(--muted)}
+  .pp-root .pp-posprof.rechts-seite .pph .lf{color:var(--muted)}
+  .pp-root .pp-posprof.rechts-seite .pph .rt{color:var(--ak)}
+
+  /* Elo-Kurve: die Fläche unter der Linie folgt der Linie. */
+  .pp-root .pp-spark svg circle{filter:drop-shadow(0 0 4px rgba(var(--ak-rgb),.55))}
+
+  /* Die „Aktuell"-Spalte der Elo-Trinity hatte noch einen grünen Schimmer
+     unter einer rangfarbenen Zahl. */
+  .pp-root .pp-et-col.now{background:linear-gradient(180deg,
+    rgba(var(--ak-rgb),.07),transparent 70%)}

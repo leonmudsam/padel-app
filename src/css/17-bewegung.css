@@ -1,0 +1,344 @@
+  /* ============ [§C43] BEWEGUNG ============ */
+  /* Wie die App sich öffnet, Reiter betritt und Karten hervorhebt. Jede
+     Bewegung hier bewegt nur transform und opacity, endet von selbst (außer
+     dem Gerüst, solange es steht) und entfällt bei
+     Bewegungsruhe. Material und Farben sind die der App: Acid fürs
+     Bedienen, das Metall der Plätze für die Plätze, Gold für den Titel
+     [§C25]. Die Regeln stehen in docs/gesetze/C43-bewegung.md. */
+
+  /* ── Das Gerüst ─────────────────────────────────────────────────────
+     Ohne Stand auf dem Gerät (erster Start, neue Fassung) steht unter der
+     Kopfleiste die Form
+     der Liga da, bis die Datenbank antwortet: Kopf, Zeitraum, Tage,
+     Saisons, Spieler und Teams, dann die Zeilen — in denselben Maßen, damit
+     beim Tausch nichts springt. Jedes Kästchen trägt `gk`: eine Regel mit
+     einem Tag ganz rechts (`.geruest i`) prüfte der Browser bei jedem <i>
+     der App. Ein einziges Lichtband über allem, keins je Kästchen. */
+  .geruest{position:relative;overflow:hidden;pointer-events:none}
+  .gk{display:block;border-radius:7px;background:var(--surface2)}
+  .g-kopf{margin:8px 2px 18px}
+  .g-h{width:78px;height:26px}
+  .g-s{width:62%;height:11px;margin-top:10px;opacity:.7}
+  .g-switch{height:43px;margin-bottom:12px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+  .g-sw{width:25%;height:100%;border-radius:10px}
+  .g-lauf{height:10px;margin:2px 2px 16px;border-radius:3px;
+    background:repeating-linear-gradient(90deg,var(--surface2) 0 7px,transparent 7px 9px)}
+  .g-wahl{display:flex;gap:10px;height:28px;margin-bottom:12px}
+  .g-w,.g-w1{width:68px;height:100%;border-radius:9px}
+  .g-w1{background:var(--surface3)}
+  .g-tabs{display:flex;justify-content:space-around;align-items:center;height:35px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+  .g-t{width:64px;height:11px}
+  .g-liste{display:flex;flex-direction:column;gap:8px}
+  .g-zeile{display:flex;align-items:center;gap:11px;height:84px;padding:10px 14px;border-radius:var(--r);
+    background:var(--surface);border:1px solid var(--line)}
+  .g-zeile.g-erste{height:98px}
+  .g-pos{width:14px;height:15px;margin:0 4px}
+  .g-av{width:52px;height:52px;border-radius:50%;flex-shrink:0}
+  .g-mid{flex:1;display:flex;flex-direction:column;gap:8px}
+  .g-m1{width:44%;height:13px}
+  .g-m2{width:68%;height:7px;opacity:.7}
+  .g-m3{width:38%;height:7px;opacity:.5}
+  .g-wert{width:38px;height:19px}
+  #main{position:relative}
+  /* Kommt die Liga, liegt das Gerüst noch einen Augenblick über ihr und
+     blendet aus, während sie sich darunter aufbaut. */
+  .geruest.g-weg{position:absolute;left:16px;right:16px;top:6px;z-index:2}
+  .geruest::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.055) 50%,transparent 70%);
+    transform:translateX(-100%)}
+  @keyframes geruestLicht{to{transform:translateX(100%)}}
+  @media(prefers-reduced-motion:no-preference){
+    .geruest::after{animation:geruestLicht 1.5s cubic-bezier(.4,0,.2,1) infinite}
+  }
+
+  /* ── Das Kantenlicht [§C27] ─────────────────────────────────────────
+     Ein Ring aus einer Maske (nur der Rand bleibt sichtbar), darin ein
+     Kegel aus Licht mit langem Schweif, der sich dreht: die Linie fährt die
+     Kante ab. Zwei Arten und keine dritte [§C41]:
+       kl-zeichnen  einmal herum, dann leuchtet der Rahmen auf und steht
+                    einige Sekunden: eine Karte, die zählt, ist angekommen;
+       kl-hinweis   zweimal herum, ohne Rahmen: hier ist etwas neu;
+     Zeichnen und Hinweis ziehen sich: nach der Runde läuft das Licht
+     langsamer weiter, ein Schein liegt um die Karte (.kl-schein, neben dem
+     Ring — in ihm schnitte die Maske ihn weg), und nach 4,6 bzw. 4,2 s
+     verlischt alles, langsam. Nach gut einer Sekunde war es vorbei, bevor
+     man die Karte angesehen hatte. Bewegt werden nur Drehung und
+     Deckkraft. Der Kegel ist so groß wie die Diagonale der Karte (--kd),
+     nicht größer: eine gedrehte Ebene kostet bei dreifacher Pixeldichte
+     Speicher im Quadrat ihrer Kante. */
+  .kl{position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;z-index:3;padding:2px;overflow:hidden;
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .kl-innen{inset:0}
+  /* Bis zu seinem Einsatz steht ein Licht ohne Kasten in seiner Karte und
+     trägt keine Bewegung (`_lichtWartet`): wartend war es für Safari schon
+     eine eigene Ebene, und Platz 1 kam mit ihnen später als Platz 2. */
+  .kl-wartet{display:none}
+  .kl i{position:absolute;left:50%;top:50%;width:var(--kd);height:var(--kd);
+    margin:calc(var(--kd) / -2) 0 0 calc(var(--kd) / -2);opacity:0;
+    background:conic-gradient(from 0deg,transparent 0deg 180deg,rgba(var(--kr),.22) 250deg,rgba(var(--kr),.7) 318deg,
+      rgba(var(--kr),1) 348deg,#fff 355deg,transparent 360deg)}
+  /* Der Rahmen, wenn die Linie ihn geschlossen hat: ganz hell, dann steht
+     er, dann verlischt er. */
+  .kl.kl-zeichnen::after{content:"";position:absolute;inset:0;background:rgba(var(--kr),.75);opacity:0}
+  /* Der Schein: Licht, das von der Kante nach außen und ein wenig nach
+     innen fällt. Eine feste Schattenform, bewegt wird nur ihre Deckkraft. */
+  .kl-schein{position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;
+    box-shadow:0 0 0 1px rgba(var(--kr),.35),0 0 20px -3px rgba(var(--kr),.55),inset 0 0 18px -7px rgba(var(--kr),.4)}
+  /* Der Inhalt einer Story und einer Karte im Feed steht über ihrem Motiv
+     (`.nd > *`, `.nf-card > *`, relative): der Ring darin bliebe sonst im
+     Fluss stehen, vier Pixel breit, und machte Fenster und Karte höher.
+     Innen liegt auch der Schein innen — einen Pixel darüber hinaus gab
+     einem Fenster, das selbst scrollt, einen Pixel zu scrollen. */
+  :is(.nd, .nf-card) > .kl{position:absolute;z-index:3}
+  :is(.nd, .nf-card) > .kl-schein{position:absolute;z-index:2}
+  .kl-schein.kl-innen{inset:0}
+  /* Im laufenden Betrieb leiser und langsamer als beim Ankommen
+     (`_leisesLicht`): eine einzige Runde in 6,5 s, sanft an- und auslaufend,
+     die Linie schmaler und gut halb so hell, kein Rahmen, der aufleuchtet,
+     ein Schein, den man eher ahnt. */
+  .kl.kl-leise{padding:1.5px}
+  .kl-schein.kl-leise{box-shadow:0 0 0 1px rgba(var(--kr),.16),0 0 14px -4px rgba(var(--kr),.28),inset 0 0 12px -7px rgba(var(--kr),.2)}
+  @keyframes klLeise{0%{transform:rotate(-120deg);opacity:0}16%{opacity:.6}84%{opacity:.6}100%{transform:rotate(240deg);opacity:0}}
+  @keyframes klScheinLeise{0%,100%{opacity:0}45%,60%{opacity:.55}}
+  .kl-gold{--kr:247,207,74}
+  .kl-silber{--kr:214,222,230}
+  .kl-bronze{--kr:222,160,108}
+  .kl-acid{--kr:190,242,100}
+  .kl-weiss{--kr:255,255,255}
+  .kl-story{--kr:var(--story-rgb,190,242,100)}
+  .kl-blau{--kr:86,180,232}
+  /* Die erste Runde beschleunigt und kommt in Fahrt an; danach läuft das
+     Licht weiter und wird langsamer, bis es steht, während es verlischt. */
+  @keyframes klZeichnen{
+    0%{transform:rotate(-110deg);opacity:0;animation-timing-function:cubic-bezier(.4,0,.7,.6)}
+    4%{opacity:1}
+    22%{transform:rotate(250deg);opacity:1;animation-timing-function:cubic-bezier(.3,.6,.6,1)}
+    70%{opacity:.9}
+    100%{transform:rotate(790deg);opacity:0}}
+  @keyframes klHinweis{
+    0%{transform:rotate(-110deg);opacity:0;animation-timing-function:cubic-bezier(.4,0,.7,.6)}
+    5%{opacity:1}
+    40%{transform:rotate(610deg);opacity:1;animation-timing-function:cubic-bezier(.3,.6,.6,1)}
+    70%{opacity:.7}
+    100%{transform:rotate(1150deg);opacity:0}}
+  @keyframes klRahmen{0%,19%{opacity:0}25%{opacity:1}36%{opacity:.78}74%{opacity:.7}100%{opacity:0}}
+  @keyframes klSchein{0%,17%{opacity:0}27%{opacity:1}40%{opacity:.85}74%{opacity:.75}100%{opacity:0}}
+  @keyframes klScheinHinweis{0%,6%{opacity:0}22%{opacity:.75}40%{opacity:.5}60%{opacity:.7}78%{opacity:.5}100%{opacity:0}}
+  @media(prefers-reduced-motion:no-preference){
+    .kl-zeichnen i{animation:klZeichnen 4.6s linear var(--kv,0ms) both}
+    .kl.kl-zeichnen::after{animation:klRahmen 4.6s ease var(--kv,0ms) both}
+    .kl-schein.kl-zeichnen{animation:klSchein 4.6s ease var(--kv,0ms) both}
+    .kl-hinweis i{animation:klHinweis 4.2s linear var(--kv,0ms) both}
+    .kl-schein.kl-hinweis{animation:klScheinHinweis 4.2s ease var(--kv,0ms) both}
+    .kl-leise i{animation:klLeise 6.5s cubic-bezier(.45,.05,.55,.95) var(--kv,0ms) both}
+    .kl.kl-leise::after{animation:none}
+    .kl-schein.kl-leise{animation:klScheinLeise 6.5s ease var(--kv,0ms) both}
+  }
+
+  /* ── Der Aufbau ─────────────────────────────────────────────────────
+     Bei jedem Öffnen (`.aufbau` am Wurzelknoten, 1,7 s): die untere Leiste
+     steigt herauf, ihre Zeichen springen nacheinander auf; zuletzt dreht
+     sich „Match eintragen" herein, und vom heutigen Tag in der Leiste der
+     Tage geht ein Ring aus. Die Kopfleiste steht schon im ersten Bild und
+     bleibt stehen — sie noch einmal einzublenden, ließe sie flackern. Der
+     Inhalt kommt in Teilen (`.bau`), beim Öffnen und beim Betreten eines
+     Reiters; die Verzögerung steht an jedem Teil selbst (09d-bewegung.js).
+     Bis ihre Knöpfe da sind, ist die untere Leiste unsichtbar: leer stand
+     sie als Balken da, bevor sie heraufstieg. */
+  .botnav:empty{visibility:hidden}
+  .lauf-z i.h{position:relative}
+  .lauf-z i.h::after{content:"";position:absolute;inset:-1px;border-radius:3px;border:1.5px solid var(--acid);opacity:0;pointer-events:none}
+  /* Die letzte Partie im Verlauf trägt das Kantenlicht. */
+  .mrow{position:relative}
+  @keyframes aufbauVonUnten{from{transform:translateY(100%)}}
+  /* Ein Blatt kommt gestaffelt (`_blattStaffeln`): die ersten acht Teile
+     45 ms auseinander. Der Rahmen, der sie trägt, blendet nicht noch
+     einmal als Ganzes ein. */
+  .sheet.show > .staffel{animation:none}
+  /* Was ein Blatt oder Fenster verdeckt, steht still (`_verdecken`): die
+     Unschärfe des Vorhangs rechnet sonst jedes Bild einer Bewegung darunter
+     neu. */
+  .steht,.steht::before,.steht::after{animation-play-state:paused!important}
+  /* Eine Karte im Feed bewegt sich nur im Bild (`_feedKartenSicht`): bis
+     der Beobachter sie hereinmeldet, steht alles in ihr still, auch was sie
+     beim Ankommen aufbaut. Dieselbe Auswahl wie `content-visibility` in
+     `07-icons-profil.css` — was dort übersprungen werden kann, bewegte sich
+     sonst unerreichbar im Hauptthread weiter. */
+  .nf-liste.sicht .nf-card:not(.nf-brk):not(.nf-gross):not(.im-bild)::before,
+  .nf-liste.sicht .nf-card:not(.nf-brk):not(.nf-gross):not(.im-bild)::after,
+  .nf-liste.sicht .nf-card:not(.nf-brk):not(.nf-gross):not(.im-bild) *,
+  .nf-liste.sicht .nf-card:not(.nf-brk):not(.nf-gross):not(.im-bild) *::before,
+  .nf-liste.sicht .nf-card:not(.nf-brk):not(.nf-gross):not(.im-bild) *::after{animation-play-state:paused!important}
+  /* Die Pille „News" steht vom ersten Bild an als Gerüst da, still, und
+     nimmt keinen Tipp an; kommen ihre Stories, färbt sie sich ein, und ihr
+     Inhalt gleitet herein (`_pilleKommt`). Zuerst lief darin derselbe
+     Schimmer wie im Gerüst der Liga: eine Ebene, die links neben der Pille
+     beginnt und von ihrem runden Rand abgeschnitten werden sollte. Safari
+     auf dem iPhone schnitt die laufende Ebene dort nicht ab, und solange der
+     Start den Hauptthread hielt, stand der Streifen fünf Sekunden lang still
+     neben der Pille in der Kopfleiste. */
+  .news-pill.wartet{background:var(--surface2);border-color:var(--line);pointer-events:none}
+  .news-pill.wartet > *{opacity:0}
+  @keyframes pilleInhalt{from{opacity:0;transform:translateX(8px)}}
+  /* Die Pille ruft: kommt der Hinweis „x neue Stories", geht zweimal ein
+     Ring von ihr aus, und ihre Zahl springt auf (`_hinweisBewegung`). */
+  #newsBtn::after{content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;
+    border:2px solid var(--acid);opacity:0}
+  @keyframes hinweisRuf{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
+  @keyframes aufbauPop{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.12)}100%{transform:none}}
+  @keyframes aufbauFab{0%{opacity:0;transform:scale(.3) rotate(-90deg)}70%{opacity:1;transform:scale(1.08) rotate(6deg)}100%{transform:none}}
+  @keyframes aufbauPing{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+  @keyframes bauTeil{from{opacity:0;transform:translateY(16px) scale(.985)}}
+  @keyframes bauPodest{from{opacity:0;transform:translateY(26px) scale(.94)}}
+  /* Das Band über Gold beim Ankommen: dieselbe Bahn wie über einem Titel
+     (06-misc.css), einmal. */
+  .glanz-einmal::after{content:"";position:absolute;top:0;bottom:0;left:0;width:250%;pointer-events:none;
+    background:linear-gradient(105deg,transparent 42%,rgba(247,207,74,.3) 50%,transparent 58%);
+    transform:translateX(-84%)}
+  @keyframes glanzEinmal{from{transform:translateX(-84%)}to{transform:translateX(24%)}}
+  .glanz-einmal.glanz-blau::after{background:linear-gradient(105deg,transparent 42%,rgba(86,180,232,.3) 50%,transparent 58%)}
+
+  /* ── Die Vorstellung eines Rückblicks (`_vorstellung`) ─────────────
+     Der Meister groß in der Mitte (`.vs-gross`), Licht hinter ihm
+     (`.vs-spot`); dann auf seinem Platz, ein Ring geht von ihm aus
+     (`.vs-ring`), Platz 2 und 3 steigen dazu, der Kranz geht auf
+     (`.vs-kranz`); dann das Team der Saison, dann der Rest. Was unter dem
+     Rand steht, wartet (`.vs-w`) und kommt beim Hereinscrollen (`.vs-da`);
+     bis dahin steht auch alles darin still. Ein Teil der Vorstellung
+     (`.vs`) trägt sonst keine Bewegung: das Einblenden jedes Blatts kam
+     sonst nach der Vorstellung noch einmal. Jede Bewegung einmal, mit
+     `backwards`, damit danach keine ihren Endwert hält [§C43]. */
+  .rcp-buehne.vs-spot::before{content:"";position:absolute;left:50%;top:50%;width:300px;height:300px;margin:-150px 0 0 -150px;
+    z-index:-1;pointer-events:none;border-radius:50%;opacity:0;
+    background:radial-gradient(circle,rgba(247,207,74,.32),rgba(247,207,74,.09) 44%,transparent 68%)}
+  .rcp-buehne.vs-buehne:not(.vs-kranz) > .nf-ms-strahl{display:none}
+  .rcp-buehne.vs-buehne:not(.vs-kranz) .pod-karte.gold > .glanz-bahn::after{animation:none}
+  .rcp-buehne .pod-karte.vs-ring::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+    border:2px solid rgba(var(--mrgb),.9);opacity:0}
+  .rcp-held.vs-ring .rcp-held-av::after{content:"";position:absolute;left:50%;top:50%;width:116px;height:116px;margin:-58px 0 0 -58px;
+    border-radius:50%;border:2px solid rgba(247,207,74,.85);pointer-events:none;opacity:0}
+  /* Der Tag mit den meisten Partien trägt seinen Rand auch ohne Bewegung. */
+  .rcp-kal-t.max::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+    box-shadow:0 0 0 1.5px rgba(255,255,255,.5),0 0 12px rgba(255,255,255,.16);opacity:.75}
+  @media(prefers-reduced-motion:no-preference){
+    .sheet.show .vs:not(.vs-da):not(.vs-gross){animation:none}
+    .sheet.show .vs-w{opacity:0}
+    .vs-w::before,.vs-w::after,.vs-w *,.vs-w *::before,.vs-w *::after{animation-play-state:paused!important}
+    .sheet.show .vs.vs-da{animation:vsKommt .5s cubic-bezier(.2,.8,.2,1) backwards}
+    /* Der Kopf: die Marke springt auf, ihr Glanz fährt einmal darüber, der
+       Monat hebt sich herein. */
+    .rcp-head.vs-kopf .rcp-label{animation:vsMarke .55s cubic-bezier(.3,1.4,.5,1) backwards}
+    .rcp-head.vs-kopf .rcp-month{animation:vsTitel .6s cubic-bezier(.2,.8,.2,1) .08s backwards}
+    .rcp-head.vs-kopf .rcp-meta,.rcp-head.vs-kopf .saisonwahl{animation:vsKommt .5s cubic-bezier(.2,.8,.2,1) .18s backwards}
+    /* Der Meister: groß, kurz stehen, dann auf seinen Platz. Er liegt dabei
+       über Platz 2 und 3, die schon aufsteigen, während er landet. Sein
+       eigenes Band fährt einmal über ihn, solange er groß ist, heller als
+       im Takt danach; es endet, bevor er landet. */
+    .sheet.show .rcp-buehne .pod-karte.vs-gross{animation:vsMeister 1.25s linear backwards;z-index:2}
+    .rcp-buehne.vs-buehne .pod-karte.erster.gold.vs-gross > .glanz-bahn::after{
+      background:linear-gradient(105deg,transparent 42%,rgba(247,207,74,.34) 50%,transparent 58%);
+      animation:glanzEinmal 1s cubic-bezier(.45,0,.25,1) .22s backwards}
+    .rcp-buehne.vs-spot::before{animation:vsSpot 1.6s ease-out backwards}
+    .sheet.show .rcp-buehne .pod-karte.vs.vs-da{animation:bauPodest .62s cubic-bezier(.2,.8,.2,1) backwards}
+    .rcp-buehne .pod-karte.vs-ring::before{animation:vsRing .9s cubic-bezier(.2,.8,.2,1) backwards}
+    /* Der Kranz: Drehung und Einblenden sind zwei Eigenschaften, das Glühen
+       in seiner Mitte ein eigenes Element — eine Bewegung je Element auf
+       transform. */
+    .rcp-buehne.vs-buehne.vs-kranz > .nf-ms-strahl{animation:msDreh 48s linear infinite,vsDa 1.1s ease-out backwards}
+    .rcp-buehne.vs-buehne.vs-kranz > .nf-ms-strahl::after{animation:vsGlut 1.1s cubic-bezier(.2,.8,.2,1) backwards}
+    /* Das Team der Saison: es hebt sich herein, seine Kante oben zieht sich
+       auf, die Partien kommen Zelle für Zelle, die Elo zuletzt. */
+    .sheet.show .rcp-team.vs.vs-da{animation:vsTeam .62s cubic-bezier(.2,.8,.2,1) backwards}
+    .rcp-team.vs-da::before{animation:vsLinie .7s cubic-bezier(.2,.8,.2,1) .18s backwards}
+    .rcp-team.vs-da .srn-z i{animation:vsZelle .32s cubic-bezier(.3,1.5,.5,1) backwards;animation-delay:calc(.24s + var(--i,0) * 24ms)}
+    .rcp-team.vs-da .rcp-team-e b{animation:rcpZahlKommt .5s cubic-bezier(.2,.8,.3,1.25) .36s backwards}
+    /* Der Held der Woche hebt sich herein, ein Ring geht von seinem Gesicht aus. */
+    .sheet.show .rcp-held.vs.vs-da{animation:vsHeld .6s cubic-bezier(.2,.8,.2,1) backwards}
+    .rcp-held.vs-ring .rcp-held-av::after{animation:vsRingRund 1s cubic-bezier(.2,.8,.2,1) backwards}
+    /* Was hereinkommt: die Linie einer Überschrift zieht sich auf, Zahlen
+       springen auf, Zeilen gleiten von links herein, Kacheln heben sich,
+       der stärkste Tag leuchtet einmal auf. */
+    .rcp-section.vs-da::after{transform-origin:left;animation:vsLinie .7s cubic-bezier(.2,.8,.2,1) .12s backwards}
+    .rcp-z.vs-da > .rcp-z-s{animation:rcpZahlKommt .5s cubic-bezier(.2,.8,.3,1.25) backwards}
+    .rcp-z.vs-da > .rcp-z-s:nth-child(2){animation-delay:.06s}
+    .rcp-z.vs-da > .rcp-z-s:nth-child(3){animation-delay:.12s}
+    .rcp-z.vs-da > .rcp-z-s:nth-child(4){animation-delay:.18s}
+    .rcp-z.vs-da > .rcp-z-s:nth-child(5){animation-delay:.24s}
+    :is(.rcp-tab,.rcp-feld,.rcp-lb).vs-da > *{animation:vsZeile .45s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0) * 32ms)}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > *{animation:vsKachel .5s cubic-bezier(.2,.8,.3,1.15) backwards}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(2){animation-delay:45ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(3){animation-delay:90ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(4){animation-delay:135ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(5){animation-delay:180ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(6){animation-delay:225ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(7){animation-delay:270ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(8){animation-delay:315ms}
+    :is(.aw-vitrine,.rcp-rw,.rcp-bns).vs-da > :nth-child(n+9){animation-delay:360ms}
+    .rcp-kal.vs-da .rcp-kal-t.max::after{animation:vsPuls 1.3s ease-out .5s backwards}
+  }
+  @keyframes vsKommt{from{opacity:0;transform:translateY(14px)}}
+  @keyframes vsMarke{from{opacity:0;transform:scale(.6)}}
+  @keyframes vsTitel{from{opacity:0;transform:translateY(14px) scale(.94)}}
+  @keyframes vsMeister{
+    0%{opacity:0;transform:translateY(46px) scale(1.2);animation-timing-function:cubic-bezier(.2,.8,.3,1)}
+    22%{opacity:1;transform:translateY(46px) scale(1.55);animation-timing-function:linear}
+    50%{opacity:1;transform:translateY(46px) scale(1.58);animation-timing-function:cubic-bezier(.6,0,.2,1)}
+    100%{opacity:1;transform:none}}
+  @keyframes vsSpot{0%{opacity:0;transform:translateY(46px) scale(.5)}25%{opacity:1;transform:translateY(46px) scale(1)}
+    55%{opacity:1;transform:translateY(46px) scale(1.04)}100%{opacity:0;transform:none}}
+  @keyframes vsRing{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.16,1.1)}}
+  @keyframes vsRingRund{from{opacity:1;transform:scale(.85)}to{opacity:0;transform:scale(1.7)}}
+  @keyframes vsDa{from{opacity:0}}
+  @keyframes vsGlut{from{opacity:0;transform:scale(.3)}}
+  @keyframes vsTeam{from{opacity:0;transform:translateY(22px) scale(.95)}}
+  @keyframes vsHeld{from{opacity:0;transform:translateY(14px) scale(.95)}}
+  @keyframes vsLinie{from{transform:scaleX(0)}}
+  @keyframes vsZelle{from{opacity:0;transform:scale(.3)}}
+  @keyframes vsZeile{from{opacity:0;transform:translateX(-12px)}}
+  @keyframes vsKachel{from{opacity:0;transform:translateY(12px) scale(.94)}}
+  @keyframes vsPuls{0%{opacity:0;transform:scale(.8)}40%{opacity:1;transform:scale(1.1)}}
+  @media(prefers-reduced-motion:no-preference){
+    .aufbau .botnav{animation:aufbauVonUnten .5s cubic-bezier(.2,.8,.2,1) .05s both}
+    .aufbau .botnav button .ic{animation:aufbauPop .42s cubic-bezier(.3,1.4,.5,1) both}
+    .aufbau .botnav button:nth-child(1) .ic{animation-delay:.22s}
+    .aufbau .botnav button:nth-child(2) .ic{animation-delay:.26s}
+    .aufbau .botnav button:nth-child(3) .ic{animation-delay:.3s}
+    .aufbau .botnav button:nth-child(4) .ic{animation-delay:.34s}
+    .aufbau .botnav button:nth-child(5) .ic{animation-delay:.38s}
+    .aufbau .fab{animation:aufbauFab .55s cubic-bezier(.3,1.3,.5,1) .7s both}
+    .aufbau .lauf-z i.h::after{animation:aufbauPing .8s ease-out .6s 2 both}
+    .bau{animation:bauTeil .56s cubic-bezier(.2,.8,.2,1) both}
+    .pod-karte.bau{animation-name:bauPodest;animation-duration:.62s}
+    /* Das Band über dem Ersten des Podests läuft erst, wenn die Karte steht:
+       während des Aufbaus war es die eine Ebene, die Platz 2 und 3 nicht
+       tragen, und Platz 1 kam auf dem iPhone nach ihnen. */
+    .pod-karte.erster.gold.bau > .glanz-bahn::after{animation:none}
+    .glanz-einmal::after{animation:glanzEinmal 1.3s cubic-bezier(.45,0,.25,1) var(--gv,0ms) both}
+    .sheet.show .staffel-k{animation:blattEin .34s cubic-bezier(.2,.8,.2,1) backwards}
+    #newsBtn.ruf::after{animation:hinweisRuf 1s cubic-bezier(.2,.8,.2,1) 2}
+    .news-pill{transition:background-color .5s ease,border-color .5s ease}
+    .news-pill.kommt > svg{animation:pilleInhalt .45s cubic-bezier(.2,.8,.2,1) .05s both}
+    .news-pill.kommt > .news-pill-lbl{animation:pilleInhalt .45s cubic-bezier(.2,.8,.2,1) .13s both}
+    .news-pill.kommt > .news-btn-badge{animation:aufbauPop .5s cubic-bezier(.3,1.6,.5,1) .32s both}
+    .news-btn-badge.ruf{animation:aufbauPop .5s cubic-bezier(.3,1.6,.5,1)}
+  }
+
+  /* ── Reiter wechseln ────────────────────────────────────────────────
+     Der Schlitten der unteren Leiste zieht sich beim Öffnen auf. Rechnet
+     ein Reiter länger als 90 ms, dunkelt der Schleier den alten ab — eine
+     einfarbige Ebene, die immer da ist und unsichtbar wartet —, und nach
+     120 ms läuft unter der Kopfleiste die Ladelinie, ebenso solange Daten
+     kommen. Steht die Verbindung zum ersten Mal, geht vom Punkt oben links
+     zweimal ein Ring aus. */
+  @keyframes aufbauSchlitten{from{opacity:0;transform:scaleX(.3)}}
+  .reiter-schleier{position:fixed;left:0;right:0;top:0;bottom:0;z-index:30;max-width:520px;margin:0 auto;pointer-events:none;
+    background:var(--bg);opacity:0;will-change:opacity}
+  .lade-linie{position:absolute;left:0;right:0;bottom:0;height:2px;pointer-events:none;transform-origin:0 50%;
+    will-change:transform,opacity;transform:scaleX(0);opacity:0;border-radius:2px;
+    background:linear-gradient(90deg,rgba(190,242,100,0),var(--acid) 40%,var(--acid));box-shadow:0 0 10px rgba(190,242,100,.5)}
+  .dot{position:relative}
+  .dot.ping::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:1.5px solid var(--acid);opacity:0}
+  @media(prefers-reduced-motion:no-preference){
+    .aufbau .nav-schlitten::before{animation:aufbauSchlitten .4s cubic-bezier(.3,1.3,.5,1) .42s both}
+    .dot.ping::after{animation:aufbauPing .9s ease-out 2}
+  }
