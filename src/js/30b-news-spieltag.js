@@ -1490,7 +1490,7 @@ function _spGipfelBild(d){
 function _spRueckkehrBild(d){
   const n = Math.min(28, d.tage + 1);
   return `<div class="sp-fk sp-zu">${_spWappen(d.id, 48)}<div class="sp-zu-m">
-      <span class="sp-zu-z"><b class="num">${_spZahl(d.tage)}</b> ${d.nurAnlass ? 'Tage' : 'Tage ohne Satz'}</span>
+      <span class="sp-zu-z"><b class="num">${_spZahl(d.tage)}</b> ${d.nurAnlass ? 'Tage' : 'Tage Pause'}</span>
       <span class="sp-zu-k">${Array.from({length:n}, (_, k) => `<i class="${k === 0 ? 'alt' : ''}" style="--i:${k}"></i>`).join('')}${d.nurAnlass ? '' : _spSt(d)}</span></div></div>`
     + (d.nurAnlass ? '' : _spUnter(`${_spNb(d.id)} mit ${_spNb(d.mit)} gegen ${_spUnd(d.L)}.`));
 }

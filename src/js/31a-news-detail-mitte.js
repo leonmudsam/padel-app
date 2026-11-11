@@ -944,7 +944,7 @@ function _ndMitteRoh(s){
         return `<div class="nd-gwert"><b>${esc(String(d.n))}</b><span>${d.type === 'pleiten_ende'
           ? 'Niederlagen in Folge davor' : 'gemeinsame Niederlagen in Folge davor'}</span></div>`;
       case 'rueckkehr':
-        return `<div class="nd-gwert"><b>${esc(String(d.tage))}</b><span>Tage ohne Satz</span></div>`;
+        return `<div class="nd-gwert"><b>${esc(String(d.tage))}</b><span>Tage Pause</span></div>`;
       case 'tabellensprung': {
         return `<div class="nd-gwert"><b>${esc(String(d.pre))} → ${esc(String(d.post))}</b><span>Platz in der Tabelle</span></div>
           <div class="nd-stat-row"><div class="nd-stat-label">Gewonnene Plätze</div>
@@ -960,7 +960,7 @@ function _ndMitteRoh(s){
       case 'dry_spell': {
         return `<div class="nd-section">Liga-Pause</div>
           <div class="nd-stat-row">
-            <div class="nd-stat-label">Tage ohne Satz</div>
+            <div class="nd-stat-label">Tage Pause</div>
             <div class="nd-stat-val gold">${d.daysSince}</div></div>
           ${d.lastMatchId ? `<div class="nd-section">Letzter Satz</div>${_newsMatchVsBlock(d.lastMatchId)}` : ''}`;
       }

@@ -113,7 +113,7 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countUnbeatableDays(id,ms,bis)},
   {id:'comeback_day',ic:'comeback',name:'Comeback-Tag',desc:'Spieltag mit einem verlorenen Satz begonnen und mit einem gewonnenen beendet (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countComebackDays(id,ms,bis)},
-  {id:'revanchist',ic:'rematch',name:'Revanchist',desc:'Satz gegen ein Paar verloren und den nächsten gegen dasselbe Paar gewonnen',
+  {id:'revanchist',ic:'rematch',name:'Revanchist',desc:'Match gegen ein Paar verloren und das nächste Match gegen dasselbe Paar gewonnen',
     multi:true,count:(id,ms)=>countRevenge(id,ms)},
   // Ergebnis-Muster
   {id:'clear_win',ic:'thumbsUp',name:'Klares Ding',desc:'Satz mit höchstens einem Viertel der Games für den Gegner gewonnen (6:2 oder klarer)',
@@ -739,8 +739,11 @@ function countComebackDays(id,ms,bis){
 
 // ─── Revanchist: nach Niederlage gegen Team X im direkt folgenden Match Sieg gegen X ───
 // Strikt: das unmittelbar nächste Match muss gegen das gleiche Gegner-Team sein.
+// Gezählt wird Match gegen Match, nicht Satz gegen Satz: je Satz feierte
+// jedes 1:1 eine Revanche, und die Auszeichnung fiel fast in jedem Match.
 function countRevenge(id,ms){
-  const mine=matchesOfPlayer(id,ms);
+  const mine=matchesOfPlayer(id,ms).filter(m=>begegnungGewonnen(m,id)!==null);
+  const won=(pid,m)=>begegnungGewonnen(m,pid)===true;
   const oppKey=(m)=>{
     const onA=(id===m.a1||id===m.a2);
     return (onA?[m.b1,m.b2]:[m.a1,m.a2]).slice().sort().join('|');
@@ -1500,18 +1503,18 @@ function getBadgeEarnedCache(){
         });
       }
 
-      // ── Revanchist: Sieg gegen das Team, gegen das man im direkt vorigen Match verloren hat ──
-      // Strikt: das unmittelbar nächste Match nach einer Niederlage muss gegen X sein.
-      const currentOpp=(onA?[m.b1,m.b2]:[m.a1,m.a2]).slice().sort().join('|');
-      if(s.lastLossOpp){
-        if(currentOpp===s.lastLossOpp && w){
-          fire('revanchist');
+      // ── Revanchist: ein Match gewonnen gegen das Paar, gegen das man das
+      // Match davor verloren hat. Nur am letzten Satz eines Matches [§1.3]:
+      // je Satz war jedes 1:1 eine Revanche.
+      const mGew=begegnungGewonnen(m,id);
+      if(mGew!==null){
+        const currentOpp=(onA?[m.b1,m.b2]:[m.a1,m.a2]).slice().sort().join('|');
+        if(s.lastLossOpp){
+          if(currentOpp===s.lastLossOpp && mGew) fire('revanchist');
+          s.lastLossOpp=null;
         }
-        // Egal ob Revanche gelang oder nicht: Counter resetten (nicht mehr "direkt nächstes Match")
-        s.lastLossOpp=null;
+        if(!mGew) s.lastLossOpp=currentOpp;
       }
-      // Wenn aktuelles Match Niederlage: setze lastLossOpp für nächstes Match
-      if(!w) s.lastLossOpp=currentOpp;
 
       // ── Königsklasse / Pflichtaufgabe: Sieg gegen Top-3 / Bottom-3 der Saison-Endrangliste ──
       // Cache ist nach erstem Aufruf für alle weiteren Matches verfügbar.

@@ -93,6 +93,15 @@ ok(J(`(()=>{const m={id:'mx',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_
     {...m,id:'mz',...partieFelder([{a:6,b:2,art:'n'}]),created_at:'2026-08-10T19:00:00Z'}];invalidateCache();
   const s=playerStats('p1',matches);return s.matchW===1&&s.matchL===0&&s.wins===2&&s.losses===1;})()`),
   'Drei Sätze derselben Paare sind ein Match: 2:1 in Sätzen, 1:0 in Matches');
+ok(J(`(()=>{const m={id:'r1',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+  ...partieFelder([{a:4,b:6,art:'n'}]),exp_a:.5,created_at:'2026-08-10T18:00:00Z'};
+  const w=x=>({...m,...partieFelder([{a:6,b:3,art:'n'}]),...x});
+  matches=[m,w({id:'r2',created_at:'2026-08-10T18:30:00Z'})];invalidateCache();
+  const inEinem=BADGES.find(b=>b.id==='revanchist').count('p1',matches);
+  matches=[m,w({id:'r3',created_at:'2026-08-12T18:00:00Z'})];invalidateCache();
+  const naechstes=BADGES.find(b=>b.id==='revanchist').count('p1',matches);
+  return inEinem===0&&naechstes===1;})()`),
+  'Revanchist heißt das nächste Match gegen dasselbe Paar gewonnen, ein 1:1 im selben Match zählt nicht');
 ok(zaehl('nail_biter', [S(4,6), S(6,4), S(10,8,'mtb')]) === 1, 'Ein Sieg im Match-Tiebreak ist ein Zittersieg');
 ok(zaehl('wall_badge', [S(4,6), S(6,3)]) === 1, 'Satzrückstand gedreht ist „Die Wende"');
 

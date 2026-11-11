@@ -2244,7 +2244,7 @@ function _buildStories(){
           id: 'dry_spell_'+matches[matches.length-1].id,
           cat: 'fun',
           ic: 'clock',
-          title: `${sinceLastDays} Tage ohne Satz`,
+          title: `${sinceLastDays} Tage Pause`,
           desc: isRecord
             ? `So lange blieb der Court noch nie leer.`
             : `Die längste Pause der Liga waren ${maxGapDays} Tage.`,

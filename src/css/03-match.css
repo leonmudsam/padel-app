@@ -109,7 +109,9 @@
 
   /* Die Siegchance beim Aufstellen: unter der Score-Karte, die Paare über
      dem Balken der Vorschau [§C27]. */
-  .m-chance{margin:-2px 0 12px}
+  /* Abstand zum Court darüber: ohne ihn lag der Balken auf der Karte von
+     Team B. */
+  .m-chance{margin:14px 0 12px}
   .m-ch-r{display:flex;align-items:center;gap:8px;margin-bottom:6px}
   .m-ch-w{flex:1;text-align:center;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
 

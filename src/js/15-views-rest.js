@@ -531,7 +531,7 @@ function updatePreview(){
   const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
   // Jeder Satz wird eine eigene Partie [§1.3]; die Zahlen davor sind die
   // Elo je Satz, rechts ihre Summe.
-  const zusatz = n > 1 ? `${n} Sätze, je einen Satz` : '';
+  const zusatz = n > 1 ? `${n} Sätze, jeder für sich` : '';
   const titel = 'Elo';
   slot.innerHTML = `<div class="preview">
     <div class="prob-cap">${titel}${zusatz?' · '+zusatz:''}</div>

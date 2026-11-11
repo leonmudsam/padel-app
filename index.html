@@ -548,7 +548,7 @@
   .btn.sm{padding:12px;font-size:13px}
   .btn-row{display:flex;gap:10px}
 
-  .m-chance{margin:-2px 0 12px}
+  .m-chance{margin:14px 0 12px}
   .m-ch-r{display:flex;align-items:center;gap:8px;margin-bottom:6px}
   .m-ch-w{flex:1;text-align:center;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
 
@@ -6767,7 +6767,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.134320a8';
+const BUILD_VERSION='2026.11.11.0b404efc';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -14750,7 +14750,7 @@ function updatePreview(){
     </div>`;
   };
   const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
-  const zusatz = n > 1 ? `${n} Sätze, je einen Satz` : '';
+  const zusatz = n > 1 ? `${n} Sätze, jeder für sich` : '';
   const titel = 'Elo';
   slot.innerHTML = `<div class="preview">
     <div class="prob-cap">${titel}${zusatz?' · '+zusatz:''}</div>
@@ -15543,7 +15543,7 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countUnbeatableDays(id,ms,bis)},
   {id:'comeback_day',ic:'comeback',name:'Comeback-Tag',desc:'Spieltag mit einem verlorenen Satz begonnen und mit einem gewonnenen beendet (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countComebackDays(id,ms,bis)},
-  {id:'revanchist',ic:'rematch',name:'Revanchist',desc:'Satz gegen ein Paar verloren und den nächsten gegen dasselbe Paar gewonnen',
+  {id:'revanchist',ic:'rematch',name:'Revanchist',desc:'Match gegen ein Paar verloren und das nächste Match gegen dasselbe Paar gewonnen',
     multi:true,count:(id,ms)=>countRevenge(id,ms)},
   {id:'clear_win',ic:'thumbsUp',name:'Klares Ding',desc:'Satz mit höchstens einem Viertel der Games für den Gegner gewonnen (6:2 oder klarer)',
     multi:true,count:(id,ms)=>countClearWins(id,ms)},
@@ -16000,7 +16000,8 @@ function countComebackDays(id,ms,bis){
 }
 
 function countRevenge(id,ms){
-  const mine=matchesOfPlayer(id,ms);
+  const mine=matchesOfPlayer(id,ms).filter(m=>begegnungGewonnen(m,id)!==null);
+  const won=(pid,m)=>begegnungGewonnen(m,pid)===true;
   const oppKey=(m)=>{
     const onA=(id===m.a1||id===m.a2);
     return (onA?[m.b1,m.b2]:[m.a1,m.a2]).slice().sort().join('|');
@@ -16548,14 +16549,15 @@ function getBadgeEarnedCache(){
         });
       }
 
-      const currentOpp=(onA?[m.b1,m.b2]:[m.a1,m.a2]).slice().sort().join('|');
-      if(s.lastLossOpp){
-        if(currentOpp===s.lastLossOpp && w){
-          fire('revanchist');
+      const mGew=begegnungGewonnen(m,id);
+      if(mGew!==null){
+        const currentOpp=(onA?[m.b1,m.b2]:[m.a1,m.a2]).slice().sort().join('|');
+        if(s.lastLossOpp){
+          if(currentOpp===s.lastLossOpp && mGew) fire('revanchist');
+          s.lastLossOpp=null;
         }
-        s.lastLossOpp=null;
+        if(!mGew) s.lastLossOpp=currentOpp;
       }
-      if(!w) s.lastLossOpp=currentOpp;
 
       if(w){
         const rk=getSeasonRankingsCache();
@@ -21912,7 +21914,7 @@ function _buildStories(){
           id: 'dry_spell_'+matches[matches.length-1].id,
           cat: 'fun',
           ic: 'clock',
-          title: `${sinceLastDays} Tage ohne Satz`,
+          title: `${sinceLastDays} Tage Pause`,
           desc: isRecord
             ? `So lange blieb der Court noch nie leer.`
             : `Die längste Pause der Liga waren ${maxGapDays} Tage.`,
@@ -27492,7 +27494,7 @@ function _spGipfelBild(d){
 function _spRueckkehrBild(d){
   const n = Math.min(28, d.tage + 1);
   return `<div class="sp-fk sp-zu">${_spWappen(d.id, 48)}<div class="sp-zu-m">
-      <span class="sp-zu-z"><b class="num">${_spZahl(d.tage)}</b> ${d.nurAnlass ? 'Tage' : 'Tage ohne Satz'}</span>
+      <span class="sp-zu-z"><b class="num">${_spZahl(d.tage)}</b> ${d.nurAnlass ? 'Tage' : 'Tage Pause'}</span>
       <span class="sp-zu-k">${Array.from({length:n}, (_, k) => `<i class="${k === 0 ? 'alt' : ''}" style="--i:${k}"></i>`).join('')}${d.nurAnlass ? '' : _spSt(d)}</span></div></div>`
     + (d.nurAnlass ? '' : _spUnter(`${_spNb(d.id)} mit ${_spNb(d.mit)} gegen ${_spUnd(d.L)}.`));
 }
@@ -31135,7 +31137,7 @@ function _ndMitteRoh(s){
         return `<div class="nd-gwert"><b>${esc(String(d.n))}</b><span>${d.type === 'pleiten_ende'
           ? 'Niederlagen in Folge davor' : 'gemeinsame Niederlagen in Folge davor'}</span></div>`;
       case 'rueckkehr':
-        return `<div class="nd-gwert"><b>${esc(String(d.tage))}</b><span>Tage ohne Satz</span></div>`;
+        return `<div class="nd-gwert"><b>${esc(String(d.tage))}</b><span>Tage Pause</span></div>`;
       case 'tabellensprung': {
         return `<div class="nd-gwert"><b>${esc(String(d.pre))} → ${esc(String(d.post))}</b><span>Platz in der Tabelle</span></div>
           <div class="nd-stat-row"><div class="nd-stat-label">Gewonnene Plätze</div>
@@ -31148,7 +31150,7 @@ function _ndMitteRoh(s){
       case 'dry_spell': {
         return `<div class="nd-section">Liga-Pause</div>
           <div class="nd-stat-row">
-            <div class="nd-stat-label">Tage ohne Satz</div>
+            <div class="nd-stat-label">Tage Pause</div>
             <div class="nd-stat-val gold">${d.daysSince}</div></div>
           ${d.lastMatchId ? `<div class="nd-section">Letzter Satz</div>${_newsMatchVsBlock(d.lastMatchId)}` : ''}`;
       }
