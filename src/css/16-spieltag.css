@@ -37,33 +37,38 @@
 .sp-z-sc i{font-style:normal;margin:0 1px}
 
 /* ── Das Spielfeld ── */
-.sp-feld{position:relative;margin:2px 10px 0;padding:8px 0 10px;border-radius:12px;overflow:hidden;
-  background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.035),transparent 70%),var(--surface2);
-  box-shadow:inset 0 0 0 1px var(--line2)}
-/* Der Court von oben: Glaswände an den Enden, das Netz in der Mitte,
-   Aufschlaglinien und die Mittellinie der Aufschlagfelder. Nichts davon
-   trägt Schrift. */
-.sp-f-netz{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;
-  background:repeating-linear-gradient(180deg,rgba(238,243,239,.28) 0 3px,transparent 3px 6px)}
-.sp-f-wand{position:absolute;top:6px;bottom:6px;width:4px;border-radius:2px;
-  background:linear-gradient(180deg,rgba(47,111,214,.05),rgba(47,111,214,.32),rgba(47,111,214,.05))}
-.sp-f-wand.l{left:0}.sp-f-wand.r{right:0}
-.sp-f-linie{position:absolute;top:0;bottom:0;width:1px;margin-left:-.5px;
-  background:linear-gradient(180deg,transparent,rgba(182,193,207,.16) 20%,rgba(182,193,207,.16) 80%,transparent)}
-.sp-f-mittel{position:absolute;left:22%;right:22%;top:50%;height:1px;background:rgba(182,193,207,.12)}
-.sp-f-sc{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;margin-bottom:6px}
+/* Der Court von oben, das Netz senkrecht: Team A links, Team B rechts, je
+   Ecke ein Spieler. Die Partner stehen übereinander, weil Revés und Drive
+   die linke und rechte Hälfte des eigenen Feldes sind. Linien und Glas
+   tragen keine Schrift. */
+.sp-feld{position:relative;margin:2px 10px 0;height:176px;border-radius:12px;overflow:hidden;
+  background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line2)}
+.sp-f-platz{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px)}
+.sp-f-boden{fill:rgba(47,111,214,.07);stroke:rgba(238,243,239,.16);stroke-width:1;vector-effect:non-scaling-stroke}
+.sp-f-glas{fill:none;stroke:rgba(47,111,214,.45);stroke-width:3;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.sp-f-linie{fill:none;stroke:rgba(238,243,239,.14);stroke-width:1;vector-effect:non-scaling-stroke}
+.sp-f-netz{fill:none;stroke:rgba(238,243,239,.4);stroke-width:2;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
+.sp-f-sc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:2px}
 /* Der Stand ist die Aussage der Matchbuehne, nicht ein kleiner Feldaufkleber.
    Er bleibt auch zwischen vier Wappen auf dem Telefon der Blickpunkt. */
-.sp-f-sc b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:26px;line-height:1.1;color:var(--muted);padding:4px 12px;border-radius:9px;
+.sp-f-sc b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:24px;line-height:1.1;color:var(--muted);padding:3px 10px;border-radius:9px;
   background:var(--surface);box-shadow:0 0 0 1px var(--line2)}
 .sp-f-sc b em{font-style:normal}.sp-f-sc b em.w{color:var(--acid);text-shadow:0 0 14px rgba(228,242,74,.2)}.sp-f-sc b i{font-style:normal;margin:0 1px}
-.sp-f-sc span{font:600 8.5px 'Sometype Mono',monospace;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
-.sp-f-reihe{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-.sp-f-sp{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:0 2px;text-align:center}
+.sp-f-sc span{font:600 8.5px 'Sometype Mono',monospace;letter-spacing:.06em;color:var(--muted);white-space:nowrap;
+  background:var(--surface2);padding:0 4px;border-radius:4px}
+/* Jede Ecke: Wappen und daneben Seite, Name, Elo. Team A liest nach rechts
+   zum Netz, Team B gespiegelt nach links. */
+.sp-f-sp{position:absolute;display:flex;align-items:center;gap:6px;width:calc(50% - 46px);min-width:0}
+.sp-f-sp.ao{left:12px;top:12px}.sp-f-sp.au{left:12px;bottom:12px}
+.sp-f-sp.bo{right:12px;top:12px;flex-direction:row-reverse;text-align:right}
+.sp-f-sp.bu{right:12px;bottom:12px;flex-direction:row-reverse;text-align:right}
+.sp-f-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.sp-f-sp.bo .sp-f-txt,.sp-f-sp.bu .sp-f-txt{align-items:flex-end}
+.sp-f-sp.ao .sp-f-txt,.sp-f-sp.au .sp-f-txt{align-items:flex-start}
 .sp-f-rolle{font:600 8px 'Sometype Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
-.sp-f-sp .rav{opacity:.5}
+.sp-f-sp .rav{opacity:.5;flex:none}
 .sp-f-sp.w .rav{opacity:1}
-.sp-f-n{font-size:10.5px;font-weight:600;line-height:1.25;color:var(--muted)}
+.sp-f-n{font-size:10.5px;font-weight:600;line-height:1.25;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .sp-f-sp.w .sp-f-n{color:var(--ink)}
 .sp-f-sp em{font:700 10px 'Sometype Mono',monospace;font-style:normal;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.04)}
 .sp-f-sp em.g{color:var(--acid)}.sp-f-sp em.r{color:var(--red)}
@@ -506,8 +511,8 @@
 .sp-sm-m .sp-st{font-size:23px}
 .sp-sm-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.35)}
 
-/* Die Lebensbalken: je Team ein Balken von außen zur Mitte, so lang wie
-   das, was ihm von zehn Toren blieb; der leere trägt „K.o.". */
+/* Die Games-Balken: je Team ein Balken von außen zur Mitte, ein Feld je
+   Game des Satzes (--n), gefüllt mit den eigenen Games. */
 .sp-lb{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:8px}
 .sp-lb .av{--av:24px;width:24px;height:24px;font-size:9px}
 .sp-lb-s{display:flex;flex-direction:column;gap:7px;min-width:0}
@@ -517,20 +522,18 @@
 .sp-lb-s.w .sp-lb-k > span.num{color:var(--acid)}
 .sp-lb-s:not(.w) .sp-kp{opacity:.75}
 .sp-lb-b{position:relative;display:block;height:14px;border-radius:4px;overflow:hidden;
-  background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 calc(10% - 2px),transparent calc(10% - 2px) 10%);
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 calc(100% / var(--n,10) - 2px),transparent calc(100% / var(--n,10) - 2px) calc(100% / var(--n,10)));
   box-shadow:inset 0 0 0 1px var(--line2)}
 .sp-lb-b i{position:absolute;top:0;bottom:0;left:0;width:var(--r);border-radius:4px;
   background:linear-gradient(90deg,#6f9a2c,var(--acid));box-shadow:0 0 12px rgba(228,242,74,.35)}
 .sp-lb-s.re .sp-lb-b i{left:auto;right:0;background:linear-gradient(270deg,#6f9a2c,var(--acid))}
-.sp-lb-b em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 9px 'Archivo Black',sans-serif;
-  letter-spacing:.14em;color:var(--red);font-style:normal}
+.sp-lb-s:not(.w) .sp-lb-b i{background:rgba(240,86,106,.45);box-shadow:none}
 .sp-lb-m{padding-bottom:0}
 .sp-lb-m .sp-st{font-size:24px}
 @media (prefers-reduced-motion:no-preference){
-  .sp-lb-b i{animation:spLbLeer 1.1s cubic-bezier(.3,0,.2,1) .25s both}
-  .sp-lb-b em{animation:spDa .4s ease-out 1.2s both}
+  .sp-lb-b i{animation:spLbFuellen 1.1s cubic-bezier(.3,0,.2,1) .25s both}
 }
-@keyframes spLbLeer{from{width:100%}}
+@keyframes spLbFuellen{from{width:0}}
 
 /* Das Herzschlagfinale: Paar, Herzschlag, Stand, Herzschlag, Paar. Die
    Paare stehen übereinander, damit dem Herzschlag Platz bleibt. */
@@ -552,13 +555,11 @@
    nicht da. */
 .sp-hz-k path.sp-hz-lauf{stroke:#f4ffd8;stroke-width:3;stroke-dasharray:12 100;stroke-dashoffset:12;opacity:0}
 
-/* Zu null: der Stand zwischen den Paaren, darunter unter jedem Paar sein
-   eigenes Tor — bei den Siegern leer, bei den Verlierern getroffen —,
-   darunter das Band. */
+/* Zu Null: der Stand zwischen den Paaren, darunter je Paar eine Reihe mit
+   einem Feld je Game — bei den Siegern ein Ball in jedem, bei den
+   Verlierern leer —, darunter das Band. */
 .sp-zn{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;justify-items:center;gap:7px 6px;
-  background:linear-gradient(118deg,transparent 22%,rgba(255,255,255,.05) 30%,transparent 40%),
-    linear-gradient(242deg,transparent 22%,rgba(255,255,255,.05) 30%,transparent 40%),
-    radial-gradient(130px 70px at 22% 82%,rgba(247,207,74,.17),transparent 70%),
+  background:radial-gradient(130px 70px at 22% 82%,rgba(247,207,74,.14),transparent 70%),
     radial-gradient(160px 60px at 22% 0%,rgba(228,242,74,.10),transparent 70%),var(--surface2)}
 .sp-zn > *{position:relative}
 .sp-zn .av{--av:24px;width:24px;height:24px;font-size:9px}
@@ -570,18 +571,12 @@
 .sp-zn-z i{font-style:normal;color:var(--faint);font-size:.7em;margin:0 3px}
 .sp-zn-z u{text-decoration:none;color:transparent;-webkit-text-stroke:1.5px var(--gold);text-shadow:0 0 18px rgba(247,207,74,.45)}
 .sp-zn-tore{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;padding:0 6px}
-.sp-zn-t{width:100%;height:auto;aspect-ratio:100/58;overflow:visible}
-.sp-zn-n{fill:none;stroke:rgba(255,255,255,.14);stroke-width:.8}
-.sp-zn-r{fill:none;stroke:#eef2f7;stroke-width:3;stroke-linejoin:round}
-.sp-zn-b{stroke:var(--line2);stroke-width:1}
-.sp-zn-t.leer .sp-zn-r{stroke:var(--gold)}
-.sp-zn-t.leer .sp-zn-n{stroke:rgba(247,207,74,.22)}
-.sp-zn-t.voll .sp-zn-r{stroke:var(--ink2)}
-/* Die Treffer: ein heller Ball, um ihn der Einschlag im Netz. */
-.sp-zn-ball{stroke:rgba(0,0,0,.35);stroke-width:.5}
-.sp-zn-ring{fill:rgba(228,242,74,.10);stroke:var(--acid);stroke-width:.8;opacity:.45}
-.sp-zn-glanz{fill:none;stroke:#fff;stroke-width:.9;stroke-linecap:round;opacity:.85}
-.sp-zn-hit{transform-box:fill-box;transform-origin:center}
+.sp-zn-reihe{display:flex;justify-content:center;gap:3px;flex-wrap:wrap}
+.sp-zn-game{display:block;width:17px;height:17px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line2)}
+.sp-zn-reihe.w .sp-zn-game{box-shadow:none}
+.sp-zn-game svg{display:block;width:100%;height:100%}
+.sp-zn-ball{fill:var(--acid);stroke:rgba(0,0,0,.3);stroke-width:.6}
+.sp-zn-naht{fill:none;stroke:rgba(255,255,255,.85);stroke-width:1;stroke-linecap:round}
 .sp-zn-p{display:flex;flex-direction:column;align-items:center;gap:3px}
 .sp-zn-p > span.num{font:600 10px 'Sometype Mono',monospace;color:var(--acid);white-space:nowrap}
 .sp-zn-p.aus > span.num{color:var(--red)}
@@ -606,8 +601,7 @@
   .sp-pu-r i:nth-child(6){--n:5}.sp-pu-r i:nth-child(7){--n:6}.sp-pu-r i:nth-child(8){--n:7}.sp-pu-r i:nth-child(9){--n:8}.sp-pu-r i:nth-child(10){--n:9}
   .sp-sm-p{animation:spDa .6s ease-out both}
   .sp-sm-p.w{animation-delay:.45s}
-  .sp-zn-hit{animation:spKopfTreffer .42s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i) * 70ms + .25s)}
-  .sp-zn-ring{animation:spKopfWelle .7s ease-out both;animation-delay:calc(var(--i) * 70ms + .3s)}
+  .sp-zn-reihe.w .sp-zn-game{animation:spKopfTreffer .42s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i) * 70ms + .25s)}
   .sp-zn::before{animation:spKopfLicht 1.6s ease-in-out .3s both}
   .sp-hz-k path.sp-hz-b{stroke-dasharray:100;animation:spHerzZug .8s ease-out both}
   .sp-hz-k.w path.sp-hz-lauf{animation:spHerzLauf 1.25s cubic-bezier(.45,0,.55,1) .8s 2}
@@ -616,7 +610,6 @@
 @keyframes spKopfKlapp{from{transform:rotateX(-88deg);opacity:.2}}
 @keyframes spKopfPuck{from{transform:scale(.2);opacity:0}}
 @keyframes spKopfTreffer{from{transform:scale(0);opacity:0}}
-@keyframes spKopfWelle{from{transform:scale(.3);opacity:1}}
 @keyframes spKopfLicht{0%{opacity:0;transform:translateX(-70%)}20%,80%{opacity:1}100%{opacity:0;transform:translateX(70%)}}
 @keyframes spHerzZug{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 @keyframes spHerzLauf{0%{stroke-dashoffset:12;opacity:0}10%{opacity:1}90%{opacity:1}100%{stroke-dashoffset:-100;opacity:0}}
@@ -1045,7 +1038,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-feld{margin-bottom:6px}
 /* Der Stand steht auf der Bühne darüber; hier zählt nur die Aufstellung. */
 .nd-feld .sp-f-sc{display:none}
-.nd-feld .sp-feld{margin:0;padding-top:12px}
+.nd-feld .sp-feld{margin:0}
 .nd-dd{display:flex;flex-direction:column;gap:9px;margin-bottom:6px}
 .nd-dd-z{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 8px;align-items:center;cursor:pointer}
 .nd-dd-z .nd-lf{grid-column:2 / span 2}

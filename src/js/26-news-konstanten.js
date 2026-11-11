@@ -228,8 +228,11 @@ const NEWS_BADGE_MARKEN = [1, 5, 10, 20, 25, 50, 75, 100, 125];
 // Liste zwischen dem zehnten und dem fuenfundzwanzigsten Mal vierzehnmal
 // weg. Eine GEWOEHNLICHE dagegen ist beim ersten Mal keine Nachricht: einen
 // Zittersieg holt in der Liga jeder, der lange genug dabei ist. Der fuenfte
-// ist eine Zahl, ueber die man redet.
-const NEWS_BADGE_MARKEN_KLEIN = [5, 10, 25, 50, 100];
+// ist eine Zahl, ueber die man redet. Gezählt wird je Satz, und an einem
+// Tag mit kurzen Sätzen holt einer eine gewöhnliche Auszeichnung fünfmal:
+// am ersten Spieltag hießen zwei Karten „Fabio holt Thronfäller zum 5. Mal"
+// und „Leon holt Carry zum 5. Mal". Die erste Marke ist deshalb die zehnte.
+const NEWS_BADGE_MARKEN_KLEIN = [10, 25, 50, 100, 250];
 function _badgeTakt(rar, rang){
   if(rar === 'legendary') return true;
   if(rar === 'rare') return NEWS_BADGE_MARKEN.indexOf(rang) >= 0
@@ -573,3 +576,8 @@ const NEWS_BADGE_WHITELIST = new Set([
   // laufen daher ohnehin über die generische Badge-News-Regel unten.
 ]);
 
+// Ab dem wievielten Satz eines Spielers ein Jubiläum erzählt wird
+// (`_rundeMarke`, 27-news-generator.js): 50, 100, 150 … Ein Satz bis 2
+// dauert wenige Minuten, und ab dem zehnten feierte jeder an seinem ersten
+// Abend.
+const JUBILAEUM_AB = 50;

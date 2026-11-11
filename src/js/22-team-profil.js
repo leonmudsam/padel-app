@@ -527,7 +527,10 @@ function showMatchDetail(mid){
           desc:(schwach?'Schwache':'Starke')+' Seite · '+pz+(schwach?(b.won?'Bonus':'Schutz'):(b.won?'Dämpfer':'Abzug'))});
       }
       factors.push({label:'Zuschlag je Satz',val:b.matchBonus,desc:'fest +'+komma(b.matchBonus,2)}); 
-      const factorRows=factors.map(f=>`<div class="ea-posten" style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px">
+      // Zurückgegeben, nicht nur gebaut: als die Posten je Satz in eine eigene
+      // Funktion zogen, blieb die Zuweisung stehen, und unter jedem Spieler
+      // stand „undefined" statt der Rechnung.
+      return factors.map(f=>`<div class="ea-posten" style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px">
         <div><span style="color:var(--ink)">${f.label}</span> <span style="color:var(--muted);font-size:10px">${f.desc}</span></div>
         <span class="ea-wert" style="font-family:'Sometype Mono',monospace;font-weight:700;color:${f.val>=0?'var(--acid)':'var(--red)'}">${sign(f.val)}</span>
       </div>`).join('');

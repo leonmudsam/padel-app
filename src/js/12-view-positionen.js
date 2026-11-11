@@ -32,11 +32,14 @@ function positionsListe(pos, spieler){
 function positionsBlockHtml(arr, pos, ohneRang){
   // Ohne Partie auf dieser Seite sagt die Ansicht, was hier stehen wird —
   // und nicht, was Drive und Revés im Padel sind: das weiß, wer spielt.
-  if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
+  // Die Erklärung steht auch über einer vollen Liste, bis sie geschlossen
+  // wird: wer neu in die Liga kommt, sieht sonst nur Zahlen.
+  const karte = ersatz => ohneRang ? (ersatz || '') : vorschauHtml(pos==='drive'?'posDrive':'posReves',
     pos==='drive' ? 'Drive · rechts' : 'Revés · links',
     `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`,
-    null, '', emptyState(pos==='drive'?'posDrive':'posReves', 'Noch niemand auf dieser Seite gewertet.'));
-  return `<div class="rlist">${arr.map((x,i)=>{
+    null, '', ersatz);
+  if(!arr.length) return karte(emptyState(pos==='drive'?'posDrive':'posReves', 'Noch niemand auf dieser Seite gewertet.'));
+  return karte('') + `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     // Rechts steht der Wert, nach dem sortiert wird; der Game-Anteil hat
     // seine eigene ruhige Zeile darunter.

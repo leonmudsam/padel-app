@@ -116,8 +116,10 @@ function formDotsHtml(erg, curStreak){
   return erg.map((w, i) => `<div class="dot ${w ? 'w' : 'l'}${
     glut && i >= erg.length - glut ? ' glut' : ''}"></div>`).join('');
 }
-// ── Die Liga vor der ersten Partie [§C27] ───────────────────────────
+// ── Wie die Liga funktioniert [§C27] ────────────────────────────────
 // Schritt für Schritt, wie man anfängt — und nur, was die App betrifft;
+// Sie steht auch in einer laufenden Liga, bis sie jemand schließt: wer neu
+// dazukommt, findet die Liga voller Sätze vor und sonst keine Erklärung.
 // was Padel ist, weiß, wer sie öffnet. Die angelegten Spieler stehen unter
 // „Gesamt" (die Ewige Tafel nennt jeden); Saison und Tag zeigen, wer im
 // Zeitraum gespielt hat, und vor der ersten Partie also niemanden.
@@ -562,7 +564,7 @@ function _vRankingCore(){
         : !matches.length ? '' : emptyState('calendar', period==='day'
         ? 'Heute noch kein Satz. Die Tabelle des Tages beginnt mit der ersten.'
         : 'In dieser Saison noch kein Satz. Die Tabelle beginnt mit der ersten.')}
-      ${matches.length ? '' : ligaVorschauHtml()}
+      ${ligaVorschauHtml()}
       ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
 
@@ -703,7 +705,7 @@ function _vRankingCore(){
     ${metrikLeisteHtml('all')}
     ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
     <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>
-    ${matches.length ? '' : ligaVorschauHtml()}`;
+    ${ligaVorschauHtml()}`;
 
 }
 function rrow(p, s, i, metric, globalElo, letzte){

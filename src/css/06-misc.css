@@ -15,13 +15,18 @@
   .vorschau{position:relative;margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
     background:var(--surface);transition:opacity .2s ease,transform .2s ease}
   .vorschau.weg{opacity:0;transform:scale(.97)}
-  /* Das Kreuz: groß genug für den Daumen, der Titel läuft nicht darunter. */
-  .vs-zu{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;
-    border:1px solid var(--line);background:transparent;color:var(--muted);display:grid;place-items:center;
-    cursor:pointer;padding:0}
-  .vs-zu svg{width:14px;height:14px}
-  .vs-zu:active{transform:scale(.94)}
-  .vorschau .vs-kopf{padding-right:40px}
+  /* Das Kreuz: groß genug für den Daumen, in der Farbe der Liga, damit man
+     es sofort findet — grau auf grau sah es aus wie ein Zierrat, und die
+     Karte wirkte, als ließe sie sich nicht schließen. Der Titel läuft
+     nicht darunter. */
+  .vs-zu{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;
+    border:1.5px solid rgba(228,242,74,.55);background:rgba(228,242,74,.12);color:var(--acid);
+    display:grid;place-items:center;cursor:pointer;padding:0;box-shadow:0 0 0 3px rgba(228,242,74,.06)}
+  .vs-zu svg{width:16px;height:16px;stroke-width:2.6}
+  .vs-zu:hover{background:rgba(228,242,74,.2)}
+  .vs-zu:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
+  .vs-zu:active{transform:scale(.92)}
+  .vorschau .vs-kopf{padding-right:44px}
   .vs-kopf{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}
   .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
     background:rgba(228,242,74,.1);color:var(--acid)}

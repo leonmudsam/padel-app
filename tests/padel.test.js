@@ -294,6 +294,17 @@ ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
 ok(J('[REKORD_GRUNDWERT.koennen, REKORD_GRUNDWERT.fuegung, CHRONIK_GRUNDWERT]').join(',') === '30,20,30',
   'Rekorde beginnen bei 30 (Können) und 20 (Fügung), Chroniken bei 30');
 
+// ── Der Feed an einem Tag mit kurzen Sätzen ─────────────────────────
+// Am ersten Spieltag (Sätze bis 2, bis 14 je Spieler) stand „0 vor Domi",
+// jeder feierte sein „Jubiläum" zum 10. Satz und zwei holten eine
+// gewöhnliche Auszeichnung „zum 5. Mal".
+ok(J(`_vorText(0,'Domi')`) === 'gleichauf mit Domi' && J(`_vorText(7,'Domi')`) === '7 vor Domi',
+  'Ein Abstand von null Elo heißt „gleichauf", nicht „0 vor"');
+ok(J('JUBILAEUM_AB') === 50 && J('[10,25].some(n=>_rundeMarke(n,JUBILAEUM_AB))') === false && J('_rundeMarke(50,JUBILAEUM_AB)') === true,
+  'Ein Jubiläum gibt es ab dem 50. Satz, nicht schon zum 10. oder 25.');
+ok(J(`[1,5].every(n=>!_badgeTakt('common',n)) && [10,25].every(n=>_badgeTakt('common',n))`) === true,
+  'Eine gewöhnliche Auszeichnung wird erst ab der zehnten Vergabe erzählt');
+
 // ── Was die Liga betrifft, steht in der Liga, nicht auf einem Gerät ──
 // Ein Profilbild und die Regler lagen bei einem abgelehnten Speichern still
 // in localStorage: das Bild sah nur das eine Gerät, und die Regler ließen es

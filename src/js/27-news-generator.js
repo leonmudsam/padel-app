@@ -196,7 +196,7 @@ function _buildStories(){
           ic: 'saisonKal',
           title: `Noch ${daysLeft} ${daysLeft === 1 ? 'Tag' : 'Tage'} um den Monat`,
           desc: `${nameOf(rankList[0].pid)} führt mit ${rankList[0].elo} Elo, `
-              + `${nameOf(rankList[1].pid)} liegt ${gap} dahinter.`,
+              + (gap > 0 ? `${nameOf(rankList[1].pid)} liegt ${gap} dahinter.` : `${nameOf(rankList[1].pid)} liegt gleichauf.`),
           // NICHT `now`: der Zeitstempel wäre der Moment, in dem jemand die
           // App öffnet, und die Karte stünde im Feed über der letzten Partie
           // statt unter ihr. Sie beschreibt den Stand nach dem letzten
@@ -255,7 +255,7 @@ function _buildStories(){
           ic: 'saisonKal',
           title: `${currentSeason().label} hat eine Tabelle`,
           desc: `${nameOf(rang[0].pid)} führt mit ${rang[0].elo} Elo, `
-              + `${vor} vor ${nameOf(rang[1].pid)}. `
+              + `${_vorText(vor, nameOf(rang[1].pid))}. `
               + `Gewertet sind ${frei.partien} Sätze und `
               + `${frei.genug} Spieler mit mindestens ${STORY_RANG_MIN_EINSAETZE} Sätzen.`,
           // Der Zeitpunkt ist die Partie, die die Tabelle freigegeben hat,
@@ -269,7 +269,7 @@ function _buildStories(){
                     // Der Vorsprung als Bildzone: die Karte trug sonst nur
                     // zwei Wappen und sagte vor dem Lesen nichts ueber die
                     // Lage [§C27].
-                    vv:String(vor), vl:'Elo Vorsprung',
+                    vv:vor > 0 ? String(vor) : '±0', vl:vor > 0 ? 'Elo Vorsprung' : 'Elo, gleichauf',
                     partien:frei.partien, aktive:frei.genug, gebraucht:frei.gebraucht}
         });
       }
@@ -343,7 +343,7 @@ function _buildStories(){
         // nicht mehr die Partie, die das Band darueber zeigt.
         const desc = [
           `${nameOf(fuehrt.pid)} steht mit ${fuehrt.elo} Elo oben`
-            + (zweiter ? `, ${abstand} vor ${nameOf(zweiter.pid)}` : '') + '.',
+            + (zweiter ? `, ${_vorText(abstand, nameOf(zweiter.pid))}` : '') + '.',
           `Vorher stand dort ${nameOf(vorher)}.`,
           wechsel.length > 1 ? `Die Spitze wechselte an diesem Tag ${wieOft}.` : ''
         ].filter(Boolean).join(' ');
@@ -954,15 +954,18 @@ function _buildStories(){
     // über das, was er gespielt hat [§C40].
     // Jede Partie im Fenster, nicht nur die jüngste: kamen zwei Partien
     // eines Spielers zugleich an, riss die erste die Marke, und gefragt
-    // wurde nur die zweite. Die Leiter (10, 25, 50, 100, 250 …) und dazu
+    // wurde nur die zweite. Die Leiter ab 50 (50, 100, 250 …) und dazu
     // jede fünfzigste: die 450. Partie stand nur im Zählwerk des Fußes,
-    // ohne Satz und nur, wenn der Fuß gerade sie wählte.
+    // ohne Satz und nur, wenn der Fuß gerade sie wählte. Gezählt werden
+    // Sätze, und an einem Tag mit kurzen Sätzen spielt jeder zehn bis
+    // vierzehn: ab 10 feierte am ersten Spieltag jeder Spieler sein
+    // „Jubiläum", und ab 25 wäre es der zweite Abend.
     const seit = now.getTime() - NEWS_FENSTER_TAGE * _dayMs;
     players.filter(p => sichtbar(p)).forEach(p => {
       const arr = byPlayer[p.id] || [];
       arr.forEach((m, i) => {
         const n = i + 1;
-        if(mts(m) < seit || mts(m) > now.getTime() || !_rundeMarke(n, 10)) return;
+        if(mts(m) < seit || mts(m) > now.getTime() || !_rundeMarke(n, JUBILAEUM_AB)) return;
         candidates.push({pid: p.id, total: n, when: new Date(m.created_at), matchId: m.id});
       });
     });
@@ -1008,7 +1011,10 @@ function _buildStories(){
   try {
     const seit = now.getTime() - NEWS_FENSTER_TAGE * _dayMs;
     const DUO_STUFEN = new Set([25, 50, 75, 100, 150, 200, 250, 300, 400, 500]);
-    const TAG_STUFEN = new Set([10, 15, 20, 25, 30, 40]);
+    // Ab dem 15. Satz des Tages: mit kurzen Sätzen kommt jeder auf zehn bis
+    // vierzehn, und am ersten Spieltag hingen fünf Karten „bestreitet den 10.
+    // Satz des Tages" im Feed — für die Hälfte der Liga.
+    const TAG_STUFEN = new Set([15, 20, 25, 30, 40, 50]);
     const sieger = m => m.winner === 'A' ? [m.a1, m.a2] : [m.b1, m.b2];
     const verlierer = m => m.winner === 'A' ? [m.b1, m.b2] : [m.a1, m.a2];
     const duo = ids => ids.slice().sort().join('|');
@@ -1198,9 +1204,11 @@ function _buildStories(){
         desc:`Zum ersten Mal an diesem Tag über +75, nach ${tagFakt.n} Sätzen.`,
         when:zeit, prio:STORY_PRIO.tag_hoehe,
         dataRef:{type:'tag_hoehe', pid:tagFakt.id, elo:Math.round(tagFakt.elo), n:tagFakt.n, matchId:m.id, playerIds:[tagFakt.id]}});
-      // (10) Der Monat: der größte Gewinn eines Siegers ab der achten Partie
-      // und mindestens 22 Elo, oder die Siegquote erreicht ab der fünfzehnten
-      // Partie 50 % von unten. Der Monat ist die Saison der Partie.
+      // (10) Der Monat: der größte Gewinn eines Siegers ab dem zwanzigsten
+      // Satz und mindestens 22 Elo, oder die Siegquote erreicht ab dem
+      // fünfzehnten Satz 50 % von unten. Der Monat ist die Saison der Partie.
+      // Ab dem achten stand am ersten Spieltag „mehr als mit jedem Sieg davor
+      // im November" über einem Sieg, vor dem es sieben Sätze gab.
       const sid = seasonOf(m.created_at).id;
       let monatFakt = null;
       W.concat(L).forEach(id => {
@@ -1214,7 +1222,7 @@ function _buildStories(){
         const halb = !z.halb && vor.n >= 14 && vor.s * 2 < vor.n && z.s * 2 >= z.n;
         if(halb) z.halb = true;
         if(!neu || monatFakt || !sieg || !zeig(id)) return;
-        if(z.n >= 8 && d >= 22 && d > vor.best)
+        if(z.n >= 20 && d >= 22 && d > vor.best)
           monatFakt = {art:'gewinn', id, elo:Math.round(d), vorher:Math.round(vor.best), n:z.n};
         else if(halb) monatFakt = {art:'halb', id, s:z.s, n:z.n};
       });
@@ -1264,7 +1272,7 @@ function _buildStories(){
         const n = pleiten[id] || 0;
         if(neu && n >= 5 && zeig(id)) neuSt.push({id:'pleitenende_' + id + '_' + m.id, cat:'comeback', ic:'comeback',
           title:`${nameOf(id)} beendet eine Serie von ${n} Niederlagen`,
-          desc:letzterSieg[id] ? `Der letzte Sieg davor war am ${tagImSatz(letzterSieg[id])}`
+          desc:letzterSieg[id] ? `Der letzte Sieg davor war ${wannImSatz(letzterSieg[id], t)}`
             : `Es ist der erste Sieg, nach ${n} Sätzen.`,
           when:zeit, prio:STORY_PRIO.pleiten_ende,
           dataRef:{type:'pleiten_ende', pid:id, n, matchId:m.id, playerIds:[id]}});
@@ -1275,7 +1283,7 @@ function _buildStories(){
       const dkW = duo(W), dn = duoPleiten[dkW] || 0;
       if(neu && dn >= 4 && W.every(zeig)) neuSt.push({id:'duopleitenende_' + dkW.replace('|', '_') + '_' + m.id, cat:'team', ic:'comeback',
         title:`${nameOf(W[0])} und ${nameOf(W[1])} gewinnen wieder zusammen, nach ${dn} Niederlagen`,
-        desc:duoSieg[dkW] ? `Zuletzt gewannen beide zusammen am ${tagImSatz(duoSieg[dkW])}`
+        desc:duoSieg[dkW] ? `Zuletzt gewannen beide zusammen ${wannImSatz(duoSieg[dkW], t)}`
           : `Es ist der erste gemeinsame Sieg, nach ${dn} gemeinsamen Sätzen.`,
         when:zeit, prio:STORY_PRIO.duo_pleiten_ende,
         dataRef:{type:'duo_pleiten_ende', a:W[0], b:W[1], n:dn, matchId:m.id, playerIds:W.slice()}});

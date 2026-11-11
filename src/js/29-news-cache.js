@@ -1354,7 +1354,7 @@ function _consolidateStoriesLegacy(list){
       })();
       neuText = `${bild.charAt(0).toUpperCase() + bild.slice(1)}: `
         + (plusTafel
-            ? `für die Laufbahn bleiben ${plusTafel} Prestige.`
+            ? `zusammen ${plusTafel} Prestige mehr in der Laufbahn.`
             : `der Spieltag ordnet die Ewige Tafel neu.`);
     } else {
       const namen = pids.map(nameOf);

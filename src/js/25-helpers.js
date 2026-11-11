@@ -37,6 +37,13 @@ function tagImSatz(when){
   const t = datumFmt(when, 'tmx');
   return t.endsWith('.') ? t : t + '.';
 }
+// „am 11.11." über einen Satz vom selben Tag las sich, als läge er Tage
+// zurück: an einem Spieltag mit zwanzig Sätzen ist der letzte Sieg oft eine
+// Stunde alt. Liegt `when` am Tag von `bezug`, nennt der Satz die Uhrzeit.
+function wannImSatz(when, bezug){
+  if(bezug != null && tagKey(when) === tagKey(bezug)) return `am selben Tag um ${datumFmt(when, 'uhr')} Uhr.`;
+  return 'am ' + tagImSatz(when);
+}
 // ── Eine Dezimalzahl trägt hier ein Komma ───────────────────────────
 // Die Oberfläche schreibt „6,9 Gegentore", die Fun Facts schrieben „6.9" —
 // acht Stellen mit `toFixed(1)` und ein Punkt mitten im deutschen Satz.

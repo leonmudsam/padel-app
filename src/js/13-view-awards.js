@@ -899,8 +899,9 @@ function _vAwardsCore(){
   // Ohne Partie steht die Vitrine trotzdem, jede Kachel noch niemandes:
   // „Keine Partien in diesem Zeitraum" auf leerer Fläche sagte nicht, was
   // es hier zu holen gibt. Getippt zeigt jede Kachel ihre Frage.
-  const vorschau = R.counts.matches ? '' : vorschauHtml('trophy', 'Die Auszeichnungen der Saison',
-    `In ${esc(pl)} ist noch kein Satz gespielt. Jede Kachel unten gehört dem, der ihre Frage in der Saison am besten beantwortet, und füllt sich mit den Sätzen. Tippen zeigt, wofür es sie gibt und ab wann sie zählt.`);
+  // Sie steht auch mit Sätzen, bis sie geschlossen wird [§C27].
+  const vorschau = vorschauHtml('trophy', 'Die Auszeichnungen der Saison',
+    `${R.counts.matches ? '' : `In ${esc(pl)} ist noch kein Satz gespielt. `}Jede Kachel unten gehört dem, der ihre Frage in der Saison am besten beantwortet, und füllt sich mit den Sätzen. Tippen zeigt, wofür es sie gibt und ab wann sie zählt.`);
   // Wer eine Kachel trägt, wie viel und woraus, sagt AW_WERT [§5.3d];
   // gezeichnet wird sie von awKachelHtml. Hier steht nur noch, welche
   // Kacheln in welchem Abschnitt stehen.
@@ -1061,7 +1062,8 @@ function vAwards(){
     return kopf + ligaRekordeHtml(true);
   }
   if(awView === 'chronik'){
-    return kopf + (ligaChronikMatrixHtml() || chronikVorschauHtml());
+    const matrix = ligaChronikMatrixHtml();
+    return kopf + (matrix ? chronikKarteHtml(false) + matrix : chronikVorschauHtml());
   }
   // Ein abgeschlossener Monat oder eine vergangene Woche ist Geschichte [§C40].
   let bis = null;

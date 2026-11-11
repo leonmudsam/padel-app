@@ -81,6 +81,12 @@ function _ladderCrossing(before, after, min){
 // Eine runde Zahl: die Leiter ab `min` (10, 25, 50, 100, 250 …) und jede
 // fünfzigste ab 50. Die 150. und 450. Partie zählte vorher nur das Zählwerk
 // eines Fußes, ohne eigene Meldung.
+// Der Abstand an der Spitze in Worten. Gerundet auf ganze Elo liegen zwei
+// oft gleich: am ersten Spieltag stand „Niggo steht mit 59 Elo oben, 0 vor
+// Domi" — ein Vorsprung, den es nicht gibt.
+function _vorText(abstand, name){
+  return abstand > 0 ? `${abstand} vor ${name}` : `gleichauf mit ${name}`;
+}
 function _rundeMarke(n, min){
   return n >= min && (n % 50 === 0 || _ladderCrossing(n - 1, n, min) === n);
 }

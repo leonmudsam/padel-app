@@ -15,9 +15,7 @@ function vTeams(nurErgebnis=false){
   if(!T.length&&!ruheT.length){
     // „Noch nicht genug Daten" sagte nicht, wie viel genug ist und was dann
     // kommt.
-    const html=vorschauHtml('handshake','Die Duos der Liga',
-      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`,
-      null, '', emptyState('handshake', `Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.`));
+    const html=duosKarteHtml(emptyState('handshake', `Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.`));
     return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Sätzen`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Sätzen</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
@@ -155,6 +153,7 @@ function vTeams(nurErgebnis=false){
   if(nurErgebnis) return ergebnis;
   return `
     <div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p id="teamCount">${ergebnis.kopf}</p></div>
+    ${duosKarteHtml('')}
     ${einblickHtml('netz', `ab ${DUO_MIN} Sätzen`)}
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -179,10 +178,21 @@ function vTeams(nurErgebnis=false){
 // ╔═══ §5.5 ─── VIEW: HISTORY (Match-Liste mit Filter) ─────────────────╗
 //     Filterbar nach Spieler. Zeigt Badge-Chips pro Match.
 // ╚═════════════════════════════════════════════════════════════════════════╝
-function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
+// Die Erklärkarten von Teams und Verlauf stehen auch über einer vollen
+// Liste, bis sie geschlossen werden [§C27]: wer neu dazukommt, findet die
+// Liga voller Sätze vor. Ein Titel, eine Karte — geschlossen bleibt sie zu.
+function duosKarteHtml(ersatz){
+  return vorschauHtml('handshake','Die Duos der Liga',
+    `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`,
+    null, '', ersatz);
+}
+function verlaufKarteHtml(ersatz){
+  return vorschauHtml('verlauf','Der Verlauf',
     'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.',
-    null, '', emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
+    null, '', ersatz);
+}
+function vHistory(){
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${verlaufKarteHtml(emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -260,6 +270,7 @@ function vHistory(){
 
   return `
     <div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>${list.length} Sätze</p></div>
+    ${verlaufKarteHtml('')}
     <div class="search" style="margin-bottom:14px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></svg>
       <select id="histSel" style="padding-left:40px">${opts}</select>

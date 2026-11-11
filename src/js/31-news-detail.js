@@ -13,13 +13,13 @@
 // Eine eigene Funktion, weil die Regel sonst nur im Zeichnen des Blatts
 // stuende und damit nur mit einem Dokument zu messen waere.
 //
-// Dasselbe gilt für den Zuwachs: „Für die Laufbahn bleiben 279 Prestige."
+// Dasselbe gilt für den Zuwachs: „Zusammen 279 Prestige mehr in der Laufbahn."
 // stand über der Reihe, deren vierte Zelle „+279 Prestige" ist.
 function _ndLead(desc, body){
   const lead = String(desc || '');
   if(String(body || '').indexOf('rcp-z') < 0 || !/^[^:]+:\s+\S/.test(lead)) return lead;
   const rest = lead.replace(/^[^:]+:\s+/, '');
-  if(/^für die Laufbahn bleiben \d+ Prestige\.$/i.test(rest) && /rcp-z-l">Prestige</.test(body)) return '';
+  if(/^zusammen \d+ Prestige mehr in der Laufbahn\.$/i.test(rest) && /rcp-z-l">Prestige</.test(body)) return '';
   return rest ? rest.charAt(0).toUpperCase() + rest.slice(1) : lead;
 }
 
@@ -1631,7 +1631,7 @@ function _ndEloLinie(pid, bisId, marke){
 function _ndMeilensteinBlatt(s){
   const d = s.dataRef || {}, pm = pmap(), pid = d.pid;
   if(!pid || !pm[pid]) return null;
-  const art = {jubilee:['Sätze', 10, 0, true], milestone_wins:['Siege', 50, 0, true], milestone_goals:['Games', 500, 0],
+  const art = {jubilee:['Sätze', JUBILAEUM_AB, 0, true], milestone_wins:['Siege', 50, 0, true], milestone_goals:['Games', 500, 0],
     milestone_elo:['Elo', (cfg.start_elo ?? 1000) + 200, 100]}[d.type];
   const wert = d.type === 'jubilee' ? Number(d.total) : d.type === 'milestone_elo' ? Number(d.mark) || parseInt(d.milestone, 10) : parseInt(d.milestone, 10);
   if(!art || !Number.isFinite(wert)) return null;

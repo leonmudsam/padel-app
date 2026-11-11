@@ -1181,15 +1181,7 @@ function _renderNewsFeed(){
     // Ein leerer Feed vor der ersten Partie erklärt, was hier erscheinen
     // wird; Stories entstehen erst aus Partien [§C33].
     listHtml = stories.length ? '<div class="nf-empty">Keine Stories in dieser Auswahl.</div>'
-      : vorschauHtml('newspaper', 'Die Liga-News',
-        'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
-        [
-          ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
-          ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
-          ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
-          ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
-          ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
-        ], '', '<div class="nf-empty">Noch keine Stories. Die erste entsteht mit dem ersten Satz.</div>');
+      : newsKarteHtml(false, '<div class="nf-empty">Noch keine Stories. Die erste entsteht mit dem ersten Satz.</div>');
   } else {
     // Über alle Karten des Feeds, nicht nur die des Filters: der Faden
     // gehört der Geschichte und nicht der Auswahl.
@@ -1254,7 +1246,9 @@ function _renderNewsFeed(){
       oben.push(job.html());
     }
     oben.push('</div>');
-    listHtml = oben.join('');
+    // Die Erklärung steht auch über einem vollen Feed, bis sie geschlossen
+    // wird [§C27]: wer neu dazukommt, sieht sonst nur Karten.
+    listHtml = newsKarteHtml(true, '') + oben.join('');
     nachreichen = nachreichen.slice(sofort);
   }
 
@@ -1363,3 +1357,16 @@ function _newsFeedPlan(o){
   });
 }
 
+// Die Erklärkarte des Feeds, leer wie voll unter demselben Titel: eine
+// geschlossene Karte bleibt zu, gleich ob schon Stories stehen.
+function newsKarteHtml(voll, ersatz){
+  return vorschauHtml('newspaper', 'Die Liga-News',
+    voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
+    [
+      ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
+      ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
+      ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
+      ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
+      ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
+    ], '', ersatz);
+}

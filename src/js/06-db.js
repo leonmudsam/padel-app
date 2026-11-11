@@ -691,7 +691,7 @@ function showSeasonRecap(season, opts){
     .map(s => s.id).sort().reverse();
 
   openSheet(
-    rcpKopfHtml({ic:'trophy', marke:'Saison beendet', titel:season.label,
+    rcpKopfHtml({ic:'trophy', marke:'Saison beendet', titel:season.label || seasonLabel(sid),
       extra:saisonWaehlerHtml('rcpSaisonwahl', sid, {liste:vergangene, attr:'rcpsaison'})})
     // Gleich unter dem Kopf das Podest auf der Bühne der Meister-Story
     // [§C27]: wer gewonnen hat, ist die erste Frage. Der Meister kommt

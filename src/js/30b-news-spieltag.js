@@ -269,10 +269,12 @@ function _spBandBild(d){
 
 // ── Der Court: die gewöhnliche Partie ────────────────────────────────
 // Die Karte zeigt, wer wo stand: der Platz von oben, links Team A, rechts
-// Team B, das Netz dazwischen. Je Team der Revés außen an der Glaswand und
-// der Drive am Netz — so liest sich eine Zeile von links nach rechts wie
-// der Platz: Revés A, Drive A | Netz | Drive B, Revés B. Unter jedem die Elo
-// der Partie.
+// Team B, das Netz senkrecht dazwischen. Revés und Drive sind die linke und
+// die rechte Hälfte des eigenen Feldes, vom Spieler aus zum Netz gesehen —
+// die Partner stehen also nebeneinander, im Bild übereinander. Team A blickt
+// nach rechts: Revés oben, Drive unten. Team B blickt nach links: Revés
+// unten, Drive oben; so stehen sich die Revés-Spieler diagonal gegenüber wie
+// auf dem Platz. Neben jedem die Elo des Satzes.
 function _spFeldDaten(a){
   const m = a.m;
   const seite = id => m[(m.a1 === id ? 'a1' : m.a2 === id ? 'a2' : m.b1 === id ? 'b1' : 'b2') + '_side'];
@@ -282,23 +284,32 @@ function _spFeldDaten(a){
   return {slots:[slot(rev('A'), 'Revés'), slot(drv('A'), 'Drive'), slot(drv('B'), 'Drive'), slot(rev('B'), 'Revés')],
     sa:m.games_a, sb:m.games_b, aw:m.winner === 'A', c:a.c, mm:m};
 }
-// Das Feld ist ein Fluss und keine Fläche mit festen Plätzen: der Stand
-// oben, darunter vier Spalten, eine je Spieler, und jede wächst mit ihrem
-// Namen. Glaswände, Netz und Aufschlaglinien liegen dahinter und tragen
-// keine Schrift. Passen die Namen nicht unter ihre Stange, steht die Aufstellung
-// darunter in zwei Spalten, eine je Team.
+// Vorher standen die vier in einer Reihe, je Team der Revés an der Wand und
+// der Drive am Netz, jeder unter einem senkrechten Strich: das war das Bild
+// des Kickertischs mit seinen Stangen, und es stellte die Partner
+// hintereinander, wo sie auf dem Platz nebeneinander stehen. Jetzt hat jeder
+// Spieler seine Ecke des Courts (`SP_FELD_ECKE`), der Stand steht über dem
+// Netz. Passen die Namen nicht in ihre Ecke, steht die Aufstellung darunter
+// in zwei Spalten, eine je Team.
+const SP_FELD_ECKE = ['ao', 'au', 'bo', 'bu'];
+// Der Court von oben, 20 × 10 m: Glas an beiden Enden und an den Seiten nur
+// nahe den Enden, die Aufschlaglinien 6,95 m vor dem Netz, die Mittellinie
+// zwischen ihnen. Der Rahmen geht mit der Karte in die Breite.
+const SP_FELD_PLATZ = '<svg class="sp-f-platz" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">'
+  + '<rect class="sp-f-boden" x="1" y="1" width="198" height="98" rx="3"/>'
+  + '<path class="sp-f-glas" d="M1 1V99M199 1V99M1 1H41M159 1H199M1 99H41M159 99H199"/>'
+  + '<path class="sp-f-linie" d="M30.5 1V99M169.5 1V99M30.5 50H169.5"/>'
+  + '<path class="sp-f-netz" d="M100 0V100"/></svg>';
 function _spFeldBild(d){
   const innen = !d.tz && _spPasst(d.slots.map(s => s.id), 9);
   const aufst = w => d.slots.filter(s => s.w === w).sort((a, b) => (a.r === 'Revés') - (b.r === 'Revés'))
     .map(s => `<span><i>${s.r}</i>${_spNb(s.id)}</span>`).join('');
-  return `<div class="sp-feld">
-    <span class="sp-f-wand l"></span><span class="sp-f-wand r"></span><span class="sp-f-netz"></span>
-    ${[22, 78].map(x => `<i class="sp-f-linie" style="left:${x}%"></i>`).join('')}<i class="sp-f-mittel"></i>
+  return `<div class="sp-feld">${SP_FELD_PLATZ}
     <div class="sp-f-sc"><b class="num">${_spStand(d)}</b>${d.c != null ? `<span>${Math.round(d.c * 100)} % Chance</span>` : ''}</div>
-    <div class="sp-f-reihe">${d.slots.map((s, i) => `<div class="sp-f-sp${s.w ? ' w' : ''}" style="--i:${i}">`
-      + `<span class="sp-f-rolle">${s.r}</span>${_spWappen(s.id, 48)}`
+    ${d.slots.map((s, i) => `<div class="sp-f-sp ${SP_FELD_ECKE[i]}${s.w ? ' w' : ''}" style="--i:${i}">`
+      + `${_spWappen(s.id, 40)}<span class="sp-f-txt"><span class="sp-f-rolle">${s.r}</span>`
       + (innen ? `<span class="sp-f-n">${esc(_spName(s.id))}</span>` : '')
-      + (d.ohneElo ? '' : `<em class="${(s.d || 0) >= 0 ? 'g' : 'r'} num">${_spVz(s.d)}</em>`) + `</div>`).join('')}</div>
+      + (d.ohneElo ? '' : `<em class="${(s.d || 0) >= 0 ? 'g' : 'r'} num">${_spVz(s.d)}</em>`) + `</span></div>`).join('')}
   </div>${innen || d.tz ? '' : `<div class="sp-aufst"><div class="w">${aufst(true)}</div><div class="re">${aufst(false)}</div></div>`}`;
 }
 
@@ -1225,7 +1236,8 @@ const SP_FORM = {
   // Das Tauziehen: zwei bis fünf Games Abstand. Der Knoten steht so weit auf
   // der Seite der Sieger, wie ihr Anteil an den Games war.
   tauziehen:{rang:13, ic:'scaleBalance', v2:true,
-    wann:F => F.diff >= 2 && F.diff <= 5 ? {} : null,
+    // Gezogen haben beide: ein 2:0 hat keinen Gegenzug.
+    wann:F => F.diff >= 2 && F.diff <= 5 && F.tief >= 1 ? {} : null,
     daten:F => ({A:_spTeam(F.m, 'A'), B:_spTeam(F.m, 'B'), aw:F.W.includes(F.m.a1), W:F.W, L:F.L,
       hoch:F.hoch, tief:F.tief, anteil:F.anteil, delta:Object.assign({}, F.delta)}),
     text:F => _spKontext(F)},
@@ -1722,7 +1734,9 @@ function _spFaktBild(d){
 function _spTauziehenBild(d){
   // Der Knoten: so weit auf der Seite der Sieger, wie ihr Anteil an den Games.
   const anteil = d.anteil != null ? d.anteil : d.hoch / Math.max(1, d.hoch + d.tief);
-  const pos = Math.round((d.aw ? 1 - anteil : anteil) * 100);
+  // Der Knoten trägt den Stand und bleibt zwischen den Paaren: ganz an den
+  // Rand gezogen lag er über den Wappen der Sieger.
+  const pos = Math.max(18, Math.min(82, Math.round((d.aw ? 1 - anteil : anteil) * 100)));
   const team = (ids, w) => `<div class="sp-tz-t${w ? ' w' : ''}">${_spChips(ids)}<span class="sp-tz-d">`
     + ids.map(id => `<i class="num ${d.delta[id] >= 0 ? 'g' : 'r'}">${_spVz(d.delta[id] || 0)}</i>`).join('') + `</span></div>`;
   return `<div class="sp-fk sp-tz">${team(d.A, d.aw)}<div class="sp-tz-s">`
@@ -1908,42 +1922,40 @@ function _spHerzBild(d){
     + zelle('Elo der Sieger', _spKopfElo(d, d.W)) + (d.nr ? zelle('im Monat', _spZahl(d.nr) + '.') : '') + `</div></div>`
     + _spNz(d.W, d.L);
 }
-// ── Die Lebensbalken: wie viel jedem Team am Ende blieb ───────────────
-// Der Verlierer endet leer, der Sieger mit seinem Anteil an den Games:
-// ein 7:6 lässt gut die Hälfte, ein 6:1 fast alles. Statt der Pucks, die
-// die Tore zweimal zählten — als Kugeln und als Zahl daneben —, zeigt der
-// Balken den Abstand, den die Zahlen nicht auf einen Blick sagen. Team A
-// links, die Balken laufen von außen zur Mitte, die Elo jedes Spielers
-// außen.
+// ── Die Games-Balken: wer wie viele Games des Satzes holte ─────────────
+// Je Team ein Balken von außen zur Mitte, ein Feld je Game des Satzes, und
+// jedes Team füllt so viele, wie es gewonnen hat: ein 6:4 sind zehn Felder,
+// sechs hell bei den Siegern, vier bei den Verlierern. Vorher waren es zehn
+// Felder wie die zehn Tore am Kickertisch, der Verlierer endete leer und
+// trug „K.o." — auch nach einem 6:7, in dem er sechs Games gewonnen hatte.
+// Team A links, die Elo jedes Spielers außen.
 function _spBalkenBild(d){
-  const aw = d.aw !== false, dl = d.delta || {};
+  const aw = d.aw !== false;
   const A = aw ? d.W : d.L, B = aw ? d.L : d.W;
-  const rest = (gegen) => gegen === 'sieg' ? Math.round((d.anteil != null ? d.anteil : .75) * 100) : 0;
-  const seite = (ids, sieg, links, gegen) => `<div class="sp-lb-s${sieg ? ' w' : ''}${links ? '' : ' re'}">`
+  const hoch = d.hoch != null ? d.hoch : 6, tief = d.tief != null ? d.tief : 0;
+  const n = Math.max(1, hoch + tief);
+  const anteil = sieg => Math.round((sieg ? hoch : tief) / n * 1000) / 10;
+  const seite = (ids, sieg, links) => `<div class="sp-lb-s${sieg ? ' w' : ''}${links ? '' : ' re'}">`
     + `<span class="sp-lb-k">${_spKopfPaar(ids)}<span class="num">${_spKopfElo(d, ids)}</span></span>`
-    + `<span class="sp-lb-b"><i style="--r:${rest(gegen)}%"></i>${sieg ? '' : '<em>K.o.</em>'}</span></div>`;
-  return `<div class="sp-fk sp-lb">${seite(A, aw, true, aw ? 'sieg' : 0)}<span class="sp-lb-m">${_spSt(d)}</span>${seite(B, !aw, false, aw ? 0 : 'sieg')}</div>`
+    + `<span class="sp-lb-b" style="--n:${n}"><i style="--r:${anteil(sieg)}%"></i></span></div>`;
+  return `<div class="sp-fk sp-lb">${seite(A, aw, true)}<span class="sp-lb-m">${_spSt(d)}</span>${seite(B, !aw, false)}</div>`
     + _spNz(d.W, d.L);
 }
-// Die Treffer liegen über das Netz verteilt, jeder mit seinem Einschlag:
-// zu einer Pyramide gestapelt sahen sie aus wie Obst in einer Kiste.
-const SP_TREFFER = [[25, 15], [47, 11], [70, 17], [80, 31], [33, 30], [56, 25], [71, 41], [21, 41], [45, 40], [60, 45]];
+// Zu Null: der Stand zwischen den Paaren, darunter je Paar eine Reihe mit
+// einem Feld je Game des Satzes. Bei den Siegern liegt in jedem ein Ball,
+// bei den Verlierern bleibt jedes leer. Vorher standen hier zwei
+// Fußballtore, das der Verlierer mit Bällen im Netz — das Bild des
+// Kickertischs, nicht eines Satzes, in dem jedes Game an die anderen ging.
+const SP_ZN_BALL = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle class="sp-zn-ball" cx="8" cy="8" r="6.6"/>'
+  + '<path class="sp-zn-naht" d="M3.2 3.6C6 5.6 6 10.4 3.2 12.4M12.8 3.6C10 5.6 10 10.4 12.8 12.4"/></svg>';
 function _spZunullBild(d){
-  const id = 'spn' + _spVisualHash(d.W.concat(d.L).join() + ':' + d.hoch);
-  const netz = `<path class="sp-zn-n" d="${Array.from({length:11}, (_, i) => `M${16 + i * 6.8} 2V46`).join('')}`
-    + `${Array.from({length:8}, (_, i) => `M16 ${2 + i * 6.3}H84`).join('')}M6 10L16 2M94 10L84 2M6 54L16 46M94 54L84 46"/>`;
-  const rahmen = `<path class="sp-zn-r" d="M6 55V10H94V55"/><path class="sp-zn-b" d="M2 55H98"/>`;
-  const treffer = SP_TREFFER.slice(0, Math.min(10, d.hoch)).map(([x, y], i) => `<g transform="translate(${x} ${y})"><g class="sp-zn-hit" style="--i:${i}">`
-    + `<circle class="sp-zn-ring" r="7"/><circle class="sp-zn-ball" r="4.3" fill="url(#${id}b)"/><path class="sp-zn-glanz" d="M-2.2 -1.6a2.6 2.6 0 0 1 2.4-1.4"/></g></g>`).join('');
+  const n = Math.max(1, Math.min(12, d.hoch || 6));
+  const reihe = w => `<div class="sp-zn-reihe${w ? ' w' : ''}">` + Array.from({length:n}, (_, i) =>
+    `<i class="sp-zn-game" style="--i:${i}">${w ? SP_ZN_BALL : ''}</i>`).join('') + `</div>`;
   const paar = (ids, w) => `<div class="sp-zn-p${w ? '' : ' aus'}">${_spKopfPaar(ids)}<span class="num">${_spKopfElo(d, ids)}</span></div>`;
   return `<div class="sp-fk sp-zn">${paar(d.W, true)}<span class="sp-zn-z num"><b>${_spZahl(d.hoch)}</b><i>:</i><u>0</u></span>${paar(d.L, false)}`
-    + `<div class="sp-zn-tore"><svg class="sp-zn-t leer" viewBox="0 0 100 58" aria-hidden="true"><defs><radialGradient id="${id}" cx=".5" cy=".55" r=".6">`
-    + `<stop offset="0" stop-color="#f7cf4a" stop-opacity=".32"/><stop offset="1" stop-color="#f7cf4a" stop-opacity="0"/></radialGradient></defs>`
-    + `<rect class="sp-zn-glut" x="6" y="6" width="88" height="50" fill="url(#${id})"/>${netz}${rahmen}</svg>`
-    + `<svg class="sp-zn-t voll" viewBox="0 0 100 58" aria-hidden="true"><defs><radialGradient id="${id}b" cx=".38" cy=".32" r=".75">`
-    + `<stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#ecebe2"/><stop offset="1" stop-color="#a9a89c"/></radialGradient></defs>`
-    + `${netz}${treffer}${rahmen}</svg></div>`
-    + (d.nr ? `<em class="sp-zn-band">${svgI('weisseWeste')}<b>Zu Null</b><small class="num">${_spZahl(d.nr)}. im ${esc(d.monat || 'Monat')}</small></em>` : '')
+    + `<div class="sp-zn-tore">${reihe(true)}${reihe(false)}</div>`
+    + (d.nr ? `<em class="sp-zn-band">${svgI('bagel')}<b>Zu Null</b><small class="num">${_spZahl(d.nr)}. im ${esc(d.monat || 'Monat')}</small></em>` : '')
     + `</div>` + _spNz(d.W, d.L);
 }
 

@@ -581,7 +581,7 @@ function _ambientTemplatePool(now, pm, nameOf){
       .slice()
       .sort((a,b) => b.elo - a.elo || b.wins - a.wins);
     if(ranked.length < 2) return null;
-    const lead = ranked[0].elo - ranked[1].elo;
+    const lead = Math.round(ranked[0].elo) - Math.round(ranked[1].elo);
     if(lead <= 0) return null; // Gleichstand an der Spitze → kein „thront"
     return { cat:'personal', ic:'crown', prio:4,
       title:`${nameOf(ranked[0].id)} thront an der Spitze`,

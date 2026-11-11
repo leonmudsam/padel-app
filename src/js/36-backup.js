@@ -611,7 +611,7 @@ function _analyseMatchRows(rows, opts){
   const res = {neu: [], vorhanden: 0, fehler: [], fehlendeSpieler: new Set()};
   if(!rows || rows.length < 2){ res.fehler.push({zeile: 0, grund: 'Die Datei enthält keine Datenzeilen.'}); return res; }
   const idx = _headerIndex(rows[0]);
-  if(idx['match-id'] === undefined && idx['tore a'] === undefined){
+  if(idx['match-id'] === undefined && idx['games a'] === undefined){
     res.fehler.push({zeile: 1, grund: 'Kopfzeile nicht erkannt, erwartet werden die Spalten aus dem Export.'});
     return res;
   }

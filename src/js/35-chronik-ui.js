@@ -711,8 +711,9 @@ function ligaRekordeHtml(weit){
         `<span data-tplayer="${esc(pid)}">${avHtml(pmap()[pid], 'width:16px;height:16px;font-size:7px;border-radius:5px')}<b class="num">${n[pid]}</b></span>`).join('')}</span>` : ''}
     </div>`;
   };
-  const vorschau = recs.length ? '' : vorschauHtml('rekord', 'Die Liga-Rekorde',
-    'Noch hält niemand einen Rekord. Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Jede Karte nennt ihre Bedingung, getippt zeigt sie, wie gezählt wird.');
+  // Sie steht auch mit Rekorden, bis sie geschlossen wird [§C27].
+  const vorschau = vorschauHtml('rekord', 'Die Liga-Rekorde',
+    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + 'Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Jede Karte nennt ihre Bedingung, getippt zeigt sie, wie gezählt wird.');
   return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }
@@ -749,9 +750,15 @@ function _rekFeldHtml(d, h){
 // Fläche steht der Katalog: jede Monatschronik mit ihrer Bedingung, nach
 // Klasse, noch niemandes — dieselbe Karte wie ein offener Rekord [§C27].
 const CHRONIK_VORSCHAU_JE_KLASSE = 3;
+// Die Erklärung der Chronik steht auch über der Tabelle der Monate, bis
+// sie geschlossen wird [§C27]; nur der letzte Satz hängt davon ab, ob es
+// schon einen gewerteten Monat gibt.
+function chronikKarteHtml(leer){
+  return vorschauHtml('scroll', 'Die Chronik',
+    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Sätze</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt die Monate nebeneinander${leer ? '; bis zum ersten gewerteten Monat stehen hier alle Einträge, die es gibt' : ''}.`);
+}
 function chronikVorschauHtml(){
-  const kopf = vorschauHtml('scroll', 'Die Chronik',
-    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Sätze</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt dann die Monate nebeneinander; bis dahin stehen hier alle Einträge, die es gibt.`);
+  const kopf = chronikKarteHtml(true);
   // Drei je Klasse offen, der Rest klappt auf: alle hundert untereinander
   // waren zehn Bildschirme, und die Klassen darunter sah niemand mehr.
   const karte = t => `<div class="rek offen">
