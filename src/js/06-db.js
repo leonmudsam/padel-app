@@ -71,59 +71,56 @@ const LADEN_TOEPFE = ['global', 'stats', 'awards', 'teams', 'allTeamStats', 'per
 // Die vier Antworten in den Zustand einbauen, so wie sie aus der Datenbank
 // kommen. Rein lokal: der Schnellstart baut damit den gespeicherten Stand
 // ein, und der darf nichts schreiben [§3.1b]. Was schreibt, steht in
-// `_overridesNachziehen` und läuft nur nach einem Live-Abruf.
+// `_overridesVerwerfen` und `_avatareNachziehen` und läuft nur nach einem
+// Live-Abruf.
 function _datenEinbauen(roh){
   // Alle Spieler laden (auch hidden) → für Match-Berechnungen nötig
   players=roh.p||[];
-  // Lokaler Fallback: Wenn DB-Spalte avatar_id nicht existiert,
-  // wird Edit aus localStorage übernommen.
+  // Ein Profilbild, das noch nur auf diesem Gerät liegt (aus der Zeit, als
+  // die Spalte ein Zahlwert war, siehe `_avatareNachziehen`), gilt hier,
+  // bis es in der Liga steht — sonst verschwände es mit dem ersten Abruf.
   players.forEach(pp=>{
-    if(pp.avatar_id==null){
-      try{
-        const raw=localStorage.getItem('padel_playerEdit_'+pp.id);
-        if(raw){
-          const e=JSON.parse(raw);
-          if(pp.avatar_id==null && e.avatar_id!=null) pp.avatar_id=e.avatar_id;
-        }
-      }catch(err){}
-    }
+    if(pp.avatar_id!=null) return;
+    const lokal=_avatarLokal(pp.id);
+    if(lokal) pp.avatar_id=lokal;
   });
   matches=roh.m||[];
   if(roh.c)cfg=roh.c;
-  // localStorage-Overrides für neue cfg-Felder, die noch nicht in der DB-Spalte existieren
-  try{
-    const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-    Object.keys(overrides).forEach(k=>{
-      if(overrides[k]!==undefined && overrides[k]!==null) cfg[k]=overrides[k];
-    });
-  }catch(e){}
   seasons=roh.se||[];
 }
-// Auto-Migration: wenn die DB inzwischen die Spalten kennt, Overrides
-// synchronisieren und localStorage aufräumen. Läuft fire-and-forget im
-// Hintergrund — blockt loadAll nicht.
-function _overridesNachziehen(){
+// Profilbilder, die nur auf einem Gerät stehen. Die erste Fassung des Schemas
+// legte `avatar_id` als integer an, die App speichert aber Schlüssel wie
+// 'wolf': jedes Speichern scheiterte, und die App legte das Bild still in
+// localStorage — sichtbar nur auf dem Gerät, das es gewählt hatte. Neue
+// Bilder gehen nur noch in die Datenbank; die alten schreibt jedes Gerät
+// nach, sobald die Spalte Text ist, und vergisst sie dann. Hat die Liga
+// inzwischen ein anderes Bild, gewinnt die Liga.
+const AVATAR_LOKAL_LS = 'padel_playerEdit_';
+function _avatarLokal(id){
   try{
-    const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-    const overrideKeys=Object.keys(overrides);
-    if(!overrideKeys.length) return;
-    (async()=>{
-      // Pro Key einzeln updaten: andere bleiben heile wenn einer fehlschlägt
-      const remaining={};
-      for(const k of overrideKeys){
-        try{
-          const o={};o[k]=overrides[k];
-          const {error}=await sb.from('config').update(o).eq('id',1);
-          if(error) remaining[k]=overrides[k];
-          // Bei !error: Spalte existiert nun → Override darf raus
-        }catch(e){ remaining[k]=overrides[k]; }
-      }
-      try{
-        if(Object.keys(remaining).length) localStorage.setItem('padel_cfg_overrides',JSON.stringify(remaining));
-        else localStorage.removeItem('padel_cfg_overrides');
-      }catch(e){}
-    })();
-  }catch(e){}
+    const raw=localStorage.getItem(AVATAR_LOKAL_LS+id);
+    const e=raw?JSON.parse(raw):null;
+    return e && typeof e.avatar_id==='string' ? e.avatar_id : null;
+  }catch(err){ return null; }
+}
+function _avatareNachziehen(roh){
+  (roh||[]).forEach(pp=>{
+    const lokal=_avatarLokal(pp.id);
+    if(!lokal) return;
+    const weg=()=>{ try{ localStorage.removeItem(AVATAR_LOKAL_LS+pp.id); }catch(e){} };
+    if(pp.avatar_id!=null){ weg(); return; }
+    Promise.resolve(sb.from('players').update({avatar_id:lokal}).eq('id',pp.id).is('avatar_id',null))
+      .then(r=>{ if(r && !r.error) weg(); }).catch(()=>{});
+  });
+}
+// Regler gelten für die ganze Liga. Ältere Fassungen legten einen
+// Wert, den die Datenbank ablehnte, in localStorage ab und rechneten auf
+// diesem Gerät damit — mit anderen Gewichten als alle anderen Geräte, deren
+// Elo aber in dieselbe Liga ging. Solche Gerätewerte werden verworfen, nicht
+// nachgeschrieben: ein alter Wert vom Ausprobieren überschriebe sonst den
+// der Liga, sobald die Spalte da ist.
+function _overridesVerwerfen(){
+  try{ localStorage.removeItem('padel_cfg_overrides'); }catch(e){}
 }
 
 async function _loadAllDurchlauf(){
@@ -161,6 +158,9 @@ async function _loadAllDurchlauf(){
     // von jetzt [§C42].
     _partienGeholt = abrufBeginn;
     const [p,m,c,se]=antworten.map(a=>a.value);
+    // Vor dem Einbauen: `_datenEinbauen` setzt ein lokales Bild in dieselben
+    // Objekte, und danach sähe es aus, als stünde es schon in der Liga.
+    _avatareNachziehen(p.data);
     const _fp = JSON.stringify([p.data, m.data, c.data, se.data]);
     // Zweimal am Tag ändert sich etwas ohne neue Partie: um 23:59 geht der
     // Tag zu (`_tagZu`), um Mitternacht beginnt der nächste. Nur mit
@@ -184,7 +184,7 @@ async function _loadAllDurchlauf(){
       _datenEinbauen(roh);
       invalidateCache(LADEN_TOEPFE);
     }
-    _overridesNachziehen();
+    _overridesVerwerfen();
     // Nur aktive Spieler zählen für Anzeige
     const active=activePlayers();
     setConn(active.length+' Spieler · '+matches.length+' Sätze','ok');

@@ -6774,7 +6774,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.d0a1ba75';
+const BUILD_VERSION='2026.11.11.2da1987c';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -9055,46 +9055,34 @@ const LADEN_TOEPFE = ['global', 'stats', 'awards', 'teams', 'allTeamStats', 'per
 function _datenEinbauen(roh){
   players=roh.p||[];
   players.forEach(pp=>{
-    if(pp.avatar_id==null){
-      try{
-        const raw=localStorage.getItem('padel_playerEdit_'+pp.id);
-        if(raw){
-          const e=JSON.parse(raw);
-          if(pp.avatar_id==null && e.avatar_id!=null) pp.avatar_id=e.avatar_id;
-        }
-      }catch(err){}
-    }
+    if(pp.avatar_id!=null) return;
+    const lokal=_avatarLokal(pp.id);
+    if(lokal) pp.avatar_id=lokal;
   });
   matches=roh.m||[];
   if(roh.c)cfg=roh.c;
-  try{
-    const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-    Object.keys(overrides).forEach(k=>{
-      if(overrides[k]!==undefined && overrides[k]!==null) cfg[k]=overrides[k];
-    });
-  }catch(e){}
   seasons=roh.se||[];
 }
-function _overridesNachziehen(){
+const AVATAR_LOKAL_LS = 'padel_playerEdit_';
+function _avatarLokal(id){
   try{
-    const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-    const overrideKeys=Object.keys(overrides);
-    if(!overrideKeys.length) return;
-    (async()=>{
-      const remaining={};
-      for(const k of overrideKeys){
-        try{
-          const o={};o[k]=overrides[k];
-          const {error}=await sb.from('config').update(o).eq('id',1);
-          if(error) remaining[k]=overrides[k];
-        }catch(e){ remaining[k]=overrides[k]; }
-      }
-      try{
-        if(Object.keys(remaining).length) localStorage.setItem('padel_cfg_overrides',JSON.stringify(remaining));
-        else localStorage.removeItem('padel_cfg_overrides');
-      }catch(e){}
-    })();
-  }catch(e){}
+    const raw=localStorage.getItem(AVATAR_LOKAL_LS+id);
+    const e=raw?JSON.parse(raw):null;
+    return e && typeof e.avatar_id==='string' ? e.avatar_id : null;
+  }catch(err){ return null; }
+}
+function _avatareNachziehen(roh){
+  (roh||[]).forEach(pp=>{
+    const lokal=_avatarLokal(pp.id);
+    if(!lokal) return;
+    const weg=()=>{ try{ localStorage.removeItem(AVATAR_LOKAL_LS+pp.id); }catch(e){} };
+    if(pp.avatar_id!=null){ weg(); return; }
+    Promise.resolve(sb.from('players').update({avatar_id:lokal}).eq('id',pp.id).is('avatar_id',null))
+      .then(r=>{ if(r && !r.error) weg(); }).catch(()=>{});
+  });
+}
+function _overridesVerwerfen(){
+  try{ localStorage.removeItem('padel_cfg_overrides'); }catch(e){}
 }
 
 async function _loadAllDurchlauf(){
@@ -9119,6 +9107,7 @@ async function _loadAllDurchlauf(){
     }
     _partienGeholt = abrufBeginn;
     const [p,m,c,se]=antworten.map(a=>a.value);
+    _avatareNachziehen(p.data);
     const _fp = JSON.stringify([p.data, m.data, c.data, se.data]);
     const _today = new Date().toDateString() + (_tagZu(tagKey(Date.now())) ? '|zu' : '');
     if(_fp === _lastLoadFingerprint && _today === _lastLoadDay){
@@ -9135,7 +9124,7 @@ async function _loadAllDurchlauf(){
       _datenEinbauen(roh);
       invalidateCache(LADEN_TOEPFE);
     }
-    _overridesNachziehen();
+    _overridesVerwerfen();
     const active=activePlayers();
     setConn(active.length+' Spieler · '+matches.length+' Sätze','ok');
     if(!bestaetigt) neuZeichnen();
@@ -17639,19 +17628,16 @@ function showEditPlayer(id){
 
   document.getElementById('editSave').onclick=async()=>{
     const updates = { avatar_id: selectedAvatar || null };
-    p.avatar_id = updates.avatar_id;
     const {error} = await sb.from('players').update(updates).eq('id',id);
     if(error){
-      console.warn('DB-Update fehlgeschlagen, localStorage-Fallback:', error.message);
-      try{
-        localStorage.setItem('padel_playerEdit_'+id, JSON.stringify(updates));
-        toast('Gespeichert (lokal)','ok');
-      }catch(e){
-        toast('Lokal gespeichert');
-      }
-    } else {
-      toast('Gespeichert','ok');
+      console.warn('Profilbild nicht gespeichert:', error.message);
+      toast('Nicht gespeichert', 'err', {sub:'Das Profilbild konnte nicht in die Liga geschrieben werden.'});
+      return;
     }
+    p.avatar_id = updates.avatar_id;
+    try{ localStorage.removeItem(AVATAR_LOKAL_LS+id); }catch(e){}
+    invalidateCache();
+    toast('Gespeichert','ok');
     closeSheet();
   };
 }
@@ -18778,32 +18764,22 @@ function bindSlider(id,key,toState,toLabel){
   sl.onchange=async()=>{
     const newVal=toState(+sl.value);
     const o={};o[key]=newVal;
-    cfg[key]=newVal;
-    invalidateCache();
     let dbOk=false;
     try{
       const {error}=await sb.from('config').update(o).eq('id',1);
       if(!error) dbOk=true;
-      else console.warn('Config DB-Update fehlgeschlagen für',key,':',error.message);
+      else console.warn('Einstellung nicht gespeichert:',key,error.message);
     }catch(e){
-      console.warn('Config DB-Update Exception:',e);
+      console.warn('Einstellung nicht gespeichert:',key,e);
     }
     if(!dbOk){
-      try{
-        const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-        overrides[key]=newVal;
-        localStorage.setItem('padel_cfg_overrides',JSON.stringify(overrides));
-      }catch(e){}
-    } else {
-      try{
-        const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-        if(key in overrides){
-          delete overrides[key];
-          localStorage.setItem('padel_cfg_overrides',JSON.stringify(overrides));
-        }
-      }catch(e){}
+      if(tab==='settings') render();
+      toast('Nicht gespeichert','err',{sub:'Die Einstellung konnte nicht in die Liga geschrieben werden und gilt deshalb nirgends.'});
+      return;
     }
-    toast(dbOk?'Gespeichert':'Lokal gespeichert','ok');
+    cfg[key]=newVal;
+    invalidateCache();
+    toast('Gespeichert','ok');
   };
 }
 

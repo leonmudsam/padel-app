@@ -23,12 +23,17 @@ create table if not exists public.players (
   name          text not null,
   elo           double precision not null default 0,
   drive         double precision not null default 0.5,
-  avatar_id     integer,
+  avatar_id     text,
   hidden        boolean not null default false,
   created_at    timestamptz not null default now(),
   retired_at    timestamptz,
   retired_stand jsonb
 );
+-- Das Profilbild ist ein Schlüssel aus AVATAR_OPTIONS ('wolf', 'clown' …),
+-- kein Zahlwert. Die erste Fassung legte die Spalte als integer an: jedes
+-- Speichern scheiterte, und das Bild stand nur auf dem Gerät, das es gewählt
+-- hatte. Wiederholbar: eine Textspalte bleibt, wie sie ist.
+alter table public.players alter column avatar_id type text using avatar_id::text;
 
 -- ─── Partien ────────────────────────────────────────────────────────────
 -- Immer zwei gegen zwei. Team A = a1/a2, Team B = b1/b2, je Spieler die Seite

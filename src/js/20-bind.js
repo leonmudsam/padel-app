@@ -339,39 +339,28 @@ function bindSlider(id,key,toState,toLabel){
   sl.onchange=async()=>{
     const newVal=toState(+sl.value);
     const o={};o[key]=newVal;
-    // Lokales State sofort updaten (synchron) damit die Vorschau & nächster Match-Save den
-    // neuen Wert sieht. DB- und localStorage-Persistenz folgt asynchron.
-    cfg[key]=newVal;
-    invalidateCache();
-    // DB-Update versuchen
+    // Ein Regler gilt für die ganze Liga oder gar nicht. Vorher landete ein
+    // Wert, den die Datenbank ablehnte (eine Spalte, die es dort noch nicht
+    // gab), still in localStorage: dieses Gerät rechnete dann mit anderen
+    // Gewichten als alle anderen und schrieb seine Elo trotzdem in die Liga.
     let dbOk=false;
     try{
       const {error}=await sb.from('config').update(o).eq('id',1);
       if(!error) dbOk=true;
-      else console.warn('Config DB-Update fehlgeschlagen für',key,':',error.message);
+      else console.warn('Einstellung nicht gespeichert:',key,error.message);
     }catch(e){
-      console.warn('Config DB-Update Exception:',e);
+      console.warn('Einstellung nicht gespeichert:',key,e);
     }
-    // localStorage-Fallback (z.B. neue Spalten die noch nicht in DB existieren)
-    // Diese Overrides werden bei loadAll auf das DB-cfg geschmolzen.
     if(!dbOk){
-      try{
-        const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-        overrides[key]=newVal;
-        localStorage.setItem('padel_cfg_overrides',JSON.stringify(overrides));
-      }catch(e){}
-    } else {
-      // Wenn DB jetzt klappt: alten localStorage-Override entfernen (sonst überschreibt
-      // er bei loadAll den frischen DB-Wert).
-      try{
-        const overrides=JSON.parse(localStorage.getItem('padel_cfg_overrides')||'{}');
-        if(key in overrides){
-          delete overrides[key];
-          localStorage.setItem('padel_cfg_overrides',JSON.stringify(overrides));
-        }
-      }catch(e){}
+      // Regler und Anzeige zurück auf den Wert, der in der Liga gilt: die
+      // Einstellungen zeichnen sich aus `cfg`, und das ist unverändert.
+      if(tab==='settings') render();
+      toast('Nicht gespeichert','err',{sub:'Die Einstellung konnte nicht in die Liga geschrieben werden und gilt deshalb nirgends.'});
+      return;
     }
-    toast(dbOk?'Gespeichert':'Lokal gespeichert','ok');
+    cfg[key]=newVal;
+    invalidateCache();
+    toast('Gespeichert','ok');
   };
 }
 

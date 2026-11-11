@@ -294,8 +294,36 @@ ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
 ok(J('[REKORD_GRUNDWERT.koennen, REKORD_GRUNDWERT.fuegung, CHRONIK_GRUNDWERT]').join(',') === '30,20,30',
   'Rekorde beginnen bei 30 (Können) und 20 (Fügung), Chroniken bei 30');
 
+// ── Was die Liga betrifft, steht in der Liga, nicht auf einem Gerät ──
+// Ein Profilbild und die Regler lagen bei einem abgelehnten Speichern still
+// in localStorage: das Bild sah nur das eine Gerät, und die Regler ließen es
+// mit anderen Gewichten rechnen als alle anderen.
+const GERAET = ANSCHLUSS.then(async () => {
+  K(`window.__vorher={p:players,m:matches,c:cfg,se:seasons,f:sb.from};
+    localStorage.setItem('padel_playerEdit_p9',JSON.stringify({avatar_id:'wolf'}));
+    localStorage.setItem('padel_playerEdit_p8',JSON.stringify({avatar_id:'clown'}));
+    localStorage.setItem('padel_cfg_overrides',JSON.stringify({k_factor:99}));0`);
+  const roh = `[{id:'p9',name:'Neun',avatar_id:null},{id:'p8',name:'Acht',avatar_id:'alien'}]`;
+  K(`window.__roh=${roh};_overridesVerwerfen();_datenEinbauen({p:__roh,m:[],c:{id:1,k_factor:40},se:[]});0`);
+  const e = J(`({bild:players[0].avatar_id,liga:players[1].avatar_id,k:cfg.k_factor,ov:localStorage.getItem('padel_cfg_overrides')})`);
+  ok(e.bild === 'wolf' && e.liga === 'alien' && e.k === 40 && e.ov === null,
+    `Ein Gerätewert der Regler gilt nicht und wird verworfen; ein Profilbild nur dieses Geräts bleibt sichtbar, das der Liga geht vor (${e.bild}/${e.liga}/${e.k})`);
+  // Die Spalte nimmt kein Bild an: es bleibt auf dem Gerät, bis sie es tut.
+  K(`window.__upd=[];sb.from=()=>({update:o=>({eq:(k,id)=>({is:async()=>{__upd.push(id+':'+o.avatar_id);return {error:{message:'invalid input syntax for type integer'}};}})})});
+    _avatareNachziehen([{id:'p9',avatar_id:null},{id:'p8',avatar_id:'alien'}]);0`);
+  await new Promise(r => setImmediate(r));
+  const a = J(`({u:__upd.join(','),p9:localStorage.getItem('padel_playerEdit_p9'),p8:localStorage.getItem('padel_playerEdit_p8')})`);
+  K(`window.__upd=[];sb.from=()=>({update:o=>({eq:(k,id)=>({is:async()=>{__upd.push(id+':'+o.avatar_id);return {error:null};}})})});
+    _avatareNachziehen([{id:'p9',avatar_id:null}]);0`);
+  await new Promise(r => setImmediate(r));
+  const b = J(`({u:__upd.join(','),p9:localStorage.getItem('padel_playerEdit_p9')})`);
+  ok(a.u === 'p9:wolf' && a.p9 !== null && a.p8 === null && b.u === 'p9:wolf' && b.p9 === null,
+    'Ein lokales Profilbild wird in die Liga nachgetragen und erst danach vergessen; hat die Liga schon eines, gewinnt die Liga');
+  K(`players=__vorher.p;matches=__vorher.m;cfg=__vorher.c;seasons=__vorher.se;sb.from=__vorher.f;invalidateCache();0`);
+});
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
-ANSCHLUSS.catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
+Promise.all([ANSCHLUSS, GERAET]).catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
   process.exit(fails ? 1 : 0);
 });

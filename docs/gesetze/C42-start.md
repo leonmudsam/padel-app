@@ -17,7 +17,7 @@
 
 ## Stellen
 
-`01-update.js` (`checkForUpdate`, `_updVersuchen`, `_updImHintergrund`, `_updBelegt`, `_updMelden`, `forceReload`), `06c-stand.js`, `06-db.js` (`_loadAllDurchlauf`, `_datenEinbauen`, `_overridesNachziehen`, `ligaSchreibtAbgeleitet`, `_datenFrisch`, `autoArchiveSeasons`, `_nachholen`), `29-news-cache.js` (`syncStoriesViaDb`), `29b-news-sync.js` (`_newsAutoSyncTick`), `src/sw.js`, `37-boot.js` (Registrierung), `tools/build.mjs` und Wächter 1 und 5 in `tools/check.mjs`.
+`01-update.js` (`checkForUpdate`, `_updVersuchen`, `_updImHintergrund`, `_updBelegt`, `_updMelden`, `forceReload`), `06c-stand.js`, `06-db.js` (`_loadAllDurchlauf`, `_datenEinbauen`, `_overridesVerwerfen`, `_avatareNachziehen`, `ligaSchreibtAbgeleitet`, `_datenFrisch`, `autoArchiveSeasons`, `_nachholen`), `29-news-cache.js` (`syncStoriesViaDb`), `29b-news-sync.js` (`_newsAutoSyncTick`), `src/sw.js`, `37-boot.js` (Registrierung), `tools/build.mjs` und Wächter 1 und 5 in `tools/check.mjs`.
 
 ## Prüfung
 
@@ -40,7 +40,7 @@ Karriereende ab und zieht Einstellungen nach. Jede dieser Handlungen aus
 einem alten Stand hätte etwas veröffentlicht, das die Datenbank gerade nicht
 sagt; eine Story aus gestrigen Daten ist mit dem Snapshot-Vertrag [§C33] für
 immer gespeichert. Deshalb trennt `_datenEinbauen` (rein lokal) das Einbauen
-vom Schreiben (`_overridesNachziehen`, Archiv, Sync), und nur der
+vom Schreiben (`_overridesVerwerfen`, `_avatareNachziehen`, Archiv, Sync), und nur der
 Live-Abruf ruft beides.
 
 Gespeichert werden die Antworten, wie sie aus der Datenbank kamen, nicht der

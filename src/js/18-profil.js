@@ -1046,22 +1046,20 @@ function showEditPlayer(id){
 
   document.getElementById('editSave').onclick=async()=>{
     const updates = { avatar_id: selectedAvatar || null };
-    // Lokales Update sofort
-    p.avatar_id = updates.avatar_id;
-    // DB-Update versuchen
+    // Gespeichert ist nur, was in der Datenbank steht. Vorher fiel ein
+    // abgelehntes Speichern still auf localStorage zurück: das Bild stand auf
+    // dem einen Gerät und auf keinem anderen, und die Meldung hieß trotzdem
+    // „Gespeichert".
     const {error} = await sb.from('players').update(updates).eq('id',id);
     if(error){
-      // Spalte existiert evtl. nicht in DB – lokaler Fallback via localStorage
-      console.warn('DB-Update fehlgeschlagen, localStorage-Fallback:', error.message);
-      try{
-        localStorage.setItem('padel_playerEdit_'+id, JSON.stringify(updates));
-        toast('Gespeichert (lokal)','ok');
-      }catch(e){
-        toast('Lokal gespeichert');
-      }
-    } else {
-      toast('Gespeichert','ok');
+      console.warn('Profilbild nicht gespeichert:', error.message);
+      toast('Nicht gespeichert', 'err', {sub:'Das Profilbild konnte nicht in die Liga geschrieben werden.'});
+      return;
     }
+    p.avatar_id = updates.avatar_id;
+    try{ localStorage.removeItem(AVATAR_LOKAL_LS+id); }catch(e){}
+    invalidateCache();
+    toast('Gespeichert','ok');
     closeSheet(); // zurück zum Spielerprofil (Stack-Pop, zeigt aktualisiertes Avatar)
   };
 }
