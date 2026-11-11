@@ -11,7 +11,7 @@
 - Gemessen wird der Anteil, nicht die Anzahl; der Beleg (`ev`) beginnt mit dem Sortierwert. Ein Anteil an den eigenen Gelegenheiten kennt die Spielzahl nicht. Stehen neben einem Abstand seine beiden Quoten, ist er ihre Differenz, so wie sie dastehen: die Vergleichsquote folgt aus der eigenen Quote und dem Abstand (`_ppGegen`), der Wandler zeigt die Anteile des Profils.
 - `offen`: erfüllbar mit fünfzig Partien in der Laufbahn — im Rennen steht jemand mit unter hundert Partien, der Rekord ist vergeben und gehört nicht nur den drei Besten.
 - Zwölf Gegenpaare tragen dieselbe Mindestbasis; ein `paar` (zwei Enden eines Werts mit Vorzeichen) zeigt zurück, und die Rennen schneiden sich nicht.
-- Fügungen tragen `zufall` (`quote`: erreichbar, mindestens die halbe Liga im Rennen; `fund`: darf selten und unbesetzt sein, höchstens die Hälfte leer) und wiegen 40 statt 60. Eine Laufbahn aus lauter Niederlagen erreicht keinen Rekord mit Grundwert 60.
+- Fügungen tragen `zufall` (`quote`: erreichbar, mindestens die halbe Liga im Rennen; `fund`: darf selten und unbesetzt sein, höchstens die Hälfte leer) und wiegen 20 statt 30. Eine Laufbahn aus lauter Niederlagen erreicht keinen Rekord mit Grundwert 30.
 - Kein Halter trägt mehr als ein Viertel der Tafel; jeder gewertete Spieler mindestens einen Eintrag. Die Schandtafel (`art:'schatten'`) zählt nichts und fragt eher den Abstand zum Eigenen als das Niveau; kein Halter über zwei Fünftel davon, mindestens sechs Namen.
 - Dieselbe Frage auf zwei Zeitachsen bleibt EINE Disziplin (zweiundzwanzig tragen beide); liest der Monat eine Zählung als Wende und die Laufbahn als Kehrseite, sind es zwei Fragen und zwei Einträge („Der Ausbruch" und „Der Stammkunde"). Ein neuer Rekord steht im Katalog neben seinem nächsten Verwandten. Was eine Beziehung zweier Spieler misst oder an der Spielzahl hängt, wird kein Rekord.
 - `cond` nennt jede Schwelle der Wertfunktion, `wie` sagt, wie gemessen wird, samt Nenner. Gestrichene Rekorde stehen namentlich in `STORY_ABGEMELDET`; eine ID wechselt nicht, wenn ein Eintrag seine Frage wechselt, und die ID eines gestrichenen Rekords wird nicht für eine neue Frage wiederbenutzt (die Folge der Tage im Soll heißt `sollstrecke`, nicht `kopfhoch`).
@@ -48,7 +48,7 @@ was für immer.
 **Die Karte nennt Zeitraum, Grundwert und Mindestbasis** (`zeitraum`,
 `basis`, `mind`). Die Mindestbasis musste der Leser aus dem Bedingungssatz
 heraussuchen, und über welche Strecke gerechnet wird, stand nirgends. Der
-Grundwert steht dabei ausdrücklich als „60 P Basis": er ist NICHT, was
+Grundwert steht dabei ausdrücklich als „30 P Basis": er ist NICHT, was
 jemand bekommt — er wird durch die Zahl der Halter geteilt und danach in
 der Wurzelstaffel gedämpft [§C34]. Den tatsächlichen Beitrag zeigt das
 Blatt. Die Zeile steht leise und ohne Rahmen: zwei gerahmte Pillen

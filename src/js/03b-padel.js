@@ -185,8 +185,12 @@ function satzErgebnisse(m){
 // Games, die der Sieger gewinnen musste. Zählten die des Gegners mit, brächte
 // ein 6:4 mehr als ein 6:0, und ein knapper Satz würde belohnt.
 // Die Staffel hat die Liga vorgegeben: ein Satz bis 6 ist das volle Gewicht,
-// gleich wie er ausging; bis 1 die Hälfte, bis 3 drei Viertel, dazwischen
-// gerade Linien (bis 2 also 62,5 %, bis 4 rund 83 %, bis 5 rund 92 %). Geht
+// gleich wie er ausging; darunter wiegt er nach seiner Länge, Games des
+// Siegers durch sechs (bis 1 rund 17 %, bis 2 ein Drittel, bis 3 die
+// Hälfte). Zwei Stunden mit kurzen Sätzen sollen so viel bewegen wie zwei
+// Stunden mit langen: am ersten Spieltag (Sätze bis 2) wog jeder kurze Satz
+// 62,5 %, und ein Spieler kam an einem Nachmittag auf rund acht volle Sätze
+// Elo statt drei, vier. Geht
 // ein Satz über 6 hinaus (7:5, 7:6, 8:6), wird er länger, und jedes Game
 // darüber bringt zehn Prozent mehr; bei 150 % ist Schluss, damit ein
 // vertipptes 16:14 nicht das Dreifache eines Satzes bewegt. Ein
@@ -198,7 +202,7 @@ function satzErgebnisse(m){
 // 2:1 brachte dem Sieger alles und dem Verlierer nichts für seinen Satz.
 // Die drei Stufen stehen als Regler in den Einstellungen (`gewicht_eins`,
 // `gewicht_drei`, `gewicht_ueber6`); hier die Werte, die die Liga vorgab.
-const GEWICHT_STUETZEN_STANDARD = {eins:0.5, drei:0.75};
+const GEWICHT_STUETZEN_STANDARD = {eins:0.17, drei:0.5};
 const GEWICHT_JE_GAME_UEBER_6 = 0.1;
 const GEWICHT_MAX = 1.5;
 const GEWICHT_MTB_GAMES = 2;
@@ -222,6 +226,13 @@ function partieGewicht(m){
 // Verlierer ihn lange offen gehalten, und die Elo gleicht ihm einen Teil
 // des Verlusts aus (TIEBREAK_AUSGLEICH in der Engine): ein 7:6 wiegt für
 // den Sieger mehr als ein 6:4 und kostete den Verlierer sonst ebenso mehr.
+// Ein voller Satz: bis 6 oder länger, kein Match-Tiebreak. Wo ein Ergebnis
+// als Muster zählt (dasselbe Ergebnis wieder und wieder), zählen nur volle
+// Sätze — bis 2 gibt es nur 2:0 und 2:1, und jede Wiederholung wäre geschenkt.
+function vollerSatz(m){
+  const p = partie(m);
+  return !p.mtb && p.gamesSieger >= 6;
+}
 function satzUeberSechs(m){
   const p = partie(m);
   return p.gamesSieger > 6 || p.mtb || p.tiebreaks.length > 0;

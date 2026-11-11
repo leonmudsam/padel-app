@@ -319,9 +319,10 @@ function _chronikMonat(titleId){
 // Halter, sobald neue Monate sie verschieben, und genau dieser Fehler
 // steckte schon einmal in den Auszeichnungen [§C34]. Der Wert des Halters
 // steht dazu in der Tafel und im eingefrorenen Monat (`wert`).
-// 75 hat die Liga gesetzt (vorher 100): eine Monatschronik soll weniger
-// tragen als ein Meistertitel und nicht jede Auszeichnung überragen.
-const CHRONIK_GRUNDWERT = 75;
+// 30 hat die Liga nach dem ersten Spieltag gesetzt (davor 75, ursprünglich
+// 100): eine Monatschronik soll weniger tragen als ein Meistertitel, und das
+// Insignium soll länger halten.
+const CHRONIK_GRUNDWERT = 30;
 const CHRONIK_BONUS_JE_HALBIERUNG = 10;
 // Die komplementäre Fehlerfunktion (Numerical Recipes, `erfcc`, relativ
 // genauer als 1,2·10⁻⁷) und daraus die Halbierungen je σ an einem Ausschlag.

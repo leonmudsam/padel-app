@@ -155,8 +155,10 @@ function _eloErgebnis(st){
 }
 
 // ─── §3.6 Slider-basierte Berechnung (für Match-Eingabe + Recalc) ────
-// Gezählt in Sätzen der Saison, weil je Satz gerechnet wird: acht Sätze
-// sind rund vier Partien, zwanzig rund zehn.
+// Gezählt in vollen Sätzen der Saison: `saetzeSeason` wächst je Satz um sein
+// Gewicht, ein Satz bis 2 also um ein Drittel. Vorher zählte jeder Satz eins,
+// und wer am ersten Spieltag vierzehn kurze Sätze spielte, war nach einem
+// Nachmittag kein Neuling mehr — mit langen Sätzen nach drei Abenden.
 // Wie viel vom Verlust eines Satzes über sechs oder im Tiebreak der
 // Verlierer zurückbekommt; der Regler ist `tb_ausgleich`.
 const TIEBREAK_AUSGLEICH = 0.4;
@@ -318,7 +320,7 @@ function simulateEloWithSliders(matchSubset, opts={}){
     if(expA0===null) expA0=expA;
     ids.forEach(id=>{
       st.elo[id]+=res[id]; summe[id]+=res[id];
-      saetzeSeason[id]=(saetzeSeason[id]||0)+1;
+      saetzeSeason[id]=(saetzeSeason[id]||0)+gewicht;
       breakdowns[id].satzNr=t.satzNr; breakdowns[id].satz=t.sets[0]; breakdowns[id].delta=res[id];
       bdSaetze[id].push(breakdowns[id]);
     });

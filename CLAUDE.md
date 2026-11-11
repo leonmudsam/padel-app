@@ -29,7 +29,7 @@ direkt hintereinander am selben Tag (`begegnungVon`), gewertet nur an
 ihrem letzten Satz (`begegnungAm`). Alles, was ein Ergebnis liest, fragt
 `03b-padel.js` [§1.3]. Jeder Spieler steht auf einer Seite: `drive`
 (rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
-[§C44]. Ein Satz wiegt nach den Games des Siegers (bis 1 50 %, bis 3 75 %, bis 6 voll,
+[§C44]. Ein Satz wiegt nach den Games des Siegers (unter 6 nach der Länge, Games durch sechs: bis 2 ein Drittel, bis 3 die Hälfte; bis 6 voll,
 je Game darüber +10 %, `partieGewicht`) und nach der Deutlichkeit
 (`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
 spielt etwa fünf Tage im Monat, ein Spieler kommt an einem Tag auf sechs
@@ -165,7 +165,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1652**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1653**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---

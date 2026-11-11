@@ -404,8 +404,8 @@ function _chronicleCtx(bisMs){
       dz.e += exp; dz.gf += gf; dz.ga += ga;
       if(fz.bagelsFor) dz.n10++;
       if(fz.bagelsAgainst) dz.n01++;
-      const ergKey = standFuer(m, w);
-      dz.erg[ergKey] = (dz.erg[ergKey] || 0) + 1;
+      // Nur volle Sätze: bis 2 gäbe es nur zwei Ergebnisse.
+      if(vollerSatz(m)){ const ergKey = standFuer(m, w); dz.erg[ergKey] = (dz.erg[ergKey] || 0) + 1; }
       if(!p.firstDay){ p.firstDay = day; p.firstLabel = sid ? seasonLabel(sid) : dLabel(day); }
       p.lastDay = day;
       if(!daySet[id]) daySet[id] = new Set();

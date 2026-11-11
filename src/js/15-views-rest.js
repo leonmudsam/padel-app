@@ -345,8 +345,8 @@ function vSettings(){
       sl('cfgK','Tempo',c.k,8,64,'','','Wie stark ein Satz die Elo bewegt.')
       + sl('cfgStartElo','Start-Elo',c.startElo,0,1000,'','','Damit beginnt jeder eine Saison.'))}
     ${gruppe('Länge des Satzes',
-      sl('cfgGewEins','Satz bis 1 Game',c.eins,20,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
-      + sl('cfgGewDrei','Satz bis 3 Games',c.drei,40,100,' %','','Satz bis 6 zählt voll, dazwischen gestaffelt.')
+      sl('cfgGewEins','Satz bis 1 Game',c.eins,5,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
+      + sl('cfgGewDrei','Satz bis 3 Games',c.drei,20,100,' %','','Satz bis 6 zählt voll, dazwischen nach der Länge.')
       + sl('cfgGewUeber6','Je Game über 6',c.ueber6,0,30,' %','','7:5 und 7:6 bringen so viel mehr, höchstens 150 %.')
       + sl('cfgTbAusgleich','Ausgleich im Tiebreak',c.tb,0,100,' %','','So viel weniger verliert, wer einen Satz über 6 verliert.'))}
     ${gruppe('Ergebnis',

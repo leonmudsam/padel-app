@@ -120,7 +120,7 @@ const BADGES=[
     multi:true,count:(id,ms)=>countClearWins(id,ms)},
   {id:'krimi',ic:'thriller',name:'Krimi-Reihe',desc:BG.krimi+' knappe Sätze in Folge, gewonnen oder verloren (Tiebreak, 6:4 oder 7:5)',
     multi:true,count:(id,ms)=>countKrimiStreaks(id,ms)},
-  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' Sätze in Folge mit demselben Ergebnis gewonnen',
+  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' volle Sätze in Folge mit demselben Ergebnis gewonnen (bis 6 und länger)',
     multi:true,count:(id,ms)=>countRepeatScoreStreaks(id,ms)},
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
@@ -707,6 +707,7 @@ function countRepeatScoreStreaks(id,ms){
   let lastScore=null,cur=0,count=0;
   ordered.forEach(m=>{
     if(!won(id,m)){cur=0; lastScore=null; return;}
+    if(!vollerSatz(m)) return;   // kurze Sätze zählen nicht, sie brechen aber auch nichts
     const score=standFuer(m);
     if(score===lastScore){
       cur++;
@@ -1470,7 +1471,8 @@ function getBadgeEarnedCache(){
 
       // ── Wiederholungstäter: identisches Ergebnis, Satz für Satz ──
       // Niederlagen oder Siege mit anderem Ergebnis brechen die Serie.
-      if(w){
+      // Nur volle Sätze: bis 2 gibt es nur 2:0 und 2:1.
+      if(w && vollerSatz(m)){
         const score=standFuer(m);
         if(score===s.lastWinScore){
           s.wtCur++;
@@ -1478,7 +1480,7 @@ function getBadgeEarnedCache(){
         } else {
           s.wtCur=1; s.lastWinScore=score;
         }
-      } else {
+      } else if(!w){
         s.wtCur=0; s.lastWinScore=null;
       }
 

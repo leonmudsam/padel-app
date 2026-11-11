@@ -6774,7 +6774,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.34fc625d';
+const BUILD_VERSION='2026.11.11.d0a1ba75';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -7506,7 +7506,7 @@ function satzErgebnisse(m){
     .map(s => umdrehen ? s.b + ':' + s.a : s.a + ':' + s.b);
 }
 
-const GEWICHT_STUETZEN_STANDARD = {eins:0.5, drei:0.75};
+const GEWICHT_STUETZEN_STANDARD = {eins:0.17, drei:0.5};
 const GEWICHT_JE_GAME_UEBER_6 = 0.1;
 const GEWICHT_MAX = 1.5;
 const GEWICHT_MTB_GAMES = 2;
@@ -7525,6 +7525,10 @@ function satzGewichtNachGames(g){
 function partieGewicht(m){
   const p = partie(m);
   return satzGewichtNachGames(p.mtb ? GEWICHT_MTB_GAMES : p.gamesSieger);
+}
+function vollerSatz(m){
+  const p = partie(m);
+  return !p.mtb && p.gamesSieger >= 6;
 }
 function satzUeberSechs(m){
   const p = partie(m);
@@ -12264,7 +12268,7 @@ function simulateEloWithSliders(matchSubset, opts={}){
     if(expA0===null) expA0=expA;
     ids.forEach(id=>{
       st.elo[id]+=res[id]; summe[id]+=res[id];
-      saetzeSeason[id]=(saetzeSeason[id]||0)+1;
+      saetzeSeason[id]=(saetzeSeason[id]||0)+gewicht;
       breakdowns[id].satzNr=t.satzNr; breakdowns[id].satz=t.sets[0]; breakdowns[id].delta=res[id];
       bdSaetze[id].push(breakdowns[id]);
     });
@@ -14586,8 +14590,8 @@ function vSettings(){
       sl('cfgK','Tempo',c.k,8,64,'','','Wie stark ein Satz die Elo bewegt.')
       + sl('cfgStartElo','Start-Elo',c.startElo,0,1000,'','','Damit beginnt jeder eine Saison.'))}
     ${gruppe('Länge des Satzes',
-      sl('cfgGewEins','Satz bis 1 Game',c.eins,20,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
-      + sl('cfgGewDrei','Satz bis 3 Games',c.drei,40,100,' %','','Satz bis 6 zählt voll, dazwischen gestaffelt.')
+      sl('cfgGewEins','Satz bis 1 Game',c.eins,5,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
+      + sl('cfgGewDrei','Satz bis 3 Games',c.drei,20,100,' %','','Satz bis 6 zählt voll, dazwischen nach der Länge.')
       + sl('cfgGewUeber6','Je Game über 6',c.ueber6,0,30,' %','','7:5 und 7:6 bringen so viel mehr, höchstens 150 %.')
       + sl('cfgTbAusgleich','Ausgleich im Tiebreak',c.tb,0,100,' %','','So viel weniger verliert, wer einen Satz über 6 verliert.'))}
     ${gruppe('Ergebnis',
@@ -15557,7 +15561,7 @@ const BADGES=[
     multi:true,count:(id,ms)=>countClearWins(id,ms)},
   {id:'krimi',ic:'thriller',name:'Krimi-Reihe',desc:BG.krimi+' knappe Sätze in Folge, gewonnen oder verloren (Tiebreak, 6:4 oder 7:5)',
     multi:true,count:(id,ms)=>countKrimiStreaks(id,ms)},
-  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' Sätze in Folge mit demselben Ergebnis gewonnen',
+  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' volle Sätze in Folge mit demselben Ergebnis gewonnen (bis 6 und länger)',
     multi:true,count:(id,ms)=>countRepeatScoreStreaks(id,ms)},
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
@@ -15979,6 +15983,7 @@ function countRepeatScoreStreaks(id,ms){
   let lastScore=null,cur=0,count=0;
   ordered.forEach(m=>{
     if(!won(id,m)){cur=0; lastScore=null; return;}
+    if(!vollerSatz(m)) return;
     const score=standFuer(m);
     if(score===lastScore){
       cur++;
@@ -16530,7 +16535,7 @@ function getBadgeEarnedCache(){
       }
 
 
-      if(w){
+      if(w && vollerSatz(m)){
         const score=standFuer(m);
         if(score===s.lastWinScore){
           s.wtCur++;
@@ -16538,7 +16543,7 @@ function getBadgeEarnedCache(){
         } else {
           s.wtCur=1; s.lastWinScore=score;
         }
-      } else {
+      } else if(!w){
         s.wtCur=0; s.lastWinScore=null;
       }
 
@@ -31389,7 +31394,7 @@ const CHRONIK_KLASSE_NAME = {legendaer:'legendär', selten:'selten', besonders:'
 const CHRONIK_ART_NAME = {koennen:'Können', konstanz:'Konstanz',
                           fuegung:'Fügung', schatten:'Schattenseite'};
 
-const REKORD_GRUNDWERT = {koennen:60, fuegung:40, schatten:0};
+const REKORD_GRUNDWERT = {koennen:30, fuegung:20, schatten:0};
 
 function titleTone(tone){ return TITLE_TONES[tone] || TITLE_TONES.acid; }
 
@@ -31407,7 +31412,7 @@ function chronikTon(a){
 
 const TITLE_MIN_GAMES = 8;
 
-const CHRONIK_MIN_SPIELE = 8;
+const CHRONIK_MIN_SPIELE = 10;
 
 const ST_TEIL = 5;
 const ST_TAG = 5;
@@ -32370,8 +32375,8 @@ const DISZIPLINEN = [
       kammer:'fuegung', basis:REKORD_GRUNDWERT.fuegung, offen:true,
       zeitraum:'Ein einzelner Spieltag',
       mind:'2 gleiche Ergebnisse an einem Tag',
-      wie:'Gezählt wird, wie oft dasselbe Ergebnis an einem Spieltag aus eigener Sicht und in derselben Richtung vorkam. Verglichen wird Satz für Satz: ein 6:4 und ein 4:6 sind zwei verschiedene Ergebnisse, ein 6:4 und ein 6:4 6:2 ebenso.',
-      cond:'Häufigste Wiederholung desselben Ergebnisses an einem Spieltag',
+      wie:'Gezählt wird, wie oft dasselbe Ergebnis an einem Spieltag aus eigener Sicht und in derselben Richtung vorkam, in vollen Sätzen (bis 6 und länger). Ein 6:4 und ein 4:6 sind zwei verschiedene Ergebnisse.',
+      cond:'Häufigste Wiederholung desselben Ergebnisses voller Sätze an einem Spieltag',
       val:p => p.wiederTag >= 2 ? p.wiederTag : null,
       ev:p => `${p.wiederTag}× dasselbe Ergebnis ${p.wiederErg} an einem Tag`,
       zeit:p => p.wiederLabel || ''
@@ -33455,15 +33460,15 @@ const DISZIPLINEN = [
       beiname:'Der Gewohnheitstäter',
       art:'fuegung',
       klasse:'besonders', aus:3.37, streu:0.0439, mitte:0.16, n0:42, echt:0,
-      wie:'Das häufigste Ergebnis der eigenen Sätze, Satz für Satz, und der Anteil daran.',
-      stichprobe:p => p.games,
-      cond:'Ein und dasselbe Ergebnis in mindestens 30 % der eigenen Sätze',
+      wie:'Das häufigste Ergebnis der eigenen vollen Sätze (bis 6 und länger) und der Anteil daran. Kurze Sätze zählen nicht: bis 2 gibt es nur 2:0 und 2:1.',
+      stichprobe:p => p.partien.filter(s => s.voll).length,
+      cond:`Ein und dasselbe Ergebnis in mindestens 30 % der eigenen vollen Sätze, ab ${2 * ST_TEIL} vollen Sätzen`,
       ...(_stWertung(
-        p=>true,
-        p=>{const n={};p.partien.forEach(s=>{const k=s.erg;n[k]=(n[k]||0)+1;});
-      const b=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];p._lz={k:b,n:n[b]};return n[b]/p.games;},
+        p=>p.partien.filter(s=>s.voll).length>=2*ST_TEIL,
+        p=>{const v=p.partien.filter(s=>s.voll),n={};v.forEach(s=>{const k=s.erg;n[k]=(n[k]||0)+1;});
+      const b=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];p._lz={k:b,n:n[b]};return n[b]/v.length;},
         0.30,
-        (p,v)=>`${p._lz.n}× ${p._lz.k} · ${pct(v)} % aller Sätze`))}},
+        (p,v)=>`${p._lz.n}× ${p._lz.k} · ${pct(v)} % der vollen Sätze`))}},
 
   {id:'wechselhaft', name:'Der Wechselhafte', short:'Wechsel', ic:'wechselhaft', tone:'purple', art:'ereignis',
     monat:{
@@ -34281,7 +34286,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       p.partien.push({win:w, gf, ga, pos, tag:day, wk:_wochenKey(m.created_at), mid:m.id,
                       knapp, deutlich, zitter, zuNull:pz.zuNull, wende:bg.wende && bgW,
                       sf:fz.setsFor, sa:fz.setsAgainst, tbW:fz.tbWon, tbL:fz.tbLost,
-                      bF:fz.bagelsFor, bA:fz.bagelsAgainst, erg:standFuer(m, w),
+                      bF:fz.bagelsFor, bA:fz.bagelsAgainst, erg:standFuer(m, w), voll:vollerSatz(m),
                       mate:mateOf(id),
                       geg: onA ? [m.b1, m.b2] : [m.a1, m.a2], exp:myExp(id, m)});
       p.games++; p.gf += gf; p.ga += ga; p.gd += (gf - ga);
@@ -34902,8 +34907,7 @@ function _chronicleCtx(bisMs){
       dz.e += exp; dz.gf += gf; dz.ga += ga;
       if(fz.bagelsFor) dz.n10++;
       if(fz.bagelsAgainst) dz.n01++;
-      const ergKey = standFuer(m, w);
-      dz.erg[ergKey] = (dz.erg[ergKey] || 0) + 1;
+      if(vollerSatz(m)){ const ergKey = standFuer(m, w); dz.erg[ergKey] = (dz.erg[ergKey] || 0) + 1; }
       if(!p.firstDay){ p.firstDay = day; p.firstLabel = sid ? seasonLabel(sid) : dLabel(day); }
       p.lastDay = day;
       if(!daySet[id]) daySet[id] = new Set();
@@ -37250,7 +37254,7 @@ function _chronikMonat(titleId){
   return (d && d.monat) || null;
 }
 
-const CHRONIK_GRUNDWERT = 75;
+const CHRONIK_GRUNDWERT = 30;
 const CHRONIK_BONUS_JE_HALBIERUNG = 10;
 function _erfc(x){
   const z = Math.abs(x), t = 1 / (1 + 0.5 * z);

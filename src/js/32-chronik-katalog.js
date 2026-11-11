@@ -127,12 +127,13 @@ const CHRONIK_ART_NAME = {koennen:'Können', konstanz:'Konstanz',
 
 // ─── Der Grundwert eines Liga-Rekords im Prestige [§C34] ─────────────
 // Eine Stelle für alle Rekorde. Wer misst, was jemand kann — Können,
-// Bestmarke, Form —, beginnt bei 60; wer festhält, wo jemand steht oder was
-// Auslosung und letzter Ball entschieden (Rollenwert, Fügung), bei 40; eine
-// Schattenseite bringt nichts. Die Liga hat die Werte gesenkt (vorher 100 und
-// 75): Rekorde und Chroniken trugen zu viel des Prestiges, und ein Rekord
-// wog fast so viel wie ein Meistertitel (150).
-const REKORD_GRUNDWERT = {koennen:60, fuegung:40, schatten:0};
+// Bestmarke, Form —, beginnt bei 30; wer festhält, wo jemand steht oder was
+// Auslosung und letzter Ball entschieden (Rollenwert, Fügung), bei 20; eine
+// Schattenseite bringt nichts. Die Liga hat die Werte nach dem ersten
+// Spieltag auf 30 und 20 gesenkt (davor 60/40, ursprünglich 100/75): Rekorde
+// und Chroniken trugen zu viel des Prestiges, und das Insignium stieg zu
+// schnell. So hält die Leiter länger.
+const REKORD_GRUNDWERT = {koennen:30, fuegung:20, schatten:0};
 
 function titleTone(tone){ return TITLE_TONES[tone] || TITLE_TONES.acid; }
 
@@ -199,15 +200,15 @@ const TITLE_MIN_GAMES = 8;
 // [§C32]. Wer mehrere Bestwerte hält, trägt den, bei dem er am
 // deutlichsten vorn liegt.
 //
-// Eine Monatschronik hält, wer im Monat mindestens acht eigene Sätze hat —
+// Eine Monatschronik hält, wer im Monat mindestens zehn eigene Sätze hat —
 // positive wie Schattenseiten [§C39]. Gezählt wird je Spieler, vom ersten
 // Spieltag an. Eine Zeile ist ein Satz: ein Spieler kommt an einem Spieltag
-// auf sechs bis zehn. Die Liga hat acht gesetzt, damit auch wer nur an ein,
-// zwei Tagen im Monat dabei ist, in der Chronik steht.
+// auf sechs bis vierzehn. Die Liga hat zehn gesetzt, nach dem ersten
+// Spieltag (vorher acht).
 // Eine Bedingung nennt keine Untergrenze für den Monat, die darunter liegt;
 // was dort steht, meint den Vormonat, die Laufbahn davor oder einen Teil
 // des Monats.
-const CHRONIK_MIN_SPIELE = 8;
+const CHRONIK_MIN_SPIELE = 10;
 
 // ─── Bausteine der Monatschroniken ───────────────────────────────────
 // Eine Teilmenge zählt ab fünf Sätzen. Darunter sagt eine Quote nichts,
@@ -1505,8 +1506,8 @@ const DISZIPLINEN = [
       kammer:'fuegung', basis:REKORD_GRUNDWERT.fuegung, offen:true,
       zeitraum:'Ein einzelner Spieltag',
       mind:'2 gleiche Ergebnisse an einem Tag',
-      wie:'Gezählt wird, wie oft dasselbe Ergebnis an einem Spieltag aus eigener Sicht und in derselben Richtung vorkam. Verglichen wird Satz für Satz: ein 6:4 und ein 4:6 sind zwei verschiedene Ergebnisse, ein 6:4 und ein 6:4 6:2 ebenso.',
-      cond:'Häufigste Wiederholung desselben Ergebnisses an einem Spieltag',
+      wie:'Gezählt wird, wie oft dasselbe Ergebnis an einem Spieltag aus eigener Sicht und in derselben Richtung vorkam, in vollen Sätzen (bis 6 und länger). Ein 6:4 und ein 4:6 sind zwei verschiedene Ergebnisse.',
+      cond:'Häufigste Wiederholung desselben Ergebnisses voller Sätze an einem Spieltag',
       val:p => p.wiederTag >= 2 ? p.wiederTag : null,
       ev:p => `${p.wiederTag}× dasselbe Ergebnis ${p.wiederErg} an einem Tag`,
       zeit:p => p.wiederLabel || ''
@@ -2778,15 +2779,15 @@ const DISZIPLINEN = [
       beiname:'Der Gewohnheitstäter',
       art:'fuegung',
       klasse:'besonders', aus:3.37, streu:0.0439, mitte:0.16, n0:42, echt:0,
-      wie:'Das häufigste Ergebnis der eigenen Sätze, Satz für Satz, und der Anteil daran.',
-      stichprobe:p => p.games,
-      cond:'Ein und dasselbe Ergebnis in mindestens 30 % der eigenen Sätze',
+      wie:'Das häufigste Ergebnis der eigenen vollen Sätze (bis 6 und länger) und der Anteil daran. Kurze Sätze zählen nicht: bis 2 gibt es nur 2:0 und 2:1.',
+      stichprobe:p => p.partien.filter(s => s.voll).length,
+      cond:`Ein und dasselbe Ergebnis in mindestens 30 % der eigenen vollen Sätze, ab ${2 * ST_TEIL} vollen Sätzen`,
       ...(_stWertung(
-        p=>true,
-        p=>{const n={};p.partien.forEach(s=>{const k=s.erg;n[k]=(n[k]||0)+1;});
-      const b=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];p._lz={k:b,n:n[b]};return n[b]/p.games;},
+        p=>p.partien.filter(s=>s.voll).length>=2*ST_TEIL,
+        p=>{const v=p.partien.filter(s=>s.voll),n={};v.forEach(s=>{const k=s.erg;n[k]=(n[k]||0)+1;});
+      const b=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];p._lz={k:b,n:n[b]};return n[b]/v.length;},
         0.30,
-        (p,v)=>`${p._lz.n}× ${p._lz.k} · ${pct(v)} % aller Sätze`))}},
+        (p,v)=>`${p._lz.n}× ${p._lz.k} · ${pct(v)} % der vollen Sätze`))}},
 
   {id:'wechselhaft', name:'Der Wechselhafte', short:'Wechsel', ic:'wechselhaft', tone:'purple', art:'ereignis',
     monat:{

@@ -173,8 +173,8 @@ ok(J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:
 
 // ── Die Staffel der Liga und der Ausgleich im Tiebreak ───────────────
 const st = sets => Math.round(gw(sets) * 1000) / 10;
-ok(st([[1,0]]) === 50 && st([[2,0]]) === 62.5 && st([[3,1]]) === 75 && st([[6,0]]) === 100 && st([[6,4]]) === 100,
-  `Staffel: 1:0 50 %, bis 2 62,5 %, 3:x 75 %, 6:x 100 % (${st([[1,0]])}, ${st([[2,0]])}, ${st([[3,1]])}, ${st([[6,4]])})`);
+ok(st([[1,0]]) === 17 && st([[2,0]]) === 33.5 && st([[3,1]]) === 50 && st([[6,0]]) === 100 && st([[6,4]]) === 100,
+  `Staffel nach der Länge: 1:0 17 %, bis 2 33,5 %, 3:x 50 %, 6:x 100 % (${st([[1,0]])}, ${st([[2,0]])}, ${st([[3,1]])}, ${st([[6,4]])})`);
 ok(st([[7,5]]) === 110 && st([[7,6]]) === 110 && st([[8,6]]) === 120 && st([[12,10]]) === 150,
   `Über sechs: 7:5 und 7:6 110 %, 8:6 120 %, höchstens 150 % (${st([[7,5]])}, ${st([[8,6]])}, ${st([[12,10]])})`);
 const satzDelta = (a, b) => J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
@@ -232,6 +232,23 @@ const ANSCHLUSS = (async () => {
     `Eine alte Partie mit drei Sätzen wird in drei Sätze geteilt, als Begegnung weiter 2:1 (${t.n} Zeilen, ${t.bg})`);
 })();
 
+// ── Kurze Sätze wiegen nach ihrer Länge, auch in der Neulingsphase ──
+ok(J(`(()=>{const _m=matches,_p=players,_s=seasons;players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=(i,a,b)=>({id:'k'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a,b,art:'n'}]),created_at:new Date(Date.UTC(2026,7,10,16,i)).toISOString()});
+  matches=Array.from({length:6},(_,i)=>mk(i,2,1));invalidateCache();
+  const kurz=simulateEloWithSliders(matches).saetzeSeason.p1;
+  matches=Array.from({length:2},(_,i)=>mk(i,6,4));invalidateCache();
+  const lang=simulateEloWithSliders(matches).saetzeSeason.p1;
+  matches=_m;players=_p;seasons=_s;invalidateCache();
+  return Math.abs(kurz-2.01)<0.02 && lang===2;})()`),
+  'Sechs Sätze bis 2 zählen für die Neulingsphase wie zwei volle Sätze');
+ok(J(`(()=>{const mk=(i,a,b)=>({id:'w'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a,b,art:'n'}]),exp_a:.5,created_at:new Date(Date.UTC(2026,7,10,16,i)).toISOString()});
+  const z=ms=>BADGES.find(b=>b.id==='repeat_score').count('p1',ms);
+  return z([0,1,2].map(i=>mk(i,2,1)))===0 && z([0,1,2].map(i=>mk(i,6,3)))===1;})()`),
+  'Wiederholungstäter zählt nur volle Sätze: dreimal 2:1 nicht, dreimal 6:3 schon');
+
 // ── Chronik und Rekorde: jede Schwelle der Rechnung steht im Text ────
 // Seit eine Zeile ein Satz ist, stehen die Schwellen in Sätzen; vorher
 // nannten die Texte oft andere Zahlen als die Rechnung („die letzten 40"
@@ -265,8 +282,8 @@ const _schwelle = J(`(()=>{
 ok(_schwelle.fehlt.length === 0 && _schwelle.monate > 50 && _schwelle.rekorde > 50,
   'Jede Schwelle der Chronik und der Rekorde steht auch in ihrem Text: ' + (_schwelle.fehlt.slice(0, 6).join(' · ') || _schwelle.monate + ' Monatschroniken, ' + _schwelle.rekorde + ' Rekorde'));
 ok(_schwelle.alt.length === 0, 'Kein Chronik-Text spricht noch von Partien oder Toren: ' + _schwelle.alt.join(', '));
-ok(J('[CHRONIK_MIN_SPIELE, ST_TEIL, ST_TAG, CHRON_MIN_GAMES, RF.lauf]').join(',') === '8,5,5,40,50',
-  'Chronik in Sätzen: 8 im Monat, Teilmengen ab 5, ein Spieltag ab 5, Rekorde ab 40, der Lauf über 50');
+ok(J('[CHRONIK_MIN_SPIELE, ST_TEIL, ST_TAG, CHRON_MIN_GAMES, RF.lauf]').join(',') === '10,5,5,40,50',
+  'Chronik in Sätzen: 10 im Monat, Teilmengen ab 5, ein Spieltag ab 5, Rekorde ab 40, der Lauf über 50');
 
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
@@ -274,8 +291,8 @@ ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
   const c=vorschauHtml('info','Probe','Satz');hinweiseWeg().delete('Probe');
   return /data-hinweis-zu/.test(a)&&/data-hinweis="Probe"/.test(a)&&b==='<i>Ersatz</i>'&&c==='';})()`),
   'Jede Erklärkarte trägt ein Kreuz; geschlossen steht nur noch ihr Ersatz oder nichts');
-ok(J('[REKORD_GRUNDWERT.koennen, REKORD_GRUNDWERT.fuegung, CHRONIK_GRUNDWERT]').join(',') === '60,40,75',
-  'Rekorde beginnen bei 60 (Können) und 40 (Fügung), Chroniken bei 75');
+ok(J('[REKORD_GRUNDWERT.koennen, REKORD_GRUNDWERT.fuegung, CHRONIK_GRUNDWERT]').join(',') === '30,20,30',
+  'Rekorde beginnen bei 30 (Können) und 20 (Fügung), Chroniken bei 30');
 
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 ANSCHLUSS.catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {

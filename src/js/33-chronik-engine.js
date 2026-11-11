@@ -333,7 +333,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       p.partien.push({win:w, gf, ga, pos, tag:day, wk:_wochenKey(m.created_at), mid:m.id,
                       knapp, deutlich, zitter, zuNull:pz.zuNull, wende:bg.wende && bgW,
                       sf:fz.setsFor, sa:fz.setsAgainst, tbW:fz.tbWon, tbL:fz.tbLost,
-                      bF:fz.bagelsFor, bA:fz.bagelsAgainst, erg:standFuer(m, w),
+                      bF:fz.bagelsFor, bA:fz.bagelsAgainst, erg:standFuer(m, w), voll:vollerSatz(m),
                       mate:mateOf(id),
                       geg: onA ? [m.b1, m.b2] : [m.a1, m.a2], exp:myExp(id, m)});
       p.games++; p.gf += gf; p.ga += ga; p.gd += (gf - ga);
