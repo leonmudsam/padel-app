@@ -410,15 +410,12 @@ function showChronicle(cid){
   const h = chronicleHolders()[cid] || null;
   const halterN = h ? (h.pids || [h.pid]).length : 0;
   const verfolger = rang.slice(3);
-  // Ein leeres Rennen sagt, woran es liegt. Steht noch niemand im Rennen,
-  // nennt es die Weitesten mit ihrer Zahl, sonst hieße „Diesen Rekord hat
-  // noch niemand erreicht" auch nach vierzehn Siegen in Folge nur „noch nicht".
-  const anlauf = rekordAnlauf();
-  const vorn = anlauf.filter(a => a.n === (anlauf[0] && anlauf[0].n));
-  const leer = !allChronicles().rated && vorn.length
-    ? `Im Rennen ist, wer ${CHRON_MIN_GAMES} Sätze in der Laufbahn hat. Am weitesten ${vorn.length === 1 ? 'ist' : 'sind'} ${
-        esc(_namenListe(vorn.map(a => pname(a.pid))))} mit ${vorn[0].n}.`
-    : 'Diesen Rekord hat noch niemand erreicht.';
+  // Ein leeres Rennen sagt, woran es liegt. Vor dem Tor der Liga hieß
+  // „Diesen Rekord hat noch niemand erreicht" auch nach vierzehn Siegen in
+  // Folge nur „noch nicht", und das Blatt nannte „Mindestbasis: Ein Sieg".
+  const tor = rekordTor();
+  const leer = tor.offen ? 'Diesen Rekord hat noch niemand erreicht.'
+    : `Die Rekorde werden vergeben, sobald die Liga ${CHRON_MIN_GAMES} Sätze gespielt hat. Bisher sind es ${tor.n}.`;
   // Die vier Angaben, die den Wert eines Rekords bestimmen, standen nirgends:
   // wer ein Blatt oeffnete, sah die Bedingung und sonst nichts. Die
   // Zahlenreihe ist `rcpZahlenHtml`, das Bauteil der Rueckblicke [§C27].
@@ -440,13 +437,8 @@ function showChronicle(cid){
   // Zeitraum und Mindestbasis gehoeren nicht in die Zahlenreihe: es sind
   // Saetze und keine Werte, und „12 Spieltage mit je 3 Partien" laeuft in
   // einer 88-px-Zelle in die Nachbarzelle.
-  // „Im Rennen" steht vor der Mindestbasis, weil es vor ihr gilt: das Blatt
-  // des Unaufhaltsamen nannte „Mindestbasis: Ein Sieg", und nach einem
-  // Spieltag mit Siegesserien blieb er trotzdem leer, weil niemand die
-  // CHRON_MIN_GAMES Sätze hatte, ab denen überhaupt gewertet wird.
   const fakten = [
     def.zeitraum ? ['Zeitraum', def.zeitraum] : null,
-    ['Im Rennen', `ab ${CHRON_MIN_GAMES} Sätzen in der Laufbahn`],
     def.mind     ? ['Mindestbasis', def.mind] : null,
     def.basis > 0
       ? ['Für die Laufbahn', q ? _prestigeQuellSatz(q, true)
@@ -669,28 +661,22 @@ function ligaRekordeHtml(weit){
   const zaehl = rekordZaehlung();
   const maxN = Math.max(1, ...zaehl.map(z => z.n));
   const haltungen = zaehl.reduce((a, z) => a + z.n, 0);
-  // ── Wer noch nicht im Rennen ist ──────────────────────────────────
-  // Ins Rennen um einen Rekord kommt erst, wer CHRON_MIN_GAMES Sätze hat.
+  // ── Bis die Liga so weit ist ──────────────────────────────────────
+  // Vergeben werden die Rekorde erst ab CHRON_MIN_GAMES Sätzen der Liga.
   // Das stand nirgends: nach dem ersten Spieltag trug jede Karte „noch
   // niemand", die Leiste fehlte ganz, und „Der Unaufhaltsame" verlangte laut
-  // Blatt „Ein Sieg". Wer unter dem Tor steht, steht deshalb mit seiner Zahl
-  // in derselben Karte wie die Halter — eine fehlende Zeile sagt „ich habe
-  // ihn übersehen", eine Zahl sagt, wie weit es noch ist.
-  const anlauf = rekordAnlauf();
-  const anlaufHtml = anlauf.length ? `<div class="rek-anlauf">
-      <div class="rek-al">Im Rennen ab ${CHRON_MIN_GAMES} Sätzen in der Laufbahn</div>
-      <div class="rek-al-liste">${anlauf.map(a => {
-        const p = pmap()[a.pid];
-        return `<span class="rek-al-sp" data-tplayer="${esc(a.pid)}">
-          ${avHtml(p, 'width:18px;height:18px;font-size:8px;border-radius:6px')}
-          <span class="n">${esc(p.name)}</span>
-          <span class="z num">${a.n}<i>/${CHRON_MIN_GAMES}</i></span>
-        </span>`;
-      }).join('')}</div>
-    </div>` : '';
-  const leiste = zaehl.length || anlauf.length ? `<div class="rek-besitz">
+  // Blatt „Ein Sieg". Bis dahin steht in der Leiste, wie weit die Liga ist —
+  // eine Zelle je Satz wie der Kalender eines Monats [§C27], gespielt hell.
+  const tor = rekordTor();
+  const torHtml = tor.offen ? '' : `<div class="rek-tor">
+      <div class="rek-tor-s">Die Rekorde werden vergeben, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.</div>
+      <div class="rek-tor-zellen" style="--n:${CHRON_MIN_GAMES}">${
+        Array.from({length:CHRON_MIN_GAMES}, (_, i) => `<i${i < tor.n ? ' class="an"' : ''}></i>`).join('')}</div>
+      <div class="rek-tor-z num"><span><b>${tor.n}</b> gespielt</span><span>noch ${CHRON_MIN_GAMES - tor.n}</span></div>
+    </div>`;
+  const leiste = zaehl.length || !tor.offen ? `<div class="rek-besitz">
     <div class="rek-bk"><span class="l">Wer die Tafel hält</span>
-      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} Rekorde` : 'noch niemand im Rennen'}</span></div>
+      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} Rekorde` : ''}</span></div>
     ${zaehl.length ? `<div class="rek-saeulen">${zaehl.map(z => {
       const p = pmap()[z.pid];
       return `<span class="rek-sl${z.n ? '' : ' null'}" data-tplayer="${esc(z.pid)}">
@@ -699,7 +685,7 @@ function ligaRekordeHtml(weit){
         ${p ? avHtml(p, '') : ''}
       </span>`;
     }).join('')}</div>` : ''}
-    ${anlaufHtml}
+    ${torHtml}
   </div>` : '';
 
   const gruppen = Object.keys(CHRON_KINDS)
@@ -747,7 +733,7 @@ function ligaRekordeHtml(weit){
   };
   // Sie steht auch mit Rekorden, bis sie geschlossen wird [§C27].
   const vorschau = vorschauHtml('rekord', 'Die Liga-Rekorde',
-    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + `Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Im Rennen ist, wer mindestens <b>${CHRON_MIN_GAMES} Sätze</b> in der Laufbahn hat; das gilt zusätzlich zur Bedingung jeder Karte. Getippt zeigt eine Karte, wie gezählt wird.`);
+    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + `Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat; danach zählt für jeden die Bedingung der Karte. Getippt zeigt eine Karte, wie gezählt wird.`);
   return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }

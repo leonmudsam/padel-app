@@ -3,7 +3,7 @@
 ## Regel
 
 - Zweiundsechzig Liga-Rekorde in fünf Kammern (8 Bestmarken, 16 Können, 6 Aktuelle Form, 17 Fügungen, 15 Schattenseiten), in dieser Reihenfolge in Leiste und Liste (`CHRON_KINDS.ord`). Die Kammer steht am Eintrag (`allzeit.kammer`), nicht aus `art` erraten.
-- Im Rennen ist, wer `CHRON_MIN_GAMES` (40) Sätze in der Laufbahn hat; das gilt vor der Mindestbasis jedes Rekords. Erklärkarte, Hilfe und Blatt („Im Rennen") nennen die Zahl, und wer darunter steht, steht mit seiner Zahl in der Karte „Wer die Tafel hält" (`rekordAnlauf`); solange niemand im Rennen ist, nennt das leere Blatt die Weitesten.
+- Vergeben werden die Rekorde ab `CHRON_MIN_GAMES` (40) Sätzen der LIGA, für alle zugleich; danach gilt für jeden nur die Mindestbasis des Rekords. Gezählt werden alle Sätze bis zum gefragten Stand (`_chronicleCtx`: `saetze`, `offen`). Bis dahin nennen Erklärkarte, Hilfe, die Karte „Wer die Tafel hält" (eine Zelle je Satz, `rekordTor`) und das leere Blatt die Zahl und wie weit die Liga ist.
 - Die Siegquote zählt einmal. Nach dem Niveau fragen nur der beste Monat, der höchste Gipfel, die längste Siegesserie, die Form von jetzt und die beiden Positionen (`NIVEAU` in `tests/umbau/disziplinen`); jeder andere Rekord mit dem Grundwert des Könnens (100) fragt nach dem Abstand zum Eigenen [§C38], nach einer Teilmenge oder nach einer Folge und folgt der Siegquote gemessen mit r unter 0,75.
 - Die Karte nennt Zeitraum, Grundwert und Mindestbasis (`zeitraum`, `basis`, `mind`) und zeigt, wie weit der Halter vorn liegt (`_rekFeldHtml`, aus `chronicleRang`); der Kopf jeder Kammer sagt in einem Satz, was sie misst (`CHRON_KINDS.satz`). Kein Text beschreibt die App oder eine frühere Rechnung.
 - Ein Rekord hat keine Wertlatte, nur eine Stichprobe (Partien, Spieltage, Wochen, Niederlagen). Was ein Wert von sich aus braucht (erstes Glied, zwei Partien, eine Richtung, die sein Name verspricht: Sprung, Vorsprung, Aufschwung), bleibt; eine Teilmenge, die beschreibt, welche Partien zählen, ist keine Latte. Ein Abstand, der auf null rundet, ist keine Richtung.
@@ -20,28 +20,34 @@
 
 ## Stellen
 
-`32-chronik-katalog.js` (`DISZIPLINEN`), `34-chronik-rekorde.js` (`_chronicleCtx`, `CHRONICLES`, `CHRON_KINDS`, `chronicleRang`, `rekordZaehlung`, `rekordAnlauf`), `35-chronik-ui.js` (`ligaRekordeHtml`, `_rekFeldHtml`, `showChronicle`), `25-helpers.js` (`HILFE.awards`).
+`32-chronik-katalog.js` (`DISZIPLINEN`), `34-chronik-rekorde.js` (`_chronicleCtx`, `CHRONICLES`, `CHRON_KINDS`, `chronicleRang`, `rekordZaehlung`, `rekordTor`), `35-chronik-ui.js` (`ligaRekordeHtml`, `_rekFeldHtml`, `showChronicle`), `25-helpers.js` (`HILFE.awards`).
 
 ## Prüfung
 
-`tests/padel` (das Tor der 40 Sätze in Reiter, Erklärkarte und Blatt, jeder darunter mit seiner Zahl, bei genau 40 im Rennen), `tests/umbau/rechnen` (der laufende Tag zählt erst um 23:59), `tests/umbau/disziplinen` (Katalog, Kammern und ihre Zahlen, die Siegquote, die nur das Niveau trägt, Schwellen im Text, offene Rennen, Paare, Fenster, Halterdeckel, Schandtafel, sichtbarer Text), `tests/umbau/ambient` (jede Rekord-Karte gegen den ganzen Katalog), `tests/umbau/blatt` (Kammerfelder und Besitzleiste).
+`tests/padel` (unter 40 Sätzen der Liga kein Rekord, Reiter, Erklärkarte und Blatt nennen das Tor und den Stand der Liga; mit dem 40. Satz vergeben, auch an einen Spieler mit zwei Sätzen), `tests/umbau/rechnen` (der laufende Tag zählt erst um 23:59), `tests/umbau/disziplinen` (Katalog, Kammern und ihre Zahlen, die Siegquote, die nur das Niveau trägt, Schwellen im Text, offene Rennen, Paare, Fenster, Halterdeckel, Schandtafel, sichtbarer Text), `tests/umbau/ambient` (jede Rekord-Karte gegen den ganzen Katalog), `tests/umbau/blatt` (Kammerfelder und Besitzleiste).
 
 ## Herleitung
 
 Wie es dazu kam und was vorher falsch war — der Grund jeder Regel oben.
 
-**Das Tor steht da, wo man den Rekord sucht.** Gewertet wird nur, wer
-vierzig Sätze in der Laufbahn hat (`CHRON_MIN_GAMES`, etwa ein Monat) —
-sonst hielte ein Gast nach einem Spieltag einen Liga-Rekord. Gesagt hat das
-die App nirgends. Nach dem ersten Spieltag hatte jeder höchstens vierzehn
-Sätze, jede Karte im Rekorde-Reiter trug „noch niemand", die Leiste „Wer
-die Tafel hält" fehlte, und das Blatt des Unaufhaltsamen nannte als
-Mindestbasis „Ein Sieg" — nach Siegesserien am selben Tag. Die Mindestbasis
-eines Rekords gilt erst hinter dem Tor; deshalb steht „Im Rennen" im Blatt
-davor, und wer noch nicht so weit ist, steht mit seiner Zahl („14/40") in
-der Leiste, statt zu fehlen. Die Zahl kommt aus derselben Zählung, die über
-das Tor entscheidet (`_chronicleCtx`, `anlauf`), damit Leiste und Wertung
-nie auseinanderlaufen.
+**Die Rekorde öffnen sich mit der Liga, nicht je Spieler.** Das Tor von
+vierzig Sätzen stand je Spieler: wer weniger in seiner Laufbahn hatte, war
+in keinem Rennen, auch wenn er die Bedingung einer Karte längst erfüllte.
+Nach dem ersten Spieltag hatte jeder höchstens vierzehn Sätze, kein Rekord
+war vergeben, und wer neu dazukam, wartete einen Monat, bevor seine
+Siegesserie zählte. Jetzt gilt es für die Liga: ab ihrem vierzigsten Satz
+werden die Rekorde vergeben, an alle zugleich, und wie viel ein Einzelner
+gespielt haben muss, sagt die Mindestbasis des Rekords. Gemessen an der
+Testliga gehen mit dem vierzigsten Satz 34 der 58 Rekorde an Spieler mit
+zehn bis fünfundzwanzig Sätzen; der Feed fasst die Meldungen dieses Tages
+zu einer Karte der Ewigen Tafel zusammen.
+Gesagt hat die App das Tor nirgends. Jede Karte trug „noch niemand", die
+Leiste „Wer die Tafel hält" fehlte, und das Blatt des Unaufhaltsamen nannte
+als Mindestbasis „Ein Sieg" — nach Siegesserien am selben Tag. Bis zum Tor
+steht deshalb in der Leiste, wie weit die Liga ist, eine Zelle je Satz,
+und das leere Blatt nennt die Zahl. Sie kommt aus derselben Zählung, die
+über das Tor entscheidet (`_chronicleCtx`), damit Anzeige und Wertung nie
+auseinanderlaufen.
 
 Wer besser spielt,
 gewinnt jede Quote und jede Serie — am Ende liegen alle Liga-Einträge bei

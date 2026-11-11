@@ -285,36 +285,39 @@ ok(_schwelle.alt.length === 0, 'Kein Chronik-Text spricht noch von Partien oder 
 ok(J('[CHRONIK_MIN_SPIELE, ST_TEIL, ST_TAG, CHRON_MIN_GAMES, RF.lauf]').join(',') === '10,5,5,40,50',
   'Chronik in Sätzen: 10 im Monat, Teilmengen ab 5, ein Spieltag ab 5, Rekorde ab 40, der Lauf über 50');
 
-// ── Ab wann Rekorde zählen, steht da ────────────────────────────────
+// ── Die Rekorde öffnen sich mit der Liga, nicht je Spieler ──────────
 // Nach dem ersten Spieltag (bis 14 Sätze je Spieler) trug jede Rekordkarte
 // „noch niemand", das Blatt des Unaufhaltsamen nannte „Mindestbasis: Ein
 // Sieg", und dass erst ab CHRON_MIN_GAMES Sätzen gewertet wird, stand
-// nirgends. Ein Satz unter dem Tor und genau auf ihm.
+// nirgends. Das Tor galt außerdem je Spieler; es gilt für die Liga. Ein
+// Satz unter dem Tor, genau auf ihm, und dort ein fünfter Spieler mit nur
+// zwei Sätzen, der trotzdem im Rennen steht.
 const _tor = J(`(()=>{const _m=matches,_p=players,_s=seasons;
-  players=['p1','p2','p3','p4'].map((id,i)=>({id,name:['Leon','Domi','Fabio','Niggo'][i],hidden:false,elo:0,drive:.5}));seasons=[];
-  const mk=n=>Array.from({length:n},(_,i)=>({id:'q'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+  players=['p1','p2','p3','p4','p5'].map((id,i)=>({id,name:['Leon','Domi','Fabio','Niggo','Matti'][i],hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=n=>Array.from({length:n},(_,i)=>({id:'q'+i,a1:'p1',a2:'p2',b1:'p3',b2:i>=CHRON_MIN_GAMES-2?'p5':'p4',
+    a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
     ...partieFelder([{a:6,b:i%5,art:'n'}]),exp_a:.5,created_at:new Date(Date.UTC(2026,7,10,8,i)).toISOString()}));
   const sicht=()=>{awView='rekorde';rekKammer='';const reiter=vAwards();showChronicle('unstoppable');
     return {reiter,blatt:document.getElementById('sheet').innerHTML};};
   matches=mk(CHRON_MIN_GAMES-1);invalidateCache();
-  const a=sicht(), z=a.reiter.match(/class="rek-al-sp"[\\s\\S]*?<\\/span>\\s*<\\/span>/g)||[];
-  const vor={n:rekordAnlauf().map(x=>x.n).join(','),rated:allChronicles().rated,
-    leiste:a.reiter.includes('Im Rennen ab '+CHRON_MIN_GAMES+' Sätzen in der Laufbahn')&&z.length===4
-      &&z.every(s=>s.includes((CHRON_MIN_GAMES-1)+'<i>/'+CHRON_MIN_GAMES+'</i>')),
-    karte:a.reiter.includes('<b>'+CHRON_MIN_GAMES+' Sätze</b> in der Laufbahn'),
-    blatt:a.blatt.includes('ab '+CHRON_MIN_GAMES+' Sätzen in der Laufbahn')
-      &&a.blatt.includes('Am weitesten sind Domi, Fabio, Leon und Niggo mit '+(CHRON_MIN_GAMES-1)+'.')};
+  const a=sicht();
+  const vor={tor:rekordTor(),rated:allChronicles().rated,halter:Object.keys(chronicleHolders()).length,
+    leiste:a.reiter.includes('sobald die Liga <b>'+CHRON_MIN_GAMES+' Sätze</b> gespielt hat')
+      &&(a.reiter.match(/<i class="an"><\\/i>/g)||[]).length===CHRON_MIN_GAMES-1&&a.reiter.includes('noch 1<'),
+    karte:a.reiter.includes('Vergeben werden die Rekorde, sobald die Liga <b>'+CHRON_MIN_GAMES+' Sätze</b>'),
+    blatt:a.blatt.includes('sobald die Liga '+CHRON_MIN_GAMES+' Sätze gespielt hat. Bisher sind es '+(CHRON_MIN_GAMES-1)+'.')};
   matches=mk(CHRON_MIN_GAMES);invalidateCache();
   const b=sicht();
-  const nach={n:rekordAnlauf().length,rated:allChronicles().rated,leiste:/class="rek-anlauf"/.test(b.reiter),
-    halter:!!chronicleHolders().unstoppable,blatt:!b.blatt.includes('Am weitesten')};
+  const nach={tor:rekordTor(),rated:allChronicles().rated,p5:!!_chronicleCtx().P.p5,leiste:/class="rek-tor"/.test(b.reiter),
+    halter:!!chronicleHolders().unstoppable,blatt:!b.blatt.includes('Bisher sind es')};
   matches=_m;players=_p;seasons=_s;invalidateCache();
   return {vor,nach};})()`);
-ok(_tor.vor.rated === 0 && _tor.vor.n === '39,39,39,39' && _tor.vor.leiste && _tor.vor.karte,
-  `Unter ${J('CHRON_MIN_GAMES')} Sätzen steht im Rekorde-Reiter, ab wann gewertet wird, und jeder mit seiner Zahl (${_tor.vor.n})`);
-ok(_tor.vor.blatt, 'Das Rekord-Blatt nennt das Tor und, solange niemand im Rennen ist, die Weitesten mit ihrer Zahl');
-ok(_tor.nach.rated === 4 && _tor.nach.n === 0 && !_tor.nach.leiste && _tor.nach.halter && _tor.nach.blatt,
-  'Mit genau so vielen Sätzen ist jeder im Rennen, die Anlaufzeile fällt weg und der Rekord hat einen Halter');
+ok(!_tor.vor.tor.offen && _tor.vor.tor.n === 39 && _tor.vor.rated === 0 && _tor.vor.halter === 0 && _tor.vor.leiste && _tor.vor.karte,
+  `Unter ${J('CHRON_MIN_GAMES')} Sätzen der Liga ist kein Rekord vergeben, und der Reiter sagt, ab wann und wie weit die Liga ist (${_tor.vor.tor.n})`);
+ok(_tor.vor.blatt, 'Das Rekord-Blatt nennt das Tor der Liga und ihre Sätze bisher');
+ok(_tor.nach.tor.offen && _tor.nach.rated === 5 && _tor.nach.halter && !_tor.nach.leiste && _tor.nach.blatt,
+  'Mit dem 40. Satz der Liga sind die Rekorde vergeben, die Zeile zum Tor fällt weg');
+ok(_tor.nach.p5, 'Das Tor gilt für die Liga: wer erst zwei Sätze hat, steht trotzdem im Rennen');
 
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');

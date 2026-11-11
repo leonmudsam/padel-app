@@ -286,21 +286,18 @@
   .rek-sl.null .z{color:var(--faint)}
   .rek-sl .rav,.rek-sl .av{flex:0 0 auto}
   .rek-sl .av{--av:20px;width:20px;height:20px;font-size:8px;box-shadow:none}
-  /* Wer noch nicht im Rennen ist, steht mit seiner Zahl unter den Saeulen:
-     ab wann gewertet wird, stand sonst nirgends, und jede Karte darunter
-     sagte nur „noch niemand". Gestrichelt wie die Null in der Leiste — noch
-     nicht da, aber nicht vergessen. */
-  .rek-anlauf{margin-top:2px}
-  .rek-saeulen+.rek-anlauf{margin-top:11px;padding-top:9px;border-top:1px solid var(--line)}
-  .rek-al{font-size:10.5px;color:var(--muted);margin-bottom:7px}
-  .rek-al-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
-  .rek-al-sp{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 7px 4px 4px;
-    border:1px dashed var(--line2);border-radius:9px;cursor:pointer}
-  .rek-al-sp>.av{--av:18px;flex:0 0 auto;box-shadow:none}
-  .rek-al-sp .n{flex:1;min-width:0;font-size:11.5px;color:var(--ink2);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rek-al-sp .z{font-size:10.5px;font-weight:700;color:var(--ink2)}
-  .rek-al-sp .z i{font-style:normal;font-weight:400;color:var(--faint)}
+  /* Bis die Liga ihre Sätze für die Rekorde hat, steht hier, wie weit sie
+     ist: ab wann vergeben wird, stand sonst nirgends, und jede Karte darunter
+     sagte nur „noch niemand". Eine Zelle je Satz wie der Kalender eines
+     Monats, gespielt in Gold, der Rest gestrichelt — kein Balken, der in
+     der Breite wächst [§C27]. */
+  .rek-tor-s{font-size:12px;color:var(--ink2);line-height:1.45}
+  .rek-tor-zellen{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:2px;
+    height:12px;margin:9px 0 6px}
+  .rek-tor-zellen i{border-radius:2px;border:1px dashed var(--line2)}
+  .rek-tor-zellen i.an{border:0;background:linear-gradient(180deg,var(--gold),#b8952c)}
+  .rek-tor-z{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--muted)}
+  .rek-tor-z b{color:var(--gold)}
 
   /* Der Kammerfilter: sechs Felder in zwei Reihen. Als waagerecht
      scrollende Reiterleiste standen sechs Wörter in 11,5 px eng aneinander,

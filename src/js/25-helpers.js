@@ -253,7 +253,7 @@ const HILFE = {
     'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
   awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
     '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage, getippt zeigt sie die ersten drei.',
-    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons, im Rennen ab ${CHRON_MIN_GAMES} Sätzen in der Laufbahn. Wer einen übertrifft, nimmt ihn dem Halter ab.`,
+    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons, vergeben ab dem ${CHRON_MIN_GAMES}. Satz der Liga. Wer einen übertrifft, nimmt ihn dem Halter ab.`,
     () => `<b>Chronik</b>: jeder Monat schreibt Einträge für das, worin jemand besonders war, ab ${CHRONIK_MIN_SPIELE} Sätzen im Monat.`,
     'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
   teams: {titel:'Teams', absaetze:[

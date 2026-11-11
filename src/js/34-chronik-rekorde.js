@@ -72,9 +72,12 @@ const CHRON_KINDS = {
   shame:   {label:'Schattenseite', pl:'Schattenseiten', kurz:'Schatten', ic:'ghost',      ord:4,
             satz:'Die Kehrseite. Sie bringt kein Prestige'},
 };
-// Unter dieser Zahl eigener Sätze bekommt niemand eine Chronik. Eine
-// Laufbahn braucht eine Laufbahn — sonst trägt ein Gast nach einem Abend
-// einen Liga-Rekord. Vierzig Sätze sind etwa ein Monat.
+// Ab so vielen Sätzen DER LIGA werden die Rekorde vergeben, an alle zugleich.
+// Vorher stand dieses Tor je Spieler: nach dem ersten Spieltag hatte jeder
+// höchstens vierzehn Sätze, kein Rekord war vergeben, und wer zum ersten Mal
+// gegen die Liga spielte, kam erst nach einem Monat ins Rennen. Wie viel ein
+// Einzelner gespielt haben muss, sagt die Mindestbasis jedes Rekords
+// (`mind`, `RF`); ein Ereignis wie die längste Serie braucht nur sich selbst.
 const CHRON_MIN_GAMES = 40;
 // Die Fenster und Teilmengen der Laufbahn-Rekorde stehen als RF im Katalog
 // (32-chronik-katalog.js): seine Texte nennen dieselben Zahlen.
@@ -479,8 +482,7 @@ function _chronicleCtx(bisMs){
     seasonCount: allSeasons.size,
   };
 
-  // Zu kurze Laufbahnen und versteckte Spieler fliegen raus, BEVOR die
-  // Rekorde vergeben werden — sonst hält ein Gast den Liga-Rekord. Ein
+  // Versteckte Spieler fliegen raus, BEVOR die Rekorde vergeben werden. Ein
   // Ruheständler auch, und zwar auch in einem Zeitschnitt vor seinem
   // Karriereende [§C40]: ein Liga-Rekord ist ein Vergleich mit der Liga von
   // heute. Sonst schriebe der Feed am Tag nach dem Abschied „X übernimmt"
@@ -488,15 +490,15 @@ function _chronicleCtx(bisMs){
   // eine Partie, die damit nichts zu tun hat. Seine eigenen Rekorde stehen
   // eingefroren im Profil (`ruhestandStand`).
   //
-  // Wer noch unter dem Tor steht, wird gemerkt (`anlauf`). Ohne das stand im
-  // Rekorde-Reiter an jeder Karte „noch niemand", und warum, stand nirgends:
-  // nach dem ersten Spieltag hatte jeder vierzehn Sätze und eine Siegesserie,
-  // „Der Unaufhaltsame" verlangt „Ein Sieg" — und blieb leer. Gezählt wird
-  // hier, weil genau diese Zahl über das Tor entscheidet.
-  C.anlauf = [];
+  // Vor dem Tor der Liga (CHRON_MIN_GAMES Sätze bis zum gefragten Stand)
+  // steht niemand im Rennen. Die Zahl wird gemerkt (`saetze`, `offen`):
+  // ohne sie stand im Rekorde-Reiter an jeder Karte „noch niemand", und
+  // warum, stand nirgends. Gezählt werden alle Sätze bis zum Schnitt, auch
+  // die von Ruheständlern — es ist die Liga, die gespielt hat.
+  C.saetze = ms.length;
+  C.offen = ms.length >= CHRON_MIN_GAMES;
   Object.keys(P).forEach(id => {
-    if(!ligaAktiv(id)){ delete P[id]; return; }
-    if(P[id].games < CHRON_MIN_GAMES){ C.anlauf.push({pid:id, n:P[id].games}); delete P[id]; }
+    if(!C.offen || !ligaAktiv(id)) delete P[id];
   });
 
   // ── Die zwei Kammern [§C35]: ein Durchlauf ueber die Rohsicht ──────
@@ -1152,14 +1154,13 @@ function rekordZaehlung(){
   return res;
 }
 
-// Wer noch nicht im Rennen ist: jeder aktive Spieler mit mindestens einem und
-// weniger als CHRON_MIN_GAMES Sätzen, der Weiteste zuerst. Reiter und Blatt
-// lesen dieselbe Liste, damit beide dieselben Zahlen nennen [§C27].
-function rekordAnlauf(){
+// Wie weit die Liga bis zum Tor der Rekorde ist: ihre Sätze und ob vergeben
+// wird. Reiter und Blatt lesen dieselbe Zahl, die auch über das Tor
+// entscheidet, damit beide nie etwas anderes sagen als die Rechnung [§C27].
+function rekordTor(){
   let C;
-  try { C = _chronicleCtx(); } catch(e){ return []; }
-  return (C.anlauf || []).filter(a => pmap()[a.pid])
-    .sort((a, b) => b.n - a.n || pname(a.pid).localeCompare(pname(b.pid)));
+  try { C = _chronicleCtx(); } catch(e){ return {n:0, offen:false}; }
+  return {n:C.saetze || 0, offen:!!C.offen};
 }
 
 // Die vollstaendige Reihenfolge EINES Rekords — das Podest im Blatt und die
