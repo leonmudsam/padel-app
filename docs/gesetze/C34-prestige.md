@@ -49,7 +49,7 @@ Startwert** in `PRESTIGE_AUSZEICHNUNG_SPEZIAL`, dazu die Wochen- und
 Tageswertung: Meister der Saison **150** (−5 %), 20er Serie und Dynastie
 **120**, 15er Serie und Team der Saison **75**, Dominator, Award-Sammler
 und Untouchable **70**, Player of the Week **50** (−12 %), Mr. Perfect
-**50**, Absoluter Sieger **20** (−25 %), Player of the Day **10** (−25 %),
+**50**, Bagel serviert **20** (−25 %), Player of the Day **10** (−25 %),
 die übrigen mit −10 %. Der Meister ist die höchste Auszeichnung einer
 Saison und lag mit 100 unter der 20er Serie und der Dynastie. **Die
 Siegesserien sind eine Treppe**: 5er **15**, 10er **40**, 15er **75**,

@@ -257,7 +257,7 @@ function _buildStories(){
           desc: `${nameOf(rang[0].pid)} führt mit ${rang[0].elo} Elo, `
               + `${vor} vor ${nameOf(rang[1].pid)}. `
               + `Gewertet sind ${frei.partien} Sätze und `
-              + `${frei.genug} Spieler mit mindestens vier Einsätzen.`,
+              + `${frei.genug} Spieler mit mindestens ${STORY_RANG_MIN_EINSAETZE} Sätzen.`,
           // Der Zeitpunkt ist die Partie, die die Tabelle freigegeben hat,
           // und nicht der Moment des Nachschlagens: eine Karte, die beim
           // Oeffnen der App entsteht, traegt sonst den Zeitstempel des
@@ -1076,8 +1076,11 @@ function _buildStories(){
       // haben das Duell davor klar verloren (drei Games oder mehr). Ohne den
       // Abstand war in jeder Runde jede zweite Partie eine Revanche.
       const dk = [duo(W), duo(L)].sort().join('#'), vor = duelle[dk];
+      // Das Duell davor muss in einem anderen Match liegen: je Satz gezählt
+      // war sonst jeder Ausgleich zum 1:1 eine Revanche.
       if(neu && vor && W.concat(L).every(zeig) && tagKey(vor.created_at) === tagKey(m.created_at)
-         && duo(verlierer(vor)) === duo(W) && Math.abs(vor.games_a - vor.games_b) >= 3){
+         && duo(verlierer(vor)) === duo(W) && Math.abs(vor.games_a - vor.games_b) >= 3
+         && _begegnungsGruppen().get(vor.id) !== _begegnungsGruppen().get(m.id)){
 
         neuSt.push({id:'revanche_' + m.id, cat:'comeback', ic:'rematch',
           title:`${nameOf(W[0])} und ${nameOf(W[1])} revanchieren sich gegen ${nameOf(L[0])} und ${nameOf(L[1])}`,
@@ -1848,7 +1851,7 @@ function _buildStories(){
       const bgStand = bgHier ? `${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)}` : '';
       let art = 'normal', rang = 0, title = '', desc = '', ic = 'padelBall';
       if(pz.zuNull){
-        art = 'zu_null'; rang = 10; ic = 'hundred';
+        art = 'zu_null'; rang = 10; ic = 'bagel';
         title = `${wn} lassen kein Game zu`;
         desc = `${stand} gegen ${ln}. Ein Satz zu Null.`;
       } else if(chance >= CHANCE_SENSATION && chance < CHANCE_UPSET){

@@ -295,8 +295,10 @@ function _insZuegeZwischen(vor, nach, best, wann){
 // dabei waren. Die gebrauchte Spielerzahl wächst mit der Liga, bleibt aber
 // zwischen vier und sechs — in einer Liga aus zwölf Leuten sind sechs
 // regelmäßige Spieler eine Tabelle, in einer aus fünf sind es vier.
-const STORY_RANG_MIN_PARTIEN = 15;
-const STORY_RANG_MIN_EINSAETZE = 4;
+// Gezählt in Sätzen: zwanzig Sätze sind zwei, drei Spieltage, und wer mit
+// fünf Sätzen dabei war, hat mehr als ein Match gespielt.
+const STORY_RANG_MIN_PARTIEN = 20;
+const STORY_RANG_MIN_EINSAETZE = 5;
 function _storyRangFrei(sid, bisMs){
   let ms = [];
   try { ms = matchesInSeason(sid) || []; } catch(e){ ms = []; }

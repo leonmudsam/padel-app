@@ -375,7 +375,7 @@ function _stHaelften(p){
 // Maximum aus vielen Ziehungen ist groesser [§C39]. Das letzte Fenster liegt
 // fest, also gibt es keinen Auswahlvorteil.
 function _stLetzteZehn(p){
-  if(p.games < 10) return null;
+  if(p.games < 10 + ST_TEIL) return null;
   const drin = p.partien.slice(-10), raus = p.partien.slice(0, p.games - 10);
   return {d: _stQuote(drin) - _stQuote(raus), drin: _stQuote(drin),
           raus: _stQuote(raus), vor: raus.length};
@@ -1056,7 +1056,7 @@ const DISZIPLINEN = [
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte auf der schwächeren Seite · ${_ppZeichen(p.drvPerf/p.drvG)} rechts, ${_ppZeichen(p.revPerf/p.revG)} links`
     }},
 
-  {id:'sturmfuehrer', name:'Der Drive-Virtuose', short:'Drive', ic:'sturmfuehrer', tone:'orange', art:'leistung',
+  {id:'sturmfuehrer', name:'Der Drive-Virtuose', short:'Drive', ic:'driveVirtuose', tone:'orange', art:'leistung',
     allzeit:{
       kammer:'koennen', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ganze Laufbahn, alle Sätze rechts',
@@ -1074,7 +1074,7 @@ const DISZIPLINEN = [
   // Strecke beantwortet hat. Alle anderen Bedingungen gelten unveraendert:
   // der Wert bleibt ein ANTEIL oder ein Schnitt und keine Ansammlung, sonst
   // waere es wieder ein Rekord fuer den, der am meisten spielt.
-  {id:'defchief', name:'Der Revés-Virtuose', short:'Revés', ic:'shieldRank', tone:'blue', art:'leistung',
+  {id:'defchief', name:'Der Revés-Virtuose', short:'Revés', ic:'revesVirtuose', tone:'blue', art:'leistung',
     allzeit:{
       kammer:'koennen', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ganze Laufbahn, alle Sätze links',
@@ -1138,7 +1138,7 @@ const DISZIPLINEN = [
       klasse:'selten', wende:true, aus:1.73, streu:0.187, mitte:0.0295, n0:8, echt:0.55,
       wie:'Die letzten zehn Sätze des Monats gegen alle davor in diesem Monat.',
       stichprobe:p => (f => f ? _stH(10, f.vor) : 0)(_stLetzteZehn(p)),
-      cond:'In den letzten 10 Sätzen mindestens 35 Prozentpunkte über der eigenen Quote davor',
+      cond:`In den letzten 10 Sätzen mindestens 35 Prozentpunkte über der eigenen Quote davor, ab ${10 + ST_TEIL} Sätzen im Monat`,
       ...(_stWertung(
         p=>_stLetzteZehn(p)!=null,
         p=>{const f=_stLetzteZehn(p);return f?f.d:null;},
@@ -1196,7 +1196,7 @@ const DISZIPLINEN = [
       val:p => (p.weDelta != null && p.weN >= 4 && pct(p.weDelta) > 0) ? p.weDelta : null,
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte · ${pct(p.weW / p.weN)} % in ${p.weN} Rückkehrspielen, sonst ${_ppGegen(p.weW / p.weN, v)} %`
     }},
-  {id:'schlussball', name:'Der letzte Ball', short:'Schluss', ic:'whistle', tone:'gold', art:'leistung',
+  {id:'schlussball', name:'Der letzte Ball', short:'Schluss', ic:'padelBall', tone:'gold', art:'leistung',
     monat:{
       beiname:'Der Nervenstarke',
       art:'konstanz',
@@ -2500,7 +2500,7 @@ const DISZIPLINEN = [
         (p,v)=>{const t=Object.values(p.tagGrp).filter(a=>a.length>=ST_TAG);
       return `${t.length} Spieltage, keiner unter ${pct(v)} %`;}))}},
 
-  {id:'beidseitig', name:'Der Beidfüßige', short:'Beidfüßig', ic:'sort', tone:'blue', art:'leistung',
+  {id:'beidseitig', name:'Der Beidseitige', short:'Beidseitig', ic:'sort', tone:'blue', art:'leistung',
     monat:{
       beiname:'Der Vielseitige',
       art:'konstanz',

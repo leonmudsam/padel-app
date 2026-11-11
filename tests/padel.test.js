@@ -78,7 +78,7 @@ const zaehl = (id, sets) => J(`(()=>{const m={id:'b',a1:'p1',a2:'p2',b1:'p3',b2:
   ...partieFelder(${JSON.stringify(sets)}),exp_a:.5,created_at:'2026-08-10T18:00:00Z'};
   return BADGES.find(b=>b.id==='${id}').count('p1',[m]);})()`);
 ok(zaehl('perfect_win', [S(6,0)]) === 1 && zaehl('perfect_win', [S(6,1)]) === 0 && zaehl('perfect_loss', [S(0,6)]) === 1,
-  'Absoluter Sieger heißt ein Satz zu Null (6:0), 6:1 reicht nicht; 0:6 ist der Absolute Verlierer');
+  'Bagel serviert heißt ein Satz zu Null (6:0), 6:1 reicht nicht; 0:6 ist Bagel kassiert');
 ok(J(`BG.serien.join(',')`) === '5,10,15,20' && J(`BG.elo.join(',')`) === '75,150,300',
   'Serien 5/10/15/20 Sätze, Saison-Elo 75/150/300 für Aufsteiger, Dominator und Dynastie');
 ok(J(`['dynasty_600','dominator_400','streak15','streak20'].every(id=>rarityOf(id)==='legendary') && rarityOf('perfect_win')==='rare'

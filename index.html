@@ -6774,7 +6774,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.7e32b1ef';
+const BUILD_VERSION='2026.11.11.8e529a27';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -7009,13 +7009,11 @@ const ICONS = {
   chevron:       `<g transform="translate(-0.5 0)"><path d="M9 5l7 7-7 7"/></g>`,
   formPeak:      `<g transform="translate(0.5 0)"><path d="M4 20v-5M9 20v-8M14 20v-11M19 20v-6"/><path d="M4 11l5-4 5-3 5 4"/></g>`,
   hochSpitze:    `<g transform="translate(0.5 0.65)"><path d="M3 19h9"/><path d="M12 19l4-13 4 13"/><circle cx="16" cy="5" r="1.3"/></g>`,
-  whistle:       `<g transform="translate(0.5 1.5)"><path d="M3 10h9l1-2h3a3 3 0 010 6h-3l-1 2H6a3 3 0 01-3-3z"/><circle cx="7" cy="13" r="1.4"/><path d="M17 5c2 1 3 2.5 3 4.5"/></g>`,
   windBack:      `<g transform="translate(0 0.5)"><path d="M3 9h10a3 3 0 10-3-3"/><path d="M3 15h7a2.5 2.5 0 11-2.5 2.5"/><path d="M15 12h6l-3-3M18 15l3-3"/></g>`,
   soloPath:      `<g transform="translate(1.4 -0.6)"><circle cx="8" cy="7" r="3"/><path d="M3 20v-2a4 4 0 014-4h2a4 4 0 014 4v2"/><path d="M17 8v3M17 14v3" stroke-dasharray="2 2"/><circle cx="17" cy="20" r="1.2"/></g>`,
   sollPlus:      `<path d="M3 18h18" stroke-dasharray="3 3"/><path d="M4 15l4-4 4 2 4-7 4 3"/>`,
   roleFix:       `<circle cx="12" cy="6" r="2.6"/><path d="M7 20v-5a3 3 0 013-3h4a3 3 0 013 3v5"/><path d="M4 20h16"/>`,
   bothSides:     `<path d="M12 3v18"/><path d="M4 7h5M4 12h5M4 17h5"/><path d="M15 7h5M15 12h5M15 17h5"/>`,
-  shieldRank:    `<path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 10l3-2 3 2M9 14l3-2 3 2"/>`,
   stepsUp:       `<g transform="translate(-0.5 -0.5)"><path d="M3 20h5v-5h5v-5h5V5"/><path d="M16 8l3-3 3 3"/></g>`,
   vormonatSprung:`<g transform="translate(0 -0.75)"><path d="M3 21h18M7 21v-4M17 21V10"/><path d="M6 13c2-6 8-8 11-6"/><path d="M14.5 4.5L17 7l-2.5 2.5"/></g>`,
   leiterAuf:     `<g transform="translate(-1.75 0)"><path d="M6 21V3M13 21V3M6 7h7M6 12h7M6 17h7"/><path d="M19 13V5M16.5 7.5L19 5l2.5 2.5"/></g>`,
@@ -7102,7 +7100,6 @@ const ICONS = {
   wochenschluss: `<rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.3 8v8M10.1 8v8M13.9 8v8M17.7 8v8"/><path d="M17.7 8h2.3a1.5 1.5 0 011.5 1.5v5a1.5 1.5 0 01-1.5 1.5h-2.3z" fill="currentColor" fill-opacity=".45"/>`,
   tagesabschluss:`<path d="M19.5 14.5A8 8 0 019.5 4.5a8 8 0 1010 10z"/><path d="M9.5 13l2 2 3.5-4"/>`,
   thron:         `<path d="M7 21v-3.5M17 21v-3.5"/><path d="M5.5 17.5h13v-4h-13z"/><path d="M8 13.5V5l4-2.5L16 5v8.5"/>`,
-  sturmfuehrer:  `<path d="M5.5 21.5V3"/><path d="M5.5 3.5H18l-3 4.25L18 12H5.5"/>`,
 
   weisseWeste:   `<path d="M8.5 3L3.5 6l2 4.2L8 9.2V21h8V9.2l2.5 1L20.5 6l-5-3a3.5 3.5 0 01-7 0z"/>`,
   widerstand:    `<path d="M3 12h9.5M9.5 8.5L13 12l-3.5 3.5"/><path d="M16.5 4v16M20.5 6.5v11"/>`,
@@ -7136,7 +7133,7 @@ const ICONS = {
   platztausch:   `<rect x="3" y="14" width="6" height="6" rx="1"/><rect x="15" y="4" width="6" height="6" rx="1"/><path d="M6 11c0-3.5 3.5-4.5 8.5-4.5"/><path d="M12 4l2.5 2.5L12 9"/>`,
   festhalten:    `<g transform="translate(0 0.6)"><rect x="4" y="12" width="16" height="8" rx="1"/><path d="M12 15V7"/><circle cx="12" cy="5" r="2.2"/><path d="M8 20v-2M16 20v-2"/></g>`,
   abrutsch:      `<g transform="translate(1.5 0)"><path d="M3 4h5v5h5v5h5v6"/><path d="M8 4l9 9"/><path d="M17 8v5h-5"/></g>`,
-  klatsche:      `<rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M6 12h4"/><path d="M13 9h5l-3.5 6"/>`,
+  klatsche:      `<rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M6 12h4"/><path d="M16.5 15V9L13 13h5"/>`,
   tagVergessen:  `<g transform="translate(0 0.5)"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/><path d="M9.5 12.5l5 5M14.5 12.5l-5 5"/></g>`,
   stammkunde:    `<rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="7" cy="9.5" r="1.6" fill="currentColor" fill-opacity=".45"/><circle cx="12" cy="9.5" r="1.6" fill="currentColor" fill-opacity=".45"/><circle cx="17" cy="9.5" r="1.6" fill="currentColor" fill-opacity=".45"/><circle cx="7" cy="14.5" r="1.6" fill="currentColor" fill-opacity=".45"/><circle cx="12" cy="14.5" r="1.6" fill="currentColor" fill-opacity=".45"/><path d="M15.4 14.6l1.2 1.2 2.4-2.6"/>`,
   strohfeuer:    `<path d="M12 21V10"/><path d="M12 10L7 3M12 10l5-7M12 10L9.5 3M12 10l2.5-7"/><path d="M8 21h8"/><path d="M9 14h6"/>`,
@@ -7183,6 +7180,8 @@ const ICONS = {
   tiebreakPech: `<path d="M5 19h4V9H5zM15 19h4v-8h-4z"/><path d="M12 4v16" stroke-dasharray="2 2"/><path d="M15 4.5l4 3.5M19 4.5l-4 3.5"/>`,
   zuNull: `<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><ellipse cx="12" cy="11.5" rx="2.4" ry="3.4"/>`,
   driveAce: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M15.5 13.3l.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor"/>`,
+  driveVirtuose: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M15.5 18.5v-5M13.3 15.7l2.2-2.2 2.2 2.2"/>`,
+  revesVirtuose: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 18.5v-5M6.3 15.7l2.2-2.2 2.2 2.2"/>`,
   revesAce: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 13.3l.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor"/>`,
   langstrecke: `<circle cx="12" cy="11" r="7"/><path d="M12 7v4l3 2"/><path d="M4 21h16"/>`,
 };
@@ -7190,6 +7189,7 @@ const ZEICHEN_ALT = {
   weightSmall:'weight', heartBroken:'pille', concreteWall:'betonmauer', blackDay:'schwarzerTag',
   overtake:'ueberholen', rocket:'rakete', chartUp:'trendUp', chartDown:'trendDown', swords:'crossedSwords',
   iceCube:'dropTriple',
+  sturmfuehrer:'driveVirtuose', shieldRank:'revesVirtuose', whistle:'padelBall',
 };
 function icPfad(name, rueckfall){
   return ICONS[name] || ICONS[ZEICHEN_ALT[name]] || (rueckfall ? ICONS[rueckfall] || '' : '');
@@ -13722,7 +13722,7 @@ function vAwards(){
 const AW_IC = {
   wins:'trophyStar',     onFire:'flame',       perfect:'star',          streaks:'flameTriple',
   showmaster:'wende',    mvt:'handshake',      bestDuo:'duo',           scorer:'tiebreak',
-  wall:'bagel',          ice:'zuNull',      endgegner:'skull',       clutch:'target',
+  wall:'bagel',          ice:'thumbsUp',      endgegner:'skull',       clutch:'target',
   carryKing:'weight',    solo:'lonewolf',      upset:'surprise',        biggest:'explosion',
   grinder:'racket',      worstWr:'bilanzTief',      coldStreak:'dropTriple',    lossStreaks:'trendCrash',
   formtief:'meltDown',   worstAtk:'tiebreakPech',worstDef:'bagelOpfer',        worstTeam:'brokenHeart',
@@ -15561,9 +15561,9 @@ const BADGES=[
     multi:true,count:(id,ms)=>countRepeatScoreStreaks(id,ms)},
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
-  {id:'perfect_loss',ic:'dizzy',name:'Absoluter Verlierer',desc:'Satz 0:6 verloren, ohne ein einziges Game',
+  {id:'perfect_loss',ic:'dizzy',name:'Bagel kassiert',desc:'Satz 0:6 verloren, ohne ein einziges Game',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&!won(id,m)).length},
-  {id:'perfect_win',ic:'hundred',name:'Absoluter Sieger',desc:'Satz zu Null gewonnen (6:0)',
+  {id:'perfect_win',ic:'bagel',name:'Bagel serviert',desc:'Satz zu Null gewonnen (6:0)',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&won(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
@@ -20219,8 +20219,8 @@ function _insZuegeZwischen(vor, nach, best, wann){
       return x && x.stufe === i; }).length)};
 }
 
-const STORY_RANG_MIN_PARTIEN = 15;
-const STORY_RANG_MIN_EINSAETZE = 4;
+const STORY_RANG_MIN_PARTIEN = 20;
+const STORY_RANG_MIN_EINSAETZE = 5;
 function _storyRangFrei(sid, bisMs){
   let ms = [];
   try { ms = matchesInSeason(sid) || []; } catch(e){ ms = []; }
@@ -20563,7 +20563,7 @@ function _buildStories(){
           desc: `${nameOf(rang[0].pid)} führt mit ${rang[0].elo} Elo, `
               + `${vor} vor ${nameOf(rang[1].pid)}. `
               + `Gewertet sind ${frei.partien} Sätze und `
-              + `${frei.genug} Spieler mit mindestens vier Einsätzen.`,
+              + `${frei.genug} Spieler mit mindestens ${STORY_RANG_MIN_EINSAETZE} Sätzen.`,
           when: new Date(saison[k].created_at),
           prio: STORY_PRIO.season_start,
           dataRef: {type:'season_start', sid,
@@ -21110,7 +21110,8 @@ function _buildStories(){
       });
       const dk = [duo(W), duo(L)].sort().join('#'), vor = duelle[dk];
       if(neu && vor && W.concat(L).every(zeig) && tagKey(vor.created_at) === tagKey(m.created_at)
-         && duo(verlierer(vor)) === duo(W) && Math.abs(vor.games_a - vor.games_b) >= 3){
+         && duo(verlierer(vor)) === duo(W) && Math.abs(vor.games_a - vor.games_b) >= 3
+         && _begegnungsGruppen().get(vor.id) !== _begegnungsGruppen().get(m.id)){
 
         neuSt.push({id:'revanche_' + m.id, cat:'comeback', ic:'rematch',
           title:`${nameOf(W[0])} und ${nameOf(W[1])} revanchieren sich gegen ${nameOf(L[0])} und ${nameOf(L[1])}`,
@@ -21686,7 +21687,7 @@ function _buildStories(){
       const bgStand = bgHier ? `${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)}` : '';
       let art = 'normal', rang = 0, title = '', desc = '', ic = 'padelBall';
       if(pz.zuNull){
-        art = 'zu_null'; rang = 10; ic = 'hundred';
+        art = 'zu_null'; rang = 10; ic = 'bagel';
         title = `${wn} lassen kein Game zu`;
         desc = `${stand} gegen ${ln}. Ein Satz zu Null.`;
       } else if(chance >= CHANCE_SENSATION && chance < CHANCE_UPSET){
@@ -27161,7 +27162,7 @@ function _spKontext(F){
   const tag = F.W.map(id => { const l = F.tag.filter(x => [x.a1, x.a2, x.b1, x.b2].includes(id));
     return {id, k:l.length, w:l.filter(x => _spGew(x, id)).length}; }).filter(x => x.k >= 3).sort((a, b) => b.w - a.w)[0];
   if(tag) wahl.push({t:`${_spName(tag.id)} holt den ${_spZahl(tag.w)}. Sieg des Tages`,
-    d:`${_spZahl(tag.w)} Siege aus ${_spZahl(tag.k)} Sätzen an diesem Tag.`});
+    d:`${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen an diesem Tag.`});
   if(!wahl.length) wahl.push(F.duo.p <= 1 ? {t:`${W} gewinnen den ersten gemeinsamen Satz`,
       d:n > 1 ? `Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.` : `Es ist das erste Treffen dieser beiden Duos.`}
     : {t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
@@ -31485,7 +31486,7 @@ function _stHaelften(p){
 }
 
 function _stLetzteZehn(p){
-  if(p.games < 10) return null;
+  if(p.games < 10 + ST_TEIL) return null;
   const drin = p.partien.slice(-10), raus = p.partien.slice(0, p.games - 10);
   return {d: _stQuote(drin) - _stQuote(raus), drin: _stQuote(drin),
           raus: _stQuote(raus), vor: raus.length};
@@ -32008,7 +32009,7 @@ const DISZIPLINEN = [
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte auf der schwächeren Seite · ${_ppZeichen(p.drvPerf/p.drvG)} rechts, ${_ppZeichen(p.revPerf/p.revG)} links`
     }},
 
-  {id:'sturmfuehrer', name:'Der Drive-Virtuose', short:'Drive', ic:'sturmfuehrer', tone:'orange', art:'leistung',
+  {id:'sturmfuehrer', name:'Der Drive-Virtuose', short:'Drive', ic:'driveVirtuose', tone:'orange', art:'leistung',
     allzeit:{
       kammer:'koennen', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ganze Laufbahn, alle Sätze rechts',
@@ -32019,7 +32020,7 @@ const DISZIPLINEN = [
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte · ${pct(p.drvW/p.drvG)} statt ${_ppGegen(p.drvW/p.drvG, v)} % erwartet in ${p.drvG} Sätzen rechts`
     }},
 
-  {id:'defchief', name:'Der Revés-Virtuose', short:'Revés', ic:'shieldRank', tone:'blue', art:'leistung',
+  {id:'defchief', name:'Der Revés-Virtuose', short:'Revés', ic:'revesVirtuose', tone:'blue', art:'leistung',
     allzeit:{
       kammer:'koennen', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ganze Laufbahn, alle Sätze links',
@@ -32065,7 +32066,7 @@ const DISZIPLINEN = [
       klasse:'selten', wende:true, aus:1.73, streu:0.187, mitte:0.0295, n0:8, echt:0.55,
       wie:'Die letzten zehn Sätze des Monats gegen alle davor in diesem Monat.',
       stichprobe:p => (f => f ? _stH(10, f.vor) : 0)(_stLetzteZehn(p)),
-      cond:'In den letzten 10 Sätzen mindestens 35 Prozentpunkte über der eigenen Quote davor',
+      cond:`In den letzten 10 Sätzen mindestens 35 Prozentpunkte über der eigenen Quote davor, ab ${10 + ST_TEIL} Sätzen im Monat`,
       ...(_stWertung(
         p=>_stLetzteZehn(p)!=null,
         p=>{const f=_stLetzteZehn(p);return f?f.d:null;},
@@ -32113,7 +32114,7 @@ const DISZIPLINEN = [
       val:p => (p.weDelta != null && p.weN >= 4 && pct(p.weDelta) > 0) ? p.weDelta : null,
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte · ${pct(p.weW / p.weN)} % in ${p.weN} Rückkehrspielen, sonst ${_ppGegen(p.weW / p.weN, v)} %`
     }},
-  {id:'schlussball', name:'Der letzte Ball', short:'Schluss', ic:'whistle', tone:'gold', art:'leistung',
+  {id:'schlussball', name:'Der letzte Ball', short:'Schluss', ic:'padelBall', tone:'gold', art:'leistung',
     monat:{
       beiname:'Der Nervenstarke',
       art:'konstanz',
@@ -33196,7 +33197,7 @@ const DISZIPLINEN = [
         (p,v)=>{const t=Object.values(p.tagGrp).filter(a=>a.length>=ST_TAG);
       return `${t.length} Spieltage, keiner unter ${pct(v)} %`;}))}},
 
-  {id:'beidseitig', name:'Der Beidfüßige', short:'Beidfüßig', ic:'sort', tone:'blue', art:'leistung',
+  {id:'beidseitig', name:'Der Beidseitige', short:'Beidseitig', ic:'sort', tone:'blue', art:'leistung',
     monat:{
       beiname:'Der Vielseitige',
       art:'konstanz',

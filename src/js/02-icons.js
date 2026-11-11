@@ -210,9 +210,6 @@ const ICONS = {
   // `climb` (Treppe mit Pfeil) und `stepsUp` (Stufen): dort geht es stetig
   // nach oben, hier bricht es an einer Stelle aus.
   hochSpitze:    `<g transform="translate(0.5 0.65)"><path d="M3 19h9"/><path d="M12 19l4-13 4 13"/><circle cx="16" cy="5" r="1.3"/></g>`,
-  // Der letzte Ball: eine Pfeife mit Schallbogen — der Schlusspfiff eines
-  // Spieltags. Die Partie, an die man sich erinnert.
-  whistle:       `<g transform="translate(0.5 1.5)"><path d="M3 10h9l1-2h3a3 3 0 010 6h-3l-1 2H6a3 3 0 01-3-3z"/><circle cx="7" cy="13" r="1.4"/><path d="M17 5c2 1 3 2.5 3 4.5"/></g>`,
   // Rückenwind: zwei Böen, die von hinten schieben, mit einer Spitze voran.
   // Wen die Auslosung zuteilt, entscheidet niemand selbst [§C35].
   windBack:      `<g transform="translate(0 0.5)"><path d="M3 9h10a3 3 0 10-3-3"/><path d="M3 15h7a2.5 2.5 0 11-2.5 2.5"/><path d="M15 12h6l-3-3M18 15l3-3"/></g>`,
@@ -233,7 +230,6 @@ const ICONS = {
   // Zeichen nach der Leistung auf beiden Seiten.
   bothSides:     `<path d="M12 3v18"/><path d="M4 7h5M4 12h5M4 17h5"/><path d="M15 7h5M15 12h5M15 17h5"/>`,
   // Abwehrchef: Schild mit Rangwinkeln darin — die Ansage in der Abwehr.
-  shieldRank:    `<path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 10l3-2 3 2M9 14l3-2 3 2"/>`,
   // Auftrieb: eine Treppe mit Pfeil — zwei Abschnitte, der zweite höher.
   stepsUp:       `<g transform="translate(-0.5 -0.5)"><path d="M3 20h5v-5h5v-5h5V5"/><path d="M16 8l3-3 3 3"/></g>`,
   // Zwei Monate als Säulen, der Bogen springt von der kurzen zur hohen.
@@ -399,7 +395,6 @@ const ICONS = {
   wochenschluss: `<rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.3 8v8M10.1 8v8M13.9 8v8M17.7 8v8"/><path d="M17.7 8h2.3a1.5 1.5 0 011.5 1.5v5a1.5 1.5 0 01-1.5 1.5h-2.3z" fill="currentColor" fill-opacity=".45"/>`,
   tagesabschluss:`<path d="M19.5 14.5A8 8 0 019.5 4.5a8 8 0 1010 10z"/><path d="M9.5 13l2 2 3.5-4"/>`,
   thron:         `<path d="M7 21v-3.5M17 21v-3.5"/><path d="M5.5 17.5h13v-4h-13z"/><path d="M8 13.5V5l4-2.5L16 5v8.5"/>`,
-  sturmfuehrer:  `<path d="M5.5 21.5V3"/><path d="M5.5 3.5H18l-3 4.25L18 12H5.5"/>`,
 
   // ── Tore und Abwehr
   weisseWeste:   `<path d="M8.5 3L3.5 6l2 4.2L8 9.2V21h8V9.2l2.5 1L20.5 6l-5-3a3.5 3.5 0 01-7 0z"/>`,
@@ -463,7 +458,7 @@ const ICONS = {
   // Stufen hinab und ein Pfeil: „Der Abrutsch" in der Tabelle.
   abrutsch:      `<g transform="translate(1.5 0)"><path d="M3 4h5v5h5v5h5v6"/><path d="M8 4l9 9"/><path d="M17 8v5h-5"/></g>`,
   // Eine Tafel mit minus sieben: „Die Klatsche".
-  klatsche:      `<rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M6 12h4"/><path d="M13 9h5l-3.5 6"/>`,
+  klatsche:      `<rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M6 12h4"/><path d="M16.5 15V9L13 13h5"/>`,
   // Ein Kalenderblatt, durchgestrichen: „Der Tag zum Vergessen". Nicht das
   // Zeichen des schwarzen Tages — der zählt Niederlagen, dieser die Rechnung.
   tagVergessen:  `<g transform="translate(0 0.5)"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/><path d="M9.5 12.5l5 5M14.5 12.5l-5 5"/></g>`,
@@ -521,6 +516,8 @@ const ICONS = {
   tiebreakPech: `<path d="M5 19h4V9H5zM15 19h4v-8h-4z"/><path d="M12 4v16" stroke-dasharray="2 2"/><path d="M15 4.5l4 3.5M19 4.5l-4 3.5"/>`,
   zuNull: `<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><ellipse cx="12" cy="11.5" rx="2.4" ry="3.4"/>`,
   driveAce: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M15.5 13.3l.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor"/>`,
+  driveVirtuose: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M15.5 18.5v-5M13.3 15.7l2.2-2.2 2.2 2.2"/>`,
+  revesVirtuose: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 18.5v-5M6.3 15.7l2.2-2.2 2.2 2.2"/>`,
   revesAce: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 13.3l.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor"/>`,
   langstrecke: `<circle cx="12" cy="11" r="7"/><path d="M12 7v4l3 2"/><path d="M4 21h16"/>`,
 };
@@ -533,6 +530,8 @@ const ZEICHEN_ALT = {
   weightSmall:'weight', heartBroken:'pille', concreteWall:'betonmauer', blackDay:'schwarzerTag',
   overtake:'ueberholen', rocket:'rakete', chartUp:'trendUp', chartDown:'trendDown', swords:'crossedSwords',
   iceCube:'dropTriple',
+  // Kicker-Zeichen, durch Padel-Zeichen ersetzt [§C41]
+  sturmfuehrer:'driveVirtuose', shieldRank:'revesVirtuose', whistle:'padelBall',
 };
 // Die Zeichnung zu einem Namen, auch zu einem alten. Jeder Zugriff auf den
 // Katalog geht hierüber — ein direktes `ICONS[name]` sähe die alten Namen

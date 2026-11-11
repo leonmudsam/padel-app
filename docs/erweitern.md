@@ -33,7 +33,7 @@ zwei Einträge pro Zeile: Dynastie/Dominator, 20er/15er Serie,
 Meister/Team der Saison, Untouchable/Award-Sammler und Tag der Götter/
 Bagel-Bäcker. Danach bleibt die Reihenfolge aus `BADGES[]` stabil. Gezählt
 wird in Sätzen (`BG`): Serien 5/10/15/20, Saison-Elo 75/150/300 für
-Aufsteiger, Dominator und Dynastie. „Absoluter Sieger" ist ein einzelner
+Aufsteiger, Dominator und Dynastie. „Bagel serviert" (früher „Absoluter Sieger") ist ein einzelner
 Satz zu Null und deshalb Rare; fünf davon in einer Saison („Bagel-Bäcker")
 sind Legendary, ebenso drei Spieltage in Folge als Player of the Day.
 

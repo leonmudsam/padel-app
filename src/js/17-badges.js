@@ -125,9 +125,9 @@ const BADGES=[
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
   // Zu Null heißt: ein Satz ohne abgegebenes Game, 6:0 [§1.3].
-  {id:'perfect_loss',ic:'dizzy',name:'Absoluter Verlierer',desc:'Satz 0:6 verloren, ohne ein einziges Game',
+  {id:'perfect_loss',ic:'dizzy',name:'Bagel kassiert',desc:'Satz 0:6 verloren, ohne ein einziges Game',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&!won(id,m)).length},
-  {id:'perfect_win',ic:'hundred',name:'Absoluter Sieger',desc:'Satz zu Null gewonnen (6:0)',
+  {id:'perfect_win',ic:'bagel',name:'Bagel serviert',desc:'Satz zu Null gewonnen (6:0)',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&won(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
@@ -245,7 +245,7 @@ const BADGE_RARITY = {
   games250:        'rare',      // Urgestein (BG.urgestein Sätze) — zählt Anwesenheit
   wins200:         'rare',      // Siegermaschine (BG.siegermaschine Satzsiege) — zählt Anwesenheit
   vice_champion:   'rare',      // Vize-Meister
-  perfect_win:     'rare',      // Absoluter Sieger — ein Satz zu Null; fünf in einer Saison sind legendär
+  perfect_win:     'rare',      // Bagel serviert — ein Satz zu Null; fünf in einer Saison sind legendär
   repeat_score:    'rare',      // Wiederholungstäter
   streak10:        'rare',      // 10er Serie
   krimi:           'rare',      // Krimi-Reihe
@@ -275,7 +275,7 @@ const BADGE_RARITY = {
   streak5:         'common',    // 5 Sätze in Folge
   // -- NEGATIVE (8) --
   losing5:         'negative',  // Die Talfahrt — BG.talfahrt Sätze in Folge verloren
-  perfect_loss:    'negative',  // Absoluter Verlierer — Satz 0:6
+  perfect_loss:    'negative',  // Bagel kassiert — Satz 0:6
   black_day:       'negative',  // Schwarzer Tag — ab BG.tag Sätzen, alle verloren
   krimi_loser:     'negative',  // Krimi-Versager — BG.krimiNied knappe Sätze in Folge verloren
   bitter_loss:     'negative',  // Bittere Pille — Satz im Tiebreak verloren

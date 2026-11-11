@@ -1082,7 +1082,7 @@ function vAwards(){
 const AW_IC = {
   wins:'trophyStar',     onFire:'flame',       perfect:'star',          streaks:'flameTriple',
   showmaster:'wende',    mvt:'handshake',      bestDuo:'duo',           scorer:'tiebreak',
-  wall:'bagel',          ice:'zuNull',      endgegner:'skull',       clutch:'target',
+  wall:'bagel',          ice:'thumbsUp',      endgegner:'skull',       clutch:'target',
   carryKing:'weight',    solo:'lonewolf',      upset:'surprise',        biggest:'explosion',
   grinder:'racket',      worstWr:'bilanzTief',      coldStreak:'dropTriple',    lossStreaks:'trendCrash',
   formtief:'meltDown',   worstAtk:'tiebreakPech',worstDef:'bagelOpfer',        worstTeam:'brokenHeart',

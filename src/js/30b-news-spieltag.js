@@ -1012,7 +1012,7 @@ function _spKontext(F){
   const tag = F.W.map(id => { const l = F.tag.filter(x => [x.a1, x.a2, x.b1, x.b2].includes(id));
     return {id, k:l.length, w:l.filter(x => _spGew(x, id)).length}; }).filter(x => x.k >= 3).sort((a, b) => b.w - a.w)[0];
   if(tag) wahl.push({t:`${_spName(tag.id)} holt den ${_spZahl(tag.w)}. Sieg des Tages`,
-    d:`${_spZahl(tag.w)} Siege aus ${_spZahl(tag.k)} Sätzen an diesem Tag.`});
+    d:`${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen an diesem Tag.`});
   if(!wahl.length) wahl.push(F.duo.p <= 1 ? {t:`${W} gewinnen den ersten gemeinsamen Satz`,
       d:n > 1 ? `Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.` : `Es ist das erste Treffen dieser beiden Duos.`}
     : {t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
