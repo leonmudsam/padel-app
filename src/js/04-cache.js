@@ -318,7 +318,7 @@ function getRankSnapshots(){
 // Cache-Key bindet an matches.length + _cache.version → invalidiert automatisch
 // nach jedem Match (doSaveMatch ruft invalidateCache(['global', ...])).
 const POSV_COLORS = [
-  '#BEF264', '#ff7849', '#56b4e8', '#f7cf4a',
+  '#E4F24A', '#ff7849', '#56b4e8', '#f7cf4a',
   '#a78bfa', '#4ade80', '#f0566a', '#22d3ee',
   '#fb923c', '#e879f9', '#fde047', '#94a3b8'
 ];

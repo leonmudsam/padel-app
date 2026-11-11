@@ -14,7 +14,7 @@ function showPlayerH2HList(playerId){
   const miniAv = (pp) => {
     const em = pp.avatar_id ? avatarEmoji(pp.avatar_id) : null;
     if(em) return `<div style="width:36px;height:36px;border-radius:50%;background:var(--surface3);display:grid;place-items:center;font-size:18px;flex-shrink:0">${em}</div>`;
-    return `<div style="width:36px;height:36px;border-radius:50%;background:${avColor(pp.id)};display:grid;place-items:center;font-size:13px;font-family:'Archivo Black',sans-serif;color:#0a0c0b;flex-shrink:0">${esc(initials(pp.name))}</div>`;
+    return `<div style="width:36px;height:36px;border-radius:50%;background:${avColor(pp.id)};display:grid;place-items:center;font-size:13px;font-family:'Archivo Black',sans-serif;color:#080b10;flex-shrink:0">${esc(initials(pp.name))}</div>`;
   };
 
   // Die Bilanz sagt in Worten, wofür sie steht: „39-30T · 116-72G" brauchte
@@ -115,7 +115,7 @@ function showAddPlayer(){
     <button class="btn" id="confirmAdd" style="margin-top:12px">Hinzufügen</button>`);
   const ni=document.getElementById('newName');ni.focus();
   const go=async()=>{const n=ni.value.trim();if(!n){toast('Name fehlt',true);return;}
-    const{error}=await sb.from('players').insert({name:n,elo:cfg.start_elo,atk:0.5});
+    const{error}=await sb.from('players').insert({name:n,elo:cfg.start_elo,drive:0.5});
     if(error){toast(error.message.includes('duplicate')?'Der Name ist schon vergeben':'Fehler',true);return;}
     closeSheet(true);toast('Spieler angelegt','ok');await loadAll();};
   document.getElementById('confirmAdd').onclick=go;

@@ -18,7 +18,7 @@ quer durch `src/`.
 
 ## Prüfung
 
-`tests/blatt` liest Reiter und Blätter auf Namen und Sprache und zählt in Blatt, Profil, Laufbahn und Auszeichnung nach, dass nichts abgeschnitten ist, `tests/disziplinen` prüft Belege, Bedingungen und Erklärungen auf Pronomen und Rechensprache, `tests/tafel` die Schriftangaben.
+`tests/umbau/blatt` liest Reiter und Blätter auf Namen und Sprache und zählt in Blatt, Profil, Laufbahn und Auszeichnung nach, dass nichts abgeschnitten ist, `tests/umbau/disziplinen` prüft Belege, Bedingungen und Erklärungen auf Pronomen und Rechensprache, `tests/umbau/tafel` die Schriftangaben.
 
 ## Herleitung
 
@@ -43,14 +43,14 @@ Wortlaut zitiert, nicht mit einer Nummer.
   rechneten es je Spieler noch einmal nach, ohne den Tiebreak: gemessen sind
   12 der 51 entschiedenen Tage punktgleich, und dort trugen beide Spieler den
   Tag, obwohl beide Beschreibungen „Player of the Day geworden" sagen.
-  `tests/disziplinen` rechnet beide gegen die Siegerliste zurück.
+  `tests/umbau/disziplinen` rechnet beide gegen die Siegerliste zurück.
 - **Keine persönliche Ansprache** in der Oberfläche („du", „meine").
 - **Eine Schrift hat einen Rückfall.** Die Schriften kommen aus dem Netz, und
   eine App, die offline startet, hat sie nicht. Drei Angaben nannten nur
   `'Space Grotesk'`, und dort fiel der Browser auf eine Serifenschrift
   zurück: im Positions-Profil stand „Verteidiger" in Times. Jede
   `font-family` endet deshalb auf einer Familie (`sans-serif`, `monospace`,
-  …); `tests/tafel` liest das an der Auslieferung nach.
+  …); `tests/umbau/tafel` liest das an der Auslieferung nach.
 - **Dieselbe Sache hat einen Namen.** Die Siegquote hieß im Profil
   „Siegrate", im Teams-Reiter „Winrate" und in der Chronik „Siegquote";
   der Partner war „Mate", die Tordifferenz „Tordiff" oder „TD", die größte
@@ -84,12 +84,12 @@ Wortlaut zitiert, nicht mit einer Nummer.
   „Savepoint", „Backup") oder ein Kürzel („min. 5 Siege", „Min. Spiele",
   „Ø 7,5 Tore/Sp.", „257 Sp.", „10 Rek.", „39-30T · 116-72G" mit einer
   Legende darüber), und eins steht in der Einzahl („1 Niederlagen" stand
-  als aktuelle Serie im Profil). `tests/blatt` liest den Text der Reiter und von
+  als aktuelle Serie im Profil). `tests/umbau/blatt` liest den Text der Reiter und von
   dreiundzwanzig Blättern danach ab.
 - **Keine Possessivpronomen über einen Spieler.** „42 % seiner Niederlagen"
   heißt „42 % aller Niederlagen". Belege, Bedingungen und Nachrichtentexte
   stehen unter dem Wappen jedes Spielers, und ein Pronomen behauptet dort ein
-  Geschlecht, das die Liga nicht kennt. `tests/disziplinen` misst die
+  Geschlecht, das die Liga nicht kennt. `tests/umbau/disziplinen` misst die
   gebauten Belege und Bedingungen nach.
 - **Kein „Abend".** Keine der 466 Partien hat nach 18 Uhr angefangen; was
   über einen Spieltag gesagt wird, heißt Tag.

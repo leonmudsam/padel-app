@@ -534,7 +534,8 @@ function _vRankingCore(){
       ${nebenHtml}
       ${sichtBar}
       ${metrikLeisteHtml(period)}
-      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar','Keine Partien in diesem Zeitraum')}`;
+      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar','Keine Partien in diesem Zeitraum')}
+      ${activePlayers().length<4?`<button class="btn ghost sm" id="addPlayerBtn" style="margin-top:14px">+ Spieler anlegen</button>`:''}`;
   }
 
 

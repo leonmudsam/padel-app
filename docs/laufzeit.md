@@ -128,9 +128,9 @@ Wer die Version wegen der Bequemlichkeit weglässt, baut einen stillen Fehler:
 `teamDetail` und `h2hDetail` hatten nur Spieler-IDs im Schlüssel und hingen
 damit allein an ihrem Tag — den der Eingabe-Tab beim Speichern gar nicht
 mitreicht. Gemessen zeigte das Duo-Blatt nach einer neuen Partie weiter 26:4
-statt 27:4 und die Bilanz 110 Duelle statt 111. `tests/tafel` misst das nach.
+statt 27:4 und die Bilanz 110 Duelle statt 111. `tests/umbau/tafel` misst das nach.
 
-`tests/tafel` liest die ausgelieferte Datei und prüft die Regel für **jeden**
+`tests/umbau/tafel` liest die ausgelieferte Datei und prüft die Regel für **jeden**
 Topf nach — Stichproben genügen dafür nicht, weil ein neuer Topf gerade der
 ist, an den niemand denkt.
 
@@ -140,7 +140,7 @@ aktuelle Woche beziehungsweise den Tag, `allPastSeasons` den laufenden
 Monat, `getSeasonPositionHistory` den heutigen Tag, solange die Saison
 läuft, und `avatarRings` die Woche, den Tag und ob er zu ist. Die kleine Recap-Kurve trägt auch `ph.lastDay`. Ohne neue Partie darf
 der Cache keinen alten Tag oder noch laufenden Vormonat behaupten.
-`tests/leistung` prüft das mit unveränderter Datenversion.
+`tests/umbau/leistung` prüft das mit unveränderter Datenversion.
 
 `periodPlayerStats` folgt der Identität der kanonischen Periodenliste und
 dem aktuellen Monat: auch neben einer unveränderten Allzeit-Bilanz muss die
@@ -165,7 +165,7 @@ H2H-Listen tragen Version und Matchanzahl im Schlüssel und höchstens 80
 Einträge. Gültige Nullwerte für Erwartung, Spielbonus und Verlustdämpfung sind
 keine fehlenden Angaben. Die sichtbaren Prestige-Gruppensummen kommen zentral
 aus derselben Restverteilung wie die Posten im Laufbahnblatt; Gesamtformel und
-Rohquellen bleiben unverändert. `tests/rechnen` prüft die gemeinsame Anzeige
+Rohquellen bleiben unverändert. `tests/umbau/rechnen` prüft die gemeinsame Anzeige
 in Engine, Profil und Story, ohne eine zweite Elo-Formel zu implementieren.
 
 Das Spielerprofil nutzt bereits gecachte Spieler-/Saisonlisten und bindet
@@ -228,7 +228,7 @@ oberhalb des Deckels nämlich nicht beschnitten, es ist **aus**: gemessen an
 Zeitschnitte null Rechnungen, auf zwölf und zwanzig jeweils alle noch einmal.
 Und ein Deckel steht nie weit über der Arbeitsmenge — der News-Generator
 allein fragt sieben verschiedene Schnitte des Monatskontexts ab, der Deckel
-stand bei acht. `tests/tafel` zählt die Töpfe und
+stand bei acht. `tests/umbau/tafel` zählt die Töpfe und
 die Deckel und misst, dass ein Eintrag zu viel einen Eintrag kostet —
 Stichproben genügen dafür nicht, weil ein neuer Topf gerade
 der ist, an den niemand denkt.
@@ -337,7 +337,7 @@ gerechnet.
 Bestand: aus dem `best` der letzten Insignium-Karte und aus alten
 Stufen-Zeilen. Die Stände jedes Spieltags davor nachzurechnen kostete rund
 anderthalb Sekunden und verdrängte, was das Vorwärmen für die Awards
-bereitgelegt hatte (`tests/start` war rot). Ein Ruheständler fällt beim
+bereitgelegt hatte (`tests/umbau/start` war rot). Ein Ruheständler fällt beim
 Lesen heraus [§C40].
 
 **Die Rohsicht landet nicht im Cache.** Fünfundzwanzig Liga-Rekorde [§C35]
@@ -353,7 +353,7 @@ vergleicht jeden Mitspieler mit sich selbst OHNE diesen Partner, „Der
 Rückenwind" braucht die Stärke des Partners, und „Der letzte Ball" und „Die
 Steigerung" gruppieren nach Spieltagen — alle drei Fragen hängen an einer
 Reihenfolge, die nur die fertige Liste kennt. Die vier Kennzahlen der Schandtafel fallen im
-selben Durchlauf ab — gemessen 8,6 auf 10,3 ms kalt, warm weiterhin null. `tests/disziplinen` sieht nach, dass kein Spielerobjekt im
+selben Durchlauf ab — gemessen 8,6 auf 10,3 ms kalt, warm weiterhin null. `tests/umbau/disziplinen` sieht nach, dass kein Spielerobjekt im
 Cache eine Liste trägt.
 
 **Der Stand des Geräts** (IndexedDB `kicker-stand`, ein Eintrag `liga`)
@@ -395,7 +395,7 @@ Der Update-Check (`checkForUpdate`, `01-update.js`) fragt mit
 des Geräts (`kicker_upd_v1`) und gilt nur, solange diese Version läuft. Ohne
 ihn lud jeder Start die ganze Seite erneut — neben den vier Datenabfragen.
 Der erste Check des Starts wartet, bis der erste Datenlauf gezeichnet hat und
-die Seite ruht. `tests/start` misst beides am echten Start.
+die Seite ruht. `tests/umbau/start` misst beides am echten Start.
 
 Findet er eine andere Fassung, lädt `_updVersuchen` neu, sobald nichts offen
 ist, nichts geschrieben oder abgerufen wird und Ruhe ist (seit dem Start
@@ -485,8 +485,8 @@ angenommen (`_storyWorkerLebt`), rechnet er bis zu fünf Minuten
 derselbe Code, nur stünde das Telefon still. Mit zwanzig Sekunden für alles
 übernahm er, sobald die Liga einige Jahre alt war. Wer die fünf Minuten
 überschreitet, wird beendet (`_storyWorkerNeu`); der Lauf bringt keine neuen
-Stories, und der nächste startet einen neuen Worker. `tests/start` hält Worker und Hauptthread
-aneinander, `tests/ambient` sieht nach, dass der Generator nicht im selben
+Stories, und der nächste startet einen neuen Worker. `tests/umbau/start` hält Worker und Hauptthread
+aneinander, `tests/umbau/ambient` sieht nach, dass der Generator nicht im selben
 Aufruf wie das Zeichnen läuft.
 
 Nach jedem Zeichnen mit neuen Daten rechnet `_vorwaermen` (`04-cache.js`
@@ -497,7 +497,7 @@ macht, sonst träfe der Schlüssel nicht. Seit der Generator im Worker rechnet,
 wärmt er den Hauptthread nicht mehr nebenbei; ohne das Vorwärmen rechneten
 Awards und Teams beim ersten Öffnen kalt. Ein neuer Datenstand (andere
 Version) oder ein neuerer Auftrag bricht den laufenden ab
-(`_vorwaermAuftrag`), eine versteckte Seite wartet. `tests/start` zählt nach
+(`_vorwaermAuftrag`), eine versteckte Seite wartet. `tests/umbau/start` zählt nach
 dem Start beim ersten Öffnen jedes Reiters die kalten Rechnungen: null.
 Die Zeichen der Laufbahn gehören nicht dazu: sie tragen die Rangfarbe, und
 der Start zeichnete sie für jeden Rang der Liga — gemessen elf Sekunden lang
@@ -507,7 +507,7 @@ und Datenversion gebunden) die eines Rangs, wenn sein Profil oder eine
 Story mit dem Weg zur Laufbahn offen steht, eine Zeichnung je ruhigem
 Moment; ist kein Blatt und kein Fenster mehr offen, hört es auf. Kalt
 kostete das erste Laufbahn-Blatt eines Rangs 600 bis 900 ms Skript, warm 65
-bis 140 ms. `tests/start` sieht nach, dass der Start keines zeichnet und
+bis 140 ms. `tests/umbau/start` sieht nach, dass der Start keines zeichnet und
 das Öffnen der Laufbahn aus dem Profil höchstens eines, das der eigenen
 Stufe mitten im Grad.
 
@@ -516,7 +516,7 @@ Beim Start wartet die Oberfläche höchstens 2,5 s auf das erste Bild
 seiner Zeit ab (`_aufbauAuftrag`), die Klasse `.aufbau` am Wurzelknoten nach
 1,7 s (`_vorfuehrungAuftrag`), jedes Kantenlicht nach seiner Dauer
 (`KANTE_MS`, 4,6 s zeichnen, 4,2 s Hinweis) und das Band über Gold nach
-seiner Bahn; `tests/start` sieht nach, dass danach nichts davon im Dokument
+seiner Bahn; `tests/umbau/start` sieht nach, dass danach nichts davon im Dokument
 steht. Ein Licht oder Band mit Verzögerung steht bis zu seinem Einsatz ohne
 Kasten in seiner Karte, und ein Zeitgeber je Licht gibt es dann frei
 (`_lichtWartet`, `.kl-wartet`); beim Neuzeichnen wandert es mit. Die Ladelinie endet spätestens 15 s nach ihrem Beginn (`_ladeNot`),
@@ -550,8 +550,8 @@ Zeitgeber; ein neues Blatt und das Schließen ebenso (`_vorstellungAus`).
 
 `_tickDaten` lässt außerdem ein offenes Blatt, den Eingabe-Tab und die
 Einstellungen in Ruhe:
-was man gerade unter den Fingern hat, wird nicht neu gezeichnet. `tests/blatt`
-und `tests/bedienung` messen diese Bedingungen.
+was man gerade unter den Fingern hat, wird nicht neu gezeichnet. `tests/umbau/blatt`
+und `tests/umbau/bedienung` messen diese Bedingungen.
 
 > **Pflegepflicht.** Kommt ein Zeitgeber dazu oder ändert seine Bedingung,
 > steht das hier.

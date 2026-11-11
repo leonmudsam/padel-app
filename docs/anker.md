@@ -15,6 +15,8 @@ Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
   - §1.1 ICON LIBRARY (SVG line-icons)
 - **03-saison.js**
   - §1.2 SAISON-SYSTEM (monatlich)
+- **03b-padel.js**
+  - §1.3 PADEL: SÄTZE, GAMES, SIEGER
 - **04-cache.js**
   - §2.1 PERFORMANCE CACHES & INVALIDIERUNG
   - §2.2 Abgeleitete Sim-Maps (snapMap, historyByMatchId)
@@ -27,8 +29,8 @@ Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
 - **05-rang-elo.js**
   - §2.7 RANG-SYSTEM (Durchschnitts-Saison-Elo)
   - §2.8 ERWEITERTES ELO + AUTO-POSITION
-  - §2.8a Das Positionsprofil [§C44]
-  - §2.9 POSITIONS-KLASSIFIZIERUNG (7 Stufen)
+  - §2.8a Das Seitenprofil [§C44]
+  - §2.9 SEITEN-KLASSIFIZIERUNG (7 Stufen)
 - **05b-recap-teile.js** — ohne Banner
 - **06-db.js**
   - §3.1 DATENBANK-LAYER
@@ -60,7 +62,7 @@ Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
 - **11-view-ranking.js**
   - §5.1 VIEW: RANKING
 - **12-view-positionen.js**
-  - §5.2 VIEW: POSITIONS-RANGLISTE
+  - §5.2 VIEW: SEITEN-RANGLISTE
 - **13-view-awards.js**
   - §5.3 VIEW: AWARDS
   - §5.3a Award-Hilfsfunktionen (laufende und längste Serien)
@@ -75,9 +77,12 @@ Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
   - §5.8 MATCH PREVIEW & SAVE-LOGIK
 - **15b-einblick.js**
   - §5.9 — Der Einblick: eine Grafik über einer Rangliste [§C27]
+- **15c-satz-eingabe.js**
+  - §5.6b DIE SATZ-EINGABE
 - **16-sheet-infra.js**
   - §6.1 DETAIL-SHEET-INFRASTRUKTUR
 - **17-badges.js**
+  - §7.0 Die Schwellen der Auszeichnungen
   - §7.1 Der Katalog der Auszeichnungen
   - §7.2 Die Klassen
   - §7.3 Count-Funktionen für die neuen Badges
@@ -89,7 +94,7 @@ Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
   - §8.5 Eine Auszeichnung im Detail (Popover über dem Blatt)
 - **18b-abschied.js** — ohne Banner
 - **19-bilanzen.js**
-  - §9.1 BILANZEN-SHEET (Mitspieler-Liste)
+  - §9.1 BILANZEN-SHEET (Partner-Liste)
 - **20-bind.js**
   - §10.1 BIND (globaler Click-Dispatcher)
 - **21-head-to-head.js**

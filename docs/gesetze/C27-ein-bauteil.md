@@ -22,7 +22,7 @@ quer durch `src/js` und `src/css`; die Bauteile selbst in `05b-recap-teile.js`, 
 
 ## Prüfung
 
-`tests/blatt` (Geometrie, Bauteile, Text und Bewegung jedes Reiters und Blatts bei 360 px), `tests/bewegung` (Wischgeste, Abschlüsse), `tests/rechnen` (Tausenderpunkt ab fünf Stellen, Jahr eines Tages im Satz, Dauer in Monaten und Jahren), `tests/zeichen` (alles in der Mitte: Katalog, Kachel, Wappen, Initialen), `tests/blatt` (was im Feed endlos läuft, bewegt nur transform und opacity; Platz 1 bis 3 mit Rahmen, Schein und glänzender Ziffer, ohne Strich, nichts in der Rangliste bewegt sich ohne Anlass, die offene Liga rechnet weder Stil noch Layout; das Profil lebt, wo etwas gewonnen ist oder läuft, endlos nur mit transform und opacity, bei Bewegungsruhe still), `tests/tafel` (Strich, Award-Tabelle, Kalendertag, Formatierer), `tests/zeichen`.
+`tests/umbau/blatt` (Geometrie, Bauteile, Text und Bewegung jedes Reiters und Blatts bei 360 px), `tests/bewegung` (Wischgeste, Abschlüsse), `tests/umbau/rechnen` (Tausenderpunkt ab fünf Stellen, Jahr eines Tages im Satz, Dauer in Monaten und Jahren), `tests/umbau/zeichen` (alles in der Mitte: Katalog, Kachel, Wappen, Initialen), `tests/umbau/blatt` (was im Feed endlos läuft, bewegt nur transform und opacity; Platz 1 bis 3 mit Rahmen, Schein und glänzender Ziffer, ohne Strich, nichts in der Rangliste bewegt sich ohne Anlass, die offene Liga rechnet weder Stil noch Layout; das Profil lebt, wo etwas gewonnen ist oder läuft, endlos nur mit transform und opacity, bei Bewegungsruhe still), `tests/umbau/tafel` (Strich, Award-Tabelle, Kalendertag, Formatierer), `tests/umbau/zeichen`.
 
 ## Herleitung
 
@@ -80,12 +80,12 @@ dritter Name für dieselbe Liste. Und **ein Name gehört einer Frage**: der
 Award „Einzelkämpfer" (Siegquote als Stärkster der vier) hieß wie der
 Liga-Rekord, der den Rückgang der Mitspielerstärke misst, und heißt jetzt
 „Leitwolf". Torjäger, Pechvogel und Favoritenschreck teilen ihren Namen
-mit einer Chronik, weil sie dieselbe Idee auf zwei Zeitachsen messen. `tests/tafel` sieht nach, dass jedes
+mit einer Chronik, weil sie dieselbe Idee auf zwei Zeitachsen messen. `tests/umbau/tafel` sieht nach, dass jedes
 Zeichen im Katalog steht.
 **Ein Knopf in einer Zeile ist so breit wie sein Wort.** `.btn` trägt
 `width:100%`, weil er meist allein steht; neben einem Text lief „Neu laden"
 damit 112 px aus den Einstellungen, und „Mischen" zog sich über die halbe
-Seite. `tests/blatt` zeichnet jeden Reiter bei 360 px ganz und misst beides.
+Seite. `tests/umbau/blatt` zeichnet jeden Reiter bei 360 px ganz und misst beides.
 **Eine Animation endet, wenn sie endet** (`_afterTransition`). Beim
 Zurückgehen aus einem Blatt schiebt sich das Kind nach unten, der Inhalt wird
 getauscht, das Eltern-Blatt kommt hoch. Der Tausch hing an `setTimeout(200)`,
@@ -102,7 +102,7 @@ keinen laufenden Leerschritt. Ein schon abgeschlossener Wisch leert sofort,
 ohne auf eine zweite, gar nicht mehr stattfindende Bewegung zu warten.
 Inline-Snap-/Swap-Dauern und Nudge werden nicht übernommen. Popover und
 gequeute News-Hinweise bleiben auch bei bereits geschlossenem Blatt erreichbar.
-`tests/blatt` und `tests/bewegung` messen Abschlüsse und verbleibende Arbeit.
+`tests/umbau/blatt` und `tests/bewegung` messen Abschlüsse und verbleibende Arbeit.
 **Der Finger besitzt den Zug.** Eingabefelder und bereits gescrollte
 innere Listen gehören nicht der Schließgeste. Waagerechte/aufwärts gerichtete
 Gesten lösen den nicht passiven Zug-Lauscher. Gezeichnet wird nur der
@@ -169,7 +169,7 @@ Karten derselben Familie unterscheiden sich nur in der Stärke
 ihres Schimmers. Das hält den Feed ruhig und verhindert zugleich, dass
 Tafel, Insignium, Auszeichnung und Sammelkarte alle golden aussehen.
 **Jede Karte hat eine Bildzone.** Eine Karte, die nur aus Text besteht, ist
-eine Zeile in einer Tafel voller Zeichnungen — `tests/blatt` verlangt für
+eine Zeile in einer Tafel voller Zeichnungen — `tests/umbau/blatt` verlangt für
 jede Sorte mindestens eins der Bauteile dieses Abschnitts.
 **Die Bildzone macht die Karte nie höher als ihren Text.** Die beiden Wappen
 eines Duells standen übereinander in der linken Spalte und machten die Karte
@@ -199,7 +199,7 @@ Deckel liegt deshalb bei 81 px — 68 px Inhalt plus die 13 px des
 Trennstrichs. Gemessen wird nicht nur die Breite der Spalte, sondern ob ein
 Kind über ihren Inhalt hinausragt: eine Spalte, die ihre eigene Zeichnung
 abschneidet, ist so falsch wie eine zu breite. Gemessen wird in Prozent und nicht in Pixeln: die Karte
-ist auf jedem Telefon anders breit. `tests/blatt` stellt dafür jede der
+ist auf jedem Telefon anders breit. `tests/umbau/blatt` stellt dafür jede der
 zwölf Sorten einmal — der Feed eines Zeitschnitts trug gemessen fünf davon,
 und gerade die Marke kam nicht vor.
 Im Satz stehen Ergebnis,
@@ -224,7 +224,7 @@ warmer Goldschein liegt wie bei Breaking hinter der gesamten Karte. Ihre
 eigentliche Familie bleibt gleichzeitig an Kante, Rubrik und Motiv sichtbar;
 eine Tafelgeschichte wird durch die Auswahl also nicht vollständig golden.
 Beides ruht bei
-`prefers-reduced-motion`, und `tests/blatt` misst das nach.
+`prefers-reduced-motion`, und `tests/umbau/blatt` misst das nach.
 **Dasselbe Licht liegt, wo Gold einen Titel bedeutet und EINER ihn trägt**
 (`glanzZug`, `06-misc.css`): der Erste in Gold auf jedem Podest, der
 Spieler des Tages und der Woche im Feed, solange ungelesen, samt dem Kopf
@@ -233,13 +233,13 @@ jeder goldenen Zahl wäre eine Kirmes, und Gold trägt nur, was selten ist
 [§C25]. Ein eigenes Pseudo-Element über der Box, ohne `overflow:hidden`:
 die Aura des Ersten leuchtet über das Podest hinaus und wäre sonst abgeschnitten.
 Anderthalb Sekunden Lauf, gut sechs Ruhe; bei Bewegungsruhe fehlt es ganz.
-`tests/blatt` misst, wer es trägt, wer nicht, und dass es ruht.
+`tests/umbau/blatt` misst, wer es trägt, wer nicht, und dass es ruht.
 **Im Profil lebt, was gewonnen ist oder gerade läuft.** Das Profil stand
 ganz still: ein Meistertitel, ein gehaltener Rekord und ein laufender Monat
 sahen aus wie jede andere Karte. Ein erster Entwurf gab jeder Fläche
 Metall, Verläufe und einen Strahlenfächer hinter dem Insignium — das war
 moderner als der Rest der App und gab dem Kopf einen Schimmer, den jeder
-hat (`mockup/profil`). Jetzt bleiben Material und Schrift, und bewegt wird
+hat (den Entwurf „profil“ der Kicker-Liga). Jetzt bleiben Material und Schrift, und bewegt wird
 nur mit dem, was die App schon kennt: der Lichtlauf des Goldes über Titeln,
 Rekorden, Platz 1 und legendären Auszeichnungen, versetzt Karte für Karte;
 ein Licht um den Rand des Kopfs, der sonst von Aura und Insignium lebt; die
@@ -404,7 +404,7 @@ Duo-Blatt, Award-Sammler und Saison-Rückblick lesen daraus
 vier Sortier- und fünf Anzeigetabellen, und dieselbe Serie hieß „8",
 „8er", „8er Serie" und „8 Siege in Folge". Wer einen Award hinzufügt,
 trägt ihn in `AWARD_META`, `AW_IC` und `AW_WERT` ein — sonst nirgends.
-`tests/tafel` hält Kachel und Profil an der Tabelle fest.
+`tests/umbau/tafel` hält Kachel und Profil an der Tabelle fest.
 Der Farbstich kommt aus **drei** Rollen und nicht aus sechs Katalogtönen
 [§C25]: `ton-pos` Gold für das Können, `ton-team` Blau für das, was zu
 zweit geholt wurde, `ton-neg` Rot für die Kehrseite. Die Töne stehen an
@@ -480,7 +480,7 @@ Stories, sonst 2. Sie stand an 78 Stellen in 13 Werten zwischen 1 und 3,4,
 und ein `stroke-width` am `<svg>` im Markup setzte 2,5 neben 2. Die Regel
 schlägt das Markup, runde Enden und Ecken kommen mit. Diagramme und die
 Sterne des Zeichens [§C26] zeichnen nicht im 24er-Raster und sind davon
-ausgenommen. `tests/tafel` zählt nach.
+ausgenommen. `tests/umbau/tafel` zählt nach.
 **Der Strahl im Positions-Profil gehört der Seite, die überwiegt.** Er
 lief immer von links und war so lang wie der Sturmanteil; bei 29 zu 71
 zeigte er damit die kleinere Hälfte und las sich wie ein
@@ -499,7 +499,7 @@ auch Abwehrdominanz behält die Rangfarbe statt auf Metallgrau zu fallen.
 **Ein langer Wert in der Zahlenreihe wird kleiner, nicht breiter.**
 „Schattenseite" maß gerendert 104 px in einer 88-px-Zelle und lief in die
 daneben, in der der Ausschlag steht. Zwei Stufen (`.lang`, `.sehrlang`)
-reichen; `tests/blatt` misst jede Chronik des Katalogs nach.
+reichen; `tests/umbau/blatt` misst jede Chronik des Katalogs nach.
 **Die Kachel misst am Reif, nicht am Gesicht** — der Avatar ist 46 % von
 `--rav`. Wer ein 40-px-Gesicht ersetzt, braucht 87 px Kachel, nicht 40.
 Unter 48 px bleibt vom Zeichen nichts übrig; 52 px sind das Maß der
@@ -526,7 +526,7 @@ es an EINER Stelle; die Zeile im Blatt rechnete es ein zweites Mal nach.
 den Wert einer Auszeichnung — zwei Durchläufe über die längste Siegesserie.
 Sie zusammenzulegen kostet mehr, als es bringt: die Liste rechnet alle
 Spieler auf einmal, das Badge fragt je Spieler, und das wäre in der
-Badge-Schleife quadratisch. Also bleiben beide, und `tests/tafel` hält sie
+Badge-Schleife quadratisch. Also bleiben beide, und `tests/umbau/tafel` hält sie
 aneinander. Wo eine Zusammenlegung nichts kostet, gilt weiter: es gibt sie
 nur einmal.
 **Die Elo-Rechnung zieht ihre Grenzen an einer Stelle** (`expected`,
@@ -552,20 +552,20 @@ Spieltag bleibt ohne Karte" griff nie; der Ausweg war damals ein zweiter
 Aufruf daneben statt einer Schreibweise. Ortszeit, nicht UTC: der Feed
 gruppiert nach Kalendertagen, wie sie auf der Uhr des Lesers stehen —
 `matchesByDay` schlüsselt bewusst nach UTC und ist deshalb etwas anderes.
-`tests/tafel` zählt die Stellen im gebauten Stand nach, weil sich jede
+`tests/umbau/tafel` zählt die Stellen im gebauten Stand nach, weil sich jede
 neue sonst wieder selbst eine aussucht.
 **Und eine Uhrzeit hat einen Formatierer** (`datumFmt`): `toLocaleDateString`
 mit Optionen baut bei jedem Aufruf einen neuen, und im Feed lief das je
 Karte mehrmals — gemessen 16 ms für die Uhrzeit allein beim Öffnen.
 Uhrzeit, Tag und Monat, das kurze Datum und der Wochentag gehen durch einen
-gemerkten; `tests/tafel` zählt die Stellen, die ihn selbst bauen.
+gemerkten; `tests/umbau/tafel` zählt die Stellen, die ihn selbst bauen.
 **Eine Zahl und ein Name haben je eine Form.** Eine Dezimalzahl trägt ein
 Komma (`komma`) — acht Belege des Katalogs und acht Fun Facts schrieben
 „6.9 Gegentore" mit englischem Punkt mitten im deutschen Satz, und ein
 Absturz stand als „-308 Elo" unter einer Bedingung, die „mindestens −150"
 schreibt. Dasselbe galt außerhalb des Feeds an neunundvierzig Stellen: „4.00
 Gegentore" in der Betonmauer, „Ø 8.8" in der Positionsliste, „+1.5 Elo" in
-den Einstellungen, jede Kachel der Rückblicke. `tests/blatt` liest dafür den
+den Einstellungen, jede Kachel der Rückblicke. `tests/umbau/blatt` liest dafür den
 sichtbaren Text jedes Reiters und der Blätter mit Nachkommastellen.
 Mit den Jahren kamen zwei Formen dazu. Die Sätze setzen ihre Zahlen roh ein,
 und eine Liga mit über fünftausend Partien schrieb „82820 Tore in 5152
@@ -575,7 +575,7 @@ Facts. Und ein Tag in einem Satz stand ohne Jahr: „Der letzte Sieg gegen
 Leon war am 15.03.", „Am 15.03. gewann Johannes 7 von 7" in den Rekorden
 aller Zeiten, auch wenn der März Jahre zurücklag. `tmx` setzt das Jahr, wenn
 es nicht das laufende ist, `tagImSatz` dazu genau einen Punkt ans Satzende —
-der Wochenrekord endete vorher auf „21.06..". `tests/rechnen` prüft beide.
+der Wochenrekord endete vorher auf „21.06..". `tests/umbau/rechnen` prüft beide.
 **Was in einem Rahmen steht, steht in seiner Mitte.** Gemessen an der Tinte
 in jedem Reiter, jedem Blatt und jeder Karte saß das Zeichen in den Kacheln
 des Monatsrückblicks 6,5 px über der Mitte, die Initialen in der Tabelle
@@ -586,7 +586,7 @@ Reif. Jedes Mal setzte eine Regel die `span` eines Behälters als Spalte
 141 der 272 Zeichen des Katalogs lagen schon in ihrem eigenen Feld
 daneben: die Flamme 2,5 Einheiten zu hoch, die doppelten Flammen und
 Tropfen bis 4,5, der Bannbruch ragte oben hinaus und war abgeschnitten. Sie
-tragen jetzt ein `<g transform="translate(…)">`. `tests/zeichen` misst den
+tragen jetzt ein `<g transform="translate(…)">`. `tests/umbau/zeichen` misst den
 Katalog und jede Ansicht.
 **Ein Stand gehört dem, der neben ihm steht** (`standFuer`): die eigenen
 Tore zuerst, ohne zweites Argument die der Sieger. Gespeichert ist er in
@@ -621,7 +621,7 @@ Tages eine vierte.
 mindestens so breit wie sein Inhalt: die Beziehungskarten im Profil liefen
 mit „Schwächster Partner" 17 px in den Rand des Blatts, die Seitenkarten
 des Podests mit ihrem Wappen samt Banner 4 px, und die Quellen der
-Laufbahn standen als 115, 125 und 62 px nebeneinander. `tests/blatt` misst
+Laufbahn standen als 115, 125 und 62 px nebeneinander. `tests/umbau/blatt` misst
 jedes Blatt am Innenrand — am Außenrand gemessen fiel nichts davon auf.
 **Ein Reiter nennt sein Wort ganz.** Fünf Reiter teilen sich 328 px, und
 in der Ewigen Tafel standen „Siegq…", „Torbil…" und „Prest…". Ab fünf
@@ -688,7 +688,7 @@ ist zugleich die Wahl des Spielers, also braucht es keinen Satz, der die
 Bedienung erklärt. Das Detail erscheint erst nach der Wahl: die Zahlen der
 Saison als Zahlenreihe [§C31], der **Platz an jedem Tag** als Zelle und
 die Partien als Lauf (`saisonZellenHtml`); darunter die Tage an der Spitze
-aus demselben Bauteil wie im Saison-Rückblick. `tests/blatt` rechnet die
+aus demselben Bauteil wie im Saison-Rückblick. `tests/umbau/blatt` rechnet die
 Bewegung aus den rohen Plätzen nach.
 **Eine Erklärung steht hinter einem Knopf, wenn sie länger ist als die
 Ansicht kurz** (`.kopf-info`): der Absatz über den Positionen nahm drei
@@ -725,7 +725,7 @@ Der Schein von Breaking liegt dafür auf einer Hülle hinter der Karte
 (`.nf-brk-hof`), weil die Karte abschneidet, was über ihren Rand ragt.
 
 Das Metall der ersten drei ist fest und nicht bewegt. Zwei Fassungen mit
-Bewegung kamen aus dem Entwurf `mockup/aufwertung-6/` und gingen wieder
+Bewegung kamen aus dem Entwurf den Entwurf „aufwertung-6/“ der Kicker-Liga und gingen wieder
 heraus: ein Licht über einen 3 px breiten Strich links an der Karte, dann
 ein Lichtband über die ganze Karte, dazu Kacheln, die beim Scrollen oder
 beim Zeichnen einliefen. Auf dem Telefon erschien das beim Scrollen, und

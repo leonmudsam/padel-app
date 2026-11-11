@@ -53,7 +53,6 @@ const PERIODE_MIN_SIEGE = {tag:2, woche:3, monat:6};
 const PERIODE_SAMMLER = {tag:3, woche:1};
 // Was eine Partie für einen Spieler war, an einer Stelle für Katalog und
 // Auslöser [§C27]. Die Begriffe stehen in §1.3.
-function bgSieg(id, m){ return won(id, m); }
 function bgDoppelBagel(id, m){ return partie(m).doppelBagel; }
 function bgZitter(m){ return partie(m).entscheidTb; }
 function bgKlar(id, m){ return won(id, m) && partie(m).deutlich; }
@@ -82,9 +81,9 @@ const BADGES=[
     multi:true,count:(id,ms)=>countGames(id,ms)>=BG.urgestein?1:0},
   {id:'wins200',ic:'siegermaschine',name:'Siegermaschine',desc:BG.siegermaschine+' Siege gesammelt',
     multi:true,count:(id,ms)=>countWins(id,ms)>=BG.siegermaschine?1:0},
-  {id:'reves50',ic:'posAbwehr',name:'Revés-Spezialist',desc:BG.seite+' Partien auf der linken Seite (Revés)',
+  {id:'reves50',ic:'posReves',name:'Revés-Spezialist',desc:BG.seite+' Partien auf der linken Seite (Revés)',
     multi:true,count:(id,ms)=>{const s=playerStats(id,ms);return s.revG>=BG.seite?1:0;}},
-  {id:'drive50',ic:'posSturm',name:'Drive-Spezialist',desc:BG.seite+' Partien auf der rechten Seite (Drive)',
+  {id:'drive50',ic:'posDrive',name:'Drive-Spezialist',desc:BG.seite+' Partien auf der rechten Seite (Drive)',
     multi:true,count:(id,ms)=>{const s=playerStats(id,ms);return s.drvG>=BG.seite?1:0;}},
   // JEDE SAISON neu erreichbar: gezählt werden die Saisons, in denen jemand
   // die Marke geknackt hat, nicht wie oft er die Grenze überquert.

@@ -24,7 +24,7 @@
   .zk.g svg{width:24px;height:24px;--strich:1.75;}
   .zk.gold  {--zt:var(--gold);  --ztr:247,207,74}
   .zk.rot   {--zt:var(--red);   --ztr:240,86,106}
-  .zk.gruen {--zt:var(--acid);  --ztr:190,242,100}
+  .zk.gruen {--zt:var(--acid);  --ztr:228,242,74}
   .zk.blau  {--zt:var(--blue);  --ztr:86,180,232}
   .zk.viol  {--zt:var(--purple);--ztr:167,139,250}
   .zk.bronze{--zt:var(--bronze);--ztr:192,132,87}
@@ -134,7 +134,7 @@
     stroke-linecap:round;stroke-linejoin:round}
   .pp-tier-legende    .pp-pill.tier{background:linear-gradient(180deg,rgba(247,207,74,.16),rgba(247,207,74,.06));border-color:rgba(247,207,74,.4);color:var(--gold)}
   .pp-tier-elite      .pp-pill.tier{background:linear-gradient(180deg,rgba(167,139,250,.16),rgba(167,139,250,.06));border-color:rgba(167,139,250,.4);color:var(--purple)}
-  .pp-tier-stark      .pp-pill.tier{background:linear-gradient(180deg,rgba(190,242,100,.16),rgba(190,242,100,.06));border-color:rgba(190,242,100,.4);color:var(--acid)}
+  .pp-tier-stark      .pp-pill.tier{background:linear-gradient(180deg,rgba(228,242,74,.16),rgba(228,242,74,.06));border-color:rgba(228,242,74,.4);color:var(--acid)}
   .pp-tier-solide     .pp-pill.tier{background:linear-gradient(180deg,rgba(86,180,232,.16),rgba(86,180,232,.06));border-color:rgba(86,180,232,.4);color:var(--blue)}
   .pp-tier-einsteiger .pp-pill.tier{background:linear-gradient(180deg,rgba(255,120,73,.16),rgba(255,120,73,.06));border-color:rgba(255,120,73,.4);color:var(--orange)}
 
@@ -148,7 +148,7 @@
     border:1px solid var(--line);border-radius:14px;overflow:hidden;
   }
   .pp-et-col{background:var(--surface);padding:14px 8px 12px;text-align:center;position:relative;min-width:0}
-  .pp-et-col.now{background:linear-gradient(180deg,rgba(190,242,100,.06),transparent 70%)}
+  .pp-et-col.now{background:linear-gradient(180deg,rgba(228,242,74,.06),transparent 70%)}
   .pp-et-col .label{
     font-family:'Sometype Mono',monospace;font-size:8.5px;
     text-transform:uppercase;letter-spacing:.16em;color:var(--muted);
@@ -184,12 +184,12 @@
   .pp-st .v.empty{color:var(--muted);font-size:14px}
   .pp-st .dots{display:flex;gap:3px;margin-top:7px}
   .pp-st .dots i{width:5px;height:5px;border-radius:50%;background:var(--acid);
-    box-shadow:0 0 6px rgba(190,242,100,.5)}
+    box-shadow:0 0 6px rgba(228,242,74,.5)}
   .pp-st .dots.loss i{background:var(--red);box-shadow:0 0 6px rgba(240,86,106,.4)}
   /* Mixed: zeigt sowohl Win (grün) als auch Loss (rot, .l) Dots in derselben Reihe.
      Genutzt für „letzte 10 Spiele" unter Aktuelle Serie. */
   .pp-st .dots.mixed i{background:var(--faint);box-shadow:none}
-  .pp-st .dots.mixed i:not(.l){background:var(--acid);box-shadow:0 0 6px rgba(190,242,100,.5)}
+  .pp-st .dots.mixed i:not(.l){background:var(--acid);box-shadow:0 0 6px rgba(228,242,74,.5)}
   .pp-st .dots.mixed i.l{background:var(--red);box-shadow:0 0 6px rgba(240,86,106,.35)}
   /* Sub-Label unter Längste Serie: dezenter Hinweis wann erreicht. */
   .pp-st-sub{margin-top:6px;font-family:'Sometype Mono',monospace;font-size:9px;
@@ -231,7 +231,7 @@
     stroke-linecap:round;stroke-linejoin:round}
   .pp-bmini.legendary{color:var(--gold);border-color:rgba(247,207,74,.4)}
   .pp-bmini.rare{color:var(--purple);border-color:rgba(167,139,250,.38)}
-  .pp-bmini.common{color:var(--acid);border-color:rgba(190,242,100,.25)}
+  .pp-bmini.common{color:var(--acid);border-color:rgba(228,242,74,.25)}
   .pp-bmini.negative{color:var(--red);border-color:rgba(240,86,106,.38)}
   .pp-bcard-chev{color:var(--muted);flex-shrink:0;display:grid;place-items:center}
   .pp-bcard-chev svg{width:14px;height:14px;stroke:currentColor;fill:none;
@@ -320,7 +320,7 @@
   .bsh-card.unlocked.legendary .bsh-card-ic{background:radial-gradient(circle 17px,rgba(247,207,74,.3),transparent)}
   .bsh-card.unlocked.rare{border-color:rgba(167,139,250,.4)}
   .bsh-card.unlocked.rare .bsh-card-ic{background:radial-gradient(circle 17px,rgba(167,139,250,.22),transparent)}
-  .bsh-card.unlocked.common{border-color:rgba(190,242,100,.28)}
+  .bsh-card.unlocked.common{border-color:rgba(228,242,74,.28)}
   .bsh-card.unlocked.common::before{opacity:.35}
   .bsh-card.unlocked.negative{border-color:rgba(240,86,106,.4);
     background:radial-gradient(circle at 50% 0%,rgba(240,86,106,.08),var(--surface) 75%)}
@@ -347,7 +347,7 @@
   .bp-ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;background:var(--surface)}
   .bp-ic.legendary{background:rgba(247,207,74,.12);color:var(--gold)}
   .bp-ic.rare{background:rgba(173,154,243,.12);color:var(--purple)}
-  .bp-ic.common{background:rgba(190,242,100,.12);color:var(--acid)}
+  .bp-ic.common{background:rgba(228,242,74,.12);color:var(--acid)}
   .bp-ic.negative{background:rgba(240,86,106,.12);color:var(--red)}
   .bp-ic.locked{background:var(--surface3);color:var(--muted)}
   .bp-ic svg{width:24px;height:24px;fill:none;stroke:currentColor;--strich:1.75;
@@ -427,7 +427,7 @@
     box-shadow:0 0 0 2px var(--bg);pointer-events:none}
   /* v9: beschriftete News-Pille (Idee E) — hebt sich vom Zahnrad-Icon ab */
   .news-pill{width:auto;padding:0 13px 0 11px;gap:7px;grid-auto-flow:column;
-    background:var(--acid-deep);border-color:rgba(190,242,100,.4);color:var(--acid)}
+    background:var(--acid-deep);border-color:rgba(228,242,74,.4);color:var(--acid)}
   .news-pill svg{width:18px;height:18px}
   .news-pill-lbl{font-family:'Archivo Black',sans-serif;font-size:13px;letter-spacing:-.01em}
   .news-pill.news-btn-badge{}
@@ -492,7 +492,7 @@
   .nfc-breaking  {--story:var(--red);   --story-rgb:240,86,106}
   .nfc-highlight {--story:var(--gold);  --story-rgb:247,207,74}
   .nfc-badge     {--story:var(--purple);--story-rgb:167,139,250}
-  .nfc-comeback  {--story:var(--acid2); --story-rgb:163,230,53}
+  .nfc-comeback  {--story:var(--acid2); --story-rgb:205,224,58}
   .nfc-misfortune{--story:var(--red);   --story-rgb:240,86,106}
   .nfc-rivalry   {--story:var(--bronze);--story-rgb:192,132,87}
   .nfc-season    {--story:var(--silber);--story-rgb:194,201,208}
@@ -514,10 +514,10 @@
   .nf-kopf-tafel{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
   .nf-gelesen{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;
     font-family:'Sometype Mono',monospace;font-size:9.5px;letter-spacing:.08em;
-    color:var(--acid);border:1px solid rgba(190,242,100,.34);border-radius:999px;
-    padding:5px 10px;background:rgba(190,242,100,.06);cursor:pointer;transition:.15s}
+    color:var(--acid);border:1px solid rgba(228,242,74,.34);border-radius:999px;
+    padding:5px 10px;background:rgba(228,242,74,.06);cursor:pointer;transition:.15s}
   .nf-gelesen b{font-weight:700}
-  .nf-gelesen:active{transform:scale(.96);background:var(--acid);color:#0a0c0b}
+  .nf-gelesen:active{transform:scale(.96);background:var(--acid);color:#080b10}
 
   /* Vier Chips mit Anzahl, nicht elf Rubriken. Wer liest, will vorher sehen,
      ob sich das Tippen lohnt. */
@@ -595,7 +595,7 @@
   .nf-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.045)}
   /* Ungelesenes sieht man: heller Anlauf von links, gruene Uhrzeit. Gelesen
      ist die Karte ruhig. Vorher unterschied sie nur ein Punkt von 8 px. */
-  .nf-card:not(.read){--neu:rgba(190,242,100,.05)}
+  .nf-card:not(.read){--neu:rgba(228,242,74,.05)}
   .nf-card:not(.read) .nf-when{color:var(--acid)}
   /* Breaking bleibt an seinem Platz in der Chronologie und traegt einen roten
      Kopfbalken statt eines Heros am Kopf des Feeds. Sieben Anlaesse sind
@@ -720,7 +720,7 @@
      ein Spieler nur ein Name war [§C27]. */
   .nf-face{flex-shrink:0;display:flex;align-items:center}
   .nf-face-paar > .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
-    font-family:'Archivo Black',sans-serif;font-size:11px;color:#0a0c0b;
+    font-family:'Archivo Black',sans-serif;font-size:11px;color:#080b10;
     border:2px solid var(--surface)}
   .nf-face-paar > .av + .av{margin-left:-11px}
   .nf-face-mehr{background:var(--surface3);color:var(--muted);
@@ -750,7 +750,7 @@
   .nd-s-ins,.nd-s-badge,.nd-s-spieler,.nd-s-erfolg{
     --story:var(--purple);--story-rgb:167,139,250}
   .nf-s-spiel,.nf-s-serie,.nd-s-spiel,.nd-s-serie{
-    --story:var(--acid2);--story-rgb:163,230,53}
+    --story:var(--acid2);--story-rgb:205,224,58}
   .nf-s-duell,.nd-s-duell{--story:var(--bronze);--story-rgb:192,132,87}
   .nf-s-fakt,.nd-s-fakt{--story:var(--ink2);--story-rgb:185,196,189}
   /* Die Kammern der Ewigen Tafel bekommen verwandte, entsättigte Töne.
@@ -836,7 +836,7 @@
   /* Das Ergebnisband steht UEBER dem Rubrikband und braucht deshalb keine
      eigene Unterkante: sonst stehen dort zwei Striche uebereinander. */
   .nf-erg{display:flex;align-items:center;gap:10px;padding:11px 13px 10px;
-    background:linear-gradient(96deg,rgba(190,242,100,.07),transparent 72%)}
+    background:linear-gradient(96deg,rgba(228,242,74,.07),transparent 72%)}
   .nf-erg-s{display:flex;flex-direction:column;align-items:flex-start;gap:4px;
     flex:1;min-width:0}
   .nf-erg-s.re{align-items:flex-end;text-align:right}
@@ -1111,7 +1111,7 @@
   .nf-s-marke{--tint:rgba(194,201,208,.04)}
   .nf-s-ins,.nf-s-badge{--tint:rgba(167,139,250,.055)}
   .nf-s-spieler,.nf-s-erfolg{--tint:rgba(167,139,250,.075)}
-  .nf-s-spiel,.nf-s-serie{--tint:rgba(163,230,53,.05)}
+  .nf-s-spiel,.nf-s-serie{--tint:rgba(205,224,58,.05)}
   .nf-s-duell{--tint:rgba(192,132,87,.055)}
   .nf-card.nf-neg{--tint:rgba(240,86,106,.07)}
   .nf-card.read{--tint:rgba(var(--story-rgb,185,196,189),.035)}
@@ -1606,7 +1606,7 @@
   .nd-bahn i{flex:0 0 auto;min-width:40px;padding:6px 7px;border-radius:8px;
     font-family:'Sometype Mono',monospace;font-size:10.5px;font-style:normal;
     text-align:center;letter-spacing:.02em}
-  .nd-bahn i.w{background:rgba(190,242,100,.14);border:1px solid rgba(190,242,100,.34);
+  .nd-bahn i.w{background:rgba(228,242,74,.14);border:1px solid rgba(228,242,74,.34);
     color:var(--acid)}
   .nd-bahn i.l{background:rgba(240,86,106,.12);border:1px solid rgba(240,86,106,.3);
     color:var(--red)}
@@ -1706,7 +1706,7 @@
     background:var(--surface3);border:1px solid var(--line)}
   .nd-chance-b i{display:block;height:100%;border-radius:999px;
     background:linear-gradient(90deg,rgba(194,201,208,.35),var(--silber))}
-  .nd-chance.g .nd-chance-b i{background:linear-gradient(90deg,rgba(190,242,100,.35),var(--acid))}
+  .nd-chance.g .nd-chance-b i{background:linear-gradient(90deg,rgba(228,242,74,.35),var(--acid))}
   .nd-chance.r .nd-chance-b i{background:linear-gradient(90deg,rgba(240,86,106,.35),var(--red))}
   .nd-chance-b u{position:absolute;top:0;bottom:0;width:1px;
     background:var(--line2);z-index:1}
@@ -1822,7 +1822,7 @@
   .pp-seasons::-webkit-scrollbar{display:none}
   .pp-sn{flex-shrink:0;width:74px;background:var(--surface);border:1px solid var(--line);
     border-radius:12px;padding:10px 8px;text-align:center}
-  .pp-sn.silver{border-color:rgba(185,196,189,.3)}
+  .pp-sn.silver{border-color:rgba(182,193,207,.3)}
   .pp-sn.bronze{border-color:rgba(180,120,73,.3)}
   .pp-sn .mo{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;
     font-family:'Sometype Mono',monospace}

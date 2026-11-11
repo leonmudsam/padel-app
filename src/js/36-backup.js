@@ -437,19 +437,19 @@ function _csvParse(text){
 // Die Spaltenköpfe sind zugleich der Vertrag für den Import: gelesen wird nach
 // KOPFNAME, nicht nach Position. Man darf also Spalten umsortieren oder reine
 // Anzeigespalten löschen, solange die Pflichtspalten stehen bleiben.
-const BACKUP_POS_LABEL = {atk:'Sturm', def:'Abwehr'};
+const BACKUP_POS_LABEL = {drive:'Drive', reves:'Revés'};
 // Beim Lesen akzeptieren wir beide Schreibweisen plus die Rohwerte.
 function _backupPos(v){
   const s = String(v || '').trim().toLowerCase();
-  if(s === 'drive' || s === 'sturm' || s === 'angriff' || s === 's') return 'drive';
-  if(s === 'reves' || s === 'abwehr' || s === 'verteidigung' || s === 'a') return 'reves';
+  if(s === 'drive' || s === 'rechts' || s === 'r') return 'drive';
+  if(s === 'reves' || s === 'revés' || s === 'links' || s === 'l') return 'reves';
   return null;
 }
 const BACKUP_MATCH_HEADER = [
   'Match-ID','Datum (ISO)','Datum (lesbar)',
   'A1 Name','A1 Seite','A2 Name','A2 Seite',
   'B1 Name','B1 Seite','B2 Name','B2 Seite',
-  'Tore A','Tore B','Sieger','Erwartung A','Elo-Deltas (JSON)',
+  'Sätze (A:B)','Games A','Games B','Sieger','Erwartung A','Elo-Deltas (JSON)',
   'A1 ID','A2 ID','B1 ID','B2 ID'
 ];
 function _backupMatchRows(){
@@ -467,6 +467,7 @@ function _backupMatchRows(){
       nm(m.a2), BACKUP_POS_LABEL[m.a2_side] || m.a2_side,
       nm(m.b1), BACKUP_POS_LABEL[m.b1_side] || m.b1_side,
       nm(m.b2), BACKUP_POS_LABEL[m.b2_side] || m.b2_side,
+      partieSaetze(m).map(s => s.art === 'open' ? '(' + s.a + ':' + s.b + ')' : s.a + ':' + s.b).join(' '),
       Number(m.games_a) || 0, Number(m.games_b) || 0,
       m.winner,
       m.exp_a == null ? '' : Number(m.exp_a),
@@ -482,10 +483,10 @@ function _backupPlayerRows(){
   // aktiver Spieler zurück und stünde wieder in jeder Rangliste.
   // Der Stand beim Karriereende gehört dazu: ohne ihn rechnete die App das
   // Profil nach einer Wiederherstellung mit ihrer dann aktuellen Fassung.
-  const rows = [['Spieler-ID','Name','Elo','Angriffs-Wert','Avatar','Ausgeblendet','Erstellt','Karriereende','Stand beim Karriereende']];
+  const rows = [['Spieler-ID','Name','Elo','Drive-Anteil','Avatar','Ausgeblendet','Erstellt','Karriereende','Stand beim Karriereende']];
   for(const p of players){
     const stand = p.retired_stand ? (typeof p.retired_stand === 'string' ? p.retired_stand : JSON.stringify(p.retired_stand)) : '';
-    rows.push([p.id, p.name, Number(p.elo) || 0, Number(p.atk) || 0,
+    rows.push([p.id, p.name, Number(p.elo) || 0, Number(p.drive) || 0,
                p.avatar_id || '', p.hidden ? 'ja' : 'nein', p.created_at || '', p.retired_at || '', stand]);
   }
   return rows;
@@ -649,22 +650,27 @@ function _analyseMatchRows(rows, opts){
     const pos = {};
     for(const [key, label] of seats){
       const p = _backupPos(_col(row, idx, label + ' Seite'));
-      if(!p){ bad = 'Seite für ' + label + ' fehlt oder ist unbekannt (Sturm/Abwehr).'; break; }
+      if(!p){ bad = 'Seite für ' + label + ' fehlt oder ist unbekannt (Drive/Revés).'; break; }
       pos[key] = p;
     }
     if(bad){ res.fehler.push({zeile, grund: bad}); continue; }
     if(pos.a1 === pos.a2 || pos.b1 === pos.b2){
-      res.fehler.push({zeile, grund: 'Jedes Team braucht genau einmal Sturm und einmal Abwehr.'}); continue;
+      res.fehler.push({zeile, grund: 'Jedes Team braucht genau einmal Drive und einmal Revés.'}); continue;
     }
 
-    const sa = parseInt(_col(row, idx, 'Tore A', 'games_a'), 10);
-    const sbv = parseInt(_col(row, idx, 'Tore B', 'games_b'), 10);
-    if(!isFinite(sa) || !isFinite(sbv) || sa < 0 || sbv < 0){ res.fehler.push({zeile, grund: 'Tore fehlen oder sind keine Zahl.'}); continue; }
-    if(sa === sbv){ res.fehler.push({zeile, grund: 'Unentschieden gibt es in dieser Liga nicht.'}); continue; }
-
-    // Sieger wird aus den Toren abgeleitet — steht etwas anderes in der Datei,
-    // gewinnen die Tore. Das verhindert widersprüchliche Zeilen in der DB.
-    const winner = sa > sbv ? 'A' : 'B';
+    // Die Sätze sind die Wahrheit [§1.3]: „6:4 3:6 10:8", ein offener Satz in
+    // Klammern. Fehlt die Spalte, steht ein einziger Satz aus den Games da.
+    const satzRoh = String(_col(row, idx, 'Sätze (A:B)', 'sets') || '').trim();
+    let saetze = satzRoh ? satzRoh.split(/\s+/).map(t => { const o = /^\(.*\)$/.test(t), z = t.replace(/[()]/g, '').split(':').map(Number);
+      return z.length === 2 && z.every(Number.isFinite) ? {a:z[0], b:z[1], art:o ? 'open' : null} : null; }) : [];
+    if(saetze.some(x => !x)){ res.fehler.push({zeile, grund: 'Sätze sind unlesbar (erwartet etwa 6:4 3:6).'}); continue; }
+    if(!saetze.length){
+      const ga = parseInt(_col(row, idx, 'Games A', 'games_a'), 10), gb = parseInt(_col(row, idx, 'Games B', 'games_b'), 10);
+      if(!isFinite(ga) || !isFinite(gb) || ga < 0 || gb < 0){ res.fehler.push({zeile, grund: 'Sätze und Games fehlen.'}); continue; }
+      saetze = [{a:ga, b:gb, art:null}];
+    }
+    const felder = partieFelder(saetze.map(x => ({a:x.a, b:x.b, art:satzArt([x.a, x.b], x.art)})));
+    if(!felder.winner){ res.fehler.push({zeile, grund: 'Kein Sieger erkennbar (Gleichstand in Sätzen und Games).'}); continue; }
 
     const dateRaw = _col(row, idx, 'Datum (ISO)', 'Datum', 'created_at');
     let created = null;
@@ -687,7 +693,7 @@ function _analyseMatchRows(rows, opts){
         {
           a1: pids.a1, a1_side: pos.a1, a2: pids.a2, a2_side: pos.a2,
           b1: pids.b1, b1_side: pos.b1, b2: pids.b2, b2_side: pos.b2,
-          games_a: sa, games_b: sbv, winner,
+          ...felder,
           deltas, exp_a: isFinite(expA) ? expA : 0.5,
           created_at: created
         }),
@@ -743,7 +749,7 @@ async function startBackupImport(){
       const entry = {
         id: pid || undefined, name: nm,
         elo: parseFloat(_col(row, pidx, 'Elo')) || cfg.start_elo,
-        atk: parseFloat(_col(row, pidx, 'Angriffs-Wert', 'drive')) || 0.5,
+        drive: parseFloat(_col(row, pidx, 'Drive-Anteil', 'drive')) || 0.5,
         avatar_id: _col(row, pidx, 'Avatar', 'avatar_id') || null,
         hidden: /^(ja|true|1)$/i.test(_col(row, pidx, 'Ausgeblendet', 'hidden'))
       };

@@ -285,7 +285,11 @@ for (const f of [...jsDateien.map(f => 'src/js/' + f), ...suiten.map(f => 'tests
 // Hergang; ein Gesetz ohne Suite ist eine Bitte (CLAUDE.md, Pflege).
 // Ein Kürzel wie „§30c" ist weder Gesetz noch Abschnitt — gemeint war die
 // Datei, und so ein Verweis zeigte ins Leere, ohne dass (a) oder (d) ihn sahen.
-const suitenNamen = new Set(suiten.map(f => f.replace(/\.test\.js$/, '')));
+// Suiten in tests/umbau/ sind aus der Kicker-Liga übernommen und noch nicht
+// auf Padel umgestellt; run.mjs führt sie nicht aus. Ein Gesetz darf auf sie
+// zeigen — der Verweis bleibt sichtbar offen, statt still zu verschwinden.
+const umbau = existsSync('tests/umbau') ? readdirSync('tests/umbau').filter(f => f.endsWith('.test.js')).map(f => f.replace(/\.test\.js$/, '')) : [];
+const suitenNamen = new Set([...suiten.map(f => f.replace(/\.test\.js$/, '')), ...umbau]);
 for (const f of [...gesetzDateien, 'allgemein.md']){
   const pfad = 'docs/gesetze/' + f;
   if (!existsSync(pfad)) continue;
@@ -293,7 +297,7 @@ for (const f of [...gesetzDateien, 'allgemein.md']){
   for (const k of ['## Regel', '## Stellen', '## Prüfung'])
     if (!abschnitt(text, k)) vs(`${pfad}: Abschnitt „${k}" fehlt`);
   const pruef = abschnitt(text, '## Prüfung') || '';
-  const genannt = [...pruef.matchAll(/`tests\/([a-z]+)`/g)].map(m => m[1]);
+  const genannt = [...pruef.matchAll(/`tests\/(?:umbau\/)?([a-z]+)`/g)].map(m => m[1]);
   if (!genannt.length) vs(`${pfad}: die Prüfung nennt keine Suite (\`tests/<name>\`)`);
   for (const s of genannt) if (!suitenNamen.has(s)) vs(`${pfad}: Suite tests/${s} gibt es nicht`);
 }

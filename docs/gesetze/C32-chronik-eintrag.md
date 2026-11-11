@@ -14,7 +14,7 @@
 
 ## Prüfung
 
-`tests/disziplinen` zählt die Monate mit einem Halter und nennt die zu tief hängende Schwelle; `tests/ambient` prüft die Chronik-Karten; `tests/blatt` prüft, was in Tafel und Rückblick offen steht.
+`tests/umbau/disziplinen` zählt die Monate mit einem Halter und nennt die zu tief hängende Schwelle; `tests/umbau/ambient` prüft die Chronik-Karten; `tests/umbau/blatt` prüft, was in Tafel und Rückblick offen steht.
 
 ## Herleitung
 
@@ -90,5 +90,5 @@ Danach hieß die Grenze eine Zeit lang nur „nicht mehr Halter als Monate",
 und „Der Spielverderber" ging in jedem Monat an jemanden. Gedeckelt wird die
 Rate und nicht eine feste Zahl — eine Zahl wäre mit der Liga von selbst
 falsch geworden [§C39].
-`tests/disziplinen` zählt es nach und nennt die Wertung, deren Schwelle zu
+`tests/umbau/disziplinen` zählt es nach und nennt die Wertung, deren Schwelle zu
 tief hängt.

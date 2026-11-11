@@ -87,9 +87,9 @@ function showPotwRecap(opts){
     try { R = awardRankings('week'); } finally { awWeekStart = vorherWoche; }
 
     // Die Woche als Zahlen: was die Kopfzeile nicht schon sagt (Partien,
-    // Spieler, Tore).
+    // Spieler, Games).
     const spieltage = new Set(ms.map(m => tagKey(mts(m)))).size;
-    const eng = ms.filter(m => Math.abs((m.games_a || 0) - (m.games_b || 0)) <= 2).length;
+    const eng = ms.filter(m => partie(m).knapp).length;
     const duos = new Set(ms.flatMap(m => [paarKey(m.a1, m.a2), paarKey(m.b1, m.b2)])).size;
 
     // ─── Darstellung [§C31] ──────────────────────────────────────────
@@ -137,7 +137,7 @@ function showPotwRecap(opts){
       rcpKopfHtml({ic:'weekly', titel:weekLabel,
         marke: geteilt ? 'Players of the Week' : 'Player of the Week',
         meta: rcpMeta([dateRange, ms.length+' Partien', uniquePlayers.size+' Spieler',
-                       totalGoals ? totalGoals+' Tore' : ''])})
+                       totalGoals ? totalGoals+' Games' : ''])})
       + rcpHeldHtml({
           pid: mainPotwPlayerId,
           pids: geteilt ? potwWinners.map(w => w[0]) : null,
@@ -163,7 +163,7 @@ function showPotwRecap(opts){
       + rcpKalenderHtml(ms, weekStart, 7)
       + rcpZahlenHtml([
           {v:spieltage,                        l:spieltage === 1 ? 'Spieltag' : 'Spieltage'},
-          {v:komma(totalGoals / ms.length, 1), l:'Tore je Partie'},
+          {v:komma(totalGoals / ms.length, 1), l:'Games je Partie'},
           {v:eng,                              l:'Enge Partien'},
           {v:duos,                             l:'Duos'}])
       + rcpAbschnitt('Das Feld der Woche') + rcpFeldHtml(ms, mainPotwPlayerId)
@@ -444,19 +444,21 @@ function showPotdRecap(opts){
     // Der Tages-Rückblick zeigte bisher nur den Sieger und vier Zahlen.
     // Ein Spieltag hat aber dieselben Geschichten wie eine Woche, nur
     // kürzer — dieselben drei Kacheln, aus denselben Daten gerechnet.
-    const tagDrive = {};
+    // Die meisten gewonnenen Sätze des Tages — beim Tischkicker stand hier
+    // der Torjäger.
+    const tagSaetze = {};
     dayMatches.forEach(m => {
-      [[m.a1,m.a1_side,m.games_a],[m.a2,m.a2_side,m.games_a],
-       [m.b1,m.b1_side,m.games_b],[m.b2,m.b2_side,m.games_b]].forEach(([id,pos,tore]) => {
-        if(pos !== 'drive') return;
-        if(!tagDrive[id]) tagDrive[id] = {g:0, goals:0};
-        tagDrive[id].g++; tagDrive[id].goals += tore;
+      [m.a1, m.a2, m.b1, m.b2].forEach(id => {
+        const t = teamVon(m, id); if(!t) return;
+        const f = partieFuer(m, t);
+        if(!tagSaetze[id]) tagSaetze[id] = {g:0, s:0};
+        tagSaetze[id].g++; tagSaetze[id].s += f.setsFor;
       });
     });
-    const tagScorer = Object.keys(tagDrive)
-      .map(id => ({id, g:tagDrive[id].g, goals:tagDrive[id].goals, avg:tagDrive[id].goals/tagDrive[id].g}))
-      .filter(x => x.goals > 0 && sichtbar(pm[x.id]))
-      .sort((a,b) => b.avg - a.avg || b.goals - a.goals)[0];
+    const tagScorer = Object.keys(tagSaetze)
+      .map(id => ({id, g:tagSaetze[id].g, s:tagSaetze[id].s}))
+      .filter(x => x.s > 0 && sichtbar(pm[x.id]))
+      .sort((a,b) => b.s - a.s || a.g - b.g)[0];
 
     let tagUpset = null;
     for(const m of dayMatches){
@@ -471,8 +473,8 @@ function showPotdRecap(opts){
     const tagKacheln = [];
     const tagHl = (ic, label, name, wert, attr) => tagKacheln.push(rcpKachelHtml(
       name ? {ic, label, name, wert, ton:'metall', attr} : {ic, label, leer:true}));
-    tagHl('ball', 'Torjäger', tagScorer ? pname(tagScorer.id) : null,
-          tagScorer ? 'Ø '+komma(tagScorer.avg,1)+' Tore' : null,
+    tagHl('padelBall', 'Meiste Sätze', tagScorer ? pname(tagScorer.id) : null,
+          tagScorer ? tagScorer.s + (tagScorer.s === 1 ? ' Satz' : ' Sätze') : null,
           tagScorer ? `data-potd-player="${esc(tagScorer.id)}"` : '');
     // Größter Aufwind ist keine Kachel mehr: die Elo jedes Spielers steht im
     // Feld des Tages, dieselbe Zahl stand sonst zweimal da.

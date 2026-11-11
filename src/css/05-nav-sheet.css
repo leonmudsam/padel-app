@@ -135,7 +135,7 @@
   .nav-schlitten{position:absolute;z-index:-1;top:15px;left:10px;height:28px;width:calc((100% - 28px) / 5);
     pointer-events:none;will-change:transform;transition:opacity .2s}
   .nav-schlitten::before{content:"";position:absolute;left:50%;top:0;width:52px;height:28px;margin-left:-26px;border-radius:14px;
-    background:rgba(190,242,100,.12);box-shadow:inset 0 0 0 1px rgba(190,242,100,.32),0 0 16px -2px rgba(190,242,100,.38)}
+    background:rgba(228,242,74,.12);box-shadow:inset 0 0 0 1px rgba(228,242,74,.32),0 0 16px -2px rgba(228,242,74,.38)}
   @keyframes reiterStoss{0%{transform:scale(.78)}60%{transform:scale(1.1)}100%{transform:none}}
   @media(prefers-reduced-motion:no-preference){
     .botnav button.on .ic svg{animation:reiterStoss .28s cubic-bezier(.2,1.4,.4,1)}}
@@ -144,7 +144,7 @@
   .fab{position:fixed;z-index:55;right:max(18px,calc(50% - 260px + 18px));
     bottom:calc(86px + var(--safe-bot));width:58px;height:58px;border-radius:19px;
     background:linear-gradient(135deg,var(--acid),var(--acid2));border:none;cursor:pointer;
-    display:grid;place-items:center;box-shadow:var(--shadow-acid),0 0 0 5px rgba(190,242,100,.08);
+    display:grid;place-items:center;box-shadow:var(--shadow-acid),0 0 0 5px rgba(228,242,74,.08);
     transition:.2s;color:var(--acid-deep)}
   .fab:active{transform:scale(.9) rotate(90deg)}
 
@@ -161,12 +161,12 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast.mit-akt.show{pointer-events:auto}
   .toast.err{border-color:rgba(240,86,106,.45)}
-  .toast.ok{border-color:rgba(190,242,100,.35)}
+  .toast.ok{border-color:rgba(228,242,74,.35)}
   .toast-tx{display:flex;flex-direction:column;min-width:0;line-height:1.3}
   .toast-tx b{font-size:13px;font-weight:700}
   .toast-tx span{font-size:11.5px;color:var(--muted)}
   .toast-akt{margin-left:6px;flex-shrink:0;font:700 12px 'Space Grotesk',system-ui,sans-serif;color:var(--acid);
-    background:rgba(190,242,100,.1);border:1px solid rgba(190,242,100,.3);border-radius:10px;padding:7px 10px;cursor:pointer}
+    background:rgba(228,242,74,.1);border:1px solid rgba(228,242,74,.3);border-radius:10px;padding:7px 10px;cursor:pointer}
 
   /* Die Bestätigung: über allem, auch über einem offenen Blatt. */
   .dlg-bg{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;
@@ -185,17 +185,17 @@
   .ach-toast{position:fixed;left:50%;bottom:calc(160px + var(--safe-bot));z-index:201;
     transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
     display:flex;align-items:center;gap:12px;
-    background:linear-gradient(135deg,rgba(190,242,100,.14),rgba(247,207,74,.08) 60%,var(--surface) 100%);
-    border:1px solid rgba(190,242,100,.45);
+    background:linear-gradient(135deg,rgba(228,242,74,.14),rgba(247,207,74,.08) 60%,var(--surface) 100%);
+    border:1px solid rgba(228,242,74,.45);
     padding:11px 14px 11px 11px;border-radius:14px;
     box-shadow:0 8px 24px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.2);
     max-width:88vw;min-width:240px;transition:.35s cubic-bezier(.16,1,.3,1)}
   .ach-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .ach-toast-ic{width:36px;height:36px;border-radius:10px;
-    background:rgba(190,242,100,.16);display:grid;place-items:center;
+    background:rgba(228,242,74,.16);display:grid;place-items:center;
     color:var(--acid);flex-shrink:0;font-size:22px;line-height:1;
     /* Schein ohne `filter`. */
-    box-shadow:0 2px 8px -1px rgba(190,242,100,.3)}
+    box-shadow:0 2px 8px -1px rgba(228,242,74,.3)}
   .ach-toast-ic svg{width:20px;height:20px;fill:none;stroke:currentColor;--strich:1.75;stroke-linecap:round;stroke-linejoin:round}
   .ach-toast-text{flex:1;min-width:0}
   .ach-toast-cat{font-size:9px;text-transform:uppercase;letter-spacing:.14em;
@@ -219,7 +219,7 @@
   .blatt-fuss .btn .ic{font-size:15px}
   .buehne{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;
     padding:14px 10px 12px;border-radius:16px;margin-top:14px;
-    background:radial-gradient(90% 120% at 20% 0%,rgba(190,242,100,.08),transparent 60%),var(--surface);
+    background:radial-gradient(90% 120% at 20% 0%,rgba(228,242,74,.08),transparent 60%),var(--surface);
     border:1px solid var(--line)}
   .buehne-s{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0;cursor:pointer}
   .buehne-s.nied{opacity:.6}

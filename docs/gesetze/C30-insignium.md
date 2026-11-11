@@ -20,7 +20,7 @@
 
 ## Prüfung
 
-`tests/zeichen` rastert alle 21 Zeichnungen (mittig, spiegelgleich, Loch, Reif bei 22–25 %, Rangfarbe im Stein); `tests/disziplinen` (Schwellen, Grade auch am Ordensstern, Steine und Gold an jedem Übergang); `tests/blatt` (kein Filter, Vektor gegen Bild, Topf, Leiter, Vitrine, die Grade des Ordenssterns in Laufbahn und Karte).
+`tests/umbau/zeichen` rastert alle 21 Zeichnungen (mittig, spiegelgleich, Loch, Reif bei 22–25 %, Rangfarbe im Stein); `tests/umbau/disziplinen` (Schwellen, Grade auch am Ordensstern, Steine und Gold an jedem Übergang); `tests/umbau/blatt` (kein Filter, Vektor gegen Bild, Topf, Leiter, Vitrine, die Grade des Ordenssterns in Laufbahn und Karte).
 
 ## Herleitung
 
@@ -50,7 +50,7 @@ sie sind die Beobachtung.
 **Die Zeichen sind Vektorzeichnungen nach der Vorlage**
 (`35a-insignium-zeichen.js`, `INS_ZEICHEN`, je Stufe drei). Aus Kreisen
 und Pfaden gerechnet blieb jede Fassung hinter der gemalten Vorlage
-(`mockup/insignium-vorlage.webp`) zurück; aus ihr ausgeschnitten waren die
+(den Entwurf „insignium-vorlage.webp“ der Kicker-Liga) zurück; aus ihr ausgeschnitten waren die
 Zeichen verwaschen, trugen Reste des Vorlagengrunds und wurden über 60 px
 weich. Die Zeichnungen folgen der Vorlage und sind in jeder Größe scharf.
 **Jede Stufe ist ein eigener Gegenstand**: der Reif ein Band, der
@@ -81,11 +81,11 @@ Grad III ein S am Ende des Laubs. Blätter wachsen an den Linien nur nach
 außen und nur am Bogen: in der Schnecke verdeckten sie Auge und Stein.
 Das Auge trägt schon in Grad I einen Stein in der Rangfarbe, weil der
 Zierkranz III ihn trägt und die Farbe sonst einen Grad lang verschwände;
-`tests/disziplinen` zählt die Augen. **Und
+`tests/umbau/disziplinen` zählt die Augen. **Und
 der dritte Grad einer Stufe trägt nie mehr als der erste der nächsten**:
 Zierkranz III hatte Steine im Reif und rotgoldenes Laub, Lorbeerreif I
 keins von beidem. Die Steine kommen mit dem zweiten Grad des Lorbeers.
-`tests/disziplinen` zählt Steine und Gold an jedem Übergang.
+`tests/umbau/disziplinen` zählt Steine und Gold an jedem Übergang.
 Licht fällt überall von oben links: jedes Teil hat eine helle und eine
 dunkle Seite, eine Kante im Ton seines Werkstoffs und einen Glanz, und der
 Reif wirft einen Schatten auf die Zierde hinter ihm. Gezeichnet wird auf
@@ -117,7 +117,7 @@ gedrosselter CPU auch warm in 367 ms statt 123. **Und das Bild steht unter einer
 Kilobyte, und jedes `<use>` klont die Gruppe samt dieser Adresse — der Feed
 hat rund 240 davon, und das Öffnen brauchte gemessen im Median 150 ms statt
 46. `insBild` bleibt die Daten-URL für alles, was ausserhalb der Seite
-gerastert wird; ein Blob gilt nur dort, wo er angelegt wurde. `tests/blatt`
+gerastert wird; ein Blob gilt nur dort, wo er angelegt wurde. `tests/umbau/blatt`
 misst die Länge jeder Bildadresse im Dokument.
 **Die Zeichnung trägt keinen Filter**: Schlag- und
 Reifschatten sind weiche Radialverläufe, die Lichtkanten zwei Striche
@@ -125,7 +125,7 @@ statt eines Weichzeichners — ein gefiltertes Element rechnet Safari in
 CSS-Pixeln. **Und außen liegt auch keiner darauf**: jedes Wappen trug
 `filter: drop-shadow(…)` am ganzen `svg.ins`, im Feed allein 234 Mal.
 Dasselbe gilt für eine Ebene, die skaliert — der Profilkopf läuft deshalb
-ohne `scale` ein. `tests/blatt` sucht über alle Reiter, Profil, Laufbahn
+ohne `scale` ein. `tests/umbau/blatt` sucht über alle Reiter, Profil, Laufbahn
 und Feed nach einem Filter oder einer Skalierung über einem Zeichen
 (ausgenommen das Entfärben einer Stufe, die niemand trägt) und misst,
 dass Profilkopf und Laufbahn Vektor und die Ranglistenzeile Bild ist.
@@ -154,7 +154,7 @@ sind in den Tönen der Rangfarbe (`INS_RANGFARBE`, `_izStein`) gezeichnet,
 gedämpft und je Rang eine eigene Zeichnung; Lilie, Band und die großen
 Spitzen des Sterns sind Metall mit einem Schimmer darauf. In voller
 Sättigung standen sie als violette Flecken auf dem Metall und liefen dem
-Schmuck den Rang ab. `tests/zeichen` misst die Rangfarbe im Stein und
+Schmuck den Rang ab. `tests/umbau/zeichen` misst die Rangfarbe im Stein und
 verlangt eine Lilie aus Metall.
 Ein Filter über einem Bild färbte vorher die violetten Bildpunkte um und
 kostete auf zwölf Wappen einer Rangliste in jedem Bild des Scrollens.
@@ -188,14 +188,14 @@ siebenundneunzig Knoten eines Zeichens und im Awards-Tab 312 Gradienten für
 ein knappes Dutzend verschiedener Sätze. Der Topf steht **außerhalb von
 `#app` und des Blatts** — darin nähme ihn das nächste `render()` mit, und
 ein Verweis auf einen Verlauf, den es nicht gibt, wirft keinen Fehler: die
-Fläche wird schwarz. `tests/blatt` sieht nach jedem Zeichnen nach.
+Fläche wird schwarz. `tests/umbau/blatt` sieht nach jedem Zeichnen nach.
 **Die Zeichnungen stehen auch nur einmal im Dokument.** Eine Zeichnung ist
 zwanzig bis siebzig Kilobyte, und die Laufbahn zeigt die ganze Leiter samt
 Vitrine: `insigniumStufeSvg` legt deshalb je Rang, Stufe und Zeichnung eine
 Gruppe (`inst…`) in den Topf und verweist darauf, wie die Wappen. Mit
 `{eigen:true}` kommt das volle Markup zurück — damit ein
 Ergebnis für sich steht und sich außerhalb des Dokuments rastern lässt;
-genau das tun `tests/zeichen` und `tests/disziplinen`.
+genau das tun `tests/umbau/zeichen` und `tests/umbau/disziplinen`.
 Dieselbe Zeichnung entsteht nur einmal: gleicher Rang, gleiche Stufe,
 gleiche Titelzahl heißt gleiches Wappen, und das Ergebnis wird gemerkt.
 **Und sie steht auch nur einmal im Dokument** (`insigniumRef`). Gemerkt war
@@ -214,21 +214,21 @@ einen Viewport bei (0,0), und die Zeichnung rutschte um 22 von 144 Einheiten
 nach unten rechts — auf einer 52-px-Kachel 8 px, das Gesicht oben links und
 der Reif unten rechts, auf jeder Seite der App. Die Box des `<svg>` ist in
 beiden Fassungen dieselbe, also fängt nur eine Messung am INHALT das:
-`tests/zeichen` legt Verweis und volles Markup nebeneinander und vergleicht,
+`tests/umbau/zeichen` legt Verweis und volles Markup nebeneinander und vergleicht,
 wo gezeichnet wird. Der Schlüssel ist das MARKUP selbst: gleiches
 Markup heißt gleiches Symbol, also hängt der Topf an der Zahl verschiedener
 Zeichnungen und nicht an der Zeit [§3]. Ohne Topf bleibt es beim vollen
 Markup, wie bei den Verläufen. Der Inhalt liegt damit im Symbol und ist aus
-der Instanz nicht mehr zu erreichen: `tests/zeichen` rechnet den Reif aus der
+der Instanz nicht mehr zu erreichen: `tests/umbau/zeichen` rechnet den Reif aus der
 gerenderten Box und der viewBox und prüft die Rechnung einmal gegen das
-gezeichnete Original. `tests/blatt` sieht nach, dass kein Verweis auf ein
+gezeichnete Original. `tests/umbau/blatt` sieht nach, dass kein Verweis auf ein
 fehlendes Symbol zeigt und dass viele Wappen wenige Zeichnungen teilen.
 **Der Feed legt nur, was zu sehen ist** (`content-visibility:auto` an
 `.nf-card`). Rund siebzig Karten und 4600 Knoten kosteten beim Öffnen und
 bei jedem Zurück aus einem Story-Blatt 110 bis 140 ms Layout — das Parsen
 des Markups nur zehn, das Bauen der Karten fünfzehn. Gemessen jetzt rund
 35 ms. Breaking und die Karte des Tages sind ausgenommen: ihr Schein liegt
-außerhalb der Fläche, und die Eindämmung schnitte ihn ab. `tests/blatt`
+außerhalb der Fläche, und die Eindämmung schnitte ihn ab. `tests/umbau/blatt`
 misst die Geometrie der Karten deshalb mit abgeschalteter Regel — so, wie
 eine Karte auf dem Bildschirm liegt — und prüft die Regel selbst getrennt.
 **Und er zeichnet zuerst, was man sieht** (`NEWS_FEED_SOFORT`,
@@ -266,11 +266,11 @@ und wird in jedem Bild der Bewegung mitgemalt. Und ein Vorhang mit
 ist `transition:all` und stellte auch den Blur zur Animation, der in jedem
 Bild alles hinter sich neu rechnet.
 
-Gemessen, nicht behauptet: `tests/zeichen` rastert alle einundzwanzig
+Gemessen, nicht behauptet: `tests/umbau/zeichen` rastert alle einundzwanzig
 Zeichnungen und verlangt je Zeichnung, dass sie mittig steht, spiegelgleich ist, ein
 freies Loch für das Gesicht hat, ihren Reif rundum bei 22 bis 25 % der
 Kante trägt und am Rand der Zeichenfläche nichts mehr zeichnet — und dass
-sich zwei Grade bei 52 px sichtbar unterscheiden. `tests/disziplinen`
+sich zwei Grade bei 52 px sichtbar unterscheiden. `tests/umbau/disziplinen`
 verlangt je Stufe drei verschiedene Zeichnungen und für jeden Rang eine
 Zeichnung in seiner Rangfarbe, ohne Filter.
 Auch die kleine Leiter im Blatt (`_newsLeiter`, `.nf-lt-p`) zeigt die
@@ -282,20 +282,20 @@ hatte. Sie zeigt dieselben Bilder wie die Laufbahn. Ein Feld ist **höchstens 40
 Schildring ein Ring, und die sechzehn des CSS-Punktes waren für einen Punkt
 gedacht. Sieben Felder und die Zahl daneben liefen bei 360 px über den
 Rand; die Felder teilen sich deshalb die Zeile, und die Zahl steht
-darunter. `tests/blatt` misst beides.
+darunter. `tests/umbau/blatt` misst beides.
 Die Laufbahn zeigt die Leiter als Vitrine (`.lb-karus`/`.lb-k`): eine
 Stufe groß in der Mitte, die übrigen schiebt man heran — **oder tippt sie
 an**. Wischen allein hat die letzte Stufe nie erreicht: der Blatt-Zug
 riss jede waagerechte Geste an sich, sobald sie zwölf Pixel nach unten
 driftete. Das ist repariert (`bindSheetSwipe` entscheidet die Richtung
 einmal je Berührung), aber ein Ziel tippt man ohnehin lieber an.
-`tests/blatt` misst beides.
+`tests/umbau/blatt` misst beides.
 Die drei Marken unter der Vitrine sind Knöpfe: sie zeigen den Grad in der
 Vitrine. Darunter steht **die ganze Leiter** (`#lbAlle`): sieben Zeilen zu
 drei Feldern, das erreichte hell, das eigene gerahmt, darüber „x von 21
 erreicht"; ein Feld antippen stellt die Vitrine auf Stufe und Grad. Die
 Vitrine allein zeigte einen Gegenstand zur Zeit, und was ein Grad
-verändert, sah man nur durch Wischen und Merken. `tests/blatt` misst das.
+verändert, sah man nur durch Wischen und Merken. `tests/umbau/blatt` misst das.
 **Und die Liga erfährt davon** (`insignium_stand`, ein Fun Fact „Die Leiter
 der Liga"): wie viele welche Stufe tragen, was die Spitze trägt und wie
 weit es zur nächsten Stufe ist, auf der Karte die sieben Zeichen mit ihrer

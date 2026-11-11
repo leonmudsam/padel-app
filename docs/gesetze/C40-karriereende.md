@@ -18,7 +18,7 @@
 
 ## Prüfung
 
-`tests/ruhestand` (die vier Regeln an den echten Partien, Profil zwei Monate und eine Fassung später Wort für Wort gleich), `tests/ruheliga` (kein Ruheständler auf dem Bildschirm außerhalb von `[data-ruhestand]` und `[data-bis]`, kein Bestwert mit ihm im Profil eines Aktiven), `tests/blatt` (Abschied bei 360 px).
+`tests/umbau/ruhestand` (die vier Regeln an den echten Partien, Profil zwei Monate und eine Fassung später Wort für Wort gleich), `tests/ruheliga` (kein Ruheständler auf dem Bildschirm außerhalb von `[data-ruhestand]` und `[data-bis]`, kein Bestwert mit ihm im Profil eines Aktiven), `tests/umbau/blatt` (Abschied bei 360 px).
 
 ## Herleitung
 
@@ -106,7 +106,7 @@ der bleibt, wie er beim Abschluss war.
 **Wer eine neue Ansicht, Story oder Wertung baut**, entscheidet eine Frage:
 ist es ein Zeitraum oder etwas aus seinen Partien (`sichtbar`), oder ein
 Vergleich über die Laufbahn (`ligaAktiv`)? Mehr ist nicht zu tun. Eine rohe
-`.hidden`-Abfrage lässt `tests/ruhestand` nicht zu.
+`.hidden`-Abfrage lässt `tests/umbau/ruhestand` nicht zu.
 **Was auf dem Bildschirm steht, wird abgesucht** (`tests/ruheliga`): nach
 seinem Abschluss, während die anderen weiterspielen, jeder Reiter aus
 `NAV`, jeder Knopf darin bis zur Tiefe drei und die Spielerwahl. Erlaubt ist
@@ -117,7 +117,7 @@ spätestens mit seinem Abschluss endet (`geschichteHtml`: ein vergangener
 Monat in Liga und Awards, eine vergangene Woche, die Zeile der
 Chronik-Matrix bis zu ihrem letzten Eintrag), und im Verlauf
 (`GESCHICHTE`). Eine neue Ansicht, die ihn zeigt, fällt auf, ohne dass der
-Test sie kennt. `tests/ruhestand` zeichnet Profil, Laufbahn,
+Test sie kennt. `tests/umbau/ruhestand` zeichnet Profil, Laufbahn,
 Auszeichnungen, Bilanzen und Abschied nach dem Abschluss und noch einmal
 zwei Monate und eine neue Fassung der App später und vergleicht den Text.
 **Kehrt er zurück** (beide Spalten leer), gilt wieder die Liga von heute:

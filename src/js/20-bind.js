@@ -186,7 +186,7 @@ function bind(){
       toast('Teams gemischt','ok');render();
     };
     document.getElementById('saveM').onclick=doSaveMatch;
-    updatePreview();
+    updatePreview(); requestMatchPreview();
   }
 
   // settings sliders

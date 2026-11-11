@@ -4647,7 +4647,7 @@ const ZEICHEN_FAMILIEN = {
   duplicate:'Dasselbe Ergebnis immer wieder', sunrise:'Die erste Partie des Tages',
   weight:'Sieg mit dem Schwächsten als Partner', rainCloud:'Der Pechvogel', ghost:'Der Angstgegner',
   bothSides:'Auf beiden Positionen', stepsUp:'Plätze gewonnen', abzeichen:'Eine Auszeichnung',
-  posSturm:'Der Stürmer', posAbwehr:'Der Verteidiger', posReinAbwehr:'Der reine Verteidiger',
+  posDrive:'Der Stürmer', posReves:'Der Verteidiger', posReinReves:'Der reine Verteidiger',
   medalTrio:'Einer sammelt mehreres', users:'Mehrere zusammen: Teams und geteilter Erfolg',
   tafelStein:'Die Ewige Tafel', spielfeld:'Die Partie am Spieltag',
 };

@@ -24,7 +24,7 @@
 
 /* ── Die Ergebniszeile ── */
 .sp-zeile{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;
-  padding:9px 13px;background:linear-gradient(96deg,rgba(190,242,100,.06),transparent 70%);border-bottom:1px solid var(--line)}
+  padding:9px 13px;background:linear-gradient(96deg,rgba(228,242,74,.06),transparent 70%);border-bottom:1px solid var(--line)}
 .sp-zeile{align-items:start}
 .sp-z-s{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;opacity:.6}
 .sp-z-s.w{opacity:1}
@@ -32,7 +32,7 @@
 .sp-z-n{display:flex;flex-direction:column;font-size:10.5px;line-height:1.3;color:var(--muted)}
 .sp-z-s.w .sp-z-n b{color:var(--ink)}
 .sp-z-sc{align-self:center}
-.sp-z-sc{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:25px;line-height:1;letter-spacing:-.03em;color:var(--faint);text-shadow:0 0 16px rgba(190,242,100,.12)}
+.sp-z-sc{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:25px;line-height:1;letter-spacing:-.03em;color:var(--faint);text-shadow:0 0 16px rgba(228,242,74,.12)}
 .sp-z-sc em{font-style:normal}.sp-z-sc em.w{color:var(--ink)}
 .sp-z-sc i{font-style:normal;margin:0 1px}
 
@@ -49,14 +49,14 @@
   background:linear-gradient(180deg,rgba(47,111,214,.05),rgba(47,111,214,.32),rgba(47,111,214,.05))}
 .sp-f-wand.l{left:0}.sp-f-wand.r{right:0}
 .sp-f-linie{position:absolute;top:0;bottom:0;width:1px;margin-left:-.5px;
-  background:linear-gradient(180deg,transparent,rgba(185,196,189,.16) 20%,rgba(185,196,189,.16) 80%,transparent)}
-.sp-f-mittel{position:absolute;left:22%;right:22%;top:50%;height:1px;background:rgba(185,196,189,.12)}
+  background:linear-gradient(180deg,transparent,rgba(182,193,207,.16) 20%,rgba(182,193,207,.16) 80%,transparent)}
+.sp-f-mittel{position:absolute;left:22%;right:22%;top:50%;height:1px;background:rgba(182,193,207,.12)}
 .sp-f-sc{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;margin-bottom:6px}
 /* Der Stand ist die Aussage der Matchbuehne, nicht ein kleiner Feldaufkleber.
    Er bleibt auch zwischen vier Wappen auf dem Telefon der Blickpunkt. */
 .sp-f-sc b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:26px;line-height:1.1;color:var(--muted);padding:4px 12px;border-radius:9px;
   background:var(--surface);box-shadow:0 0 0 1px var(--line2)}
-.sp-f-sc b em{font-style:normal}.sp-f-sc b em.w{color:var(--acid);text-shadow:0 0 14px rgba(190,242,100,.2)}.sp-f-sc b i{font-style:normal;margin:0 1px}
+.sp-f-sc b em{font-style:normal}.sp-f-sc b em.w{color:var(--acid);text-shadow:0 0 14px rgba(228,242,74,.2)}.sp-f-sc b i{font-style:normal;margin:0 1px}
 .sp-f-sc span{font:600 8.5px 'Sometype Mono',monospace;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
 .sp-f-reihe{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .sp-f-sp{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:0 2px;text-align:center}
@@ -89,10 +89,10 @@
   font-weight:400;font-size:40px;line-height:1;padding:9px 0 7px;border-radius:10px;color:var(--ink2);
   background:linear-gradient(180deg,var(--surface3) 0 50%,var(--surface2) 50% 100%);box-shadow:inset 0 0 0 1px var(--line2)}
 .sp-at-t > b::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.45)}
-.sp-at-t.w > b{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(190,242,100,.35),0 0 18px rgba(190,242,100,.08)}
+.sp-at-t.w > b{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(228,242,74,.35),0 0 18px rgba(228,242,74,.08)}
 .sp-at-m{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:58px;padding-top:12px}
 .sp-at-m span{font:700 9px 'Sometype Mono',monospace;letter-spacing:.16em;color:var(--acid);padding:3px 7px;border-radius:999px;
-  background:rgba(190,242,100,.08);box-shadow:inset 0 0 0 1px rgba(190,242,100,.25);white-space:nowrap}
+  background:rgba(228,242,74,.08);box-shadow:inset 0 0 0 1px rgba(228,242,74,.25);white-space:nowrap}
 .sp-at-m em{font:700 12px 'Sometype Mono',monospace;font-style:normal;color:var(--ink);margin-top:5px;white-space:nowrap}
 .sp-at-m i{font-size:9px;font-style:normal;color:var(--faint);white-space:nowrap}
 .sp-nv{padding:9px 13px 10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
@@ -112,8 +112,8 @@
 .sp-vt-g{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;height:62px;margin:7px 0 4px;align-items:end}
 .sp-vt-s{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;min-width:0}
 .sp-vt-s i{display:block;width:100%;min-height:2px;border-radius:3px 3px 1px 1px;background:var(--surface3)}
-.sp-vt-s.mehr i{background:rgba(185,196,189,.32)}
-.sp-vt-s.jetzt i{background:var(--acid);box-shadow:0 0 12px rgba(190,242,100,.25)}
+.sp-vt-s.mehr i{background:rgba(182,193,207,.32)}
+.sp-vt-s.jetzt i{background:var(--acid);box-shadow:0 0 12px rgba(228,242,74,.25)}
 .sp-vt-s em{font:600 8.5px 'Sometype Mono',monospace;font-style:normal;color:var(--faint);line-height:1}
 .sp-vt-s.jetzt em{color:var(--acid)}
 .sp-vt-f{font-size:11px;color:var(--muted)}
@@ -138,7 +138,7 @@
 .sp-wp-t{position:absolute;transform:translate(-50%,-100%)}
 .sp-wp-t .av{--av:26px;width:26px;height:26px;font-size:10px}
 .sp-wp-t:not(.w){opacity:.6}
-.sp-wp-t.w .av{box-shadow:0 0 0 2px var(--surface),0 0 0 3px rgba(190,242,100,.55)}
+.sp-wp-t.w .av{box-shadow:0 0 0 2px var(--surface),0 0 0 3px rgba(228,242,74,.55)}
 .sp-wp-ls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:-6px}
 .sp-wp-l{display:flex;flex-direction:column;min-width:0;line-height:1.3}
 /* Team A links, links bündig; Team B rechts, rechts bündig. */
@@ -158,7 +158,7 @@
 .sp-sl-n{min-width:0;margin-left:auto;text-align:right;font-size:10.5px;color:var(--muted)}
 .sp-sl-r{position:relative;display:flex;gap:3px;margin-top:8px;height:14px}
 .sp-sl-r i{flex:1;min-width:0;height:14px;border-radius:3px;background:var(--surface3)}
-.sp-sl-r i.w{background:var(--acid);box-shadow:0 0 8px rgba(190,242,100,.18)}
+.sp-sl-r i.w{background:var(--acid);box-shadow:0 0 8px rgba(228,242,74,.18)}
 .sp-sl-r.balken{border-radius:4px;background:var(--surface3)}
 .sp-sl-r.balken .sp-sl-voll{flex:none;border-radius:4px;background:var(--acid)}
 .sp-sl-r u{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:1px;background:var(--ink2)}
@@ -185,7 +185,7 @@
 .sp-rk-b{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:0 0 auto}
 .sp-rk-r{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr)) 22px;gap:3px;margin-top:9px;height:14px}
 .sp-rk-r i{display:block;min-width:0;height:14px;border-radius:3px}
-.sp-rk-r i.w{background:rgba(190,242,100,.55)}
+.sp-rk-r i.w{background:rgba(228,242,74,.55)}
 .sp-rk-r i.x{display:flex;align-items:center;justify-content:center;background:var(--red);
   box-shadow:0 0 12px rgba(240,86,106,.5)}
 .sp-rk-r i.x svg{width:11px;height:11px;color:#1a0b0b}
@@ -195,7 +195,7 @@
 .sp-pm-d{display:flex;align-items:center;gap:4px;flex:0 0 auto}
 .sp-pm-d .av{--av:26px;width:26px;height:26px;font-size:9px}
 .sp-pm-d i{display:flex;width:18px;height:18px;align-items:center;justify-content:center;border-radius:50%;
-  color:var(--acid);background:rgba(190,242,100,.1)}
+  color:var(--acid);background:rgba(228,242,74,.1)}
 .sp-pm-d i svg{width:12px;height:12px}
 .sp-pm-t{display:flex;align-items:center;gap:8px;min-width:0}
 .sp-pm-t b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:26px;line-height:1;color:var(--acid)}
@@ -205,7 +205,7 @@
 .sp-pm-r{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:3px;margin-top:9px;height:12px}
 .sp-pm-r i{display:block;min-width:0;height:12px;border-radius:3px}
 .sp-pm-r i.l{background:rgba(240,86,106,.4)}
-.sp-pm-r i.w{background:var(--acid);box-shadow:0 0 10px rgba(190,242,100,.35)}
+.sp-pm-r i.w{background:var(--acid);box-shadow:0 0 10px rgba(228,242,74,.35)}
 /* Der Rollentausch: der Anteil der Seite als Strahl, die heutige markiert. */
 .sp-ro{padding:10px 13px 10px;border-top:1px solid var(--line)}
 .sp-ro-k{display:flex;align-items:center;gap:8px;min-width:0}
@@ -216,7 +216,7 @@
 .sp-ro-s{display:flex;height:10px;margin-top:9px;border-radius:5px;overflow:hidden;background:var(--surface3)}
 .sp-ro-s i{display:block;height:100%;background:rgba(255,255,255,.12)}
 .sp-ro-s i.reves{flex:1}
-.sp-ro-s i.heute{background:var(--acid);box-shadow:0 0 10px rgba(190,242,100,.4)}
+.sp-ro-s i.heute{background:var(--acid);box-shadow:0 0 10px rgba(228,242,74,.4)}
 .sp-ro-l{display:flex;justify-content:space-between;margin-top:4px;font-size:9.5px;color:var(--muted)}
 
 /* ── Das Duo ── */
@@ -282,7 +282,7 @@
 .sp-ku-0{stroke:var(--line2);stroke-dasharray:3 4}
 .sp-ku-l{fill:none;stroke:var(--ink2);stroke-width:1.8;stroke-linejoin:round;opacity:.7;stroke-dasharray:1}
 .sp-ku circle.w{fill:var(--acid)}.sp-ku circle.l{fill:var(--red)}
-.sp-ku circle.jetzt{stroke:var(--surface);stroke-width:2;filter:drop-shadow(0 0 5px rgba(190,242,100,.6))}
+.sp-ku circle.jetzt{stroke:var(--surface);stroke-width:2;filter:drop-shadow(0 0 5px rgba(228,242,74,.6))}
 
 /* ── Jede Begegnung ── */
 .sp-bg{padding:9px 13px 9px;border-top:1px solid var(--line)}
@@ -347,7 +347,7 @@
 
 /* ── Das Band des klaren Siegs ── */
 .sp-band{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:start;padding:11px 13px 10px;
-  background:linear-gradient(96deg,rgba(190,242,100,.07),transparent 72%)}
+  background:linear-gradient(96deg,rgba(228,242,74,.07),transparent 72%)}
 .sp-band-s{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
 .sp-band-s.re{align-items:flex-end;text-align:right}
 .sp-band-avs{display:flex;min-height:48px}
@@ -356,13 +356,13 @@
 .sp-band-s.w .sp-z-n b{color:var(--ink)}
 .sp-band-m{align-self:center;display:flex;flex-direction:column;align-items:center;gap:5px}
 .sp-band-sc{font-family:'Archivo Black',sans-serif;font-size:32px;line-height:1;letter-spacing:-.03em;color:var(--faint)}
-.sp-band-sc em{font-style:normal}.sp-band-sc em.w{color:var(--acid);text-shadow:0 0 14px rgba(190,242,100,.35)}
+.sp-band-sc em{font-style:normal}.sp-band-sc em.w{color:var(--acid);text-shadow:0 0 14px rgba(228,242,74,.35)}
 .sp-band-sc i{font-style:normal;font-size:16px;margin:0 2px;vertical-align:3px}
 .sp-band-g{display:flex;gap:2px}
 .sp-band-g i{display:block;width:5px;height:9px;border-radius:1.5px;background:rgba(255,255,255,.14)}
 .sp-band-g i.a{background:var(--acid)}
 .sp-band-d{font:700 9.5px 'Sometype Mono',monospace;color:var(--acid);letter-spacing:.04em;padding:1px 6px;border-radius:6px;
-  background:rgba(190,242,100,.1)}
+  background:rgba(228,242,74,.1)}
 
 /* ── Die Runde im Blatt ──
    Antippen öffnet die Karte der Partie; eine Breaking-Partie trägt ihre
@@ -390,7 +390,7 @@
 .sp-rq{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:2px 13px 8px}
 .sp-rq-f{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 3px 6px;min-width:0;
   border-radius:10px;background:rgba(255,255,255,.025);border:1px solid var(--line)}
-.sp-rq-f.erst{border-color:rgba(var(--story-rgb,190,242,100),.45);background:rgba(var(--story-rgb,190,242,100),.07)}
+.sp-rq-f.erst{border-color:rgba(var(--story-rgb,228,242,74),.45);background:rgba(var(--story-rgb,228,242,74),.07)}
 .sp-rq-f .av{width:22px;height:22px;font-size:8px}
 .sp-rq-n{font-size:11px;font-weight:600;color:var(--ink2);line-height:1.25;text-align:center;
   overflow-wrap:anywhere;max-width:100%}
@@ -475,7 +475,7 @@
 /* Die Fuge liegt hinter der Ziffer: darüber las sie sich als Durchstreichen. */
 .sp-ag-k::after{content:"";position:absolute;z-index:0;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.6);box-shadow:0 1px 0 rgba(255,255,255,.035)}
 .sp-ag-k b{position:relative;z-index:1;font:400 32px/1 'Archivo Black',sans-serif;color:var(--ink2)}
-.sp-ag-k.w b{color:var(--acid);text-shadow:0 0 16px rgba(190,242,100,.5)}
+.sp-ag-k.w b{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.5)}
 
 /* Torpucks: jedes Tor ein Puck, die fehlenden als leere Ringe. */
 .sp-pu{display:flex;flex-direction:column;gap:8px}
@@ -484,9 +484,9 @@
 .sp-pu-z:not(.w) .sp-kp{opacity:.78}
 .sp-pu-r{position:relative;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;align-items:center}
 .sp-pu-r i{aspect-ratio:1;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line2)}
-.sp-pu-r i.w{background:radial-gradient(circle at 35% 30%,#efffc2,var(--acid) 45%,#6f9a2c);box-shadow:0 0 7px rgba(190,242,100,.35)}
+.sp-pu-r i.w{background:radial-gradient(circle at 35% 30%,#efffc2,var(--acid) 45%,#6f9a2c);box-shadow:0 0 7px rgba(228,242,74,.35)}
 .sp-pu-r i.l{background:radial-gradient(circle at 35% 30%,#ffc2ca,var(--red) 50%,#9b2c3f);opacity:.8}
-.sp-pu-r u{position:absolute;top:-4px;bottom:-4px;left:calc(var(--von) * 10% - 2px);right:-2px;border:1px dashed rgba(190,242,100,.35);border-radius:9px;pointer-events:none}
+.sp-pu-r u{position:absolute;top:-4px;bottom:-4px;left:calc(var(--von) * 10% - 2px);right:-2px;border:1px dashed rgba(228,242,74,.35);border-radius:9px;pointer-events:none}
 .sp-pu-z b{font:400 22px/1 'Archivo Black',sans-serif;text-align:right;color:var(--ink2)}
 .sp-pu-z.w b{color:var(--acid)}
 
@@ -504,7 +504,7 @@
 .sp-sm-m{position:absolute;z-index:1;left:50%;top:50%;transform:translate(-50%,-50%);padding:5px 9px;border-radius:11px;
   background:rgba(10,12,11,.86);border:1px solid var(--line2);box-shadow:0 0 18px rgba(0,0,0,.55)}
 .sp-sm-m .sp-st{font-size:23px}
-.sp-sm-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(190,242,100,.35)}
+.sp-sm-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.35)}
 
 /* Die Lebensbalken: je Team ein Balken von außen zur Mitte, so lang wie
    das, was ihm von zehn Toren blieb; der leere trägt „K.o.". */
@@ -520,7 +520,7 @@
   background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 calc(10% - 2px),transparent calc(10% - 2px) 10%);
   box-shadow:inset 0 0 0 1px var(--line2)}
 .sp-lb-b i{position:absolute;top:0;bottom:0;left:0;width:var(--r);border-radius:4px;
-  background:linear-gradient(90deg,#6f9a2c,var(--acid));box-shadow:0 0 12px rgba(190,242,100,.35)}
+  background:linear-gradient(90deg,#6f9a2c,var(--acid));box-shadow:0 0 12px rgba(228,242,74,.35)}
 .sp-lb-s.re .sp-lb-b i{left:auto;right:0;background:linear-gradient(270deg,#6f9a2c,var(--acid))}
 .sp-lb-b em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 9px 'Archivo Black',sans-serif;
   letter-spacing:.14em;color:var(--red);font-style:normal}
@@ -542,7 +542,7 @@
   background:rgba(10,12,11,.7);border:1px solid rgba(247,207,74,.4);box-shadow:0 0 16px rgba(247,207,74,.14)}
 .sp-hz-m small{font:600 8px 'Sometype Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
 .sp-hz-m .sp-st{font-size:26px}
-.sp-hz-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(190,242,100,.35)}
+.sp-hz-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.35)}
 .sp-hz-k{position:relative;display:block;height:40px;overflow:hidden}
 .sp-hz-k svg{display:block;width:100%;height:100%}
 .sp-hz-k path{fill:none;stroke:rgba(240,86,106,.6);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
@@ -559,27 +559,27 @@
   background:linear-gradient(118deg,transparent 22%,rgba(255,255,255,.05) 30%,transparent 40%),
     linear-gradient(242deg,transparent 22%,rgba(255,255,255,.05) 30%,transparent 40%),
     radial-gradient(130px 70px at 22% 82%,rgba(247,207,74,.17),transparent 70%),
-    radial-gradient(160px 60px at 22% 0%,rgba(190,242,100,.10),transparent 70%),var(--surface2)}
+    radial-gradient(160px 60px at 22% 0%,rgba(228,242,74,.10),transparent 70%),var(--surface2)}
 .sp-zn > *{position:relative}
 .sp-zn .av{--av:24px;width:24px;height:24px;font-size:9px}
 /* Das Flutlicht fährt einmal über die Tafel, wenn sie hereinkommt. */
 .sp-zn::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
   background:linear-gradient(105deg,transparent 35%,rgba(255,244,200,.13) 48%,transparent 60%)}
 .sp-zn-z{display:flex;align-items:baseline;font:400 40px/1 'Archivo Black',sans-serif;letter-spacing:-.01em}
-.sp-zn-z b{font-weight:400;color:var(--acid);text-shadow:0 0 22px rgba(190,242,100,.55)}
+.sp-zn-z b{font-weight:400;color:var(--acid);text-shadow:0 0 22px rgba(228,242,74,.55)}
 .sp-zn-z i{font-style:normal;color:var(--faint);font-size:.7em;margin:0 3px}
 .sp-zn-z u{text-decoration:none;color:transparent;-webkit-text-stroke:1.5px var(--gold);text-shadow:0 0 18px rgba(247,207,74,.45)}
 .sp-zn-tore{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;padding:0 6px}
 .sp-zn-t{width:100%;height:auto;aspect-ratio:100/58;overflow:visible}
 .sp-zn-n{fill:none;stroke:rgba(255,255,255,.14);stroke-width:.8}
-.sp-zn-r{fill:none;stroke:#eef3ef;stroke-width:3;stroke-linejoin:round}
+.sp-zn-r{fill:none;stroke:#eef2f7;stroke-width:3;stroke-linejoin:round}
 .sp-zn-b{stroke:var(--line2);stroke-width:1}
 .sp-zn-t.leer .sp-zn-r{stroke:var(--gold)}
 .sp-zn-t.leer .sp-zn-n{stroke:rgba(247,207,74,.22)}
 .sp-zn-t.voll .sp-zn-r{stroke:var(--ink2)}
 /* Die Treffer: ein heller Ball, um ihn der Einschlag im Netz. */
 .sp-zn-ball{stroke:rgba(0,0,0,.35);stroke-width:.5}
-.sp-zn-ring{fill:rgba(190,242,100,.10);stroke:var(--acid);stroke-width:.8;opacity:.45}
+.sp-zn-ring{fill:rgba(228,242,74,.10);stroke:var(--acid);stroke-width:.8;opacity:.45}
 .sp-zn-glanz{fill:none;stroke:#fff;stroke-width:.9;stroke-linecap:round;opacity:.85}
 .sp-zn-hit{transform-box:fill-box;transform-origin:center}
 .sp-zn-p{display:flex;flex-direction:column;align-items:center;gap:3px}
@@ -636,12 +636,12 @@
 .sp-tk-f{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
 .sp-tk-f > i{display:grid;place-items:center;width:22px;height:22px}
 .sp-tk-f:not(.g):not(.r):not(.eins) .av{opacity:.55}
-.sp-tk-f.g .av{box-shadow:0 0 0 2px var(--surface2),0 0 0 3.5px var(--acid),0 0 10px rgba(190,242,100,.45)}
+.sp-tk-f.g .av{box-shadow:0 0 0 2px var(--surface2),0 0 0 3.5px var(--acid),0 0 10px rgba(228,242,74,.45)}
 .sp-tk-f.r .av{box-shadow:0 0 0 2px var(--surface2),0 0 0 3px rgba(240,86,106,.7)}
 .sp-tk-f.eins .av{box-shadow:0 0 0 2px var(--surface2),0 0 0 3.5px var(--gold),0 0 12px rgba(247,207,74,.55)}
 .sp-tk-f small{font:600 8.5px 'Sometype Mono',monospace;color:var(--faint)}
 .sp-tk-f.g small,.sp-tk-f.eins small{color:var(--ink2)}
-.sp-tk-g{position:absolute;top:1px;width:20px;height:20px;margin-left:-10px;border-radius:50%;border:1.5px dashed rgba(190,242,100,.5);box-sizing:border-box}
+.sp-tk-g{position:absolute;top:1px;width:20px;height:20px;margin-left:-10px;border-radius:50%;border:1.5px dashed rgba(228,242,74,.5);box-sizing:border-box}
 /* Die Medaille (`_spMedailleBild`): die Farben der Klasse am Rahmen, damit
    die Punkte der Liga darunter dieselben tragen. */
 .sp-md.viol{--m1:#e9e1ff;--m2:#a78bfa;--m3:#5b45a8;--mr:167,139,250}
@@ -756,7 +756,7 @@
   background:rgba(194,201,208,calc(.04 + var(--a) * .16));box-shadow:inset 0 0 0 1px rgba(194,201,208,calc(.06 + var(--a) * .2))}
 .sp-mo-k > b{font:700 11px 'Sometype Mono',monospace;color:var(--ink2)}
 .sp-mo-k > span{font:600 8.5px 'Sometype Mono',monospace;color:var(--muted)}
-.sp-mo-k.jetzt{background:rgba(190,242,100,.14);box-shadow:inset 0 0 0 1.5px var(--acid)}
+.sp-mo-k.jetzt{background:rgba(228,242,74,.14);box-shadow:inset 0 0 0 1.5px var(--acid)}
 .sp-mo-k.jetzt .sp-st{font-size:18px}
 .sp-mo-k.jetzt .sp-st em{color:var(--acid)}
 .sp-mo-a{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;
@@ -803,7 +803,7 @@
 .sp-et-p > em{font:700 10px 'Sometype Mono',monospace;font-style:normal;margin-top:2px}
 .sp-et-p > em.g{color:var(--acid)}.sp-et-p > em.r{color:var(--red)}
 .sp-et-m{position:relative;align-self:stretch;min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;overflow:hidden;
-  border-radius:9px;background:linear-gradient(90deg,rgba(240,86,106,.07),transparent 40%,transparent 60%,rgba(190,242,100,.09))}
+  border-radius:9px;background:linear-gradient(90deg,rgba(240,86,106,.07),transparent 40%,transparent 60%,rgba(228,242,74,.09))}
 .sp-et-m > i{position:absolute;left:0;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--acid);opacity:0}
 .sp-et-m > b{position:relative;font-family:'Archivo Black',sans-serif;font-weight:400;font-size:26px;line-height:1;color:var(--acid)}
 .sp-et-m > span{position:relative;font:600 8px 'Sometype Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -831,7 +831,7 @@
 .sp-gg-b b{font-weight:400;color:var(--ink)}
 .sp-gg-r{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;max-width:100%}
 .sp-gg-r i{width:7px;height:12px;border-radius:2px;background:rgba(240,86,106,.55)}
-.sp-gg-r i.w{background:rgba(190,242,100,.65)}
+.sp-gg-r i.w{background:rgba(228,242,74,.65)}
 .sp-gg-r i.jetzt{background:var(--acid);box-shadow:0 0 0 1.5px var(--surface2),0 0 0 2.5px var(--acid)}
 .sp-gg-h{display:flex;align-items:baseline;gap:5px;font:600 8.5px 'Sometype Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
 .sp-gg-h .sp-st{font-size:18px}
@@ -843,7 +843,7 @@
 .sp-rv-t{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;border-radius:9px;background:var(--surface);box-shadow:0 0 0 1px var(--line2)}
 .sp-rv-t > i{font:600 8px 'Sometype Mono',monospace;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
 .sp-rv-t.alt > b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:15px;color:var(--red);opacity:.85}
-.sp-rv-t.neu{box-shadow:0 0 0 1px rgba(190,242,100,.5)}
+.sp-rv-t.neu{box-shadow:0 0 0 1px rgba(228,242,74,.5)}
 .sp-rv-t.neu .sp-st{font-size:20px}
 .sp-rv-t.neu .sp-st em{color:var(--acid)}
 .sp-rv-p{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
@@ -854,7 +854,7 @@
 /* Gipfeltreffen: die vier in Tabellenreihenfolge, Sieger hell. */
 .sp-gp{display:flex;flex-direction:column;gap:3px}
 .sp-gp-z{display:grid;grid-template-columns:22px auto minmax(0,1fr) auto;gap:7px;align-items:center;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.02);opacity:.65}
-.sp-gp-z.w{opacity:1;background:rgba(190,242,100,.06);box-shadow:inset 2px 0 0 var(--acid)}
+.sp-gp-z.w{opacity:1;background:rgba(228,242,74,.06);box-shadow:inset 2px 0 0 var(--acid)}
 .sp-gp-z > span:first-child{font-size:11px;color:var(--muted)}
 .sp-gp-n{font-size:11.5px;font-weight:600;color:var(--ink2);overflow-wrap:anywhere}
 .sp-gp-z > em{font:700 10px 'Sometype Mono',monospace;font-style:normal;color:var(--faint)}
@@ -870,7 +870,7 @@
 .sp-zu-k{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
 .sp-zu-k i{width:8px;height:8px;border-radius:2px;background:var(--line2)}
 .sp-zu-k i.alt{background:var(--silber)}
-.sp-zu-k .sp-st{margin-left:4px;padding:2px 6px;border-radius:6px;font-size:17px;background:rgba(190,242,100,.12);box-shadow:inset 0 0 0 1px rgba(190,242,100,.4)}
+.sp-zu-k .sp-st{margin-left:4px;padding:2px 6px;border-radius:6px;font-size:17px;background:rgba(228,242,74,.12);box-shadow:inset 0 0 0 1px rgba(228,242,74,.4)}
 .sp-zu-k .sp-st em{color:var(--acid)}
 
 /* Zwei Welten: die Elo vor dem Anstoß als Säulen, je Team geklammert. */
@@ -929,7 +929,7 @@
 .sp-tz-zug{position:absolute;top:50%;height:3px;margin-top:-1.5px;border-radius:2px;background:var(--acid);opacity:.7}
 .sp-tz-mitte{position:absolute;left:50%;top:8px;bottom:8px;width:1px;background:var(--faint);opacity:.6}
 .sp-tz-k{position:absolute;top:50%;transform:translate(-50%,-50%);padding:4px 7px;border-radius:9px;background:var(--surface);
-  box-shadow:0 0 0 1px rgba(190,242,100,.5)}
+  box-shadow:0 0 0 1px rgba(228,242,74,.5)}
 .sp-tz-k .sp-st{font-size:17px}
 
 /* Der Münzwurf: die Münze in zwei Hälften, darunter die Siegchance beider. */
@@ -938,7 +938,7 @@
 .sp-mz-c{display:block;width:64px;height:64px;transform-style:preserve-3d}
 .sp-mz-c svg{display:block;width:100%;height:100%;overflow:visible}
 .sp-mz-r{fill:rgba(247,207,74,.10);stroke:rgba(247,207,74,.55);stroke-width:1.5}
-.sp-mz-w{fill:rgba(190,242,100,.75)}.sp-mz-l{fill:rgba(194,201,208,.16)}
+.sp-mz-w{fill:rgba(228,242,74,.75)}.sp-mz-l{fill:rgba(194,201,208,.16)}
 .sp-mz-i{fill:none;stroke:rgba(0,0,0,.28);stroke-width:1;stroke-dasharray:1.5 2.5}
 .sp-mz-z{font:700 11px 'Sometype Mono',monospace;color:var(--faint);white-space:nowrap}
 .sp-mz-z b{color:var(--acid)}
@@ -996,7 +996,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .sp-ds-k b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:22px;color:var(--acid)}
 .sp-ds-r{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;max-width:100%}
 .sp-ds-r i{width:7px;height:12px;border-radius:2px;background:rgba(240,86,106,.55)}
-.sp-ds-r i.w{background:rgba(190,242,100,.65)}
+.sp-ds-r i.w{background:rgba(228,242,74,.65)}
 .sp-ds-r i.jetzt{background:var(--acid);box-shadow:0 0 0 1.5px var(--surface2),0 0 0 2.5px var(--acid)}
 
 /* Der Elo-Höchststand: die Kurve, die alte Marke gestrichelt, der neue Punkt. */
@@ -1039,8 +1039,8 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 /* Die Bühne: die Zeichnung der Karte, in einer Fläche, die in der Farbe der
    Sorte schimmert. Darunter nur Zeichnungen, ohne Sätze darüber. */
 .nd-buehne{position:relative;margin:4px 0 16px;padding:12px 10px;border-radius:18px;overflow:hidden;
-  background:radial-gradient(90% 80% at 50% 0%,rgba(var(--story-rgb,190,242,100),.12),transparent 70%),var(--surface);
-  box-shadow:inset 0 0 0 1px rgba(var(--story-rgb,190,242,100),.18),0 18px 40px -24px rgba(var(--story-rgb,190,242,100),.6)}
+  background:radial-gradient(90% 80% at 50% 0%,rgba(var(--story-rgb,228,242,74),.12),transparent 70%),var(--surface);
+  box-shadow:inset 0 0 0 1px rgba(var(--story-rgb,228,242,74),.18),0 18px 40px -24px rgba(var(--story-rgb,228,242,74),.6)}
 .nd-buehne > .sp-fk{background:transparent;box-shadow:none}
 .nd-feld{margin-bottom:6px}
 /* Der Stand steht auf der Bühne darüber; hier zählt nur die Aufstellung. */
@@ -1055,7 +1055,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-dd-z > .av{--av:22px;width:22px;height:22px;font-size:8.5px;flex:0 0 auto}
 .nd-lf{display:flex;flex-wrap:wrap;gap:3px}
 .nd-lf i{width:9px;height:14px;border-radius:2.5px;background:rgba(240,86,106,.6)}
-.nd-lf i.w{background:rgba(190,242,100,.7)}
+.nd-lf i.w{background:rgba(228,242,74,.7)}
 .nd-lf i.dies{box-shadow:0 0 0 1.5px var(--bg),0 0 0 2.5px var(--ink)}
 .nd-tl{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
 .nd-tl-z{display:flex;flex-direction:column;align-items:center;padding:4px 5px;border-radius:7px;background:var(--surface2);min-width:40px}
@@ -1066,7 +1066,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-vt{display:flex;align-items:flex-end;gap:4px;height:84px}
 .nd-vt span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;min-width:0}
 .nd-vt i{display:block;width:100%;border-radius:3px 3px 1px 1px;background:rgba(194,201,208,.3)}
-.nd-vt span.dies i{background:var(--story,var(--acid));box-shadow:0 0 12px -2px rgba(var(--story-rgb,190,242,100),.7)}
+.nd-vt span.dies i{background:var(--story,var(--acid));box-shadow:0 0 12px -2px rgba(var(--story-rgb,228,242,74),.7)}
 .nd-vt b{font-size:8.5px;color:var(--muted)}
 .nd-vt em{font-style:normal;font-size:9px;font-weight:700;color:var(--ink)}
 .nd-vt span.dies b{color:var(--ink)}
@@ -1091,7 +1091,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-sr-d{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--muted)}
 .nd-pzl{display:flex;flex-direction:column;gap:5px;margin-bottom:6px}
 .nd-pz{display:grid;grid-template-columns:44px auto auto auto minmax(0,1fr);align-items:center;gap:7px;padding:6px 9px;border-radius:9px;
-  background:var(--surface);box-shadow:inset 3px 0 0 rgba(190,242,100,.6);cursor:pointer}
+  background:var(--surface);box-shadow:inset 3px 0 0 rgba(228,242,74,.6);cursor:pointer}
 .nd-pz.l{box-shadow:inset 3px 0 0 rgba(240,86,106,.6)}
 .nd-pz-t{font-size:9.5px;color:var(--muted)}
 .nd-pz .sp-chips .av,.nd-bk-z > .av,.nd-zg-n .av{--av:20px;width:20px;height:20px;font-size:8px;box-shadow:0 0 0 2px var(--surface);flex:0 0 auto}
@@ -1103,7 +1103,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-bk-z{display:grid;grid-template-columns:auto 76px minmax(0,1fr) auto;gap:8px;align-items:center;cursor:pointer}
 .nd-bk-n{font-size:11.5px;font-weight:600;color:var(--ink2);overflow-wrap:anywhere}
 .nd-bk-b{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
-.nd-bk-b i{display:block;height:100%;border-radius:4px;background:rgba(var(--story-rgb,190,242,100),.75)}
+.nd-bk-b i{display:block;height:100%;border-radius:4px;background:rgba(var(--story-rgb,228,242,74),.75)}
 .nd-bk-z > b{font-size:11.5px;color:var(--ink)}
 .nd-zg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:6px}
 .nd-zg-p{padding:9px;border-radius:11px;background:var(--surface);display:flex;flex-direction:column;gap:6px;cursor:pointer}
@@ -1218,7 +1218,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-ml > span.naechst{background:transparent;box-shadow:inset 0 0 0 1px var(--line2);color:var(--muted)}
 .nd-bb{margin-bottom:6px}
 .nd-bb-b{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px}
-.nd-bb-b i{display:block;background:rgba(190,242,100,.75)}
+.nd-bb-b i{display:block;background:rgba(228,242,74,.75)}
 .nd-bb-b u{display:block;background:rgba(240,86,106,.6)}
 .nd-bb-z{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--muted)}
 .nd-bb-z b{color:var(--ink)}

@@ -34,7 +34,7 @@
 
 ## Prüfung
 
-`tests/rechnen` (was den Tag beschreibt, erst am Tagesende; keine Ehrung vor 23:59, dann trägt der Spieler des Tages alles des Tages), `tests/ambient` (Snapshots, Bündel, IDs bei zweitem Lauf, eine abgemeldete Karte gibt ihren Fun-Fact-Slot frei, Abwechslung von Kopf und Fuß der Partie-Karten, Sprache über jeden vierten Spieltag, Breaking-Anlässe, Fun-Fact-Bilder, die Säulen, die Karte ohne Satz und Fuß, die Klassen, der Satz und das Blatt jeder Ehrung, die Tafel-Karte ohne Auszeichnungen, der Monatsabschluss mit Team, Chronik, Erstlingen und Zeichen, Tag vor Woche vor Monat, was ein Schluss vergibt unter dem Spieler des Tages und in der Ehrung der Woche und des Monats und in keiner zweiten, Woche und Monat mit allen Auszeichnungen wie ihr Rückblick und direkt unter dessen Karte, aus beiden Richtungen sortiert, eine gespeicherte Ehrung eines Tages in der Karte ihres Spielers des Tages, Reihen um höchstens eine Säule verschieden, die Liste je Schluss an den echten Partien nachgerechnet, die Zeichen-Karte des Wochenschlusses, ein Spieltag ohne die Abschlüsse von Woche und Monat, ein Tag ohne Spieler des Tages als eine Karte mit dem härtesten Tag, was um Montag 00:00 vergeben wird, einmal, die größere Ehrung trägt den Tag am 30.06. und an gestellten Sonntagen, eine legendäre aus einer Partie macht den Spieler des Tages nicht zum Breaking, auch keinen gespeicherten, eine des Schlusses schon, mit dem Grund im Kleintext), `tests/blatt` (jede Karte und jedes Blatt bei 288 und 360 px, die sieben Chips und jede Karte auf genau einer Seite, Bildzonen, Faden, Bewegung, die Ehrung in einer Reihe und ohne gebrochenen Namen, die knappe Ehrung der Woche und des Monats gemessen, eine Auszeichnung im Blatt öffnet ihre Detailansicht darüber und ihre Wochen, jedes Gesicht der Ehrung des Tages rund, unter der Schlagzeile, in welchen Partien sie geholt ist, ein Tag in einer Zeile, der Monatsabschluss öffnet den Saison-Rückblick), `tests/wiederholung` (Auszeichnungsmarken), `tests/storyscroll`, `tests/leistung` (Feed in Portionen), `tests/start` (der Feed liest einen Monat, eine Zeile hält ab ihrem Ereignis).
+`tests/umbau/rechnen` (was den Tag beschreibt, erst am Tagesende; keine Ehrung vor 23:59, dann trägt der Spieler des Tages alles des Tages), `tests/umbau/ambient` (Snapshots, Bündel, IDs bei zweitem Lauf, eine abgemeldete Karte gibt ihren Fun-Fact-Slot frei, Abwechslung von Kopf und Fuß der Partie-Karten, Sprache über jeden vierten Spieltag, Breaking-Anlässe, Fun-Fact-Bilder, die Säulen, die Karte ohne Satz und Fuß, die Klassen, der Satz und das Blatt jeder Ehrung, die Tafel-Karte ohne Auszeichnungen, der Monatsabschluss mit Team, Chronik, Erstlingen und Zeichen, Tag vor Woche vor Monat, was ein Schluss vergibt unter dem Spieler des Tages und in der Ehrung der Woche und des Monats und in keiner zweiten, Woche und Monat mit allen Auszeichnungen wie ihr Rückblick und direkt unter dessen Karte, aus beiden Richtungen sortiert, eine gespeicherte Ehrung eines Tages in der Karte ihres Spielers des Tages, Reihen um höchstens eine Säule verschieden, die Liste je Schluss an den echten Partien nachgerechnet, die Zeichen-Karte des Wochenschlusses, ein Spieltag ohne die Abschlüsse von Woche und Monat, ein Tag ohne Spieler des Tages als eine Karte mit dem härtesten Tag, was um Montag 00:00 vergeben wird, einmal, die größere Ehrung trägt den Tag am 30.06. und an gestellten Sonntagen, eine legendäre aus einer Partie macht den Spieler des Tages nicht zum Breaking, auch keinen gespeicherten, eine des Schlusses schon, mit dem Grund im Kleintext), `tests/umbau/blatt` (jede Karte und jedes Blatt bei 288 und 360 px, die sieben Chips und jede Karte auf genau einer Seite, Bildzonen, Faden, Bewegung, die Ehrung in einer Reihe und ohne gebrochenen Namen, die knappe Ehrung der Woche und des Monats gemessen, eine Auszeichnung im Blatt öffnet ihre Detailansicht darüber und ihre Wochen, jedes Gesicht der Ehrung des Tages rund, unter der Schlagzeile, in welchen Partien sie geholt ist, ein Tag in einer Zeile, der Monatsabschluss öffnet den Saison-Rückblick), `tests/umbau/wiederholung` (Auszeichnungsmarken), `tests/storyscroll`, `tests/umbau/leistung` (Feed in Portionen), `tests/umbau/start` (der Feed liest einen Monat, eine Zeile hält ab ihrem Ereignis).
 
 ## Herleitung
 
@@ -242,7 +242,7 @@ weil vier Karten mit früherer Uhrzeit dazugekommen waren. Eine Wiederholung
 kann sie nicht sein, also nimmt sie niemandem etwas weg. Vom Vergleich der
 Schlagzeilen ist sie dagegen NICHT ausgenommen — „Harter Tag für Johannes"
 stand an vier Tagen des Fensters.
-`tests/ambient` spielt den letzten Spieltag Partie für Partie nach, mit
+`tests/umbau/ambient` spielt den letzten Spieltag Partie für Partie nach, mit
 einem Bestand, der sich verhält wie die Datenbank.
 Der Deckel je Sorte ist ein Deckel auf **Wiederholungen**, und eine Partie
 ist keine: neun Partien an einem Tag sind neun Ereignisse, nicht eine
@@ -399,7 +399,7 @@ seinen Tag als Bahn und die Elo darüber (`_spTagBild`) statt dreier Zahlen.
 **Jedes Bauteil hat zwei Hälften**: `…Daten` rechnet aus den Partien,
 `…Bild` zeichnet nur, was es bekommt. Die Liga wächst, aus 466 Partien
 werden 46 600 und aus „Leo" „Maximilian-Alexander"; weil das Bild nur Daten
-nimmt, zeichnet `tests/blatt` jedes Bauteil auch mit Grenzwerten und langen
+nimmt, zeichnet `tests/umbau/blatt` jedes Bauteil auch mit Grenzwerten und langen
 Namen. **Nichts wird gekürzt oder geschrumpft**: ein „…" versteckte, wer
 gemeint ist, und ein kleinerer Name sah neben seinen Nachbarn falsch aus. Ein
 Name steht in der Grafik nur, wo sie Platz für ihn hat — auf dem Spielfeld
@@ -848,7 +848,7 @@ grauen Zeile wie fünf andere. Die Zeile bekommt deshalb eine **eigene Kante
 und eine eigene Fläche** und ihr Zeichen in Rot, und der Balken der Karte
 nennt neben dem Wort BREAKING die **Zahl der gebündelten Meldungen**
 (`.nf-brk-n`): sonst sah eine Karte über sechs Ereignisse aus wie eine
-einzelne Nachricht. `tests/blatt` misst Kante und Fläche im Browser. Darunter fällt auch der **Nachsatz**
+einzelne Nachricht. `tests/umbau/blatt` misst Kante und Fläche im Browser. Darunter fällt auch der **Nachsatz**
 (`.nf-brk-sub`): `_breakingHeroText` kannte sieben Typen und die Sammelkarte
 nicht, fiel damit auf `desc` zurück, und der Aufrufer unterdrückt ihn genau
 dann, wenn er `desc` ist — die gebündelte Breaking-Karte hatte also gar
@@ -907,7 +907,7 @@ und nach dem Tag. Das Verlorene steht nicht in derselben Summe wie
 das Gewonnene — sie hieße, der Tag hätte weniger gebracht —, sondern über
 der Wirkung, deren rote Zeilen es zusammenzählt (`.nd-sec-r`). Als fünfte
 Zelle der Zahlenreihe brach es die Reihe in zwei, und „−413 verloren" stand
-allein auf einer Zeile. `tests/blatt` misst das Stück im Balken.
+allein auf einer Zeile. `tests/umbau/blatt` misst das Stück im Balken.
 **Und schon auf der Karte** (`_newsPrestigeBand`): unter dem Sammelband
 einer Tafel-Karte steht die Bilanz des Tages in zwei leisen Zeilen, vor der
 einen ein grüner Pfeil hinauf, vor der anderen ein roter hinab [§C25], und
@@ -1007,7 +1007,7 @@ die eine Durststrecke aufwirft. Die Karte nennt deshalb den Tag, vor dem
 der letzte Sieg liegt — **und keinen Punkt dahinter**: „25.08." trägt
 seinen eigenen schon, und der des Satzes stand daneben („liegt vor dem
 25.08.."). Jede abgekürzte Angabe am Satzende hat das Problem, also prüft
-`tests/ambient` es über jeden vierten Spieltag der Ligageschichte.
+`tests/umbau/ambient` es über jeden vierten Spieltag der Ligageschichte.
 **Und der Schlusssprint bekommt keinen Nachsatz.** `_breakingHeroText`
 trug für ihn „Machtwechsel an der Tabellenspitze: … Das Titelrennen ist
 wieder völlig offen" — ein Etikett mit Doppelpunkt am Satzanfang, ohne eine
@@ -1022,7 +1022,7 @@ bis zum Ord…" und nannte die Stufe nicht, und das Zeichen der Stufe stand bei
 [§6]. Die Reihe bricht deshalb um — vier Zellen zwei mal zwei, wo sie
 nicht in eine Reihe passen (`vier`) —, die Aufschrift darf zwei Zeilen
 nehmen, die Zeile der Wirkung auch, und das Zeichen misst 48 px.
-`tests/blatt` misst das für JEDEN Story-Typ im Blatt selbst (`.nd`, 310 px
+`tests/umbau/blatt` misst das für JEDEN Story-Typ im Blatt selbst (`.nd`, 310 px
 wie auf einem 360-px-Telefon): läuft etwas aus dem Rand, oder ist eine
 Schrift breiter als ihr Feld, ohne mit „…" zu enden? Im nackten Kasten galt
 `.nd .num{white-space:nowrap}` nicht, und die Prüfung sah den Beleg nicht,
@@ -1256,8 +1256,8 @@ es sieben von zehn Fäden. Eine **Rückkehr** nach der Pause gibt es nicht:
 die Karte der Pause fällt mit der nächsten Partie weg, es steht also nie
 eine im Feed, auf die sie zeigen könnte. Gerechnet wird einmal je Bestand
 (`WeakMap` an der aufgefrischten Liste), gemessen unter einer Millisekunde.
-`tests/ambient` rechnet jeden Faden aus den rohen Partien nach,
-`tests/blatt` misst ihn bei 360 px und öffnet ihn.
+`tests/umbau/ambient` rechnet jeden Faden aus den rohen Partien nach,
+`tests/umbau/blatt` misst ihn bei 360 px und öffnet ihn.
 
 **Breaking scheitert auch nicht am Doublettenfilter.** Die Tabellenspitze
 wechselte am 14.09. zweimal und am 15.09. erneut; zwei der drei Karten
@@ -1352,7 +1352,7 @@ unverändertem Wortlaut dieselbe Referenz zurück. Ohne das baute es bei
 jedem Aufruf ein frisches Array, und der Referenz-Memo in
 `_consolidateStories` — der genau dafür gebaut ist — schlug nie an:
 gemessen null Treffer in fünf Aufrufen, bei einem Aufruf nach jedem
-`loadAll` und bei jedem Zeichnen des Feeds. `tests/ambient` misst das alles.
+`loadAll` und bei jedem Zeichnen des Feeds. `tests/umbau/ambient` misst das alles.
 
 **Das Ergebnis im Text gehört dem Sieger.** Es stand in der Reihenfolge der
 Eingabe, und damit stand „Maxi und Leo retten ein 9:10 ins Ziel" im Feed —
@@ -1374,7 +1374,7 @@ Karte [§C27]. „Seit dem 16.07. geht jedes gemeinsame Spiel verloren. 3 am
 Stück." endet auf einem Fragment ohne Verb. Und „Giant Slayer" und „Losing
 Streak" waren die einzigen englischen Aufschriften der Liga — „Player of the
 Week" und „Player of the Day" bleiben, das sind die Namen der beiden
-Wertungen. `tests/ambient` prüft das über jeden vierten Spieltag der
+Wertungen. `tests/umbau/ambient` prüft das über jeden vierten Spieltag der
 Ligageschichte: ein einziger Generatorlauf trifft von jedem Typ höchstens
 einen Fall, und dann prüft die Zusicherung genau den, der zufällig gerade
 ansteht.
@@ -1391,7 +1391,7 @@ Kleingedruckten, jetzt heißt es „Leon und Maxi brechen Martins 8er-Serie".
 Jeder Text nennt eine Zahl (ausgenommen die Auszeichnung, deren Text die
 Bedingung aus dem Katalog ist), und jeder Name im Satz ist aufgelöst: „Holt
 er ihn" stand direkt hinter dem Namen des HALTERS und zeigte auf den
-Falschen. `tests/ambient` misst das alles.
+Falschen. `tests/umbau/ambient` misst das alles.
 
 **„Ausgebaut" heißt besser geworden** (`_rekordArt`). Die Meldung feuerte,
 sobald sich die angezeigte Zahl änderte — egal wohin. „Der Fels" ging von
@@ -1430,7 +1430,7 @@ Zeitpunkte, dieselbe Gruppierung und denselben Wortlaut ergibt. Sonst legt
 jedes Öffnen der App eine neue Zeile an, und der Feed wächst vom Zusehen.
 Jede ID ist deshalb aus Fachlichem gebaut — Spieler, Sache, Spieltag — und
 nie aus dem Bestand, der Uhrzeit des Laufs oder einem Zufall.
-`tests/ambient` läuft den Generator zweimal und vergleicht beides samt der
+`tests/umbau/ambient` läuft den Generator zweimal und vergleicht beides samt der
 fertigen Gruppierung, und ein dritter Lauf findet den Bestand des ersten
 vor: er darf keine einzige ID hinzufügen.
 
@@ -1494,8 +1494,8 @@ Karte das Band — und ebenso, wenn der stärkste unter dem Niveau einer
 Tagesbilanz bleibt (`NEWS_LIMITS.tagKarteSpannung`): gemessen trug ein
 Spieltag das Band auf „Der größte Ausschlag des Tages" mit 564 Punkten gegen
 620 für einen Tagessieger, und ein Band, das eine beliebige Karte
-auszeichnet, zeichnet nichts aus. Die Liste steht an EINER Stelle, weil `tests/ambient` und
-`tests/blatt` dieselbe Frage stellen und sie sich vorher jeder selbst
+auszeichnet, zeichnet nichts aus. Die Liste steht an EINER Stelle, weil `tests/umbau/ambient` und
+`tests/umbau/blatt` dieselbe Frage stellen und sie sich vorher jeder selbst
 beantwortet haben.
 Die Auswahl ist deterministisch und verändert weder Story-ID noch Zeitpunkt.
 Sie wird aus allen Karten des Tages berechnet, nicht neu aus dem aktiven
@@ -1564,8 +1564,8 @@ behält ihre Zahl links. Die Breite eines Balkens rechnet die Vorlage, weil
 dort bekannt ist, ob weniger besser ist. Die Reihenfolge eines Rekords
 (`chronicleRang`) ist schon nach dem Wert geordnet. Jedes Bild nennt die
 Namen seiner Spieler im Text, und es bleibt leise wie die Karte [§C25]:
-Metall, die Familienfarbe nur am Ersten. `tests/ambient` rechnet die Zahlen
-jedes Bilds an ihrer Quelle nach. `tests/blatt` misst jedes bei 288 und
+Metall, die Familienfarbe nur am Ersten. `tests/umbau/ambient` rechnet die Zahlen
+jedes Bilds an ihrer Quelle nach. `tests/umbau/blatt` misst jedes bei 288 und
 360 px.
 **Verpasste stille Tage werden nachgetragen.** Beim nächsten Öffnen prüft
 `_buildAmbientStories` alle Tage des 14-Tage-Fensters. Ein vergangener Tag
@@ -1638,7 +1638,7 @@ Tagen wieder da, denn der Typ-Cooldown von sieben Tagen fällt ab dem zweiten
 Durchgang und ein personenloses Template liefert immer ein Ergebnis.
 Ausgenommen sind die **Rückblicke mit festem Termin** (`pflicht`): die
 Monatshalbzeit gehört dem 15. und der Jahresblick dem 1. Januar, sie hängen
-nicht am Losverfahren. `tests/ambient` spielt die vierzig Tage Slot für Slot
+nicht am Losverfahren. `tests/umbau/ambient` spielt die vierzig Tage Slot für Slot
 nach und prüft jede These.
 Die Ambient-Auswahl rotiert nicht nur konkrete Templates, sondern auch ihre
 **Rubrik** (`ambientRubrik`). Zwei aufeinanderfolgende Slots vermeiden nach
@@ -1757,7 +1757,7 @@ trägt deshalb `rekordId`, `rekordName`, `kammer` und `kammerLabel`, `fall`
 (eine der fünf Wechselarten), `basis`, `halter` (alle neuen Halter),
 `vorher` (alle alten), `wert` und `wertVorher`, `ev` und `evVorher`,
 `cond`, `matchId`, `causalKey`, `fenster` und `laufbahn` (die
-Punktewirkung); den Zeitpunkt trägt `when`. `tests/ambient` prüft das über
+Punktewirkung); den Zeitpunkt trägt `when`. `tests/umbau/ambient` prüft das über
 jeden vierten Spieltag der Ligageschichte.
 **Vier Fälle, vier Aussagen** (`_halterFall`): **erstmals vergeben** (den
 Rekord hatte vorher niemand), **übernommen** (der Halter wechselt), **jetzt
@@ -1856,7 +1856,7 @@ erklärte dann selbst, dass nichts mehr dazwischenkommt. Jetzt drei
 Bedingungen — Frist, höchstens `SAISON_ENDSPURT_ELO` Abstand und eine
 belastbare Rangliste —, und ihr Zeitstempel ist die letzte Partie statt
 `now`, sonst stünde sie im Feed über dem Spieltag statt unter ihm.
-Die Liste ist geschlossen: `tests/ambient` prüft jeden Anlass einzeln und
+Die Liste ist geschlossen: `tests/umbau/ambient` prüft jeden Anlass einzeln und
 misst über die 19 Spieltage vom 28.07. bis 26.08., dass keine Karte des
 fertigen Feeds Breaking trägt, deren Anlass nicht darauf steht. Gemessen
 sind es dort zwei Karten und im Juni 2026 keine.
@@ -1921,7 +1921,7 @@ Rekorde auf Spieltage, Wochen und Tore als Doppel der Siegquote gefallen
 sind [§C35], nennen die drei Karten die Halter von „Der Glanztag", „Der
 Umsteiger" und „Der Aufschwung": Bestmarken gegen das Eigene, die nicht
 automatisch dem gehören, der am meisten gewinnt.
-`tests/ambient` prüft den genannten Spieler, nicht den Wortlaut.
+`tests/umbau/ambient` prüft den genannten Spieler, nicht den Wortlaut.
 
 **Jede Ambient-Vorlage wird im Rundlauf gemessen, nicht einzeln.** Sie
 stehen an vierzig Stellen und gingen deshalb einzeln kaputt: „vor -1 Tagen"
@@ -1929,7 +1929,7 @@ stehen an vierzig Stellen und gingen deshalb einzeln kaputt: „vor -1 Tagen"
 Liste), „7 trägt den Schildring", ein leerer Wertblock, „1 Platz" als Anzahl
 statt als Rang, ein Anteil, der dem Spieler gehörte und der Liga
 zugeschrieben war, und ein großer Wert, der den Katalog zählte, während die
-Schlagzeile von einer Führung erzählte. `tests/ambient` läuft jede Vorlage
+Schlagzeile von einer Führung erzählte. `tests/umbau/ambient` läuft jede Vorlage
 an mehreren Uhrzeiten und mit mehreren Würfeln ab — darunter der Vormittag
 jedes Spieltags der letzten Wochen, weil der Blick in die Zukunft nur dort
 zu treffen ist — und prüft sechs Dinge: einen gefüllten großen Wert, das
@@ -2078,7 +2078,7 @@ Funktion, aus der auch der Teams-Tab seine Zahlen zieht [§C27]. Es gab
 Team-SERIEN und ein Team der Saison, aber nichts dazwischen. Für den TAG
 gibt es bewusst keins: eine Duo-Karte an jedem Spieltag wäre die
 Wiederholung, die §C33 gerade verhindert.
-`tests/ambient` misst das alles.
+`tests/umbau/ambient` misst das alles.
 
 **Die Ehrung braucht keinen Satz.** Unter den Säulen standen Schlagzeile,
 ein Satz, der die wertvollste Auszeichnung nannte („Henry holt dabei

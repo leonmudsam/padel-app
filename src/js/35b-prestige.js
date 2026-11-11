@@ -755,7 +755,7 @@ const INS_RA = INS_R + INS_BREIT / 2;  // Außenkante
 // und Kristalle der Leiter tragen sie in jedem Rang an denselben Stellen —
 // Violett, Gold, Grün, Blau, Orange.
 const INS_RANGFARBE = {
-  Einsteiger:'#ff7849', Solide:'#56b4e8', Stark:'#BEF264',
+  Einsteiger:'#ff7849', Solide:'#56b4e8', Stark:'#E4F24A',
   Elite:'#a78bfa', Legende:'#f7cf4a',
 };
 // Der Rang der Vorlage. In ihm stehen die Zeichen dort, wo sie keinem

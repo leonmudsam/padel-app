@@ -14,7 +14,7 @@
 
 ## Prüfung
 
-`tests/zeichen` misst Lage, Größe, Loch und Helligkeit je Stufe; `tests/blatt` die Bewegung.
+`tests/umbau/zeichen` misst Lage, Größe, Loch und Helligkeit je Stufe; `tests/umbau/blatt` die Bewegung.
 
 ## Herleitung
 
@@ -22,7 +22,7 @@ Wie es dazu kam und was vorher falsch war — der Grund jeder Regel oben.
 
 Hinter Avatar und Insignium steht die
 **Aura** der Meistertitel (`35c-titel-aura.js`, `AURA_STUFEN`), die Korona
-aus `mockup/titel-aura`: ein weicher Goldschein mit ungleich langen
+aus den Entwurf „titel-aura“ der Kicker-Liga: ein weicher Goldschein mit ungleich langen
 Strahlen, ab der vierten Stufe Goldstaub, ab der siebten ein Lichtring, ab
 der neunten einzelne Lichtsterne. Zehn Stufen, je Titel eine; danach
 bleibt sie stehen, und die Zahl neben den fünf Sternen zählt weiter
@@ -52,5 +52,5 @@ In der Laufbahn stehen ihre zehn Stufen als **zweite Leiter** unter der
 Vitrine (`.lb-auren`): zwei Reihen zu fünf, klein, in jedem Feld das
 eigene Zeichen als Bild aus demselben Topf. Klein ist Absicht: die
 Vitrine sammelt man Punkt für Punkt, die Aura gewinnt man, und zwei gleich
-laute Leitern auf einer Seite sind keine mehr. `tests/zeichen` misst Lage,
-Größe, Loch und die Helligkeit je Stufe, `tests/blatt` die Bewegung.
+laute Leitern auf einer Seite sind keine mehr. `tests/umbau/zeichen` misst Lage,
+Größe, Loch und die Helligkeit je Stufe, `tests/umbau/blatt` die Bewegung.

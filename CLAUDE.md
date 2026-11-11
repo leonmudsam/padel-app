@@ -1,9 +1,33 @@
-# Kicker-Liga — Arbeitsanweisung
+# Padel Liga — Arbeitsanweisung
 
-Deutschsprachige Einzeldatei-PWA für eine 2-gegen-2-Tischkicker-Liga:
-Elo, Saisons, Awards, Rekorde, Chronik, News. Backend ist Supabase,
+Deutschsprachige Einzeldatei-PWA für eine Padel-Gruppe (immer zwei gegen
+zwei): Elo, Saisons, Auszeichnungen, Rekorde, Chronik, News. Backend ist
+Supabase (Projekt `padel-app`, Schema in `datenbank/schema.sql`),
 ausgeliefert wird **eine** `index.html` über GitHub Pages, daneben ihr
 Service Worker `sw.js` [§C42].
+
+Die App ist aus der Kicker-Liga (Repo `kicker-app`) hervorgegangen und
+trägt deren Aufbau, Gesetze und viele Bezeichner. Wo ein Name noch nach
+Tischkicker klingt (`perfect_win`, `milestone_goals`, `atk`/`def` in
+Kommentaren), meint er das Padel-Gegenstück; der Kommentar an der Stelle
+sagt welches. Kicker-Repo und Kicker-Datenbank werden nie angefasst; die
+Vorlage liegt nur lokal und ist in `.gitignore`.
+
+### Padel in einem Absatz
+
+Eine Partie trägt ihre Sätze in Games (`matches.sets`, aus Sicht von
+Team A) und je Satz eine Art (`set_kind`: normal, Tiebreak, Match-
+Tiebreak, offen). Alles, was ein Ergebnis liest, fragt `03b-padel.js`
+[§1.3]: Sieger, Sätze, Games, Zu Null (alle Sätze, mindestens zwei —
+ein 1:0 ist keins), Bagel, Doppel-Bagel, Wende, knapp, deutlich, im
+Tiebreak entschieden. Jeder Spieler steht auf einer Seite: `drive`
+(rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
+[§C44]. Die Elo wiegt eine Partie nach dem Weg bis zum Sieg (Games des
+Siegers, `partieGewicht`) und nach der Deutlichkeit (`movMult`). Die Liga
+spielt etwa fünf Tage im Monat mit drei bis fünf Partien — alle Schwellen
+(Mindestspiele, Serien, Fenster) sind darauf gesetzt und stehen je System
+an einer Stelle: `BG` (Auszeichnungen), `CHRONIK_MIN_SPIELE`/`ST_TEIL`
+(Monatschronik), `CHRON_MIN_GAMES`/`RF` (Rekorde), `PERIODE_MIN_SIEGE`.
 
 > **Diese Datei ist Teil des Codes, nicht Begleitmaterial.**
 > Wer die Struktur, den Ablauf oder eine Regel ändert, ändert sie hier im
@@ -48,7 +72,7 @@ waren 38 % des JavaScripts, und jedes Telefon lud und parste sie bei jedem
 Start: gemessen 649 statt 326 Kilobyte über die Leitung und rund 20 % mehr
 Zeit zum Kompilieren. Entfernt wird mit einem kleinen Lexer, weil `//` auch in
 Adressen und `/*` in regulären Ausdrücken steht; der Bau parst das Ergebnis,
-bevor er es schreibt, und `tests/tafel` sieht nach, dass keiner übrig ist.
+bevor er es schreibt, und `tests/umbau/tafel` sieht nach, dass keiner übrig ist.
 Wer einen Fehler im ausgelieferten Code sucht, liest ihn deshalb in `src/` —
 in `dist/` fehlt das Warum.
 
@@ -70,7 +94,7 @@ mit rotem Wächter oder roter Suite.
 src/index.html        Gerüst mit den Platzhaltern /*@@CSS*/ und /*@@JS*/
 src/sw.js             der Service Worker; build.mjs setzt seine Fassung [§C42]
 src/css/              18 Dateien
-src/js/               62 Dateien
+src/js/               64 Dateien
 tools/build.mjs       hängt src/css/* und src/js/* ALPHABETISCH aneinander,
                       ohne Kommentare
 tools/check.mjs       acht Wächter
@@ -79,24 +103,32 @@ tools/golden.mjs      Vergleich zweier Fassungen: jede Rechnung und Ansicht
                       gegen einen früheren Stand (Umbau ohne sichtbare Folgen)
 tools/performance.cjs Messung und das Gerüst für Chromium (createHarness)
 tools/interaktion.cjs Messung der Bedienung
+tools/fixture-padel.mjs erzeugt die Testliga (tests/fixtures/liga*.json) mit
+                      festem Startwert, solange es keine echten Partien gibt
+tools/rauchtest.cjs   zeichnet jede Ansicht mit der Testliga, sammelt Fehler,
+                      auf Wunsch mit Bildschirmfotos (--fotos=<Ordner>)
 tests/run.mjs         Testläufer, jede Suite ein eigener Prozess
 tests/ziel.js         entscheidet, welche Datei geprüft wird (dist vor Wurzel)
 tests/runtime.js      die App ohne Browser, für reine Rechentests
 tests/browser.js      findet Chromium oder meldet, dass keins da ist
-tests/fixtures/       die echten Partien der Liga, gepackt
+tests/fixture.js      lädt die Testliga für Suiten und Werkzeuge
+tests/fixtures/       die Testliga (liga.json, liga2.json)
+tests/umbau/          Suiten aus der Kicker-Liga, noch nicht auf Padel
+                      umgestellt; run.mjs führt sie nicht aus
 index.html            das ausgelieferte Ergebnis, mitversioniert
 sw.js                 sein Service Worker, ebenso gebaut und mitversioniert
-mockup/               Entwürfe ohne Bauablauf, kein Teil der App —
-                      Übersicht in mockup/README.md
+manifest.webmanifest  Web-Manifest (Name, Farben, Symbol); build.mjs kopiert
+                      es nach dist/, damit die App installierbar ist
 datenbank/            SQL, das der Betreiber selbst ausführt — die App ändert
-                      kein Schema. karriereende.sql legt players.retired_at
-                      und players.retired_stand an [§C40]; fehlt eine
-                      Spalte, sagt der Knopf das
+                      kein Schema. schema.sql legt alle Tabellen, Policies
+                      und Realtime an; karriereende.sql ist darin enthalten
+                      und bleibt für bestehende Datenbanken
 README.md             Einstieg: was die App ist, wie man sie baut
 CLAUDE.md             diese Arbeitsanweisung
 docs/                 Herleitung, Laufzeit, Gesetze, Leistung, Erweitern —
                       Inhaltsverzeichnis in docs/README.md (erzeugt)
 icon.png              Symbol der App; build.mjs kopiert es nach dist/
+src/logo.svg          das Logo als Quelle; 01-shell.css trägt es als Data-URI
 .github/workflows/    pages.yml — Prüf-Job, Veröffentlichung schaltbar
 ```
 
@@ -121,7 +153,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1572**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1620**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---
@@ -138,8 +170,8 @@ Datei, deren Aufgabe niemand aufgeschrieben hat.
 | Bereich | Dateien |
 |---|---|
 | Rahmen, Zustand, Daten | `00-prolog` (Konstanten, Supabase-Client) · `01-update` (Version, Update-Banner, **aller Zustand**) · `04-cache` · `06-db` (Laden, Speichern, Saison-Rückblick) · `06b-ruhestand` (Karriereende: `ligaAktiv`, `sichtbar`, der eingefrorene Stand) · `06c-stand` (der letzte Stand des Geräts, Schnellstart) · `37-boot` |
-| Rechnen | `03-saison` · `05-rang-elo` (Ränge, `posWert`, das Positionsprofil `positionsLage` [§C44], Metrikleiste) · `08-stats` · `10-elo-engine` |
-| Ansichten | `11-view-ranking` · `12-view-positionen` · `13-view-awards` · `15-views-rest` (Teams, Verlauf, Einstellungen) · `15b-einblick` (Rollen-Landkarte, Netz der Duos, als Zeile, die aufklappt) · `18-profil` · `18a-badge-popover` (eine Auszeichnung im Detail, aus jedem Blatt: wann und wo sie kam, `_bpBinden`) · `22-team-profil` |
+| Rechnen | `03-saison` · `03b-padel` (Sätze, Games, Sieger, Zu Null, Tiebreak, Gewicht einer Partie [§1.3]) · `05-rang-elo` (Ränge, `posWert`, das Positionsprofil `positionsLage` [§C44], Metrikleiste) · `08-stats` · `10-elo-engine` |
+| Ansichten | `11-view-ranking` · `12-view-positionen` (die Seiten-Rangliste Drive/Revés) · `13-view-awards` · `15-views-rest` (Teams, Verlauf, Eingabe, Einstellungen) · `15c-satz-eingabe` (die Satz-Eingabe und die Aufstellung als Court [§5.6b]) · `15b-einblick` (Rollen-Landkarte, Netz der Duos, als Zeile, die aufklappt) · `18-profil` · `18a-badge-popover` (eine Auszeichnung im Detail, aus jedem Blatt: wann und wo sie kam, `_bpBinden`) · `22-team-profil` |
 | Blätter (Sheets) | `14-top5-listen` · `16-sheet-infra` (Öffnen, Stapel, Wischgeste) · `19-bilanzen` · `21-head-to-head` |
 | Rückblicke | `05b-recap-teile` (Baukasten) · `07-positionsverlauf` (Positionsverlauf) · `07b-rueckblick` (Woche, Tag) · `18b-abschied` (der Abschied eines Ruheständlers, Bühne für Blatt und Story) |
 | Zeichen und Wappen | `02-icons` (SVG-Katalog, `lossStreakInline`) · `09c-zeichen` (Feuer, Sterne, `avHtml`) · `17-badges` · `17b-fingerabdruck` · `35a-insignium-zeichen` (die 21 Zeichnungen der Leiter, `insBild`) · `35b-prestige` (Insignium, Laufbahn) · `35c-titel-aura` (die Aura der Meistertitel, `auraHref`) |
@@ -308,7 +340,7 @@ Kürzel wie `§5.2` Abschnitte im Code; beide stehen in
   Rekorde-Reiter war nur die Stelle, an der es auffiel: dort trug jede der
   fünfundsechzig Karten eine Marke über die Fassung der App, und in den
   Erklärungen stand „sonst wäre eine Seite leichter zu halten als die
-  andere". `tests/disziplinen` prüft jeden sichtbaren Text des Katalogs.
+  andere". `tests/umbau/disziplinen` prüft jeden sichtbaren Text des Katalogs.
 - Kein `node_modules/` und kein `package-lock.json` einchecken.
 
 ---
@@ -442,11 +474,11 @@ Immer im **selben Commit** wie die Änderung, die sie auslöst:
 | Zeitgeber kommt dazu oder ändert seine Bedingung | `docs/laufzeit.md` |
 | Cache-Topf kommt dazu | `docs/laufzeit.md` |
 | Gemeinsames Bauteil kommt dazu (`.rav`, `.podest`, …) | `docs/gesetze/C27-ein-bauteil.md` |
-| Zeichen kommt dazu, bekommt einen neuen Träger oder wird ersetzt | ein im ganzen Katalog freier Schlüssel mit eigener Bedeutung — oder der Träger meint dieselbe Sache und steht in `ZEICHEN_FAMILIEN` (`tests/disziplinen`); ein ersetzter Name kommt nach `ZEICHEN_ALT` [§C41] |
+| Zeichen kommt dazu, bekommt einen neuen Träger oder wird ersetzt | ein im ganzen Katalog freier Schlüssel mit eigener Bedeutung — oder der Träger meint dieselbe Sache und steht in `ZEICHEN_FAMILIEN` (`tests/umbau/disziplinen`); ein ersetzter Name kommt nach `ZEICHEN_ALT` [§C41] |
 | Regel für Agenten ändert sich | §9 |
 | Auszeichnung, Disziplin oder Prestige-Konstante ändert sich | `docs/erweitern.md` |
 | Monatschronik kommt dazu oder ändert Art, Klasse oder Ausschlag | `docs/gesetze/C39-monatschronik.md`, `docs/erweitern.md` §10.2 |
-| Ein Katalogfeld kommt dazu (`beiname`, `streu`, `zufall`, `offen`, `fenster`, `paar`, …) | `docs/erweitern.md` §10.1/§10.2 als eigene Zeile, **und** eine Zusicherung in `tests/disziplinen`, die es für jeden Eintrag verlangt — **und** bei einem Feld unter `allzeit` die Projektion `_chronRoh` in `34-chronik-rekorde.js`, bei einem unter `monat` die Projektion `SEASON_TITLES` in `32-chronik-katalog.js` oder das Lesen über `_chronikMonat`, sonst kommt das Feld nie an |
+| Ein Katalogfeld kommt dazu (`beiname`, `streu`, `zufall`, `offen`, `fenster`, `paar`, …) | `docs/erweitern.md` §10.1/§10.2 als eigene Zeile, **und** eine Zusicherung in `tests/umbau/disziplinen`, die es für jeden Eintrag verlangt — **und** bei einem Feld unter `allzeit` die Projektion `_chronRoh` in `34-chronik-rekorde.js`, bei einem unter `monat` die Projektion `SEASON_TITLES` in `32-chronik-katalog.js` oder das Lesen über `_chronikMonat`, sonst kommt das Feld nie an |
 | Ein Liga-Rekord kommt dazu oder fällt weg | `docs/gesetze/C35-rekorde.md` (Zahl der Rekorde und Haltungen), `docs/erweitern.md` §10.2, §10.3 — und das Prestige verschiebt sich [§C34] |
 | Eine Anweisung hier hat sich als falsch erwiesen | die Stelle selbst |
 

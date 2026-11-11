@@ -17,7 +17,7 @@ function showH2H(idA, idB){
   const avBig = (p) => {
     const em = p.avatar_id ? avatarEmoji(p.avatar_id) : null;
     if(em) return `<div style="width:60px;height:60px;border-radius:50%;background:var(--surface3);display:grid;place-items:center;font-size:28px;border:2px solid var(--line2)">${em}</div>`;
-    return `<div style="width:60px;height:60px;border-radius:50%;background:${avColor(p.id)};display:grid;place-items:center;font-size:20px;font-family:'Archivo Black',sans-serif;color:#0a0c0b;border:2px solid var(--line2)">${esc(initials(p.name))}</div>`;
+    return `<div style="width:60px;height:60px;border-radius:50%;background:${avColor(p.id)};display:grid;place-items:center;font-size:20px;font-family:'Archivo Black',sans-serif;color:#080b10;border:2px solid var(--line2)">${esc(initials(p.name))}</div>`;
   };
 
   // Empty state — beide Spieler kennen sich, aber keine gemeinsamen Matches
@@ -125,7 +125,7 @@ function showH2H(idA, idB){
       ? `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(86,180,232,.12);color:var(--blue);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:6px;font-family:'Sometype Mono',monospace">Team</span>`
       : `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(167,139,250,.12);color:var(--purple);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:6px;font-family:'Sometype Mono',monospace">Gegner</span>`;
     return `<div class="rrow" data-match="${esc(m.id)}" style="padding:10px 12px;display:flex;align-items:center;gap:10px">
-      <div style="width:24px;height:24px;border-radius:50%;background:${won?'rgba(190,242,100,.12)':'rgba(240,86,106,.12)'};color:${won?'var(--acid)':'var(--red)'};display:grid;place-items:center;flex-shrink:0">
+      <div style="width:24px;height:24px;border-radius:50%;background:${won?'rgba(228,242,74,.12)':'rgba(240,86,106,.12)'};color:${won?'var(--acid)':'var(--red)'};display:grid;place-items:center;flex-shrink:0">
         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           ${won?'<polyline points="4,12 10,18 20,6"/>':'<path d="M6 6L18 18M6 18L18 6"/>'}
         </svg>

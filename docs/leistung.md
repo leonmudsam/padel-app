@@ -66,7 +66,7 @@ weiterhin aufwendiger; diese Änderung behauptet dort keinen neuen Geschwindigke
 ```powershell
 node tools/build.mjs
 node tools/performance.cjs --profil --ausgabe=dist/performance.json
-node tests/leistung.test.js
+node tests/umbau/leistung.test.js
 node tests/run.mjs
 ```
 
@@ -145,9 +145,9 @@ und dürfen nicht zu einer vermeintlichen Gesamtzeit addiert werden.
 
 ```powershell
 node tools/performance.cjs --cpu=4 --mobil --profil --ausgabe=dist/mobil.json
-node tests/mobil.test.js
+node tests/umbau/mobil.test.js
 node tests/prefix.test.js
-node tests/rechnen.test.js
+node tests/umbau/rechnen.test.js
 ```
 
 Die neuen Suiten prüfen 21 UI-, 76 Prefix- und 36 Recheninvarianten am gebauten
@@ -217,9 +217,9 @@ durchgehend 60 Bilder/s oder vollständige Lagfreiheit sind nicht zugesichert.
 ```powershell
 node tools/interaktion.cjs --cpu=4 --runden=3 --ausgabe=dist/interaktion.json
 node tools/interaktion.cjs --cpu=4 --runden=3 --waehler-only --ausgabe=dist/waehler.json
-node tests/bedienung.test.js
+node tests/umbau/bedienung.test.js
 node tests/bewegung.test.js
-node tests/eingabe.test.js
+node tests/umbau/eingabe.test.js
 ```
 
 Die drei neuen Suiten prüfen 16 Bedienungs-, 24 Bewegungs- und 42
@@ -276,10 +276,10 @@ keine CI-Zeitgrenzen und kein belastbarer Nachweis von Handy-FPS oder INP;
 die teure kalte Statistik-/Storyarbeit bleibt ein Engpass.
 
 ```powershell
-node tests/aktualisierung.test.js
+node tests/umbau/aktualisierung.test.js
 node tests/storyscroll.test.js
 node tests/bewegung.test.js
-node tests/wiederholung.test.js
+node tests/umbau/wiederholung.test.js
 node tools/interaktion.cjs --cpu=4 --runden=3 --ausgabe=dist/interaktion.json
 ```
 
@@ -300,7 +300,7 @@ und im Gesetz [§C42](gesetze/C42-start.md); die Bewegungsregel in
 
 - Nach jedem Live-Abruf liegt der Stand der Liga auf dem Gerät (IndexedDB).
   Der nächste Start zeichnet daraus, während das Netz antwortet, und schreibt
-  dabei nichts. In `tests/start` mit drei Sekunden Netz steht die Liga nach
+  dabei nichts. In `tests/umbau/start` mit drei Sekunden Netz steht die Liga nach
   rund 400 ms statt nach dem Netz.
 - Ein Service Worker hält Seite, Schriften und Supabase-Bibliothek. Ohne Netz
   öffnet die App aus ihm; Update-Check und Neuladen gehen weiter ans Netz.
@@ -312,10 +312,10 @@ und im Gesetz [§C42](gesetze/C42-start.md); die Bewegungsregel in
 - Der Story-Generator rechnet in einem Worker mit demselben Code. Kalt war
   er auf dem Hauptthread rund eine Sekunde am Stück (`Generator kalt` in
   `tools/performance.cjs --mobil`, 1038 ms); beim Start rechnet der
-  Hauptthread jetzt keine Story mehr (`tests/start`).
+  Hauptthread jetzt keine Story mehr (`tests/umbau/start`).
 - Nach dem Zeichnen rechnen die übrigen Reiter im Leerlauf vor. Beim ersten
   Öffnen von Positionen, Awards, Rekorden, Chronik und Teams nach dem Start
-  rechnet nichts mehr kalt (`tests/start`); vorher Awards drei, Teams eine
+  rechnet nichts mehr kalt (`tests/umbau/start`); vorher Awards drei, Teams eine
   kalte Rechnung.
 - Gemeinsame Zeitschnitte und Generator-Sortierung sparen Kopien der Liga;
   ein Zeitgewinn ist in einzelnen Läufen nicht vom Rauschen zu trennen
@@ -349,7 +349,7 @@ ragt; er erscheint nur im Kopf eines Profils mit extremer Form.
 ```
 node tools/performance.cjs --cpu=4 --ruhe
 node tools/golden.mjs --basis=<rev> --bilder
-node tests/start.test.js
+node tests/umbau/start.test.js
 ```
 
 Grenzen wie in den Runden davor: Chromium mit CPU-Drosselung ist kein
@@ -448,8 +448,8 @@ Anfang an still (achte Runde).
 endet es.
 
 ```
-node tests/start.test.js
-node tests/blatt.test.js
+node tests/umbau/start.test.js
+node tests/umbau/blatt.test.js
 ```
 
 ## Achte Runde: Ring, Rückblicke, Chroniken
@@ -487,7 +487,7 @@ App rechnet er im Worker.
 ```
 node tools/performance.cjs --cpu=4 --ruhe
 node tools/performance.cjs --cpu=4 --mobil
-node tests/blatt.test.js
+node tests/umbau/blatt.test.js
 ```
 
 ## Neunte Runde: Speichern ohne Warten
@@ -524,12 +524,12 @@ Elo verschiebt sich durch alle —, keine davor und keine eines anderen
 Monats.
 
 ```
-node tests/eingabe.test.js
+node tests/umbau/eingabe.test.js
 ```
 
 ## Zehnte Runde: eine Liga, die Jahre alt ist
 
-Gemessen mit `mockup/langlebig-lauf.js`: die 616 echten Partien bis Oktober
+Gemessen mit den Entwurf „langlebig-lauf.js“ der Kicker-Liga: die 616 echten Partien bis Oktober
 neunmal hintereinander, jedes Mal 23 Wochen später, mit vertauschten
 Spielern — 5544 Partien über 49 Monate, die vergangenen Monate eingefroren
 wie in der Datenbank. Ein Lauf des Generators nach einer neuen Partie, in
@@ -572,5 +572,5 @@ Jahren hieß „nach 130 Wochen", Gold von vor dreizehn Monaten „vor 400 Tagen
 [§C27].
 
 ```
-node mockup/langlebig-lauf.js && node mockup/langlebig-pruef.js
+(Messskripte der Kicker-Liga, nicht übernommen)
 ```

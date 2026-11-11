@@ -594,8 +594,8 @@ const rankProgHtml = rInfo ? `
         return `<div class="pp-pos-combined">
           <div class="head"><div class="t">Revés und Drive</div></div>
           <div class="pp-roles-donuts">
-            ${donut('reves','Revés · links','posAbwehr',revWr,s.revW,s.revG,'der Games',anteil(s.revAnteil),'var(--blue)')}
-            ${donut('drive','Drive · rechts','posSturm',drvWr,s.drvW,s.drvG,'der Games',anteil(s.drvAnteil),'var(--orange)')}
+            ${donut('reves','Revés · links','posReves',revWr,s.revW,s.revG,'der Games',anteil(s.revAnteil),'var(--blue)')}
+            ${donut('drive','Drive · rechts','posDrive',drvWr,s.drvW,s.drvG,'der Games',anteil(s.drvAnteil),'var(--orange)')}
           </div>
         </div>`;
       })()}
@@ -779,7 +779,7 @@ const rankProgHtml = rInfo ? `
         const pp = pmL[x.oid];
         const em = pp.avatar_id ? avatarEmoji(pp.avatar_id) : null;
         if(em) return `<div style="width:26px;height:26px;border-radius:50%;background:var(--surface3);display:grid;place-items:center;font-size:14px;border:1.5px solid var(--surface);flex-shrink:0">${em}</div>`;
-        return `<div style="width:26px;height:26px;border-radius:50%;background:${avColor(pp.id)};display:grid;place-items:center;font-size:9px;font-family:'Archivo Black',sans-serif;color:#0a0c0b;border:1.5px solid var(--surface);flex-shrink:0">${esc(initials(pp.name))}</div>`;
+        return `<div style="width:26px;height:26px;border-radius:50%;background:${avColor(pp.id)};display:grid;place-items:center;font-size:9px;font-family:'Archivo Black',sans-serif;color:#080b10;border:1.5px solid var(--surface);flex-shrink:0">${esc(initials(pp.name))}</div>`;
       }).join('') + (mit.length > zeige ? `<span class="pp-mit-mehr num">+${mit.length - zeige} weitere</span>` : '');
       return `
     <div class="pp-sec" style="animation-delay:.5s">
@@ -837,9 +837,9 @@ const rankProgHtml = rInfo ? `
            die Überschrift bei 360 px in zwei Zeilen. -->
       <div class="pp-posprof ${revPct > drvPct + 4 ? 'links-seite' : drvPct > revPct + 4 ? 'rechts-seite' : 'neutral'}" style="--atk:${revPct}%;--strahl:${Math.max(drvPct, revPct)}%">
         <div class="pph">
-          <span class="lf">${svgI('posAbwehr')}Revés</span>
+          <span class="lf">${svgI('posReves')}Revés</span>
           <span><span class="pct">${revPct}\u00A0%</span> / <span class="pct">${drvPct}\u00A0%</span></span>
-          <span class="rt">Drive${svgI('posSturm')}</span>
+          <span class="rt">Drive${svgI('posDrive')}</span>
         </div>
         <!-- Der Strahl beginnt an der staerkeren Seite und laeuft zur
              Mitte. Bei einem beidseitigen Profil sitzt er als eigener,

@@ -202,7 +202,7 @@
   /* Die laufende Spalte ist getönt: ihre Zellen können bis zum Monatsende
      noch wechseln. Gestrichelt allein war das nur an den gefüllten Zellen zu
      sehen, nicht an der Spalte. */
-  .lchron th.live,.lchron td.live{background:rgba(190,242,100,.045)}
+  .lchron th.live,.lchron td.live{background:rgba(228,242,74,.045)}
   .lchron th.live .lc-m{color:var(--acid)}
   .lchron th:first-child{text-align:left;padding-left:10px}
   .lchron th[data-season-table]{cursor:pointer}
@@ -260,7 +260,7 @@
   .lchron-lg [data-kl="selten"]{--kr:167,139,250}
   .lchron-lg [data-kl="besonders"]{--kr:154,167,181}
   .lchron-lg [data-kl="schatten"]{--kr:240,86,106}
-  .lchron-lg .live::before{background:none;box-shadow:none;outline:1px dashed rgba(190,242,100,.55);outline-offset:-1px}
+  .lchron-lg .live::before{background:none;box-shadow:none;outline:1px dashed rgba(228,242,74,.55);outline-offset:-1px}
   .ruhe-ende .lchron-wrap{margin-top:4px}
   .lc-cell{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;
     padding:6px 3px;border-radius:11px;background:rgba(var(--ttr),.11);cursor:pointer;

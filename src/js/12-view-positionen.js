@@ -30,7 +30,7 @@ function positionsListe(pos, spieler){
 // stehen in keiner Rangfolge der aktiven Liga, also trägt die Zeile keinen
 // Platz und kein Metall der ersten drei.
 function positionsBlockHtml(arr, pos, ohneRang){
-  if(!arr.length) return emptyState(pos==='drive'?'posSturm':'posAbwehr','Noch keine Partien auf dieser Seite');
+  if(!arr.length) return emptyState(pos==='drive'?'posDrive':'posReves','Noch keine Partien auf dieser Seite');
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     // Rechts steht der Wert, nach dem sortiert wird; der Game-Anteil hat
@@ -67,8 +67,8 @@ function vPositions(){
     <div class="view-head"><h2>Seiten <button class="kopf-info" type="button" data-info="positionen" aria-label="So entsteht der Wert">${svgI('info')}</button></h2><p>Drive und Revés, über alle Partien</p></div>
     ${einblickHtml('rollen')}
     <div class="ui-switch">
-      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posSturm')}Drive · rechts</span></button>
-      <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posAbwehr')}Revés · links</span></button>
+      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
+      <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}Revés · links</span></button>
     </div>
     <div class="mini-label">▲ über · ▼ unter der Erwartung, gemessen an Partner und Gegnern</div>
     ${positionsBlockHtml(arr, which)}

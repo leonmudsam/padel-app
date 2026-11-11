@@ -14,7 +14,7 @@
 
 ## Prüfung
 
-`tests/zeichen` misst Feuer, Sterne und die Füllung des Feuers in Zeile und Profil am Knoten; `tests/blatt` misst die Zeichen am Ring mit zwei bis fünf Zuständen und klappt die Zeile auf; `tests/rechnen` rechnet Woche und Tag des Rings, auch für den, der danach nicht mehr spielte, und für den, der seinen letzten Zeitraum nicht gewann.
+`tests/umbau/zeichen` misst Feuer, Sterne und die Füllung des Feuers in Zeile und Profil am Knoten; `tests/umbau/blatt` misst die Zeichen am Ring mit zwei bis fünf Zuständen und klappt die Zeile auf; `tests/umbau/rechnen` rechnet Woche und Tag des Rings, auch für den, der danach nicht mehr spielte, und für den, der seinen letzten Zeitraum nicht gewann.
 
 ## Herleitung
 
@@ -49,7 +49,7 @@ wie im Profilkopf. In der Rangliste brannte es orange mit warmem Kern und
 im Profil desselben Spielers in seiner Rangfarbe — zwei Bildsprachen für
 dieselbe Serie [§C27]. Die Zeile behält ihre eigene Geometrie, ihr Schein
 ist sogar kräftiger: von einem Feuer ist dort nur der Streifen über dem
-Reif zu sehen. `tests/zeichen` vergleicht die Füllung beider am Knoten.
+Reif zu sehen. `tests/umbau/zeichen` vergleicht die Füllung beider am Knoten.
 Über dem Zeichen hat der
 Profilkopf nur seinen Innenabstand, und `.pp-header` schneidet ab: für die
 brennenden Stufen rückt er nach unten (`--feuerluft`) — und nur für sie,

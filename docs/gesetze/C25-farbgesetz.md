@@ -17,7 +17,7 @@
 
 ## Prüfung
 
-`tests/blatt` hält Besitzleiste und Podest je Spieler aneinander, misst Farbfamilien und Kanten im Feed, im Profil die Klassenfarben der Auszeichnungen und die Kante unter jeder Überschrift auf jeder Stufe, in der Chronik-Matrix die Farbe jeder Zelle nach ihrer Stufe und den Glanz nur auf Gold.
+`tests/umbau/blatt` hält Besitzleiste und Podest je Spieler aneinander, misst Farbfamilien und Kanten im Feed, im Profil die Klassenfarben der Auszeichnungen und die Kante unter jeder Überschrift auf jeder Stufe, in der Chronik-Matrix die Farbe jeder Zelle nach ihrer Stufe und den Glanz nur auf Gold.
 
 ## Herleitung
 
@@ -62,7 +62,7 @@ des Rekorde-Reiters zählte sie mit, Podest und Profil nicht, und damit
 standen zwei Zahlen unter demselben Wort — Martins Säule sagte 13, seine
 Podestkarte „10 Rek.". Die Regel steht deshalb in der Zählung und nicht
 dreimal im Aufruf [§C27]; sichtbar bleibt die Schandtafel in ihrer Kammer.
-`tests/blatt` hält Leiste und Podest je Spieler aneinander — eine Summe
+`tests/umbau/blatt` hält Leiste und Podest je Spieler aneinander — eine Summe
 stimmt auch dann, wenn zwei Spieler ihre Zahlen tauschen. Die **Kammer**
 bleibt davon unberührt — sie steht als `data-kammer` an der Karte, nicht
 als Farbklasse, weil eine Fügung rot sein kann und trotzdem eine Fügung

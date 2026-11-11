@@ -118,7 +118,7 @@
      hiess Blau einmal „gut" und Orange einmal „schlecht", ohne dass das
      irgendwo stand. Jetzt heisst Grün gut und Rot schlecht, zweimal. */
   .pp-root .pp-r-rich.fav{border-left-color:var(--acid);
-    background:linear-gradient(135deg,rgba(190,242,100,.04),var(--surface) 70%)}
+    background:linear-gradient(135deg,rgba(228,242,74,.04),var(--surface) 70%)}
   .pp-root .pp-r-rich.fav .stat .v{color:var(--acid)}
   .pp-root .pp-r-rich.nem{border-left-color:var(--red);
     background:linear-gradient(135deg,rgba(240,86,106,.03),var(--surface) 70%)}
@@ -133,8 +133,8 @@
   .pp-root .pp-av-inner:not(.icon-av){
     background:linear-gradient(155deg,
       color-mix(in srgb,var(--ak) 62%,#252d28),
-      color-mix(in srgb,var(--ak) 24%,#141a16));
-    color:#0a0c0b;text-shadow:none}
+      color-mix(in srgb,var(--ak) 24%,#121822));
+    color:#080b10;text-shadow:none}
 
   /* ── Nachtrag: die drei letzten grünen Inseln im Profil ───────────
      Elo-Kurve, Gesamt-Stats und Positions-Profil trugen weiter --acid.

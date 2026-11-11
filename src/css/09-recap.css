@@ -184,7 +184,7 @@
   .rcp-av{position:relative;flex-shrink:0;width:var(--rav);height:var(--rav);
     display:inline-grid;place-items:center}
   .rcp-av > .av{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;
-    font-family:'Archivo Black',sans-serif;font-size:calc(var(--rav) * .34);color:#0a0c0b}
+    font-family:'Archivo Black',sans-serif;font-size:calc(var(--rav) * .34);color:#080b10}
   .rcp-av > .av .em{font-size:calc(var(--rav) * .54);line-height:1}
   .rcp-av.leer{border-radius:50%;background:var(--surface3);color:var(--muted);
     font-family:'Sometype Mono',monospace;font-size:calc(var(--rav) * .3);font-weight:700}
@@ -276,7 +276,7 @@
   /* Leise und ohne Rand: zehn Punkte auf zwei Zentimetern überlappen, und
      jeder Rand zeichnete dort eine Klammer. */
   .bl-feld i{position:absolute;top:7px;width:6px;height:6px;margin-left:-3px;border-radius:50%;
-    background:rgba(185,196,189,.4)}
+    background:rgba(182,193,207,.4)}
   .bl-feld i.er{top:4px;width:12px;height:12px;margin-left:-6px;background:var(--gold);
     box-shadow:0 0 0 2px var(--surface),0 0 10px rgba(247,207,74,.6)}
   .bl-feld-l{display:flex;justify-content:space-between;gap:6px;font-size:9.5px;color:var(--faint);margin-top:2px}
@@ -665,7 +665,7 @@
 .rcp-tab-z{--strich:2}
 .rcp-tab-z.auf{color:var(--acid)}
 .rcp-tab-z.ab{color:var(--red)}
-.rcp-tab-z.max.auf{background:rgba(190,242,100,.13);box-shadow:inset 0 0 0 1px rgba(190,242,100,.42)}
+.rcp-tab-z.max.auf{background:rgba(228,242,74,.13);box-shadow:inset 0 0 0 1px rgba(228,242,74,.42)}
 .rcp-tab-z.max.ab{background:rgba(240,86,106,.13);box-shadow:inset 0 0 0 1px rgba(240,86,106,.42)}
 .rcp-tab-r > .rcp-av{flex:none}
 .rcp-tab-n{flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--ink);line-height:1.2;overflow-wrap:anywhere}

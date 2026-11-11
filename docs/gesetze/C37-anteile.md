@@ -12,7 +12,7 @@
 
 ## Prüfung
 
-`tests/tafel` prüft Schwellen und Nenner der Awards und was nach einer vollen Woche leer bleibt.
+`tests/umbau/tafel` prüft Schwellen und Nenner der Awards und was nach einer vollen Woche leer bleibt.
 
 ## Herleitung
 
@@ -39,7 +39,7 @@ es auch „Gesamt" gab. Gemessen spielt ein Duo in einer Woche im Mittel drei
 Partien und über einen ganzen Monat ebenfalls drei — sieben von
 sechsunddreißig Kacheln verlangten zehn gemeinsame Spiele und standen damit
 jede Woche leer. Sie stehen an einer Stelle beisammen, damit sich das nicht
-wieder über die Datei verteilt. Keine steigt über fünf, und `tests/tafel`
+wieder über die Datei verteilt. Keine steigt über fünf, und `tests/umbau/tafel`
 zählt nach, was nach einer vollen Woche noch leer bleibt: erlaubt sind nur
 Ereignisse, die es nicht gab, kein 10:0 heißt kein Showmaster.
 **Und die Erklärung nennt, was gilt** (`AWARD_META.why`). „So wird

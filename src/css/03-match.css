@@ -1,7 +1,7 @@
   /* ============ [§C7] MATCH BUILDER ============ */
   .builder{display:flex;flex-direction:column;gap:12px}
   .team-block{border-radius:var(--r);padding:15px;border:1px solid var(--line);position:relative}
-  .team-block.A{background:linear-gradient(180deg,rgba(190,242,100,.05),transparent),var(--surface)}
+  .team-block.A{background:linear-gradient(180deg,rgba(228,242,74,.05),transparent),var(--surface)}
   .team-block.B{background:linear-gradient(180deg,rgba(255,120,73,.05),transparent),var(--surface)}
   .team-label{display:flex;align-items:center;gap:8px;margin-bottom:13px;font-family:'Archivo Black',sans-serif;
     font-size:13px;text-transform:uppercase;letter-spacing:.04em}
@@ -108,41 +108,26 @@
   .m-ch-r{display:flex;align-items:center;gap:8px;margin-bottom:6px}
   .m-ch-w{flex:1;text-align:center;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
 
-  /* Die Satz-Eingabe [§5.6b]: je Satz eine Zeile mit zwei Steppern, darunter
-     die Schnellwahl für die angetippte Zeile, die Art und der Stand. */
+  /* Die Satz-Eingabe [§5.6b]: je Satz zwei Zahlenfelder, darunter der Stand.
+     Große Felder, damit sie mit dem Daumen zu treffen sind. */
   .score-board.saetze{display:block;padding:12px 12px 10px}
-  .se-kopf{display:grid;grid-template-columns:64px 1fr 14px 1fr;margin-bottom:4px}
+  .se-kopf{display:grid;grid-template-columns:56px 1fr 18px 1fr 34px;margin-bottom:6px}
   .se-kopf .cl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;text-align:center}
   .se-kopf .cl.A{grid-column:2;color:var(--acid)} .se-kopf .cl.B{grid-column:4;color:var(--orange)}
-  .se-satz{display:grid;grid-template-columns:64px 1fr 14px 1fr;align-items:center;padding:6px 0;
-    border-radius:11px;cursor:pointer;border:1px solid transparent}
-  .se-satz.on{background:var(--surface2);border-color:var(--line2)}
-  .se-nr{font-size:10.5px;color:var(--muted);font-weight:600;padding-left:8px;line-height:1.2}
-  .se-nr i{display:block;font-style:normal;font-size:9px;color:var(--faint);font-weight:500}
-  .se-satz.on .se-nr{color:var(--ink)}
-  .se-step{display:flex;align-items:center;justify-content:center;gap:6px}
-  .se-step button{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--surface3);
-    color:var(--ink);font-size:18px;font-weight:700;cursor:pointer;display:grid;place-items:center;line-height:1}
-  .se-step button:active{transform:scale(.88);background:var(--acid);color:var(--acid-deep)}
-  .se-v{font-family:'Archivo Black',sans-serif;font-size:24px;width:34px;text-align:center;color:var(--ink2)}
-  .se-step.A.sieg .se-v{color:var(--acid)} .se-step.B.sieg .se-v{color:var(--orange)}
-  .se-sep{text-align:center;font-family:'Archivo Black',sans-serif;color:var(--faint)}
-  .se-schnell{margin:10px 0 6px;display:flex;flex-direction:column;gap:6px}
-  .se-reihe{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center}
-  .se-reihe::-webkit-scrollbar{display:none}
-  .se-rl{flex:0 0 auto;font-size:9.5px;font-weight:700;width:14px;text-align:center}
-  .se-rl.A{color:var(--acid)} .se-rl.B{color:var(--orange)}
-  .se-chip{flex:0 0 auto;font-family:'Sometype Mono',monospace;font-size:12px;font-weight:600;color:var(--ink2);
-    background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:7px 9px;cursor:pointer}
-  .se-chip.on{background:var(--acid);color:var(--acid-deep);border-color:var(--acid)}
-  .se-chip:active{transform:scale(.93)}
-  .se-art{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
-  .se-tog{font-family:inherit;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);
-    border:1px solid var(--line);padding:6px 10px;border-radius:9px;cursor:pointer}
-  .se-tog.on{color:var(--ink);border-color:var(--acid2);background:var(--surface3)}
-  .se-tog.weg{margin-left:auto}
-  .se-fuss{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:9px}
-  .se-stand{flex:1;font-size:12px;color:var(--muted);line-height:1.35}
+  .se-satz{display:grid;grid-template-columns:56px 1fr 18px 1fr 34px;align-items:center;gap:0;margin-bottom:8px}
+  .se-nr{font-size:11px;color:var(--muted);font-weight:600}
+  .se-in{width:100%;min-width:0;height:54px;text-align:center;font-family:'Archivo Black',sans-serif;font-size:28px;
+    color:var(--ink);background:var(--bg2);border:1px solid var(--line2);border-radius:12px;outline:none;padding:0}
+  .se-in::placeholder{color:var(--faint)}
+  .se-in.A:focus{border-color:var(--acid)} .se-in.B:focus{border-color:var(--orange)}
+  .se-sep{text-align:center;font-family:'Archivo Black',sans-serif;color:var(--faint);font-size:20px}
+  .se-weg{justify-self:end;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:transparent;
+    color:var(--muted);display:grid;place-items:center;cursor:pointer}
+  .se-weg svg{width:14px;height:14px}
+  .se-fuss{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+  .se-stand{flex:1;font-size:12.5px;color:var(--muted);line-height:1.35}
   .se-stand.ok{color:var(--ink2)} .se-stand b{color:var(--ink)}
   .se-plus{font-family:inherit;font-size:12px;font-weight:700;color:var(--acid);background:transparent;
-    border:1px dashed var(--acid2);padding:8px 12px;border-radius:10px;cursor:pointer;flex-shrink:0}
+    border:1px dashed var(--acid2);padding:9px 13px;border-radius:10px;cursor:pointer;flex-shrink:0}
+  /* Was dem Speichern noch fehlt, als Satz unter dem Knopf. */
+  .m-fehlt{font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px;min-height:15px}

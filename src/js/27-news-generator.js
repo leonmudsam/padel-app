@@ -17,6 +17,9 @@ function _ohneDoppeltenGipfel(stories){
 }
 function _buildStories(){
   const stories = [];
+  // Eine leere Liga hat nichts zu erzählen: ohne eine einzige Partie gibt es
+  // keine Story, auch keinen Saisonstart und keinen Fun Fact.
+  if(!matches || !matches.length) return stories;
   const now = new Date();
   const pm = pmap();
   const nameOf = pid => (pm[pid] && pm[pid].name) || '?';

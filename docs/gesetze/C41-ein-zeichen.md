@@ -3,7 +3,7 @@
 ## Regel
 
 - Jedes Zeichen im Katalog (`ICONS`, `02-icons.js`) trägt genau eine Bedeutung. Zwei verschiedene Sachen teilen nie ein Zeichen.
-- Dieselbe Sache in mehreren Systemen behält ein Zeichen: die laufende Siegesserie ist als Award, Badge, Ring am Avatar und Anlass einer Partie dieselbe Flamme. Ein solches Zeichen steht mit seiner einen Bedeutung in `ZEICHEN_FAMILIEN` (`tests/disziplinen`).
+- Dieselbe Sache in mehreren Systemen behält ein Zeichen: die laufende Siegesserie ist als Award, Badge, Ring am Avatar und Anlass einer Partie dieselbe Flamme. Ein solches Zeichen steht mit seiner einen Bedeutung in `ZEICHEN_FAMILIEN` (`tests/umbau/disziplinen`).
 - Ausnahme in der Gegenrichtung: Disziplinen (Liga-Rekorde und Monatschroniken) stehen in der Chronik nebeneinander und brauchen dort jede ihr eigenes Bild, auch wo eine von ihnen mit einem Award dieselbe Sache meint.
 - Kein Schlüssel steht im Katalog zweimal, keine zwei Schlüssel tragen dieselbe Zeichnung.
 - Jeder Zugriff auf eine Zeichnung geht über `icPfad` (oder `svgI`/`zkHtml`, die ihn rufen). Ein ersetzter Name steht in `ZEICHEN_ALT` und zeigt auf die Zeichnung, die seine Sache jetzt trägt; lebender Code setzt nur heutige Namen.
@@ -16,7 +16,7 @@
 
 ## Prüfung
 
-`tests/disziplinen` (kein Zeichen mit zwei Bedeutungen über Award, Badge, Disziplin, News, Rang, Ring, Position, Spieltag und Rubrik; jede Familie hat mindestens zwei Träger; jeder Träger nennt ein Zeichen, das es gibt; keine doppelte Zeichnung, kein doppelter Schlüssel; jeder alte Name zeigt auf eine bestehende Zeichnung; jedes wörtlich gesetzte Zeichen steht unter seinem heutigen Namen im Katalog; jede Disziplin hat ihr eigenes Zeichen), `tests/tafel` (kein Zeichen ohne Aufrufer).
+`tests/umbau/disziplinen` (kein Zeichen mit zwei Bedeutungen über Award, Badge, Disziplin, News, Rang, Ring, Position, Spieltag und Rubrik; jede Familie hat mindestens zwei Träger; jeder Träger nennt ein Zeichen, das es gibt; keine doppelte Zeichnung, kein doppelter Schlüssel; jeder alte Name zeigt auf eine bestehende Zeichnung; jedes wörtlich gesetzte Zeichen steht unter seinem heutigen Namen im Katalog; jede Disziplin hat ihr eigenes Zeichen), `tests/umbau/tafel` (kein Zeichen ohne Aufrufer).
 
 ## Herleitung
 
@@ -38,7 +38,7 @@ Acht Zeichnungen waren Zwillinge — `chartUp` und `trendUp` dieselbe Linie,
 zwei gebrochene Herzen, zwei Regenwolken, zwei Hanteln —, und die Rakete
 las sich bei 14 px als Stift.
 
-Der Entwurf `mockup/aufwertung-6/` hat jede Verwendung erfasst und je
+Der Entwurf den Entwurf „aufwertung-6/“ der Kicker-Liga hat jede Verwendung erfasst und je
 Bedeutung entschieden: eigene Zeichnung oder das Zeichen derselben Sache.
 Dabei zeigte sich die Grenze in der Gegenrichtung: sieben Paare von
 Disziplinen meinten nach dem Entwurf dieselbe Sache wie ein Award (der

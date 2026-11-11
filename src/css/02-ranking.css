@@ -127,7 +127,7 @@
   .chip.drive{background:rgba(255,120,73,.16);color:var(--orange)}
   .chip.reves{background:rgba(86,180,232,.16);color:var(--blue)}
   .perf-up{color:var(--acid);font-size:11px} .perf-dn{color:var(--red);font-size:11px}
-  .champ-banner{background:linear-gradient(135deg,rgba(247,207,74,.10),rgba(190,242,100,.03));
+  .champ-banner{background:linear-gradient(135deg,rgba(247,207,74,.10),rgba(228,242,74,.03));
     border:1px solid rgba(247,207,74,.22);border-radius:var(--r);padding:22px 18px;margin-bottom:10px;text-align:center;position:relative;overflow:hidden}
   .champ-banner::before{content:"";position:absolute;right:-12px;top:50%;width:120px;height:120px;
     transform:translateY(-50%);opacity:.08;
@@ -174,7 +174,7 @@
      was noch kommt als Umriss. */
   .lauf-z{flex:1;display:grid;grid-template-columns:repeat(var(--g),minmax(0,1fr));gap:2px;height:10px}
   .lauf-z i{border-radius:2px;background:var(--surface2)}
-  .lauf-z i.v{background:rgba(190,242,100,.2)}
+  .lauf-z i.v{background:rgba(228,242,74,.2)}
   .lauf-z i.s{background:var(--acid)}
   .lauf-z i.h{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--acid)}
 
@@ -228,13 +228,13 @@
   /* Der Recap-Knopf des abgeschlossenen Zeitraums. Vorher stand er als
      30-zeiliges Inline-Style-Ungetüm im JavaScript. */
   .nw-recap{width:100%;display:flex;align-items:center;gap:12px;
-    background:linear-gradient(135deg,rgba(190,242,100,.07),rgba(190,242,100,.02));
-    border:1px solid rgba(190,242,100,.26);border-radius:14px;
+    background:linear-gradient(135deg,rgba(228,242,74,.07),rgba(228,242,74,.02));
+    border:1px solid rgba(228,242,74,.26);border-radius:14px;
     padding:11px 13px;margin-bottom:10px;cursor:pointer;
     font-family:inherit;color:var(--ink);text-align:left;transition:.16s}
   .nw-recap:active{transform:scale(.99)}
   .nw-recap .ic{flex-shrink:0;width:36px;height:36px;border-radius:11px;
-    background:rgba(190,242,100,.12);display:grid;place-items:center;color:var(--acid)}
+    background:rgba(228,242,74,.12);display:grid;place-items:center;color:var(--acid)}
   .nw-recap .ic svg{width:18px;height:18px;fill:none;stroke:currentColor;
     --strich:1.75;stroke-linecap:round;stroke-linejoin:round}
   .nw-recap .tx{flex:1;min-width:0}
@@ -248,7 +248,7 @@
   .sh-chip-pair{display:flex;flex-shrink:0}
   .sh-chip-av,.sh-chip-pair .sh-chip-av{width:22px;height:22px;border-radius:50%;
     display:grid;place-items:center;font-size:11px;border:1.5px solid var(--surface);
-    flex-shrink:0;font-family:'Archivo Black',sans-serif;color:#0a0c0b}
+    flex-shrink:0;font-family:'Archivo Black',sans-serif;color:#080b10}
   .sh-chip-pair .sh-chip-av+.sh-chip-av{margin-left:-7px}
 
   /* Die Tore je Spiel in der Positionsliste: eine eigene Zeile. Hinter

@@ -598,7 +598,7 @@ function showSeasonRecap(season, opts){
         {v:ms.length, l:'Partien', d:unterschied(ms.length, vorMs.length)},
         {v:tage, l:'Spieltage', d:unterschied(tage, new Set(vorMs.map(mdayKey)).size)},
         {v:spielerImMonat.size, l:'Spieler', d:unterschied(spielerImMonat.size, vorSpieler)},
-        {v:tore, l:'Tore', d:unterschied(tore, vorTore)}])
+        {v:tore, l:'Games', d:unterschied(tore, vorTore)}])
     + (vorMs.length ? `<div class="rcp-z-bezug">Unterschied zum ${esc(seasonLabel(vorSid))}</div>` : '');
 
   // ─── Die Tabelle ───────────────────────────────────────────────────

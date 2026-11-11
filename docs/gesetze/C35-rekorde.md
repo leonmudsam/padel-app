@@ -3,7 +3,7 @@
 ## Regel
 
 - Zweiundsechzig Liga-Rekorde in fünf Kammern (8 Bestmarken, 16 Können, 6 Aktuelle Form, 17 Fügungen, 15 Schattenseiten), in dieser Reihenfolge in Leiste und Liste (`CHRON_KINDS.ord`). Die Kammer steht am Eintrag (`allzeit.kammer`), nicht aus `art` erraten.
-- Die Siegquote zählt einmal. Nach dem Niveau fragen nur der beste Monat, der höchste Gipfel, die längste Siegesserie, die Form von jetzt und die beiden Positionen (`NIVEAU` in `tests/disziplinen`); jeder andere Rekord mit dem Grundwert des Könnens (100) fragt nach dem Abstand zum Eigenen [§C38], nach einer Teilmenge oder nach einer Folge und folgt der Siegquote gemessen mit r unter 0,75.
+- Die Siegquote zählt einmal. Nach dem Niveau fragen nur der beste Monat, der höchste Gipfel, die längste Siegesserie, die Form von jetzt und die beiden Positionen (`NIVEAU` in `tests/umbau/disziplinen`); jeder andere Rekord mit dem Grundwert des Könnens (100) fragt nach dem Abstand zum Eigenen [§C38], nach einer Teilmenge oder nach einer Folge und folgt der Siegquote gemessen mit r unter 0,75.
 - Die Karte nennt Zeitraum, Grundwert und Mindestbasis (`zeitraum`, `basis`, `mind`) und zeigt, wie weit der Halter vorn liegt (`_rekFeldHtml`, aus `chronicleRang`); der Kopf jeder Kammer sagt in einem Satz, was sie misst (`CHRON_KINDS.satz`). Kein Text beschreibt die App oder eine frühere Rechnung.
 - Ein Rekord hat keine Wertlatte, nur eine Stichprobe (Partien, Spieltage, Wochen, Niederlagen). Was ein Wert von sich aus braucht (erstes Glied, zwei Partien, eine Richtung, die sein Name verspricht: Sprung, Vorsprung, Aufschwung), bleibt; eine Teilmenge, die beschreibt, welche Partien zählen, ist keine Latte. Ein Abstand, der auf null rundet, ist keine Richtung.
 - Was einen ganzen Spieltag beschreibt (der makellose Tag, Kaltstart und Tagesabschluss, der Glanztag, die Fügungen eines Abends), zählt nur Tage, die für den gefragten Stand zu sind (`_tagZu`); ein laufender Tag hat noch keine letzte Partie und keine Tagesquote.
@@ -23,7 +23,7 @@
 
 ## Prüfung
 
-`tests/rechnen` (der laufende Tag zählt erst um 23:59), `tests/disziplinen` (Katalog, Kammern und ihre Zahlen, die Siegquote, die nur das Niveau trägt, Schwellen im Text, offene Rennen, Paare, Fenster, Halterdeckel, Schandtafel, sichtbarer Text), `tests/ambient` (jede Rekord-Karte gegen den ganzen Katalog), `tests/blatt` (Kammerfelder und Besitzleiste).
+`tests/umbau/rechnen` (der laufende Tag zählt erst um 23:59), `tests/umbau/disziplinen` (Katalog, Kammern und ihre Zahlen, die Siegquote, die nur das Niveau trägt, Schwellen im Text, offene Rennen, Paare, Fenster, Halterdeckel, Schandtafel, sichtbarer Text), `tests/umbau/ambient` (jede Rekord-Karte gegen den ganzen Katalog), `tests/umbau/blatt` (Kammerfelder und Besitzleiste).
 
 ## Herleitung
 
@@ -72,7 +72,7 @@ irgendwo in der Laufbahn gehörte immer dem, der am meisten gespielt hat",
 „Deshalb wiegt der Eintrag 50 Punkte und nicht 100", „sonst wäre eine Seite
 leichter zu halten als die andere"). Das ist die Bauanleitung und gehört in
 einen Kommentar, nicht auf die Karte — dieselbe Regel wie „Das Blatt
-erklärt nicht die App" [§C33]. `tests/disziplinen` prüft jeden sichtbaren
+erklärt nicht die App" [§C33]. `tests/umbau/disziplinen` prüft jeden sichtbaren
 Text jedes Rekords und jeder Chronik gegen eine Liste solcher Wendungen und
 gegen Entwicklersprache („Rohsicht", „Cache", „Projektion", „Savepoint",
 ein Paragraphenzeichen).
@@ -118,7 +118,7 @@ Zitterpartien und nicht alle Partien oder Pleiten — das unterscheidet sie
 vom Pechvogel, der die 9:10 durch alle Pleiten teilt. Für 10:0 gegen 0:10
 sind es r = 0,98 bei einer Handvoll Fällen je Spieler: eine zweite
 Siegquote, und kein Rekord.
-`tests/disziplinen` misst jeden Rekord mit dem Grundwert des Könnens gegen die
+`tests/umbau/disziplinen` misst jeden Rekord mit dem Grundwert des Könnens gegen die
 Siegquote und fällt, sobald einer außerhalb von `NIVEAU` darüber steigt.
 „Die ruhige Hand" bleibt, weil sie den SPRUNG in engen Partien misst und
 nicht die Quote darin; ebenso „Der Stehaufmann" den Sprung nach einer
@@ -148,7 +148,7 @@ Sieben Rekorde stehen auf den letzten 20, 25, 40 oder 50 eigenen
 Partien. Der beste Zwanzigerblock IRGENDWO in einer Laufbahn gehörte immer
 dem Vielspieler: dreihundert Partien haben 281 solche Blöcke, dreißig
 Partien haben elf, und das Maximum aus vielen Ziehungen ist größer.
-`tests/disziplinen` rechnet jedes Fenster unabhängig aus den echten
+`tests/umbau/disziplinen` rechnet jedes Fenster unabhängig aus den echten
 Partien nach.
 **Kein Fenster ist kürzer als zwanzig Partien.** „Der Lauf" zählte die
 letzten 20, „Der Höhenflug" verglich 10 mit 10. Ein Spieler bestreitet
@@ -193,7 +193,7 @@ dass der Wert auf genug beruht: Partien, Spieltage, Wochen, Niederlagen —
 sonst hielte ein Neuling nach drei Abenden einen Rekord, ohne eine Linie
 gezeigt zu haben. Eine Teilmenge, die beschreibt, welche Partien zählen
 („Partien mit 35 bis 65 % Siegchance"), ist keine Latte und bleibt.
-`tests/disziplinen` liest Bedingung, Mindestbasis und Wertfunktion jedes
+`tests/umbau/disziplinen` liest Bedingung, Mindestbasis und Wertfunktion jedes
 Rekords, dazu `min` und die Wertfunktion auf Elo-Latten. Seitdem sind
 „Der Unaufhaltsame", „Der höchste Gipfel" und „Der Maßstab" mit fünfzig
 Partien erreichbar und tragen `offen`. Eine Latte bei null ist auch eine:
@@ -209,7 +209,7 @@ Rückgang in der Liste.
 Fügungen dürfen von einer Laufbahn aus lauter Niederlagen gehalten werden:
 „Das Fundament" fragt nach der gleichmäßigsten Tordifferenz, und wer immer
 0:10 verliert, ist gleichmäßig. Was den Grundwert des Könnens trägt, darf
-sie nicht erreichen — `tests/disziplinen` spielt genau diese Laufbahn gegen
+sie nicht erreichen — `tests/umbau/disziplinen` spielt genau diese Laufbahn gegen
 jeden Rekord mit Grundwert 100.
 **Der Anteil an den eigenen Gelegenheiten kennt die Spielzahl nicht.** Er
 zählt nicht, wie oft etwas gelang, sondern wie oft von wie vielen
@@ -219,7 +219,7 @@ spielt. Gemessen verlangten 17 der 57 Rekorde eine Mindestzahl von vierzig
 Partien oder mehr, darunter die vier mit fünfzig Sturm- oder
 Abwehrspielen; „Auf Augenhöhe" und „Der Wiedereinstieg" fragen
 stattdessen nach den eigenen offenen Partien und Rückkehrspielen. Die Herleitung samt Messung steht in
-`mockup/README-staerken.md`.
+den Entwurf „README-staerken.md“ der Kicker-Liga.
 **Ein neuer Rekord steht neben seinem nächsten Verwandten.** Die
 Katalogreihenfolge IST die Reihenfolge im Rekorde-Reiter, und ein Eintrag
 am Ende der Liste erklärt sich niemandem: „Auf Augenhöhe" steht neben
@@ -254,7 +254,7 @@ Punktlandung" und „Die Achterbahn". Gemessen waren 13 der 21 damaligen Rekorde
 mit lesbarer Mindestzahl für einen solchen Spieler unerreichbar: „ab 50
 Sturmspielen", „ab 60 Gelegenheiten", „ab 80 Spielen" gehören dem
 Vielspieler, weil sie außer ihm niemand halten KANN. `offen` ist dabei
-keine Beschriftung: `tests/disziplinen` zählt nach, dass in jedem offenen
+keine Beschriftung: `tests/umbau/disziplinen` zählt nach, dass in jedem offenen
 Rennen jemand mit unter hundert Partien steht, dass jeder offene Rekord
 vergeben ist und dass mindestens einer nicht den drei Besten gehört.
 **Ein gleitendes Fenster meldet kein „ausgebaut"** (`fenster` im Katalog).
@@ -273,7 +273,7 @@ gefüllt hat. Gemessen stand „Maxi, Julian, Jane und Johannes übernehmen
 ‚Der Höhenflug'. +10 %-Punkte … Vorher hielt Leon den Rekord mit +20 %" —
 eine Übernahme mit dem schlechteren Wert, und der Satz erklärt nicht, wieso.
 Es bleibt „Vorher gehörte der Rekord Leon"; dieselbe Begründung wie beim
-ausgebliebenen „ausgebaut". `tests/ambient` prüft jede Rekord-Karte.
+ausgebliebenen „ausgebaut". `tests/umbau/ambient` prüft jede Rekord-Karte.
 **Die Bedingung nennt jede Schwelle, die Erklärung sagt, wie gemessen wird.**
 Auf der Karte steht `cond`, im Blatt darunter `wie` — und beides war
 lückenhaft: nur 15 der 46 Rekorde hatten überhaupt eine Erklärung. „Die
@@ -285,7 +285,7 @@ nicht gegen die als Außenseiter. Und „Die Mauer" heißt so, misst aber nur,
 wie oft jemand hinten stand: ohne Erklärung liest sich der Name als
 Abwehrstärke. Die Erklärung nennt deshalb bei jedem Anteil seinen **Nenner**
 und sagt, wo eine Zahl etwas NICHT bedeutet. Geprüft wird beides maschinell:
-`tests/disziplinen` liest jede Schwelle aus dem Quelltext der Wertfunktion
+`tests/umbau/disziplinen` liest jede Schwelle aus dem Quelltext der Wertfunktion
 und verlangt sie im Text — als Ziffer oder ausgeschrieben.
 **Kein Halter trägt mehr als ein Viertel der Tafel.** Eine Kennzahl auf
 drei Teilmengen ist dieselbe Frage in drei Ausschnitten und sammelt sich
@@ -293,7 +293,7 @@ beim selben Halter; Sturm und Abwehr sind dagegen ein PAAR wie „Der
 komplette Stürmer" und „Der komplette Verteidiger" — „Die Handschrift" und
 „Das Fundament" messen dieselbe Streuung auf den beiden Positionen und
 gehören gemessen zwei verschiedenen Spielern. Gedeckelt wird deshalb nicht
-die Frage, sondern der Halter: `tests/disziplinen` nennt jeden, der mehr
+die Frage, sondern der Halter: `tests/umbau/disziplinen` nennt jeden, der mehr
 als ein Viertel aller Haltungen trägt.
 Dagegen steht die Kammer der **Fügungen**: Einträge, die von der Auslosung
 und vom letzten Ball entschieden werden. Sie tragen `zufall` im Katalog,
@@ -317,7 +317,7 @@ Vorzeichen teilt das Feld, und gemessen standen fünf über und fünf unter
 ihm — einzeln gemessen fiel jede Hälfte an der Regel „mindestens die halbe
 Liga im Rennen" durch, die gegen eine zu hohe SCHWELLE geschrieben ist. Ein
 Vorzeichen ist keine Schwelle. `paar` ist dabei keine Beschriftung:
-`tests/disziplinen` verlangt, dass der Partner zurückzeigt und dass sich
+`tests/umbau/disziplinen` verlangt, dass der Partner zurückzeigt und dass sich
 die beiden Rennen nicht schneiden — zwei Einträge, in deren Rennen derselbe
 Spieler steht, sind keine Enden eines Werts, sondern zwei Wertungen.
 Gerechnet wird gegen das **eigene** Mittel und nicht gegen das der Liga:
@@ -329,7 +329,7 @@ gerechnet bei −0,09.
 Siegquote, und die drei Besten halten höchstens die Hälfte der Kammer.
 Ohne das hätte man zehn Einträge dazugebaut und nichts verändert.
 Jeder gewertete Spieler trägt mindestens einen Liga-Eintrag.
-`tests/disziplinen` misst das alles nach.
+`tests/umbau/disziplinen` misst das alles nach.
 Was **nicht** in die Kammer gehört: sieben Rekorde, die einen Nachbarn
 doppelten — „Der Vollstrecker" neben „Der Zerstörer", „Der perfekte Abend"
 neben „Der makellose Tag". Dieselbe Frage mit derselben Antwort sammelt
@@ -390,7 +390,7 @@ beendet hat — die Länge hat der Gegner gespielt, deshalb Fügung und keine
 Bestmarke. Gemessen halten die
 fünf neuen Einträge Spieler auf Platz 2 bis 10 der Siegquote.
 **Was eine Beziehung zweier Spieler misst, wird kein Rekord.** Aus dem
-Vorschlag in `mockup/besonderheiten` fielen damit Teamgefälle und
+Vorschlag in den Entwurf „besonderheiten“ der Kicker-Liga fielen damit Teamgefälle und
 Gegensprung (beide Partner tragen denselben Wert), Grenzverkehr (der Faden
 zwischen zwei Leuten gehört beiden) und Doppelgesicht. Ebenso fielen, was
 an der Spielzahl hängt (Rückeroberung r = 0,64, Fixpunkt 0,64 gegen die
@@ -411,6 +411,6 @@ schiebt ihre Schwelle dort gemessen höchstens 1,39 σ hinaus und wäre damit
 eine Chronik, deren Bester kaum weiter draußen liegt als der Schnitt
 [§C39]. Fünf Gelegenheiten zu antworten sind ein Wurf, fünfundzwanzig ein
 Muster — sie trägt deshalb nur die Laufbahn.
-`tests/disziplinen` misst das alles: die Verteilung, die beiden Achsen und
-dass keine Schattenseite Prestige gibt; `tests/ambient` prüft den Feed
+`tests/umbau/disziplinen` misst das alles: die Verteilung, die beiden Achsen und
+dass keine Schattenseite Prestige gibt; `tests/umbau/ambient` prüft den Feed
 gegen den ganzen Katalog, damit ein neuer Eintrag nicht still durchrutscht.

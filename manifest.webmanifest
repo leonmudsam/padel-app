@@ -1,0 +1,14 @@
+{
+  "name": "Padel Liga",
+  "short_name": "Padel Liga",
+  "description": "Elo, Saisons, Auszeichnungen und Stories für eine Padel-Gruppe.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080b10",
+  "theme_color": "#080b10",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

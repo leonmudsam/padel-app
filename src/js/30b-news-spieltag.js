@@ -1884,7 +1884,7 @@ function _spStromBild(d){
   const [x1, x2] = aw ? [W, 0] : [0, W];
   return `<div class="sp-fk sp-sm"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs>`
     + `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${x1}" x2="${x2}" y1="0" y2="0"><stop offset=".08" stop-color="#f0566a"/>`
-    + `<stop offset=".5" stop-color="#f7cf4a"/><stop offset=".92" stop-color="#BEF264"/></linearGradient></defs>`
+    + `<stop offset=".5" stop-color="#f7cf4a"/><stop offset=".92" stop-color="#E4F24A"/></linearGradient></defs>`
     + seite(A, true, aw) + seite(B, false, !aw) + `</svg>`
     + A.map((x, i) => ende(x, i, true, aw)).join('') + B.map((x, i) => ende(x, i, false, !aw)).join('')
     + `<span class="sp-sm-m">${_spSt(d)}</span></div>` + _spNz(d.W, d.L);

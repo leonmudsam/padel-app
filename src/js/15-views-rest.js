@@ -66,7 +66,7 @@ function vTeams(nurErgebnis=false){
       if(!p) return `<div style="width:32px;height:32px;border-radius:50%;background:var(--surface3);border:2px solid var(--surface);${offset?'margin-left:-9px':''}"></div>`;
       const em=p.avatar_id?avatarEmoji(p.avatar_id):null;
       if(em) return `<div style="width:32px;height:32px;border-radius:50%;background:var(--surface3);display:grid;place-items:center;font-size:15px;border:2px solid var(--surface);${offset?'margin-left:-9px':''}">${em}</div>`;
-      return `<div style="width:32px;height:32px;border-radius:50%;background:${avColor(p.id)};display:grid;place-items:center;font-size:11px;font-family:'Archivo Black',sans-serif;color:#0a0c0b;border:2px solid var(--surface);${offset?'margin-left:-9px':''}">${esc(initials(p.name))}</div>`;
+      return `<div style="width:32px;height:32px;border-radius:50%;background:${avColor(p.id)};display:grid;place-items:center;font-size:11px;font-family:'Archivo Black',sans-serif;color:#080b10;border:2px solid var(--surface);${offset?'margin-left:-9px':''}">${esc(initials(p.name))}</div>`;
     };
     return `<div style="display:flex;align-items:center;flex-shrink:0">${one(a,false)}${one(b,true)}</div>`;
   };
@@ -263,7 +263,7 @@ function vMatch(){
     const key=t+n;
     const sel=M[key]?pmap()[M[key]]:null;
     const seite=SLOT_SEITE[n];
-    return `<div class="slot ${seite}"><div class="slot-seite">${svgI(seite==='drive'?'posSturm':'posAbwehr')}${SEITE_LANG[seite]}</div>
+    return `<div class="slot ${seite}"><div class="slot-seite">${svgI(seite==='drive'?'posDrive':'posReves')}${SEITE_LANG[seite]}</div>
       <div class="combo">
       <input type="text" data-combo="${key}" placeholder="Spieler…" autocomplete="off"
         value="${sel?esc(sel.name):''}" class="${sel?'filled':''}">
@@ -282,14 +282,16 @@ function vMatch(){
     </div>
     <div id="chanceSlot"></div>
     <div id="satzSlot" class="score-board saetze">${satzEditorHtml(M)}</div>
-    <div style="display:flex;justify-content:flex-end;align-items:center;margin:-4px 0 10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:-4px 0 10px;gap:8px">
+      <button class="btn ghost" id="addPlayerBtn" style="width:auto;flex-shrink:0;padding:8px 14px;font-size:11px;border-radius:10px">+ Spieler anlegen</button>
       <button class="btn ghost" id="shuffleBtn" style="width:auto;flex-shrink:0;padding:8px 14px;font-size:11px;border-radius:10px">Teams mischen</button>
     </div>
     <div id="previewSlot"></div>
     <div class="btn-row" style="margin-top:4px">
       <button class="btn ghost sm" id="clearM" style="flex:0 0 38%">Leeren</button>
       <button class="btn" id="saveM" disabled>Speichern</button>
-    </div>`;
+    </div>
+    <div class="m-fehlt" id="mFehlt" aria-live="polite"></div>`;
 }
 
 // ╔═══ §5.7 ─── VIEW: SETTINGS ─────────────────────────────────────────╗
@@ -351,7 +353,7 @@ function vSettings(){
     <div class="card">
       <div class="mini-label">So wirken die Regler</div>
       <div style="font-size:12px;color:var(--ink2);line-height:1.8">
-        <b style="color:var(--acid)">Tempo</b> — Wie stark eine Partie die Elo verändert. Eine Partie über zwei Sätze zählt voll, ein einzelner Satz etwa drei Viertel, drei Sätze etwas mehr.<br>
+        <b style="color:var(--acid)">Tempo</b> — Wie stark eine Partie die Elo verändert. Gewogen nach dem Weg bis zum Sieg: zwei Sätze bis sechs zählen voll, ein Satz bis sechs (6:0 oder 6:4) gut zwei Drittel, ein Kurzsatz bis drei die Hälfte, drei Sätze etwas mehr. Wie knapp es war, zählt dabei nicht.<br>
         <b style="color:var(--acid)">Start-Elo</b> — Mit diesem Wert beginnt jeder Spieler eine Saison.<br>
         <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Partien einer Saison wirkt das Tempo zu ${c.npMult} %, bis zur ${EINGEWOEHNT_BIS}. Partie noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
         <b style="color:var(--acid)">Last des schwächeren Partners</b> — Bei ${c.risk} % verliert weniger Elo, wer mit einem deutlich schwächeren Partner spielt.<br>
@@ -363,7 +365,7 @@ function vSettings(){
         <b style="color:var(--acid)">Saison</b> — Mit jedem Monat beginnt die Elo neu beim Startwert. Die Elo der Laufbahn ist der gewichtete Schnitt der Saisonenden.
       </div>
     </div>
-    <div class="card" style="margin-top:14px;border:1px solid rgba(190,242,100,.18);background:linear-gradient(155deg,rgba(190,242,100,.06),var(--surface) 80%)">
+    <div class="card" style="margin-top:14px;border:1px solid rgba(228,242,74,.18);background:linear-gradient(155deg,rgba(228,242,74,.06),var(--surface) 80%)">
       <div class="mini-label" style="color:var(--acid);display:flex;align-items:center;gap:6px">${svgI('info')}Wirkung der Regler</div>
       <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:8px">
         Änderungen an den Reglern wirken <b style="color:var(--acid)">nur auf neue Partien</b>.
@@ -432,8 +434,17 @@ function vSettings(){
 //     Live-Preview der Elo-Deltas + doSaveMatch() schreibt Match und zeigt
 //     Achievement-Toasts (Badge-Trigger via getBadgeEarnedCache).
 // ╚═════════════════════════════════════════════════════════════════════════╝
-function validM(){const ids=[M.A1,M.A2,M.B1,M.B2];
-  return !ids.some(x=>!x)&&new Set(ids).size===4&&!satzAuswertung(M).fehler;}
+function validM(){ return !_matchFehlt(); }
+// Was dem Speichern noch fehlt, als Satz unter dem Knopf. Ein grauer Knopf
+// ohne Grund liest sich als Fehler [§6 „Ein leeres Feld liest sich als
+// Fehler"].
+function _matchFehlt(){
+  const ids=[M.A1,M.A2,M.B1,M.B2], n=ids.filter(Boolean).length;
+  if(n<4) return n===3 ? 'Noch ein Spieler fehlt.' : `Noch ${4-n} Spieler wählen.`;
+  if(new Set(ids).size!==4) return 'Ein Spieler steht doppelt.';
+  if(!satzListe(M).length) return 'Mindestens einen Satz eintragen.';
+  return satzAuswertung(M).fehler || '';
+}
 function teamsFromM(){return{teamA:[{id:M.A1,pos:SLOT_SEITE[1]},{id:M.A2,pos:SLOT_SEITE[2]}],
   teamB:[{id:M.B1,pos:SLOT_SEITE[1]},{id:M.B2,pos:SLOT_SEITE[2]}]};}
 // Genau das letzte vollständige Eingabeergebnis, keine wachsende Sammlung
@@ -459,6 +470,7 @@ function requestMatchPreview(){
   // Validität und Zahlen antworten sofort; Wappen und analytische Vorschau
   // höchstens einmal im nächsten Bild, immer für den letzten Eingabestand.
   save.disabled=!!doSaveMatch._busy || !validM();
+  const fehlt=document.getElementById('mFehlt'); if(fehlt) fehlt.textContent=_matchFehlt();
   if(_matchPreviewPlan && _matchPreviewPlan.slot===slot) return;
   if(_matchPreviewPlan) cancelAnimationFrame(_matchPreviewPlan.frame);
   const plan={slot,frame:0};_matchPreviewPlan=plan;

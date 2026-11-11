@@ -13,7 +13,7 @@
 
 ## Prüfung
 
-`tests/blatt` zeichnet jeden Reiter bei 360 px und misst die Nebenwertungen der Liga; `tests/tafel` ordnet die Torbilanz in Gesamt und unter den Teams nach und liest jede Zahl; `tests/rechnen` stellt einen Seltenspieler mit höherem Anteil vor einen Vielspieler mit mehr Titeln.
+`tests/umbau/blatt` zeichnet jeden Reiter bei 360 px und misst die Nebenwertungen der Liga; `tests/umbau/tafel` ordnet die Torbilanz in Gesamt und unter den Teams nach und liest jede Zahl; `tests/umbau/rechnen` stellt einen Seltenspieler mit höherem Anteil vor einen Vielspieler mit mehr Titeln.
 
 ## Herleitung
 

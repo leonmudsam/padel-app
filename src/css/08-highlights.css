@@ -106,7 +106,7 @@
   .tier-pill svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
   .tier-pill.t-legende    {color:var(--gold);background:rgba(247,207,74,.10);border:1px solid rgba(247,207,74,.22)}
   .tier-pill.t-elite      {color:var(--purple);background:rgba(167,139,250,.10);border:1px solid rgba(167,139,250,.22)}
-  .tier-pill.t-stark      {color:var(--acid);background:rgba(190,242,100,.10);border:1px solid rgba(190,242,100,.22)}
+  .tier-pill.t-stark      {color:var(--acid);background:rgba(228,242,74,.10);border:1px solid rgba(228,242,74,.22)}
   .tier-pill.t-solide     {color:var(--blue);background:rgba(86,180,232,.10);border:1px solid rgba(86,180,232,.22)}
   .tier-pill.t-einsteiger {color:var(--orange);background:rgba(255,120,73,.10);border:1px solid rgba(255,120,73,.22)}
 

@@ -89,7 +89,7 @@
 const TITLE_TONES = {
   gold:   {c:'var(--gold)',   rgb:'247,207,74'},
   silver: {c:'#c3ced9',       rgb:'154,167,181'},
-  acid:   {c:'var(--acid)',   rgb:'190,242,100'},
+  acid:   {c:'var(--acid)',   rgb:'228,242,74'},
   blue:   {c:'var(--blue)',   rgb:'86,180,232'},
   orange: {c:'var(--orange)', rgb:'255,120,73'},
   purple: {c:'var(--purple)', rgb:'167,139,250'},
@@ -230,7 +230,6 @@ const _ppZeichen = v => { const d = Math.round(v * 100); return d > 0 ? '+' + d 
 // Die Richtung steht im Wort, die Zahl ohne Vorzeichen: „−12 %-Punkte über
 // der Rechnung" und „-0,2 Tore mehr rechts" lasen sich als Widerspruch.
 const _ppLage = (v, plus, minus) => { const d = Math.round(v * 100); return `${Math.abs(d)} %-Punkte ${d < 0 ? minus : plus}`; };
-const _stRichtung = (v, mehr, weniger) => `${komma(Math.abs(v))} ${v < 0 ? weniger : mehr}`;
 // Eine Elo unter null trägt das Minuszeichen und keinen Bindestrich:
 // „-2 statt 178 Elo" stand im Beleg des Gegenwinds.
 const _stElo = v => { const d = Math.round(v); return (d < 0 ? '−' : '') + Math.abs(d); };
@@ -1276,7 +1275,7 @@ const DISZIPLINEN = [
       zeit:p => p.sollSpan || ''
     }},
 
-  {id:'wall', name:'Der Linksverankerte', short:'Linkstreu', ic:'posReinAbwehr', tone:'blue', art:'ereignis',
+  {id:'wall', name:'Der Linksverankerte', short:'Linkstreu', ic:'posReinReves', tone:'blue', art:'ereignis',
     allzeit:{
       kammer:'mark', basis:REKORD_GRUNDWERT.fuegung, offen:true,
       zeitraum:'Ganze Laufbahn',

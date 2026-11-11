@@ -345,16 +345,15 @@ function driveStrength(id){ return driveStrengthFrom(id, matches); }
 // Feingranular: 60/40-Splits sollen NICHT als reines „Beidseitig" durchrutschen.
 function posClassify(autoDrive){
   const a = autoDrive;
-  if(a >= 0.78) return {label:'Reiner Drive',   icon:'posReinSturm',  tone:'drive'};
-  if(a >= 0.60) return {label:'Drive',          icon:'posSturm',      tone:'drive'};
-  if(a >= 0.54) return {label:'Drive-Flex',     icon:'posSturmFlex',  tone:'drive'};
+  if(a >= 0.78) return {label:'Reiner Drive',   icon:'posReinDrive',  tone:'drive'};
+  if(a >= 0.60) return {label:'Drive',          icon:'posDrive',      tone:'drive'};
+  if(a >= 0.54) return {label:'Drive-Flex',     icon:'posDriveFlex',  tone:'drive'};
   if(a >  0.46) return {label:'Beidseitig',     icon:'posFlex',       tone:'flex'};
-  if(a >  0.40) return {label:'Revés-Flex',     icon:'posAbwehrFlex', tone:'reves'};
-  if(a >  0.22) return {label:'Revés',          icon:'posAbwehr',     tone:'reves'};
-  return                {label:'Reiner Revés',   icon:'posReinAbwehr', tone:'reves'};
+  if(a >  0.40) return {label:'Revés-Flex',     icon:'posRevesFlex', tone:'reves'};
+  if(a >  0.22) return {label:'Revés',          icon:'posReves',     tone:'reves'};
+  return                {label:'Reiner Revés',   icon:'posReinReves', tone:'reves'};
 }
 // Die Seite in Worten, an einer Stelle [§C27]: kurz für Chips, lang für Sätze.
-const SEITE_KURZ = {drive:'Rechts', reves:'Links'};
 const SEITE_LANG = {drive:'Drive (rechts)', reves:'Revés (links)'};
 const SEITE_NAME = {drive:'Drive', reves:'Revés'};
 

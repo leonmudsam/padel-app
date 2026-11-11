@@ -10,7 +10,7 @@
 
 ## Prüfung
 
-`tests/blatt` (Reiter bei 360 px), `tools/golden.mjs` (Ansicht `liga-duos`).
+`tests/umbau/blatt` (Reiter bei 360 px), `tools/golden.mjs` (Ansicht `liga-duos`).
 
 ## Herleitung
 

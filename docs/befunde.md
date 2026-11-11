@@ -36,7 +36,7 @@ meisten Stellen hängen an gespeicherten Daten, und eine Vereinheitlichung
 - **`longestStreaks` neben `longestPlayerStreak`** und **`_computeCarry`
   neben `countCarries`**: die eine Rechnung fragt alle Spieler auf einmal,
   die andere je Spieler in der Badge-Schleife. Zusammengelegt wäre die
-  Schleife quadratisch; `tests/tafel` hält die Serien aneinander.
+  Schleife quadratisch; `tests/umbau/tafel` hält die Serien aneinander.
 - **`_stQuote` und die ausgeschriebene Quote** im Katalog: `_stQuote` gibt
   bei leerer Menge 0, die ausgeschriebene Form `NaN`. Wo eine Schwelle oder
   `Math.min` darauf folgt, ist das ein anderes Ergebnis.

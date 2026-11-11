@@ -170,11 +170,6 @@ function saetzeText(m, gewonnen = true){
     return s.art === 'open' ? '(' + t + ')' : t;
   }).join(' ');
 }
-// Der Satzstand aus Sicht des Siegers: „2:1".
-function satzStand(m, gewonnen = true){
-  const p = partie(m), w = p.winner === 'B' ? [p.setsB, p.setsA] : [p.setsA, p.setsB];
-  return gewonnen ? w[0] + ':' + w[1] : w[1] + ':' + w[0];
-}
 // Die einzelnen beendeten Sätze aus Sicht des Siegers, z. B. „6:4" — für
 // die Häufigkeit eines Satzergebnisses.
 function satzErgebnisse(m){
@@ -183,15 +178,18 @@ function satzErgebnisse(m){
     .map(s => umdrehen ? s.b + ':' + s.a : s.a + ':' + s.b);
 }
 
-// Was eine Partie an Elo bewegen darf, nach ihrer Länge: ein Satz zählt
-// weniger als zwei, drei etwas mehr. Gemessen in Games, damit ein 6:0 6:0
-// nicht schwerer wiegt als ein umkämpftes 7:6. Zwei normale Sätze sind 1.
-// Ohne das wöge ein Tag mit fünf Ein-Satz-Matches fünfmal so viel wie ein
-// Abend mit einem langen Match.
+// Was eine Partie an Elo bewegen darf, nach ihrer Länge — und Länge heißt
+// hier der Weg bis zum Sieg, nicht wie knapp es war: gezählt werden die
+// Games, die der Sieger gewinnen musste. Ein 6:0 und ein 6:4 wiegen gleich
+// (sechs Games bis zum Sieg) und mehr als ein Kurzsatz 3:0 oder 2:0; zwei
+// Sätze bis sechs (zwölf Games) sind 1. Ein Match-Tiebreak zählt wie zwei
+// Games. Ohne das wöge ein Tag mit fünf Kurzsätzen fünfmal so viel wie ein
+// Abend mit einem langen Match. Wie knapp es war, sagt die MoV (`movMult`).
+const GEWICHT_VOLL_GAMES = 12;
 function partieGewicht(m){
   const p = partie(m);
-  const g = p.gamesA + p.gamesB + (p.mtb ? 3 : 0);
-  return Math.max(0.6, Math.min(1.3, Math.sqrt(Math.max(g, 1) / 20)));
+  const g = p.gamesSieger + (p.mtb ? 1 : 0);
+  return Math.max(0.35, Math.min(1.3, Math.sqrt(Math.max(g, 1) / GEWICHT_VOLL_GAMES)));
 }
 
 // Die Speicherfelder einer Partie aus ihren Sätzen: was in der Zeile neben

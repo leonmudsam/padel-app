@@ -196,5 +196,7 @@ mkdirSync('dist', { recursive: true });
 writeFileSync('dist/index.html', html);
 writeFileSync('dist/sw.js', sw);
 copyFileSync('icon.png', 'dist/icon.png');
+// Das Web-Manifest: ohne es lässt sich die App auf Android nicht installieren.
+copyFileSync('manifest.webmanifest', 'dist/manifest.webmanifest');
 
 console.log(`dist/index.html — ${(html.length/1024).toFixed(0)} kB, Version ${version}`);

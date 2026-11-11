@@ -103,9 +103,9 @@
   .kl-gold{--kr:247,207,74}
   .kl-silber{--kr:214,222,230}
   .kl-bronze{--kr:222,160,108}
-  .kl-acid{--kr:190,242,100}
+  .kl-acid{--kr:228,242,74}
   .kl-weiss{--kr:255,255,255}
-  .kl-story{--kr:var(--story-rgb,190,242,100)}
+  .kl-story{--kr:var(--story-rgb,228,242,74)}
   .kl-blau{--kr:86,180,232}
   /* Die erste Runde beschleunigt und kommt in Fahrt an; danach läuft das
      Licht weiter und wird langsamer, bis es steht, während es verlischt. */
@@ -335,7 +335,7 @@
     background:var(--bg);opacity:0;will-change:opacity}
   .lade-linie{position:absolute;left:0;right:0;bottom:0;height:2px;pointer-events:none;transform-origin:0 50%;
     will-change:transform,opacity;transform:scaleX(0);opacity:0;border-radius:2px;
-    background:linear-gradient(90deg,rgba(190,242,100,0),var(--acid) 40%,var(--acid));box-shadow:0 0 10px rgba(190,242,100,.5)}
+    background:linear-gradient(90deg,rgba(228,242,74,0),var(--acid) 40%,var(--acid));box-shadow:0 0 10px rgba(228,242,74,.5)}
   .dot{position:relative}
   .dot.ping::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:1.5px solid var(--acid);opacity:0}
   @media(prefers-reduced-motion:no-preference){

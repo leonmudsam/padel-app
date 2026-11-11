@@ -1,6 +1,6 @@
-const SW_FASSUNG = '2026.11.10.6537bfcc';
-const SEITE = 'kicker-seite-' + SW_FASSUNG;
-const FREMD = 'kicker-fremd';
+const SW_FASSUNG = '2026.11.11.c94f13df';
+const SEITE = 'padel-seite-' + SW_FASSUNG;
+const FREMD = 'padel-fremd';
 const FREMDE_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
 
 self.addEventListener('install', e => {
@@ -13,7 +13,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
     .then(namen => Promise.all(namen
-      .filter(n => n.startsWith('kicker-seite-') && n !== SEITE)
+      .filter(n => n.startsWith('padel-seite-') && n !== SEITE)
       .map(n => caches.delete(n))))
     .then(() => self.clients.claim()));
 });

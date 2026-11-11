@@ -25,7 +25,7 @@ function _posvAvSvg(player, color, dataPid){
   }
   return `<g class="posv-end-av" data-pid="${esc(dataPid)}">
     <circle r="${r}" fill="${avColor(player.id)}" stroke="${color}" stroke-width="1.5"/>
-    <text text-anchor="middle" dominant-baseline="central" fill="#0a0c0b" font-size="10"
+    <text text-anchor="middle" dominant-baseline="central" fill="#080b10" font-size="10"
       font-family="'Archivo Black',sans-serif">${esc(initials(player.name))}</text>
   </g>`;
 }

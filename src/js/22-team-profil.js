@@ -36,7 +36,7 @@ function showTeam(p1Id,p2Id){
     const em=p.avatar_id?avatarEmoji(p.avatar_id):null;
     const ml=marginLeft?'margin-left:-8px;':'';
     if(em) return `<div style="width:30px;height:30px;border-radius:50%;background:var(--surface3);display:grid;place-items:center;font-size:14px;border:2px solid var(--surface);${ml}">${em}</div>`;
-    return `<div style="width:30px;height:30px;border-radius:50%;background:${avColor(p.id)};display:grid;place-items:center;font-size:11px;font-family:'Archivo Black',sans-serif;color:#0a0c0b;border:2px solid var(--surface);${ml}">${esc(initials(p.name))}</div>`;
+    return `<div style="width:30px;height:30px;border-radius:50%;background:${avColor(p.id)};display:grid;place-items:center;font-size:11px;font-family:'Archivo Black',sans-serif;color:#080b10;border:2px solid var(--surface);${ml}">${esc(initials(p.name))}</div>`;
   };
 
   // Gegnerspieler-Karte (einzelner Spieler)
@@ -149,7 +149,7 @@ function showTeam(p1Id,p2Id){
   // typischen abweicht (in teamDetail.bestLineup gesetzt), zeigen wir beide
   // Karten nebeneinander. Sonst nur die typische wie bisher.
   const POS_LABEL = {drive:'Drive · rechts', reves:'Revés · links'};
-  const POS_ICON  = {drive:svgI('posSturm'), reves:svgI('posAbwehr')};
+  const POS_ICON  = {drive:svgI('posDrive'), reves:svgI('posReves')};
   const POS_COLOR = {drive:'var(--orange)', reves:'var(--blue)'};
   const pA_side = d.posStats[pA.id].dom;
   const pB_side = d.posStats[pB.id].dom;
@@ -317,7 +317,7 @@ function showTeam(p1Id,p2Id){
     const o1=pm[oppIds[0]], o2=pm[oppIds[1]];
     const won=r.won;
     return `<div class="rrow" data-match="${esc(m.id)}" style="padding:10px 13px;display:flex;align-items:center;gap:10px">
-      <div style="width:24px;height:24px;border-radius:50%;background:${won?'rgba(190,242,100,.12)':'rgba(240,86,106,.12)'};color:${won?'var(--acid)':'var(--red)'};display:grid;place-items:center;flex-shrink:0">
+      <div style="width:24px;height:24px;border-radius:50%;background:${won?'rgba(228,242,74,.12)':'rgba(240,86,106,.12)'};color:${won?'var(--acid)':'var(--red)'};display:grid;place-items:center;flex-shrink:0">
         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           ${won?'<polyline points="4,12 10,18 20,6"/>':'<path d="M6 6L18 18M6 18L18 6"/>'}
         </svg>
@@ -388,7 +388,7 @@ function showMatchDetail(mid){
   const line=(id,pos)=>{
     const d=(m.deltas||{})[id]||0;
     // Die Seite als Wort mit Zeichen, nicht als Kürzel [§6].
-    return `<div class="delta-row" data-md-spieler="${esc(id)}" style="cursor:pointer"><span class="dn">${esc(pname(id))} <span class="chip ${pos}">${svgI(pos==='drive'?'posSturm':'posAbwehr')}${SEITE_NAME[pos]||''}</span></span><span class="delta-v ${d>=0?'pos':'neg'}">${d>=0?'+':''}${Math.round(d)}</span></div>`;
+    return `<div class="delta-row" data-md-spieler="${esc(id)}" style="cursor:pointer"><span class="dn">${esc(pname(id))} <span class="chip ${pos}">${svgI(pos==='drive'?'posDrive':'posReves')}${SEITE_NAME[pos]||''}</span></span><span class="delta-v ${d>=0?'pos':'neg'}">${d>=0?'+':''}${Math.round(d)}</span></div>`;
   };
   // Auszeichnungen durch dieses Match
   const earned=badgesEarnedInMatch(mid);

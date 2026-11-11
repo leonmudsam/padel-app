@@ -38,7 +38,7 @@
     display:grid;place-items:center;font-size:12px;line-height:1;z-index:3}
 
   /* ─── HEADLINER: solid acid, dark text, größer ─── */
-  .awcard.hero{background:var(--acid);color:var(--bg);border:1px solid rgba(190,242,100,.5);
+  .awcard.hero{background:var(--acid);color:var(--bg);border:1px solid rgba(228,242,74,.5);
     min-height:108px;padding:18px 20px}
   .awcard.hero .awcard-watermark{color:var(--bg);opacity:.16;font-size:96px}
   .awcard.hero .awcard-label{color:rgba(10,12,11,.78);font-size:10.5px;letter-spacing:.2em}

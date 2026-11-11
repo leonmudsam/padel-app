@@ -19,7 +19,7 @@
 
 ## Prüfung
 
-`tests/disziplinen` (Quellen, Folgen, Dämpfung, Erreichbarkeit), `tests/archiv` (eingefrorene Monate), `tests/rechnen` (dieselbe Restverteilung in Laufbahn und Story), `tests/ambient` (Zahlen jeder Bühne).
+`tests/umbau/disziplinen` (Quellen, Folgen, Dämpfung, Erreichbarkeit), `tests/archiv` (eingefrorene Monate), `tests/umbau/rechnen` (dieselbe Restverteilung in Laufbahn und Story), `tests/umbau/ambient` (Zahlen jeder Bühne).
 
 ## Herleitung
 
@@ -39,7 +39,7 @@ Eintrag, den das Profil zeigt, sonst stünde dort eine Wertung und im
 Prestige eine andere, und die Zahl wäre nirgends nachzuzählen. Für einen
 abgeschlossenen Monat kommt er aus dem Einfrierer (`_frozenTitlesOf`) und
 nicht aus einer neuen Rechnung: sonst verschöbe ein geänderter Katalog
-rückwirkend das Prestige jeder Laufbahn. `tests/disziplinen` und
+rückwirkend das Prestige jeder Laufbahn. `tests/umbau/disziplinen` und
 `tests/archiv` messen beides.
 
 **Jede positive Auszeichnung zählt jedes Mal.** Ihre sichtbare Klasse setzt
@@ -151,7 +151,7 @@ mit `playerIds`, das höchstens drei nennt, stand der vierte Halter als
 Verfolger unter seinem eigenen Rekord. **Und alle drei Rekordfälle teilen
 dieses Blatt**: nur „übernommen" hatte einen Fall im Schalter, ein erstmals
 vergebener und ein ausgebauter Rekord öffneten gemessen ein Blatt mit null
-Zeichen Mitte. `tests/ambient` misst das alles.
+Zeichen Mitte. `tests/umbau/ambient` misst das alles.
 **Die übrigen Blätter der Ewigen Tafel tragen ebenfalls eine Bühne**
 (`_ndWechselBuehne`, `_ndChronikBlatt`, `_ndMonatBlatt`,
 `_ndInsigniumBlatt`). Sie waren eine Spalte aus Zahlenkästen, Podest und
@@ -193,7 +193,7 @@ Nur eine Zeile ohne Verweis bleibt beim Profil. Eine Zeile ohne Halter aus
 einem älteren Lauf bleibt, wie sie war. Die Klassen heißen `nd-ta-…` und
 `ta-…`: `.nd-tl` ist die Tagesleiste, `.rek` die Karte des
 Rekorde-Reiters und zog ihr Raster über den Punkt, `.nd-tm` die
-Partienzeile im Blatt des Spielers des Tages. `tests/ambient` hält
+Partienzeile im Blatt des Spielers des Tages. `tests/umbau/ambient` hält
 die Zahlen jeder Bühne an ihrer Quelle fest.
 **Ein Spieler und eine Zahl stehen zusammen** (`_ndHeldBuehne`):
 Meilenstein und Jubiläum (die Zahl, die Leiter der Marken davor und

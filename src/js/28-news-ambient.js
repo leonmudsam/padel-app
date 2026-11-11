@@ -48,6 +48,14 @@ function _buildAmbientStories(now, pm, nameOf, tagesStories){
   const dueSlots = [];
   const slotHours = AMBIENT_SLOTS.slice().sort((a, b) => a - b);
   const tageMitMatch = new Set((matches || []).map(m => tagKey(m.created_at)));
+  // Eine ruhende Liga bekommt keine Fun Facts: liegt die letzte Partie vor
+  // einem Slot mehr als AMBIENT_RUHE_TAGE zurück (oder gibt es noch keine),
+  // fällt er aus. Sonst erzählte der Feed jeden Tag um 15 Uhr von einer Liga,
+  // die gerade niemand spielt.
+  const zeiten = (matches || []).map(mts).filter(Number.isFinite).sort((a, b) => a - b);
+  const lebt = t => { let lo = 0, hi = zeiten.length - 1, z = null;
+    while(lo <= hi){ const mid = (lo + hi) >> 1; if(zeiten[mid] <= t){ z = zeiten[mid]; lo = mid + 1; } else hi = mid - 1; }
+    return z != null && t - z <= AMBIENT_RUHE_TAGE * _dayMs; };
   const generation = Array.isArray(tagesStories) ? tagesStories : [];
   // Fehlende stille Tage werden innerhalb des Feed-Fensters nachgetragen.
   // Vergangene Tage sind nur still, wenn an ihnen gar nicht gespielt wurde.
@@ -59,6 +67,7 @@ function _buildAmbientStories(now, pm, nameOf, tagesStories){
     for(const slotHour of slotHours){
       const faellig = new Date(tag.getFullYear(), tag.getMonth(), tag.getDate(), slotHour, 0, 0, 0);
       if(faellig.getTime() > now.getTime()) continue;
+      if(!lebt(faellig.getTime())) continue;
       if(!istHeute && tageMitMatch.has(dk)) continue;
       if(istHeute && (matches || []).some(m => tagKey(m.created_at) === dk && mts(m) <= faellig.getTime())) continue;
       const saisonEnde = generation.some(s => (s.dataRef || {}).type === 'season_recap'
@@ -835,7 +844,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const best = _formPick(elig, id => agg[id].aW / agg[id].aG);
     if(!best || best.v <= 0) return null;
     const a = agg[best.pid];
-    return { cat:'personal', ic:'posSturm', prio:5,
+    return { cat:'personal', ic:'posDrive', prio:5,
       title:`${nameOf(best.pid)} glänzt rechts`,
       desc:`Beste Quote auf der Drive-Seite in den letzten 14 Tagen: ${Math.round(best.v*100)} % aus ${a.aG} Partien.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'rechts',
@@ -851,7 +860,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const best = _formPick(elig, id => agg[id].dW / agg[id].dG);
     if(!best || best.v <= 0) return null;
     const a = agg[best.pid];
-    return { cat:'personal', ic:'posAbwehr', prio:5,
+    return { cat:'personal', ic:'posReves', prio:5,
       title:`${nameOf(best.pid)} glänzt links`,
       desc:`Beste Quote auf der Revés-Seite in den letzten 14 Tagen: ${Math.round(best.v*100)} % aus ${a.dG} Partien.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'links',
@@ -1234,7 +1243,7 @@ function _ambientTemplatePool(now, pm, nameOf){
         dataRef:{ ambientPid: pid, bild:{f:'rolle', p:pid, s:Math.round(drvWr*100), a:Math.round(revWr*100), gs:st.drvG, ga:st.revG} } };
     }
     const strong = drvWr > revWr;
-    return { cat:'personal', ic: strong ? 'posSturm' : 'posAbwehr', prio:4,
+    return { cat:'personal', ic: strong ? 'posDrive' : 'posReves', prio:4,
       title:`${nameOf(pid)} gehört ${strong ? 'nach rechts' : 'nach links'}`,
       desc: strong
         ? `Rechts (Drive) ${Math.round(drvWr*100)} % Siege (${st.drvG} Partien), links nur ${Math.round(revWr*100)} %.`

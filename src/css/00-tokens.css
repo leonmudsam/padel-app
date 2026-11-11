@@ -9,11 +9,14 @@
    *  setzen — und in der Landkarte eintragen.
    * ════════════════════════════════════════════════════════════════════════ */
   :root{
-    --bg:#0a0c0b; --bg2:#0f1311; --surface:#141a16; --surface2:#1a221d;
-    --surface3:#222b25; --line:#28332b; --line2:#34423a;
-    --ink:#eef3ef; --ink2:#b9c4bd; --muted:#717f76; --faint:#4a554e;
-    --acid:#BEF264; --acid2:#A3E635; --acid-deep:#1A2E08;
-    --orange:#ff7849; --blue:#56b4e8; --red:#f0566a; --gold:#f7cf4a; --purple:#a78bfa;
+    --bg:#080b10; --bg2:#0d1118; --surface:#121822; --surface2:#18202b;
+    --surface3:#202a36; --line:#263241; --line2:#324257;
+    --ink:#eef2f7; --ink2:#b6c1cf; --muted:#6f7d8e; --faint:#465264;
+    --acid:#E4F24A; --acid2:#CDE03A; --acid-deep:#2A2F08;
+    --orange:#ff7849; --blue:#56b4e8;
+    /* Court-Blau: die zweite Farbe der Padel Liga, für Flächen und Linien des
+       Platzes. Gelb ist der Ball und bleibt die Farbe von „ich" [§C25]. */
+    --court:#2F6FD6; --red:#f0566a; --gold:#f7cf4a; --purple:#a78bfa;
     /* Die drei Metalle [§C26]. Platz 1, 2, 3 tragen sie überall gleich —
        Rangliste, Podeste, Medaillen, Recap. Vorher stand Silber an fünf
        Stellen in vier Tönen und --bronze war gar nicht erst definiert. */
@@ -27,7 +30,7 @@
     --safe-top:env(safe-area-inset-top,0px);
     --safe-bot:env(safe-area-inset-bottom,0px);
     --shadow:0 12px 40px -8px rgba(0,0,0,.6);
-    --shadow-acid:0 8px 28px -6px rgba(190,242,100,.35);
+    --shadow-acid:0 8px 28px -6px rgba(228,242,74,.35);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   /* Knöpfe reagieren ohne Doppeltipp-Zoom-Geste. Nur die Bedienfläche,
@@ -47,8 +50,8 @@
   body::before{
     content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(700px circle at 85% -5%,rgba(190,242,100,.07),transparent 55%),
-      radial-gradient(600px circle at 10% 105%,rgba(255,120,73,.055),transparent 55%);
+      radial-gradient(700px circle at 85% -5%,rgba(228,242,74,.07),transparent 55%),
+      radial-gradient(600px circle at 10% 105%,rgba(47,111,214,.10),transparent 55%);
   }
   .num{font-family:'Sometype Mono',monospace;font-variant-numeric:tabular-nums}
   .display{font-family:'Archivo Black',sans-serif;letter-spacing:-.02em}

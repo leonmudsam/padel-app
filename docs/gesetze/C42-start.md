@@ -21,7 +21,7 @@
 
 ## Prüfung
 
-`tests/start` (ein Telefon der Liga mit Berliner Uhr veröffentlicht; ein Gerät mit Tokioter oder Londoner Uhr und ein automatisierter Browser zeigen die Stories, schreiben aber weder Stories noch Archiv; ein Telefon, das mittags im Hintergrund verschwindet und nach Partien vor 15 Uhr zurückkommt, schreibt keinen Fun Fact für diesen Tag — mit offenem Feed und bei langsamem Netz, dann mit den Partien des Tages und ihren Stories —, und an einem Tag ohne Partie kommt der Fun Fact nach dem Zurückkommen; die Liga steht aus dem Stand, bevor das Netz antwortet; kein Schreibzugriff bis dahin; dasselbe Markup und derselbe Knoten nach dem Live-Abruf mit denselben Daten; ohne Netz bleibt der Stand; ein Stand einer anderen Fassung gilt nicht; der Service Worker hält die Seite unter ihrer Fassung, ohne Netz öffnet die App aus ihm, Update-Check und Neu laden gehen ans Netz, eine neue Fassung räumt den Topf der alten, keine Anfrage geht an eine fremde Adresse; über einem offenen Blatt lädt das Update nicht, nach dem Schließen von selbst, danach läuft die neue Fassung und steht kurz „App aktualisiert" ohne Knopf und ohne Merkmal in der Adresse; nach einer Berührung lädt es nicht sofort, beim Zurückkommen schon; geht die App in den Hintergrund, lädt es auch über einem Blatt, über einer Eingabe nicht; bringt das Neuladen eine alte Fassung zurück, lädt es nicht gleich noch einmal und meldet nichts; die Läufe der Veröffentlichung stehen je Zweig in einer eigenen Reihe).
+`tests/umbau/start` (ein Telefon der Liga mit Berliner Uhr veröffentlicht; ein Gerät mit Tokioter oder Londoner Uhr und ein automatisierter Browser zeigen die Stories, schreiben aber weder Stories noch Archiv; ein Telefon, das mittags im Hintergrund verschwindet und nach Partien vor 15 Uhr zurückkommt, schreibt keinen Fun Fact für diesen Tag — mit offenem Feed und bei langsamem Netz, dann mit den Partien des Tages und ihren Stories —, und an einem Tag ohne Partie kommt der Fun Fact nach dem Zurückkommen; die Liga steht aus dem Stand, bevor das Netz antwortet; kein Schreibzugriff bis dahin; dasselbe Markup und derselbe Knoten nach dem Live-Abruf mit denselben Daten; ohne Netz bleibt der Stand; ein Stand einer anderen Fassung gilt nicht; der Service Worker hält die Seite unter ihrer Fassung, ohne Netz öffnet die App aus ihm, Update-Check und Neu laden gehen ans Netz, eine neue Fassung räumt den Topf der alten, keine Anfrage geht an eine fremde Adresse; über einem offenen Blatt lädt das Update nicht, nach dem Schließen von selbst, danach läuft die neue Fassung und steht kurz „App aktualisiert" ohne Knopf und ohne Merkmal in der Adresse; nach einer Berührung lädt es nicht sofort, beim Zurückkommen schon; geht die App in den Hintergrund, lädt es auch über einem Blatt, über einer Eingabe nicht; bringt das Neuladen eine alte Fassung zurück, lädt es nicht gleich noch einmal und meldet nichts; die Läufe der Veröffentlichung stehen je Zweig in einer eigenen Reihe).
 
 ## Herleitung
 
@@ -52,7 +52,7 @@ Ohne den Vergleich zeichnete der Live-Abruf mit denselben Daten die Ansicht
 ein zweites Mal, nach einer zweiten kalten Rechnung aller Töpfe — der
 Schnellstart hätte den Start teurer gemacht, nicht billiger.
 
-Gemessen in `tests/start` mit drei Sekunden Netz: die Liga steht nach rund
+Gemessen in `tests/umbau/start` mit drei Sekunden Netz: die Liga steht nach rund
 400 ms; vorher nach dem Netz.
 
 Der Service Worker gehört zur selben Regel: ohne ihn holte jedes Öffnen die

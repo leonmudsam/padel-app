@@ -488,6 +488,8 @@ function _storyFolge(a, b){
 //                  verwendete Fun-Fact-Typen werden gesperrt → Rotation statt
 //                  vorhersehbarer Reihenfolge, keine schnellen Wiederholungen.
 const AMBIENT_SLOTS = [15];
+// Nach wie vielen Tagen ohne Partie die Fun Facts schweigen [§11.0].
+const AMBIENT_RUHE_TAGE = 3;
 // Der einzelne 15-Uhr-Slot mischt Stand und Geschichte. Die Rotation darunter
 // sorgt fuer den Themenwechsel zwischen Form, Laufbahn, Rekorden und Liga.
 //

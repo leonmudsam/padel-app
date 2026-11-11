@@ -21,7 +21,7 @@
 
 ## Prüfung
 
-`tests/bedienung` öffnet den Monat, während ein Blatt aufgeht und während ein Formular offen ist, und erst danach; `tests/tafel` rechnet Tage an der Spitze, das Titelrennen, den Kalender, die Tabelle mit ihren Bewegungen, die Wirkung auf die Laufbahn (die Woche zum Monatsende morgens wie abends und ohne die Titel des Monats), welcher Rückblick sich an welchem Tag von selbst öffnet, die Säulen der Auszeichnungen, die neuen Zeichen und die Arten der Rekorde aus ihren Quellen nach und misst die Inline-Styles; `tests/blatt` hält die Awards der Woche gegen den Awards-Reiter, zählt die Zahlen und den Kalender der Woche nach, misst die Heldenkarte bei 360 px, rechnet den Vergleich der Saison mit dem Vormonat nach und misst beide Rückblicke bei 360 px: nichts ragt heraus, die Laufbahn kommt nach, die neuen Zeichen stehen zu dritt, kein Rekordname bricht im Wort, und ohne Ende bewegt sich nur der Sieger; die Folge der Vorstellung misst es Bild für Bild (§C43). `tests/ambient` zählt den Spieler der Woche je Woche und je Monat genau einmal: jede Woche der echten Partien nennt den, den ihr Schluss vergab, der Mai trägt den seiner letzten Woche, der Juni nicht.
+`tests/umbau/bedienung` öffnet den Monat, während ein Blatt aufgeht und während ein Formular offen ist, und erst danach; `tests/umbau/tafel` rechnet Tage an der Spitze, das Titelrennen, den Kalender, die Tabelle mit ihren Bewegungen, die Wirkung auf die Laufbahn (die Woche zum Monatsende morgens wie abends und ohne die Titel des Monats), welcher Rückblick sich an welchem Tag von selbst öffnet, die Säulen der Auszeichnungen, die neuen Zeichen und die Arten der Rekorde aus ihren Quellen nach und misst die Inline-Styles; `tests/umbau/blatt` hält die Awards der Woche gegen den Awards-Reiter, zählt die Zahlen und den Kalender der Woche nach, misst die Heldenkarte bei 360 px, rechnet den Vergleich der Saison mit dem Vormonat nach und misst beide Rückblicke bei 360 px: nichts ragt heraus, die Laufbahn kommt nach, die neuen Zeichen stehen zu dritt, kein Rekordname bricht im Wort, und ohne Ende bewegt sich nur der Sieger; die Folge der Vorstellung misst es Bild für Bild (§C43). `tests/umbau/ambient` zählt den Spieler der Woche je Woche und je Monat genau einmal: jede Woche der echten Partien nennt den, den ihr Schluss vergab, der Mai trägt den seiner letzten Woche, der Juni nicht.
 
 ## Herleitung
 
@@ -58,7 +58,7 @@ Saison-Rückblick, der seine Rangliste seitdem aus `saisonRang` nimmt; die
 Elo je Tag kommt aus `getSeasonPositionHistory` (`eloByDay`,
 `spielTage`), aus derselben Schleife, die die Linien des
 Positionsverlaufs zeichnet — eine zweite Rechnung über dieselben Deltas
-nennte irgendwann einen anderen Ersten. `tests/tafel` rechnet die Tage
+nennte irgendwann einen anderen Ersten. `tests/umbau/tafel` rechnet die Tage
 vorn und das Ende des Rennens aus den rohen Partien nach.
 **Woche und Tag zeigen den Helden und das Feld** (`rcpWocheHtml`,
 `rcpEloBahnHtml`, `rcpFeldHtml`): die Woche des Spielers der Woche als
@@ -76,7 +76,7 @@ Gestaltung gehört ins CSS: ein `style`-Attribut trägt einen berechneten
 Wert (Avatarfarbe, `--rav`, Farbton), nie ein ganzes Bauteil. Vorher
 standen Wochen- und Tages-Rückblick zu großen Teilen als Inline-Style im
 JavaScript, und derselbe Spieler sah in drei Rückblicken dreimal anders
-aus. `tests/tafel` misst beides.
+aus. `tests/umbau/tafel` misst beides.
 
 **Die Woche hat eine Bühne und ihre Awards.** Der Wochenrückblick
 rechnete Torjäger, Abwehr, Team und Überraschung selbst, ohne die

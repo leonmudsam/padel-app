@@ -554,7 +554,7 @@ function _newsTafelWert(s){
   // Ohne „-Punkte": der grosse Wert bleibt kurz, sonst brach „+10 %-Punkte"
   // in zwei Zeilen und drueckte die Schlagzeile daneben auf drei [§C27]. Das
   // Vorzeichen sagt, dass es ein Unterschied ist; die Einheit nennt der Satz.
-  const zahl = /^\s*([+−-]?\d+(?:[.,]\d+)?\s?(?:%|Elo|Tore)?)/;
+  const zahl = /^\s*([+−-]?\d+(?:[.,]\d+)?\s?(?:%|Elo|Games)?)/;
   const m = String(d.ev || '').match(zahl)
          || String(s.desc || '').match(zahl)
          || String(s.desc || '').match(/(\d+[.,]?\d*\s?%|\d+)/);

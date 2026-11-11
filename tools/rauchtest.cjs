@@ -28,7 +28,7 @@ const FAELLE = [
   ['teams', `closeSheet(true);tab='teams';render()`],
   ['verlauf', `closeSheet(true);tab='history';histFilter='all';_histPage=0;render()`],
   ['eingabe', `closeSheet(true);tab='match';M=matchLeer();render()`],
-  ['eingabe-voll', `closeSheet(true);tab='match';M={...matchLeer(),A1:'${fixtures.ids[0]}',A2:'${fixtures.ids[1]}',B1:'${fixtures.ids[2]}',B2:'${fixtures.ids[3]}',saetze:[{a:6,b:4,art:'auto'},{a:3,b:6,art:'auto'},{a:10,b:8,art:'mtb'}],aktiv:2};render()`],
+  ['eingabe-voll', `closeSheet(true);tab='match';M={...matchLeer(),A1:'${fixtures.ids[0]}',A2:'${fixtures.ids[1]}',B1:'${fixtures.ids[2]}',B2:'${fixtures.ids[3]}',saetze:[{a:6,b:4},{a:3,b:6},{a:10,b:8}]};render()`],
   ['einstellungen', `closeSheet(true);tab='settings';render()`],
   ['profil', `closeSheet(true);tab='ranking';render();showPlayer('${id}')`],
   ['duo', `closeSheet(true);showTeam('${id}','${id2}')`],
