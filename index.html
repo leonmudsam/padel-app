@@ -786,6 +786,17 @@
   .rek-sl.null .z{color:var(--faint)}
   .rek-sl .rav,.rek-sl .av{flex:0 0 auto}
   .rek-sl .av{--av:20px;width:20px;height:20px;font-size:8px;box-shadow:none}
+  .rek-anlauf{margin-top:2px}
+  .rek-saeulen+.rek-anlauf{margin-top:11px;padding-top:9px;border-top:1px solid var(--line)}
+  .rek-al{font-size:10.5px;color:var(--muted);margin-bottom:7px}
+  .rek-al-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
+  .rek-al-sp{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 7px 4px 4px;
+    border:1px dashed var(--line2);border-radius:9px;cursor:pointer}
+  .rek-al-sp>.av{--av:18px;flex:0 0 auto;box-shadow:none}
+  .rek-al-sp .n{flex:1;min-width:0;font-size:11.5px;color:var(--ink2);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rek-al-sp .z{font-size:10.5px;font-weight:700;color:var(--ink2)}
+  .rek-al-sp .z i{font-style:normal;font-weight:400;color:var(--faint)}
 
   .rek-kammern{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 4px}
   .rek-kammern button{display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-width:0;
@@ -6767,7 +6778,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.4158946f';
+const BUILD_VERSION='2026.11.11.28363914';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -19828,7 +19839,7 @@ const HILFE = {
     'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
   awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
     '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage, getippt zeigt sie die ersten drei.',
-    '<b>Rekorde</b> sind Bestwerte über alle Saisons. Wer einen übertrifft, nimmt ihn dem Halter ab.',
+    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons, im Rennen ab ${CHRON_MIN_GAMES} Sätzen in der Laufbahn. Wer einen übertrifft, nimmt ihn dem Halter ab.`,
     () => `<b>Chronik</b>: jeder Monat schreibt Einträge für das, worin jemand besonders war, ab ${CHRONIK_MIN_SPIELE} Sätzen im Monat.`,
     'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
   teams: {titel:'Teams', absaetze:[
@@ -34959,8 +34970,10 @@ function _chronicleCtx(bisMs){
     seasonCount: allSeasons.size,
   };
 
+  C.anlauf = [];
   Object.keys(P).forEach(id => {
-    if(!ligaAktiv(id) || P[id].games < CHRON_MIN_GAMES){ delete P[id]; return; }
+    if(!ligaAktiv(id)){ delete P[id]; return; }
+    if(P[id].games < CHRON_MIN_GAMES){ C.anlauf.push({pid:id, n:P[id].games}); delete P[id]; }
   });
 
   const _sd = (a) => {
@@ -35397,6 +35410,13 @@ function rekordZaehlung(){
   return res;
 }
 
+function rekordAnlauf(){
+  let C;
+  try { C = _chronicleCtx(); } catch(e){ return []; }
+  return (C.anlauf || []).filter(a => pmap()[a.pid])
+    .sort((a, b) => b.n - a.n || pname(a.pid).localeCompare(pname(b.pid)));
+}
+
 function chronicleRang(cid){
   const def = CHRONICLE_BY_ID[cid];
   if(!def || !def.val) return [];
@@ -35795,6 +35815,12 @@ function showChronicle(cid){
   const h = chronicleHolders()[cid] || null;
   const halterN = h ? (h.pids || [h.pid]).length : 0;
   const verfolger = rang.slice(3);
+  const anlauf = rekordAnlauf();
+  const vorn = anlauf.filter(a => a.n === (anlauf[0] && anlauf[0].n));
+  const leer = !allChronicles().rated && vorn.length
+    ? `Im Rennen ist, wer ${CHRON_MIN_GAMES} Sätze in der Laufbahn hat. Am weitesten ${vorn.length === 1 ? 'ist' : 'sind'} ${
+        esc(_namenListe(vorn.map(a => pname(a.pid))))} mit ${vorn[0].n}.`
+    : 'Diesen Rekord hat noch niemand erreicht.';
   const q = h ? rekordQuelleVon(h.pid, cid) : null;
   const beitrag = q ? Math.round(q.p) : 0;
   const zahlen = rcpZahlenHtml([
@@ -35805,6 +35831,7 @@ function showChronicle(cid){
   ]);
   const fakten = [
     def.zeitraum ? ['Zeitraum', def.zeitraum] : null,
+    ['Im Rennen', `ab ${CHRON_MIN_GAMES} Sätzen in der Laufbahn`],
     def.mind     ? ['Mindestbasis', def.mind] : null,
     def.basis > 0
       ? ['Für die Laufbahn', q ? _prestigeQuellSatz(q, true)
@@ -35841,7 +35868,7 @@ function showChronicle(cid){
       ? `<div class="pp-sec-title" style="margin-top:14px"><div class="l"><h4>Die Tafel</h4></div>
            <div class="m num">${rang.length} von ${allChronicles().rated} erfüllen die Mindestbasis</div></div>
          ${_chronPodestHtml(rang.map(r => ({pid:r.pid, wert:_chronKurz(r.ev), zeit:r.zeit, v:r.wert})))}`
-      : emptyState('scroll', 'Diesen Rekord hat noch niemand erreicht.')}
+      : emptyState('scroll', leer)}
     ${verfolger.length ? `<div class="rek-verfolger">${verfolger.map((r, i) => {
       const p = pmap()[r.pid];
       return `<div class="rvf" data-tplayer="${esc(r.pid)}">
@@ -35940,17 +35967,30 @@ function ligaRekordeHtml(weit){
   const zaehl = rekordZaehlung();
   const maxN = Math.max(1, ...zaehl.map(z => z.n));
   const haltungen = zaehl.reduce((a, z) => a + z.n, 0);
-  const leiste = zaehl.length ? `<div class="rek-besitz">
+  const anlauf = rekordAnlauf();
+  const anlaufHtml = anlauf.length ? `<div class="rek-anlauf">
+      <div class="rek-al">Im Rennen ab ${CHRON_MIN_GAMES} Sätzen in der Laufbahn</div>
+      <div class="rek-al-liste">${anlauf.map(a => {
+        const p = pmap()[a.pid];
+        return `<span class="rek-al-sp" data-tplayer="${esc(a.pid)}">
+          ${avHtml(p, 'width:18px;height:18px;font-size:8px;border-radius:6px')}
+          <span class="n">${esc(p.name)}</span>
+          <span class="z num">${a.n}<i>/${CHRON_MIN_GAMES}</i></span>
+        </span>`;
+      }).join('')}</div>
+    </div>` : '';
+  const leiste = zaehl.length || anlauf.length ? `<div class="rek-besitz">
     <div class="rek-bk"><span class="l">Wer die Tafel hält</span>
-      <span class="r num">${haltungen} Haltungen · ${recs.length} Rekorde</span></div>
-    <div class="rek-saeulen">${zaehl.map(z => {
+      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} Rekorde` : 'noch niemand im Rennen'}</span></div>
+    ${zaehl.length ? `<div class="rek-saeulen">${zaehl.map(z => {
       const p = pmap()[z.pid];
       return `<span class="rek-sl${z.n ? '' : ' null'}" data-tplayer="${esc(z.pid)}">
         <span class="z num">${z.n}</span>
         <span class="b" style="height:${z.n ? (4 + z.n / maxN * 34).toFixed(1) : 3}px"></span>
         ${p ? avHtml(p, '') : ''}
       </span>`;
-    }).join('')}</div>
+    }).join('')}</div>` : ''}
+    ${anlaufHtml}
   </div>` : '';
 
   const gruppen = Object.keys(CHRON_KINDS)
@@ -35985,7 +36025,7 @@ function ligaRekordeHtml(weit){
     </div>`;
   };
   const vorschau = vorschauHtml('rekord', 'Die Liga-Rekorde',
-    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + 'Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Jede Karte nennt ihre Bedingung, getippt zeigt sie, wie gezählt wird.');
+    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + `Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Im Rennen ist, wer mindestens <b>${CHRON_MIN_GAMES} Sätze</b> in der Laufbahn hat; das gilt zusätzlich zur Bedingung jeder Karte. Getippt zeigt eine Karte, wie gezählt wird.`);
   return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }

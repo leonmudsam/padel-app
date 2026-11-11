@@ -487,8 +487,16 @@ function _chronicleCtx(bisMs){
   // für jeden Rekord, den der Ruheständler abgeben musste, und hängte es an
   // eine Partie, die damit nichts zu tun hat. Seine eigenen Rekorde stehen
   // eingefroren im Profil (`ruhestandStand`).
+  //
+  // Wer noch unter dem Tor steht, wird gemerkt (`anlauf`). Ohne das stand im
+  // Rekorde-Reiter an jeder Karte „noch niemand", und warum, stand nirgends:
+  // nach dem ersten Spieltag hatte jeder vierzehn Sätze und eine Siegesserie,
+  // „Der Unaufhaltsame" verlangt „Ein Sieg" — und blieb leer. Gezählt wird
+  // hier, weil genau diese Zahl über das Tor entscheidet.
+  C.anlauf = [];
   Object.keys(P).forEach(id => {
-    if(!ligaAktiv(id) || P[id].games < CHRON_MIN_GAMES){ delete P[id]; return; }
+    if(!ligaAktiv(id)){ delete P[id]; return; }
+    if(P[id].games < CHRON_MIN_GAMES){ C.anlauf.push({pid:id, n:P[id].games}); delete P[id]; }
   });
 
   // ── Die zwei Kammern [§C35]: ein Durchlauf ueber die Rohsicht ──────
@@ -1142,6 +1150,16 @@ function rekordZaehlung(){
   _cache._rekZKey = key;
   _cache._rekZ = res;
   return res;
+}
+
+// Wer noch nicht im Rennen ist: jeder aktive Spieler mit mindestens einem und
+// weniger als CHRON_MIN_GAMES Sätzen, der Weiteste zuerst. Reiter und Blatt
+// lesen dieselbe Liste, damit beide dieselben Zahlen nennen [§C27].
+function rekordAnlauf(){
+  let C;
+  try { C = _chronicleCtx(); } catch(e){ return []; }
+  return (C.anlauf || []).filter(a => pmap()[a.pid])
+    .sort((a, b) => b.n - a.n || pname(a.pid).localeCompare(pname(b.pid)));
 }
 
 // Die vollstaendige Reihenfolge EINES Rekords — das Podest im Blatt und die
