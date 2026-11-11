@@ -13,7 +13,7 @@
 
 ## Warum eine ausgelieferte Datei
 
-Die Liga ist ein Dutzend Leute und ein Tischkicker. Es gibt keinen Server,
+Die Liga ist ein Dutzend Leute und ein Padel-Court. Es gibt keinen Server,
 kein Deployment-Fenster und niemanden, der eine Build-Kette betreut.
 GitHub Pages liefert eine Datei aus, und ein neuer Stand ist ein `git push`.
 

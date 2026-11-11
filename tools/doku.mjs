@@ -19,7 +19,7 @@
  *  | `wort` | hätte als Suite gegolten.
  */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
-import { join, relative, dirname } from 'node:path';
+import { join, relative, dirname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -84,7 +84,10 @@ export function inhaltsverzeichnis(){
   const gesetze = [];
   for(const f of dokuDateien()){
     const {titel, satz} = kopfVon(lies(f));
-    const link = relative(join(ROOT, 'docs'), join(ROOT, f));
+    // Mit Schrägstrich auf jedem System: unter Windows lieferte `relative`
+    // Backslashes, und der Prüf-Job unter Linux erzeugte ein anderes
+    // Verzeichnis als das eingecheckte (Wächter 8 rot).
+    const link = relative(join(ROOT, 'docs'), join(ROOT, f)).split(sep).join('/');
     if(f.startsWith('docs/gesetze/')) gesetze.push(`| [${titel}](${link}) | ${satz} |`);
     else z.push(`| [${f}](${link}) — ${titel} | ${satz} |`);
   }

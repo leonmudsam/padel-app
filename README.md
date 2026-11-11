@@ -1,8 +1,8 @@
 # Padel Liga
 
 Eine App für eine Padel-Gruppe, immer zwei gegen zwei: Elo, Saisons,
-Auszeichnungen, Liga-Rekorde, Monatschronik, Insignien und ein Nachrichten-
-Feed. Eingetragen wird einmal nach der Partie, Satz für Satz in Games. Jede
+Auszeichnungen, Liga-Rekorde, Monatschronik, Insignien und ein
+Nachrichten-Feed. Eingetragen wird einmal nach der Partie, Satz für Satz in Games. Jede
 Spielweise geht: ein Satz und Teamwechsel, zwei oder drei Sätze, Match-
 Tiebreak, kurze Sätze oder ein Satz, der nicht zu Ende kam. Ausgeliefert wird
 eine einzige Datei, `index.html`, über GitHub Pages; die Daten liegen in
