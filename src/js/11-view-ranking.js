@@ -156,17 +156,6 @@ function _vRankingCore(){
   // die Tabelle darunter umstellt.
   const saisonWahl = period==='season' ? saisonWaehlerHtml('ligaSeasonPicker', sid) : '';
 
-  // Vor der ersten Partie erklärt die Liga sich selbst, in jedem Zeitraum
-  // gleich. Vorher standen hier Kacheln mit „noch keine Daten" und eine
-  // Tabelle mit lauter Nullen, und niemand erfuhr, was eine Saison ist oder
-  // wie eine Partie in die Liga kommt.
-  if(!matches.length && period !== 'all') return `
-    <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${
-      activePlayers().length} Spieler · noch keine Partie</p></div>
-    ${periodBar}
-    ${ligaVorschauHtml()}
-    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
-
   // ZEITRAUM-ANSICHT (Tag/Woche/Monat)
   if(period!=='all'){
     let ps=periodPlayerStats(period, saisonArg);
@@ -566,9 +555,14 @@ function _vRankingCore(){
       ${nebenHtml}
       ${sichtBar}
       ${metrikLeisteHtml(period)}
-      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar', period==='day'
+      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`
+        // Vor der ersten Partie der Liga stehen statt des leeren Satzes die
+        // Schritte zum Anfangen; das Gerüst des Zeitraums darüber bleibt,
+        // wie es an jedem Tag steht (Fortschritt, Spieler des Tages, Kacheln).
+        : !matches.length ? '' : emptyState('calendar', period==='day'
         ? 'Heute noch keine Partie. Die Tabelle des Tages beginnt mit der ersten.'
         : 'In dieser Saison noch keine Partie. Die Tabelle beginnt mit der ersten.')}
+      ${matches.length ? '' : ligaVorschauHtml()}
       ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
 

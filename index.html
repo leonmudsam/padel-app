@@ -6766,7 +6766,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.8abab9dc';
+const BUILD_VERSION='2026.11.11.160cf4d0';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -12443,13 +12443,6 @@ function _vRankingCore(){
     </div>`;
   const saisonWahl = period==='season' ? saisonWaehlerHtml('ligaSeasonPicker', sid) : '';
 
-  if(!matches.length && period !== 'all') return `
-    <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${
-      activePlayers().length} Spieler · noch keine Partie</p></div>
-    ${periodBar}
-    ${ligaVorschauHtml()}
-    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
-
   if(period!=='all'){
     let ps=periodPlayerStats(period, saisonArg);
     const periodMs=matchesInPeriod(period, saisonArg);
@@ -12721,9 +12714,11 @@ function _vRankingCore(){
       ${nebenHtml}
       ${sichtBar}
       ${metrikLeisteHtml(period)}
-      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar', period==='day'
+      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`
+        : !matches.length ? '' : emptyState('calendar', period==='day'
         ? 'Heute noch keine Partie. Die Tabelle des Tages beginnt mit der ersten.'
         : 'In dieser Saison noch keine Partie. Die Tabelle beginnt mit der ersten.')}
+      ${matches.length ? '' : ligaVorschauHtml()}
       ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
 
