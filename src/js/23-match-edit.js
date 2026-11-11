@@ -67,15 +67,28 @@ function showEditMatch(mid){
     const state=E,draft=JSON.parse(JSON.stringify(E)),save=document.getElementById('saveEdit');
     speichert=true;save.disabled=true;save.setAttribute('aria-busy','true');
     toast('Speichere…');
-    const felder=partieFelder(satzListe(draft));
-    const zeile={a1:draft.A1,a1_side:SLOT_SEITE[1],a2:draft.A2,a2_side:SLOT_SEITE[2],
-      b1:draft.B1,b1_side:SLOT_SEITE[1],b2:draft.B2,b2_side:SLOT_SEITE[2],...felder};
+    // Jeder Satz ist eine eigene Partie [§1.3]: der erste bleibt in dieser
+    // Zeile, jeder weitere wird eine neue direkt dahinter. Eine alte Zeile
+    // mit mehreren Sätzen wird beim Bearbeiten so aufgeteilt.
+    const saetze=satzListe(draft).filter(s=>saetzeAuswerten([s]).winner);
+    const spieler={a1:draft.A1,a1_side:SLOT_SEITE[1],a2:draft.A2,a2_side:SLOT_SEITE[2],
+      b1:draft.B1,b1_side:SLOT_SEITE[1],b2:draft.B2,b2_side:SLOT_SEITE[2]};
+    const zeile={...spieler,...partieFelder(saetze.slice(0,1))};
+    const t0=mts(m);
+    const weitere=saetze.slice(1).map((s,i)=>({...spieler,...partieFelder([s]),deltas:{},exp_a:0.5,
+      created_at:new Date(t0+(i+1)*10).toISOString()}));
     try {
     // Match-Zeile aktualisieren (Deltas folgen aus der Neuberechnung)
     const {error}=await sb.from('matches').update(zeile).eq('id',draft.id);
     if(error){toast('Fehler: '+error.message,true);return;}
+    let neue=[];
+    if(weitere.length){
+      const ins=await sb.from('matches').insert(weitere).select();
+      if(ins.error){toast('Fehler: '+ins.error.message,true);return;}
+      neue=ins.data||[];
+    }
     if(save.isConnected && E===state && JSON.stringify(E)===JSON.stringify(draft)) closeSheet(true);
-    const updated=matches.map(x=>x.id===draft.id?{...x,...zeile}:x);
+    const updated=[...matches.map(x=>x.id===draft.id?{...x,...zeile}:x),...neue];
     // Die Liga mit dem geänderten Match steht sofort; die Deltas, die sich
     // dadurch ändern, schreibt die Kette danach [§3.1c].
     const r = ligaNeuRechnen(updated);

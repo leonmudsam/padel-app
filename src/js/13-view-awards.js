@@ -260,8 +260,10 @@ function _awardRankingsUncached(period, sid){
     }
     
     // === ZU NULL: alle Sätze gewonnen, mindestens zwei [§1.3] ===
-    if(partie(m).zuNull){
-      (m.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{ agg.iceWins[id]=(agg.iceWins[id]||0)+1; });
+    // An der Begegnung, die an diesem Satz endet, nicht am Satz.
+    const _bg=begegnungAm(m);
+    if(_bg.zuNull){
+      (_bg.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{ agg.iceWins[id]=(agg.iceWins[id]||0)+1; });
     }
     
     // === CLUTCH (KNAPPE PARTIEN) ===
@@ -812,8 +814,9 @@ function _computeShowmaster(ms){
   const result={};
   for(let i=0; i<ms.length; i++){
     const m=ms[i];
-    if(!partie(m).wende) continue;
-    (m.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{result[id]=(result[id]||0)+1;});
+    const bg=begegnungAm(m);
+    if(!bg.wende) continue;
+    (bg.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{result[id]=(result[id]||0)+1;});
   }
   return Object.entries(result).filter(([,v])=>v>=1).map(([id,v])=>({id,v})).sort((a,b)=>b.v-a.v);
 }
@@ -1050,7 +1053,7 @@ function vAwards(){
       <button data-awview="rekorde" class="${awView==='rekorde'?'on':''}">Rekorde</button>
       <button data-awview="chronik" class="${awView==='chronik'?'on':''}">Chronik</button>
     </div>`;
-  const kopf = `<div class="view-head"><h2>Awards</h2><p>${unter}</p></div>${schalter}`;
+  const kopf = `<div class="view-head"><h2>Awards ${hilfeKnopf('awards')}</h2><p>${unter}</p></div>${schalter}`;
   if(awView === 'rekorde'){
     // Keine eigene Überschrift mehr: die Liste bringt jetzt ihre drei
     // Gruppenüberschriften mit, und „LIGA-REKORDE" stand dadurch zweimal

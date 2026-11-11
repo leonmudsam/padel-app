@@ -53,11 +53,15 @@ const PERIODE_MIN_SIEGE = {tag:2, woche:3, monat:6};
 const PERIODE_SAMMLER = {tag:3, woche:1};
 // Was eine Partie für einen Spieler war, an einer Stelle für Katalog und
 // Auslöser [§C27]. Die Begriffe stehen in §1.3.
-function bgDoppelBagel(id, m){ return partie(m).doppelBagel; }
+// Über mehrere Sätze [§1.3]: die Begegnung, die an diesem Satz endet, und
+// nicht der Satz. bgDoppelBagel sagt nur, DASS eine endete; wer sie gewann,
+// sagt bgBegegnungSieg — nicht der Sieger des letzten Satzes.
+function bgDoppelBagel(id, m){ return begegnungAm(m).doppelBagel; }
+function bgBegegnungSieg(id, m){ return begegnungGewonnen(m, id) === true; }
 function bgZitter(m){ return partie(m).entscheidTb; }
 function bgKlar(id, m){ return won(id, m) && partie(m).deutlich; }
 function bgKnapp(m){ return partie(m).knapp; }
-function bgWende(id, m){ return won(id, m) && partie(m).wende; }
+function bgWende(id, m){ return begegnungAm(m).wende && bgBegegnungSieg(id, m); }
 function bgBagels(id, m){ const t = teamVon(m, id); return t ? partieFuer(m, t) : {bagelsFor:0, bagelsAgainst:0}; }
 // Die Tiebreaks eines Spielers in einer Partie, in Spielreihenfolge, als
 // true (gewonnen) und false (verloren).
@@ -118,9 +122,9 @@ const BADGES=[
   // Zu Null heißt: jeden Satz gewonnen, mindestens zwei [§1.3]. Ohne ein
   // einziges abgegebenes Game ist das der Doppel-Bagel.
   {id:'perfect_loss',ic:'dizzy',name:'Absoluter Verlierer',desc:'Zu-Null-Niederlage ohne ein einziges Game (etwa 0:6 0:6)',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>!won(id,m)&&bgDoppelBagel(id,m)).length},
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgDoppelBagel(id,m)&&!bgBegegnungSieg(id,m)).length},
   {id:'perfect_win',ic:'hundred',name:'Absoluter Sieger',desc:'Zu-Null-Sieg ohne ein abgegebenes Game (etwa 6:0 6:0)',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&bgDoppelBagel(id,m)).length},
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgDoppelBagel(id,m)&&bgBegegnungSieg(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
   {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Sieg, entschieden im Tiebreak oder Match-Tiebreak',
@@ -1335,8 +1339,8 @@ function getBadgeEarnedCache(){
       if(pDrvG<BG.seite && s.drvG>=BG.seite)        fire('drive50');
 
       // ── Match-Ergebnis-Badges ──
-      if(w  && bgDoppelBagel(id,m))                 fire('perfect_win');
-      if(!w && bgDoppelBagel(id,m))                 fire('perfect_loss');
+      if(bgDoppelBagel(id,m) &&  bgBegegnungSieg(id,m)) fire('perfect_win');
+      if(bgDoppelBagel(id,m) && !bgBegegnungSieg(id,m)) fire('perfect_loss');
       if(w  && bgZitter(m))                         fire('nail_biter');
       if(!w && bgZitter(m))                         fire('bitter_loss');
       if(bgWende(id,m))                             fire('wall_badge');

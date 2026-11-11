@@ -21,9 +21,12 @@ function _statZaehlen(s, m, id, run){
   const pos = seiteVon(m, id);
   s.games++; s.gf += f.gamesFor; s.ga += f.gamesAgainst; s.sf += f.setsFor; s.sa += f.setsAgainst;
   s.tbW += f.tbWon; s.tbL += f.tbLost; s.bagelsFor += f.bagelsFor; s.bagelsAgainst += f.bagelsAgainst;
-  if(p.zuNull){ if(won) s.zuNullW++; else s.zuNullL++; }
-  if(p.umkaempft){ s.umkG++; if(won) s.umkW++; }
-  if(p.wende && won) s.wenden++;
+  // Über mehrere Sätze: nur am letzten Satz einer Begegnung [§1.3], aus
+  // Sicht der Begegnung — ihr Sieger ist nicht immer der des letzten Satzes.
+  const bg = begegnungAm(m), bgW = bg.winner === team;
+  if(bg.zuNull){ if(bgW) s.zuNullW++; else s.zuNullL++; }
+  if(bg.umkaempft){ s.umkG++; if(bgW) s.umkW++; }
+  if(bg.wende && bgW) s.wenden++;
   if(won){ s.wins++; run = run >= 0 ? run + 1 : 1; } else { s.losses++; run = run <= 0 ? run - 1 : -1; }
   if(pos === 'drive'){ s.drvG++; if(won) s.drvW++; s.drvGf += f.gamesFor; s.drvGa += f.gamesAgainst; }
   else               { s.revG++; if(won) s.revW++; s.revGf += f.gamesFor; s.revGa += f.gamesAgainst; }
@@ -184,8 +187,9 @@ function teamDetail(p1,p2){
     teamMatches.push({m,onA,won,myGf,myGa,diff,expected,t});
 
     // Fun-Facts-Tracking
-    if(pd.zuNull){ if(won) shutouts++; else shutoutsAgainst++; }
-    if(pd.doppelBagel && won) perfectWins++;
+    const bg=begegnungAm(m), bgW=bg.winner===(onA?'A':'B');
+    if(bg.zuNull){ if(bgW) shutouts++; else shutoutsAgainst++; }
+    if(bg.doppelBagel && bgW) perfectWins++;
     tbW+=fd.tbWon; tbL+=fd.tbLost; sf+=fd.setsFor; sa+=fd.setsAgainst;
     const umdrehen = (pd.winner==='A') !== onA;
     satzErgebnisse(m).forEach(x => {

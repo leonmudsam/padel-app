@@ -1023,7 +1023,9 @@ function _spKontext(F){
 // Doppel-Bagel (kein einziges Game abgegeben): ein 2:0 in Sätzen ist im
 // Padel jede fünfte Partie und trüge sonst jede fünfte Karte.
 const _spKrimi = x => partie(x).entscheidTb;
-const _spZuNull = x => partie(x).doppelBagel;
+// Ein Satz ist eine Partie; der Doppel-Bagel gehört der Begegnung über
+// mehrere Sätze und steht an ihrem letzten, wenn ihr Sieger ihn gewann.
+const _spZuNull = x => { const bg = begegnungAm(x); return bg.doppelBagel && bg.winner === x.winner; };
 
 // ── Die Formen: Regel, Daten, Bild und Text ──────────────────────────
 // `wann` gibt die Daten der Regel oder null, `daten` macht daraus, was das
@@ -1237,7 +1239,7 @@ const SP_FORM = {
   weste:{rang:60, ic:'zuNull', v2:true,
     wann:F => _spZuNull(F.m) ? {} : null,
     daten:F => {
-      const vor = _spBasis().chrono.slice(0, F.i).filter(y => partie(y).zuNull);
+      const vor = _spBasis().chrono.slice(0, F.i).filter(y => begegnungAm(y).zuNull);
       const z = vor[vor.length - 1];
       return {W:F.W, L:F.L, hoch:F.hoch, tief:F.tief, n:vor.length + 1, zuletzt:z ? mts(z) : null};
     },

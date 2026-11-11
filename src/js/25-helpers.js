@@ -83,7 +83,7 @@ function vorschauHtml(ic, titel, satz, punkte, fuss){
     : '';
   return `<div class="vorschau">
     <div class="vs-kopf"><span class="vs-ic">${svgI(ic)}</span><b>${esc(titel)}</b></div>
-    <p class="vs-satz">${satz}</p>${liste}${fuss || ''}
+    ${satz ? `<p class="vs-satz">${satz}</p>` : ''}${liste}${fuss || ''}
   </div>`;
 }
 // ── Der Hinweis [§C27] ───────────────────────────────────────────────
@@ -180,3 +180,42 @@ function _processAchToastQueue(){
   }, 2600);
 }
 
+// ── Die Hilfe eines Reiters [§C27] ───────────────────────────────────
+// Ein kleines „?" neben der Überschrift öffnet ein Blatt: wie der Reiter
+// funktioniert und wie man vorgeht — nicht, was Padel ist; das weiß, wer
+// die App öffnet. Die Erklärung steht hinter dem Knopf statt als Absatz
+// über der Liste, die sonst jeder bei jedem Öffnen wegscrollen müsste.
+const HILFE = {
+  liga: {titel:'Liga', absaetze:[
+    '<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.',
+    'Die Reiter über der Liste sortieren um: Elo, Quote, Game-Bilanz und mehr. Ein Name öffnet das Profil.',
+    'Neue Partie: das Plus unten rechts. Jeder Satz ist eine Partie; mehrere Sätze derselben Paare hintereinander zählen außerdem als Match.']},
+  seiten: {titel:'Seiten', absaetze:[
+    'Wer auf welcher Seite am stärksten ist. Die Seite kommt aus der Aufstellung jeder Partie.',
+    'Der Wert verbindet die Siegquote dort, die Leistung gegen die Erwartung (Partner und Gegner), den Anteil der Games und wie oft jemand dort stand. <b>▲</b> heißt über, <b>▼</b> unter der Erwartung.',
+    'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
+  awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
+    '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage, getippt zeigt sie die ersten drei.',
+    '<b>Rekorde</b> sind Bestwerte über alle Saisons. Wer einen übertrifft, nimmt ihn dem Halter ab.',
+    () => `<b>Chronik</b>: jeder Monat schreibt Einträge für das, worin jemand besonders war, ab ${CHRONIK_MIN_SPIELE} Partien im Monat.`,
+    'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
+  teams: {titel:'Teams', absaetze:[
+    () => `Jedes Duo ab ${DUO_MIN} gemeinsamen Partien, sortiert nach Quote, Game-Bilanz oder Elo.`,
+    'Ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
+  verlauf: {titel:'Verlauf', absaetze:[
+    'Jede Partie, die neueste zuerst; oben lässt sich nach einem Spieler filtern.',
+    'Eine Partie öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt sie sich bearbeiten oder löschen; die Liga rechnet danach neu.']},
+  eingabe: {titel:'Neue Partie', absaetze:[
+    'Vier Spieler wählen. Links steht Revés, rechts Drive; ⇄ tauscht die Seiten eines Teams.',
+    'Die Games je Satz eintragen. Jeder Satz wird eine eigene Partie, „+ Satz" trägt mehrere auf einmal ein. Ein Satz, der nicht zu Ende kam, zählt mit, wenn er einen Vorsprung hat.',
+    'Spielen dieselben Paare weiter, gehört der nächste Satz zum selben Match; die Zeile über der Elo nennt den Stand.']},
+};
+function hilfeKnopf(key){
+  const h = HILFE[key];
+  return h ? `<button class="kopf-info" type="button" data-hilfe="${key}" aria-label="So funktioniert ${esc(h.titel)}">${svgI('frage')}</button>` : '';
+}
+function zeigeHilfe(key){
+  const h = HILFE[key]; if(!h) return;
+  openSheet(blattKopfHtml({ic:'frage', titel:h.titel, unter:'So funktioniert es'})
+    + `<div class="pos-info">${h.absaetze.map(a => `<p>${typeof a === 'function' ? a() : a}</p>`).join('')}</div>`);
+}

@@ -215,10 +215,10 @@ Comboboxen unterstützen Pfeiltasten, Enter und Escape samt ARIA-Auswahl.
 Speichern hält eine sofortige Einzelsperre und einen Eingabesnapshot; eine
 verspätete Antwort löscht keinen zwischenzeitlich geänderten Entwurf. Ein
 bereits erfolgter Insert wird nach einem Folgefehler nicht erneut angeboten.
-`M.neu` sagt, dass ein Eintrag NICHT an die Partie davor angehängt wird
-(`partieFortsetzung`); es steht nur, solange der Entwurf steht, und
-`matchLeer` setzt es nach jedem Speichern zurück — sonst wäre der nächste
-Satz derselben vier ohne Hinweis eine neue Partie geworden.
+Die Begegnungen (Sätze derselben Paare hintereinander, `_begegnungsGruppen`)
+stehen in einem Topf, der an der Liste `matches` und ihrer Länge hängt: jede
+neue Liste baut ihn beim ersten Lesen neu, sonst bliebe eine Wende an einem
+Satz stehen, hinter den inzwischen ein weiterer gespeichert wurde.
 
 Ein Topf mit einem Schlüssel, der die Version enthält, **wächst über die
 Versionen**: er braucht eine Obergrenze, ab der er geräumt wird. Sieben

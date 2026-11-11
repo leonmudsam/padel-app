@@ -116,20 +116,23 @@ function liga({seed, namen, monate, jahr, startMonat}){
           const a = Math.floor(R() * 5), b = Math.floor(R() * 5);
           if(a !== b) saetze.push({a, b, art: 'open'});
         }
-        let sa = 0, sb = 0, ga = 0, gb = 0;
+        // Jeder Satz ist eine eigene Partie [§1.3], wie die App sie speichert:
+        // eine Zeile je Satz, die Sätze eines Matches direkt hintereinander.
+        // Ein offener Satz ohne Vorsprung hat keinen Sieger und fällt weg.
         saetze.forEach(s => {
-          if(s.art !== 'open'){ if(s.a > s.b) sa++; else sb++; }
-          if(s.art === 'mtb'){ if(s.a > s.b) ga++; else gb++; } else { ga += s.a; gb += s.b; }
+          const winner = s.a > s.b ? 'A' : s.b > s.a ? 'B' : null;
+          if(!winner) return;
+          const mtbSatz = s.art === 'mtb';
+          zeit += (mtbSatz ? 8 : format === 'kurz' ? 18 : 30) * 60000 + Math.floor(R() * 6) * 60000;
+          matches.push({id: 'm' + String(matches.length).padStart(4, '0'),
+            created_at: new Date(zeit).toISOString(),
+            a1: a1.id, a2: a2.id, b1: b1.id, b2: b2.id,
+            a1_side: 'reves', a2_side: 'drive', b1_side: 'reves', b2_side: 'drive',
+            sets: [[s.a, s.b]], set_kind: [s.art],
+            sets_a: s.art === 'open' ? 0 : winner === 'A' ? 1 : 0, sets_b: s.art === 'open' ? 0 : winner === 'B' ? 1 : 0,
+            games_a: mtbSatz ? (winner === 'A' ? 1 : 0) : s.a, games_b: mtbSatz ? (winner === 'B' ? 1 : 0) : s.b,
+            winner, deltas: {}, exp_a: .5});
         });
-        if(sa === sb && ga === gb){ saetze.push(satz(pA)); const s = saetze[saetze.length - 1]; if(s.a > s.b){ sa++; ga += s.a; gb += s.b; } else { sb++; ga += s.a; gb += s.b; } }
-        const winner = sa > sb ? 'A' : sb > sa ? 'B' : ga > gb ? 'A' : 'B';
-        zeit += (format === 'kurz' ? 18 : format === 'lang' ? 45 : 32) * 60000 + Math.floor(R() * 6) * 60000;
-        matches.push({id: 'm' + String(matches.length).padStart(4, '0'),
-          created_at: new Date(zeit).toISOString(),
-          a1: a1.id, a2: a2.id, b1: b1.id, b2: b2.id,
-          a1_side: 'reves', a2_side: 'drive', b1_side: 'reves', b2_side: 'drive',
-          sets: saetze.map(s => [s.a, s.b]), set_kind: saetze.map(s => s.art),
-          sets_a: sa, sets_b: sb, games_a: ga, games_b: gb, winner, deltas: {}, exp_a: .5});
       }
     }
   }

@@ -323,11 +323,14 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       // blowouts/blowL = deutlich, close = knapp.
       const pz = partie(m), fz = partieFuer(m, onA ? 'A' : 'B');
       const knapp = pz.knapp, deutlich = pz.deutlich, zitter = pz.entscheidTb;
+      // Zu Null und Wende gehören der Begegnung über mehrere Sätze [§1.3]
+      // und zählen nur an ihrem letzten Satz, aus Sicht ihres Siegers.
+      const bg = begegnungAm(m), bgW = bg.winner === (onA ? 'A' : 'B');
       // `mid` ist die Partie selbst: „Die Stütze" fragt, ob der Partner die
       // zwei Partien davor verloren hatte, und die stehen in der Liste des
       // Partners, nicht in dieser.
       p.partien.push({win:w, gf, ga, pos, tag:day, wk:_wochenKey(m.created_at), mid:m.id,
-                      knapp, deutlich, zitter, zuNull:pz.zuNull, wende:pz.wende,
+                      knapp, deutlich, zitter, zuNull:bg.zuNull, wende:bg.wende && bgW,
                       sf:fz.setsFor, sa:fz.setsAgainst, tbW:fz.tbWon, tbL:fz.tbLost,
                       bF:fz.bagelsFor, bA:fz.bagelsAgainst, erg:standFuer(m, w),
                       mate:mateOf(id),
@@ -338,8 +341,8 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       else             { p.revG++; if(w) p.revW++; }
       p.sf += fz.setsFor; p.sa += fz.setsAgainst; p.tbW += fz.tbWon; p.tbL += fz.tbLost;
       p.bagelsF += fz.bagelsFor; p.bagelsA += fz.bagelsAgainst;
-      if(w && pz.zuNull) p.zuNull++;
-      if(w && pz.wende) p.wenden++;
+      if(bgW && bg.zuNull) p.zuNull++;
+      if(bgW && bg.wende) p.wenden++;
       // Trug einer der Gegner vor der Partie drei Siege am Stueck, ist das eine
       // Gelegenheit, eine Serie zu brechen — gezaehlt wird der Anteil, nicht
       // die Anzahl: wer viel spielt, trifft oefter auf einen heissen Gegner.
@@ -348,8 +351,8 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       if(gegSerie >= 3){ p.brechG++; if(w) p.brechW++; }
       if(w && zitter)  p.nail++;
       if(!w && zitter) p.bitter++;
-      if(w && pz.zuNull)  p.perfect++;
-      if(!w && pz.zuNull) p.debacle++;
+      if(bg.zuNull &&  bgW) p.perfect++;
+      if(bg.zuNull && !bgW) p.debacle++;
       const exp = myExp(id, m);
       if(w && exp < CHANCE_UPSET) p.upsets++;
       // Außenseiter-Partien: alles, wo die Rechnung gegen ihn stand. Nicht nur

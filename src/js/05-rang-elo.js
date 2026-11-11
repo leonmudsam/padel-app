@@ -382,38 +382,40 @@ function movMult(m){
   return 1 + maxBoost * anteil * Math.min(1, Math.log(p.gameDiff + 1) / Math.log(7));
 }
 
+// Die Sätze eines Eintrags als die Zeilen, die gespeichert werden: je Satz
+// eine Partie [§1.3], eine Sekunde auseinander, damit die Reihenfolge in der
+// Datenbank die der Eingabe ist. Sätze ohne Sieger (offen im Gleichstand)
+// bewegen nichts und werden nicht gespeichert.
+function eintragZeilen(teamA, teamB, saetze, basis){
+  const t0 = basis == null ? Date.now() : basis;
+  return saetze.filter(s => saetzeAuswerten([s]).winner).map((s, i) => ({
+    a1: teamA[0].id, a1_side: teamA[0].pos, a2: teamA[1].id, a2_side: teamA[1].pos,
+    b1: teamB[0].id, b1_side: teamB[0].pos, b2: teamB[1].id, b2_side: teamB[1].pos,
+    ...partieFelder([s]), created_at: new Date(t0 + i * 1000).toISOString()
+  }));
+}
 // computeMatch nutzt DIESELBE Engine wie der Recalc, damit die beim
 // Speichern erzeugten Deltas exakt dem entsprechen, was nach einer späteren
-// Neuberechnung in der Datenbank steht. Gerechnet wird ein hypothetisches
-// Match auf dem Endstand des gecachten globalen Sims.
+// Neuberechnung in der Datenbank steht. Gerechnet werden die Zeilen des
+// Eintrags (`eintragZeilen`) nacheinander auf dem Endstand des globalen Sims
+// — dieselben, die gespeichert werden, also zeigt die Vorschau genau, was
+// danach je Satz in Verlauf, Blatt und Story steht.
 //   felder  das Ergebnis aus `partieFelder` (sets, set_kind, games, winner)
-function computeMatch(teamA, teamB, felder){
-  const HYPO_ID = '__hypo__';
-  const hypo = {
-    id: HYPO_ID,
-    a1: teamA[0].id, a1_side: teamA[0].pos,
-    a2: teamA[1].id, a2_side: teamA[1].pos,
-    b1: teamB[0].id, b1_side: teamB[0].pos,
-    b2: teamB[1].id, b2_side: teamB[1].pos,
-    ...felder,
-    created_at: new Date().toISOString()
-  };
+function computeMatch(teamA, teamB, felder, basis){
+  const zeilen = eintragZeilen(teamA, teamB, partieSaetze(felder), basis)
+    .map((z, i) => Object.assign(z, {id:'__hypo__' + i}));
   const globalSim = getGlobalSim();
-  const sim = simulateEloWithSliders([hypo], {
-    initialState: globalSim,
-    initialCurSeason: globalSim.curSeason
+  const sim = simulateEloWithSliders(zeilen, {initialState: globalSim, initialCurSeason: globalSim.curSeason});
+  const je = zeilen.map(z => {
+    const e = sim.history.find(h => h.matchId === z.id);
+    return {zeile:z, res:e ? {...e.deltas} : {}, expA:e ? e.expA : 0.5};
   });
-  const entry = sim.history.find(h => h.matchId === HYPO_ID);
-  const res = entry ? {...entry.deltas} : {};
-  const expA = entry ? entry.expA : 0.5;
-  // Die Elo je Satz, für die Vorschau beim Eintragen: die Summe allein
-  // sagte nicht, dass ein gewonnener Satz auch in der Niederlage zählt.
-  const saetze = {};
-  Object.keys(res).forEach(id => {
-    const bd = entry && entry.breakdowns && entry.breakdowns[id];
-    saetze[id] = bd && bd.saetze ? bd.saetze.map(b => b.delta) : [res[id]];
-  });
-  return {res, expA, saetze};
+  const res = {}, saetze = {};
+  je.forEach(x => Object.keys(x.res).forEach(id => {
+    res[id] = (res[id] || 0) + x.res[id];
+    (saetze[id] = saetze[id] || []).push(x.res[id]);
+  }));
+  return {res, expA:je.length ? je[0].expA : 0.5, saetze, je};
 }
 
 // ─── Schreiben, was sich geändert hat ───────────────────────────────

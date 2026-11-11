@@ -115,9 +115,14 @@ function showAddPlayer(){
     <button class="btn" id="confirmAdd" style="margin-top:12px">Hinzufügen</button>`);
   const ni=document.getElementById('newName');ni.focus();
   const go=async()=>{const n=ni.value.trim();if(!n){toast('Name fehlt',true);return;}
-    const{error}=await sb.from('players').insert({name:n,elo:cfg.start_elo,drive:0.5});
+    const{data,error}=await sb.from('players').insert({name:n,elo:cfg.start_elo,drive:0.5}).select().single();
     if(error){toast(error.message.includes('duplicate')?'Der Name ist schon vergeben':'Fehler',true);return;}
-    closeSheet(true);toast('Spieler angelegt','ok');await loadAll();};
+    // Danach öffnet sich das Profil des Neuen: dort sieht man ihn, kann den
+    // Namen ändern und ein Bild wählen. Vorher schloss sich das Blatt, und
+    // vor der ersten Partie stand er nirgends.
+    closeSheet(true);toast('Spieler angelegt','ok');await loadAll();
+    const neu=data&&players.find(p=>p.id===data.id);
+    if(neu) showPlayer(neu.id);};
   document.getElementById('confirmAdd').onclick=go;
   ni.onkeydown=e=>{if(e.key==='Enter')go();};
 }

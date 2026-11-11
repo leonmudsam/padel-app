@@ -85,6 +85,13 @@ create table if not exists public.config (
   new_player_mid_mult double precision not null default 1.2,
   veteran_damp       double precision not null default 0.85
 );
+-- Die Staffel der Satzlänge und der Ausgleich im Tiebreak. Als eigene
+-- Zeilen, damit eine schon angelegte Datenbank sie mit demselben Skript
+-- bekommt.
+alter table public.config add column if not exists gewicht_eins   double precision not null default 0.5;
+alter table public.config add column if not exists gewicht_drei   double precision not null default 0.75;
+alter table public.config add column if not exists gewicht_ueber6 double precision not null default 0.1;
+alter table public.config add column if not exists tb_ausgleich   double precision not null default 0.4;
 insert into public.config (id) values (1) on conflict (id) do nothing;
 
 -- ─── Saisons ────────────────────────────────────────────────────────────

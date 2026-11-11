@@ -16,12 +16,8 @@ function vTeams(nurErgebnis=false){
     // „Noch nicht genug Daten" sagte nicht, wie viel genug ist und was dann
     // kommt.
     const html=vorschauHtml('handshake','Die Duos der Liga',
-      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>. Die Liste zeigt, welche Paare zusammen am meisten gewinnen, und lässt sich nach Siegquote, Game-Bilanz und Elo sortieren.`,
-      [
-        ['duo','Das Duo im Detail','Getippt öffnet sich die gemeinsame Bilanz: Sätze, Games, Tiebreaks und welche Aufstellung, wer rechts und wer links, besser funktioniert.'],
-        ['crossedSwords','Direkter Vergleich','Aus jedem Profil heraus lassen sich zwei Spieler gegeneinander stellen, mit jeder Begegnung.'],
-      ]);
-    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>, mit Bilanz, Elo und der besseren Aufstellung.`);
+    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
   
@@ -157,7 +153,7 @@ function vTeams(nurErgebnis=false){
   // und kein Ersetzen des Eingabefelds samt Fokus, Cursor oder IME-Komposition.
   if(nurErgebnis) return ergebnis;
   return `
-    <div class="view-head"><h2>Teams</h2><p id="teamCount">${ergebnis.kopf}</p></div>
+    <div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p id="teamCount">${ergebnis.kopf}</p></div>
     ${einblickHtml('netz', `ab ${DUO_MIN} Partien`)}
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -183,12 +179,8 @@ function vTeams(nurErgebnis=false){
 //     Filterbar nach Spieler. Zeigt Badge-Chips pro Match.
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
-    'Jede eingetragene Partie steht hier mit Sätzen, Aufstellung und Elo-Wirkung, filterbar nach Spieler.',
-    [
-      ['edit','Korrigieren','Getippt öffnet sich die Partie. Ein falsches Ergebnis lässt sich dort bearbeiten oder löschen, und die Liga rechnet sich neu.'],
-      ['medal','Was eine Partie auslöst','Unter jeder Partie stehen die Auszeichnungen, die sie gebracht hat.'],
-    ])}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
+    'Jede Partie steht hier mit Aufstellung und Elo. Getippt lässt sie sich bearbeiten oder löschen.')}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -221,10 +213,21 @@ function vHistory(){
       +`<span class="mteam-n">${esc(pname(ids[0]))} & ${esc(pname(ids[1]))}</span></div>`;
     const dl=ids=>ids.map(id=>{const d=(m.deltas||{})[id]||0;
       return `<span><b>${esc(pname(id))}</b> <span class="delta-v ${d>=0?'pos':'neg'}">${d>=0?'+':''}${Math.round(d)}</span></span>`;}).join('');
-    const earned=badgesEarnedInMatch(m.id);
-    const badgeChips=earned.length?`<div class="mrow-bd">${earned.map(e=>
-      `<span>${badgeIc(e.badge,'12px')}<span>${esc(pname(e.playerId).split(' ')[0])}</span></span>`
-    ).join('')}</div>`:'';
+    // Eine Marke je Auszeichnung, mit allen, die sie bekamen — nicht eine je
+    // Spieler: vier gleiche Zeichen mit vier Namen füllten zwei Zeilen. Die
+    // gewöhnlichen fallen weg; sie stehen im Blatt der Partie. Höchstens
+    // drei, der Rest als Zahl.
+    const earned=badgesEarnedInMatch(m.id).filter(e=>rarityOf(e.badge.id)!=='common');
+    const jeAbz=new Map();
+    earned.forEach(e=>{const k=e.badge.id;if(!jeAbz.has(k))jeAbz.set(k,{badge:e.badge,wer:[]});jeAbz.get(k).wer.push(pname(e.playerId).split(' ')[0]);});
+    const abz=[...jeAbz.values()];
+    // Am letzten Satz eines Matches über mehrere Sätze [§1.3] steht dessen
+    // Stand; die Sätze davor sind Partien wie jede andere.
+    const bg=begegnungAm(m);
+    const matchChip=bg.n>1&&bg.winner?`<span class="mrow-match">${svgI(bg.wende?'wende':'padelBall')}Match ${Math.max(bg.setsA,bg.setsB)}:${Math.min(bg.setsA,bg.setsB)}${bg.wende?' · Wende':bg.zuNull?' · zu Null':''}</span>`:'';
+    const badgeChips=(abz.length||matchChip)?`<div class="mrow-bd">${matchChip}${abz.slice(0,3).map(x=>
+      `<span title="${esc(x.badge.name)}">${badgeIc(x.badge,'12px')}<span>${esc(x.wer.join(', '))}</span></span>`
+    ).join('')}${abz.length>3?`<span>+${abz.length-3}</span>`:''}</div>`:'';
     const k=tagKey(mts(m));
     const kopf=k!==tagVorher?`<div class="mtag"><b>${esc(datumFmt(mts(m),'wt'))}</b><span>${esc(datumFmt(mts(m),'tm'))}</span>`
       +`<em class="num">${proTag[k]} ${proTag[k]===1?'Partie':'Partien'}</em></div>`:'';
@@ -254,7 +257,7 @@ function vHistory(){
   ` : '';
 
   return `
-    <div class="view-head"><h2>Verlauf</h2><p>${list.length} Partien</p></div>
+    <div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>${list.length} Partien</p></div>
     <div class="search" style="margin-bottom:14px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></svg>
       <select id="histSel" style="padding-left:40px">${opts}</select>
@@ -286,7 +289,7 @@ function vMatch(){
       <button class="seiten-tausch" data-tausch="${t}" title="Seiten tauschen" aria-label="Seiten von Team ${t} tauschen">${svgI('sideSwap')}</button></div>
       <div class="court-h">${slot(t,1)}${slot(t,2)}</div></div>`;
   return `
-    <div class="view-head"><h2>Neue Partie</h2><p>Aufstellen, Sätze eintragen, speichern</p></div>
+    <div class="view-head"><h2>Neue Partie ${hilfeKnopf('eingabe')}</h2><p>Aufstellen, Sätze eintragen, speichern</p></div>
     <div class="builder court">
       ${haelfte('A')}
       <div class="vs-mid court-netz"><span class="line"></span><span class="vs">NETZ</span><span class="line"></span></div>
@@ -313,107 +316,78 @@ function vMatch(){
 function vSettings(){
   // `zeig` ist die Beschriftung, wenn der Regler in anderen Schritten zählt
   // als der Wert: der Zuschlag je Partie stand als „15" da und meint 1,5 Elo.
-  const sl=(id,name,val,min,max,suf,zeig)=>`<div class="slider-wrap">
-    <div class="sh"><span class="sn">${name}</span><span class="sv"><span id="${id}v">${zeig==null?val:zeig}</span>${suf||''}</span></div>
-    <input type="range" id="${id}" min="${min}" max="${max}" value="${val}"></div>`;
-  // Aktuelle Werte für Erklärungen (mit Fallbacks)
+  // `hint` ist der eine Satz unter dem Regler, was er tut.
+  const sl=(id,name,val,min,max,suf,zeig,hint)=>`<div class="slider-wrap">
+    <div class="sh"><span class="sn">${name}</span><span class="sv"><span id="${id}v">${zeig==null||zeig===''?val:zeig}</span>${suf||''}</span></div>
+    <input type="range" id="${id}" min="${min}" max="${max}" value="${val}">${hint?`<div class="sl-hint">${hint}</div>`:''}</div>`;
+  // Jeder Wert der Engine hat einen Regler, gruppiert nach dem, was er
+  // bewegt, und je Regler ein Satz, was er tut. Vorher standen neun von
+  // neunzehn da und darunter eine lange Erklärkarte; die übrigen wirkten,
+  // ohne dass jemand sie sah oder verstellen konnte.
+  const pz = v => Math.round(v * 100);
   const c = {
-    k:          Math.round(cfg.k_factor),
-    risk:       Math.round((cfg.risk_split ?? 0.6)*100),
-    pos:        Math.round((cfg.pos_swing ?? 0.45)*100),
-    winBoost:   Math.round((cfg.win_boost ?? 1.12)*100),
-    movDamp:    Math.round((cfg.mov_loss_damp ?? 0.5)*100),
-    bonus:      komma(cfg.match_bonus ?? 1.5, 1),
-    startElo:   Math.round(cfg.start_elo ?? 0),
-    npMult:     Math.round((cfg.new_player_mult ?? 1.5)*100),
-    npMidMult:  Math.round((cfg.new_player_mid_mult ?? 1.2)*100),
-    vetDamp:    Math.round((cfg.veteran_damp ?? 0.85)*100),
-    movMax:     Math.round((cfg.mov_max_boost ?? 0.4)*100),
-    expProt:    Math.round((cfg.exp_protect_max ?? 0.1)*100),
-    udElo:      Math.round((cfg.underdog_elo_max ?? 0.15)*100),
-    udGames:    Math.round((cfg.underdog_games_max ?? 0.05)*100),
-    lowDamp:    Math.round((cfg.low_elo_loss_damp ?? 0)*100),
+    k:Math.round(cfg.k_factor ?? 32), startElo:Math.round(cfg.start_elo ?? 0),
+    eins:pz(cfg.gewicht_eins ?? GEWICHT_STUETZEN_STANDARD.eins), drei:pz(cfg.gewicht_drei ?? GEWICHT_STUETZEN_STANDARD.drei),
+    ueber6:pz(cfg.gewicht_ueber6 ?? GEWICHT_JE_GAME_UEBER_6), tb:pz(cfg.tb_ausgleich ?? TIEBREAK_AUSGLEICH),
+    winBoost:pz(cfg.win_boost ?? 1.12), movMax:pz(cfg.mov_max_boost ?? 0.4), movDamp:pz(cfg.mov_loss_damp ?? 0.5),
+    bonus:Math.round((cfg.match_bonus ?? 1.5) * 10),
+    risk:pz(cfg.risk_split ?? 0.6), pos:pz(cfg.pos_swing ?? 0.45),
+    npMult:pz(cfg.new_player_mult ?? 1.5), npMidMult:pz(cfg.new_player_mid_mult ?? 1.2),
+    vetDamp:pz(cfg.veteran_damp ?? 0.85), expProt:pz(cfg.exp_protect_max ?? 0.1),
+    udElo:pz(cfg.underdog_elo_max ?? 0.15), udGames:pz(cfg.underdog_games_max ?? 0.05), lowDamp:pz(cfg.low_elo_loss_damp ?? 0),
   };
-  // Neun Regler statt fünfzehn. Die übrigen (Dämpfung bei Niederlagen,
-  // Schutz für Schwächere und Erfahrene, Aufhol-Zuschlag, Anfänger, Spitze)
-  // behalten ihre Werte aus der Datenbank und wirken weiter; verstellt hat
-  // sie in der Kicker-Liga in einem Jahr niemand, und jeder Regler mehr
-  // macht die Seite schwerer zu verstehen.
+  const gruppe = (titel, inhalt) => `<div class="cfg-section-title">${titel}</div><div class="card">${inhalt}</div>`;
   return `
-    <div class="view-head"><h2>Elo-Formel</h2><p>Wie Siege und Niederlagen die Elo verändern</p></div>
-
-    <div class="cfg-section-title">Grundwerte</div>
-    <div class="card">
-      ${sl('cfgK','Tempo (K-Faktor)',c.k,8,64,'')}
-      ${sl('cfgStartElo','Start-Elo jeder Saison',c.startElo,0,1000,'')}
-      ${sl('cfgNpMult','Neulinge (erste ' + NEULING_BIS + ' Partien)',c.npMult,100,200,' %')}
-    </div>
-
-    <div class="cfg-section-title">Partner und Seite</div>
-    <div class="card">
-      ${sl('cfgRisk','Last des schwächeren Partners',c.risk,0,100,' %')}
-      ${sl('cfgPos','Ausgleich der Seite',c.pos,0,100,' %')}
-    </div>
-
-    <div class="cfg-section-title">Sieg und Ergebnis</div>
-    <div class="card">
-      ${sl('cfgWinBoost','Mehr für Siege',c.winBoost,100,140,' %')}
-      ${sl('cfgMovMax','Zuschlag für deutliche Siege',c.movMax,0,100,' %')}
-      ${sl('cfgBonus','Zuschlag je Satz',Math.round((cfg.match_bonus ?? 1.5)*10),0,50,' Elo',c.bonus)}
-      ${sl('cfgUdElo','Außenseiter-Zuschlag',c.udElo,0,100,' %')}
-    </div>
-
-    <div class="card">
-      <div class="mini-label">So wirken die Regler</div>
-      <div style="font-size:12px;color:var(--ink2);line-height:1.8">
-        <b style="color:var(--acid)">Je Satz</b> — Jeder Satz ist eine eigene Rechnung, nacheinander, jeder mit dem Stand nach dem vorigen. Drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene, und wer einen Satz gewinnt, bekommt dafür Elo, auch wenn er die Partie verliert.<br>
-        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach den Games des Siegers: ein Satz bis sechs zählt voll, gleich ob 6:0 oder 6:4. Bis drei zählt er 75 %, bis eins 50 %, dazwischen gestaffelt. Jedes Game über sechs bringt 10 % mehr, ein 7:5 oder 7:6 also 110 %, ein 8:6 120 %, höchstens 150 %. Ein Match-Tiebreak zählt wie ein Satz bis zwei.<br>
-        <b style="color:var(--acid)">Ausgleich im Tiebreak</b> — Geht ein Satz über sechs oder in einen Tiebreak, verliert der Verlierer ${Math.round(TIEBREAK_AUSGLEICH*100)} % weniger: er hat den Satz lange offen gehalten.<br>
-        <b style="color:var(--acid)">Start-Elo</b> — Mit diesem Wert beginnt jeder Spieler eine Saison.<br>
-        <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Sätzen einer Saison wirkt das Tempo zu ${c.npMult} %, bis zum ${EINGEWOEHNT_BIS}. Satz noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
-        <b style="color:var(--acid)">Last des schwächeren Partners</b> — Bei ${c.risk} % verliert weniger Elo, wer mit einem deutlich schwächeren Partner spielt.<br>
-        <b style="color:var(--acid)">Ausgleich der Seite</b> — Auf der schwächeren Seite bringt ein Sieg mehr und kostet eine Niederlage weniger, höchstens ${Math.round(POS_GRENZE*100)} %. Auf der stärkeren ist es umgekehrt, höchstens ${Math.round(POS_DAEMPFER*100)} %. Welche Seite die schwächere ist, zeigt das Seitenprofil im Profil.<br>
-        <b style="color:var(--acid)">Mehr für Siege</b> — Ein Sieg bringt ${c.winBoost-100} % mehr, als eine Niederlage kostet. So steigt die Elo über die Zeit.<br>
-        <b style="color:var(--acid)">Zuschlag für deutliche Siege</b> — Gemessen am Anteil der Games im Satz: ein 6:0 zählt bis zu ${100+c.movMax} % eines knappen Satzes, ein 6:4 kaum mehr.<br>
-        <b style="color:var(--acid)">Zuschlag je Satz</b> — ${c.bonus} Elo für jeden Satz, ob gewonnen oder verloren.<br>
-        <b style="color:var(--acid)">Außenseiter-Zuschlag</b> — Wer gegen deutlich Stärkere gewinnt, bekommt bis zu ${c.udElo} % mehr. Er kostet nie etwas.<br>
-        <b style="color:var(--acid)">Saison</b> — Mit jedem Monat beginnt die Elo neu beim Startwert. Die Elo der Laufbahn ist der gewichtete Schnitt der Saisonenden.
-      </div>
-    </div>
+    <div class="view-head"><h2>Elo-Formel</h2><p>Jeder Satz ist eine eigene Rechnung</p></div>
+    ${gruppe('Grundwerte',
+      sl('cfgK','Tempo',c.k,8,64,'','','Wie stark ein Satz die Elo bewegt.')
+      + sl('cfgStartElo','Start-Elo',c.startElo,0,1000,'','','Damit beginnt jeder eine Saison.'))}
+    ${gruppe('Länge des Satzes',
+      sl('cfgGewEins','Satz bis 1 Game',c.eins,20,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
+      + sl('cfgGewDrei','Satz bis 3 Games',c.drei,40,100,' %','','Satz bis 6 zählt voll, dazwischen gestaffelt.')
+      + sl('cfgGewUeber6','Je Game über 6',c.ueber6,0,30,' %','','7:5 und 7:6 bringen so viel mehr, höchstens 150 %.')
+      + sl('cfgTbAusgleich','Ausgleich im Tiebreak',c.tb,0,100,' %','','So viel weniger verliert, wer einen Satz über 6 verliert.'))}
+    ${gruppe('Ergebnis',
+      sl('cfgWinBoost','Mehr für Siege',c.winBoost,100,140,' %','','Ein gewonnener Satz bringt mehr, als ein verlorener kostet.')
+      + sl('cfgMovMax','Deutlicher Satz',c.movMax,0,100,' %','','Zuschlag bis zu einem 6:0, ein 6:4 kaum.')
+      + sl('cfgMovDamp','Deutlich verloren',c.movDamp,0,100,' %','','Welcher Teil davon bei einer Niederlage mitzählt.')
+      + sl('cfgBonus','Zuschlag je Satz',c.bonus,0,50,' Elo',komma(c.bonus / 10, 1),'Für jeden Satz, gewonnen oder verloren.'))}
+    ${gruppe('Partner und Seite',
+      sl('cfgRisk','Last des schwächeren Partners',c.risk,0,100,' %','','Wer mit einem deutlich Schwächeren spielt, verliert weniger.')
+      + sl('cfgPos','Ausgleich der Seite',c.pos,0,100,' %','','Auf der schwächeren Seite mehr Gewinn und weniger Verlust.'))}
+    ${gruppe('Neue und Erfahrene',
+      sl('cfgNpMult','Neulinge',c.npMult,100,200,' %','',`Tempo in den ersten ${NEULING_BIS} Sätzen einer Saison.`)
+      + sl('cfgNpMidMult','Eingewöhnung',c.npMidMult,100,200,' %','',`Tempo bis zum ${EINGEWOEHNT_BIS}. Satz.`)
+      + sl('cfgVetDamp','Spitze',c.vetDamp,50,100,' %','','Tempo ab 400 Elo über dem Start.')
+      + sl('cfgExpProt','Schutz für Erfahrene',c.expProt,0,30,' %','','Weniger Verlust nach vielen Sätzen in der Saison.'))}
+    ${gruppe('Außenseiter',
+      sl('cfgUdElo','Sieg gegen Stärkere',c.udElo,0,100,' %','','Zuschlag nach dem Elo-Abstand. Kostet nie etwas.')
+      + sl('cfgUdGames','Weniger gespielt',c.udGames,0,30,' %','','Zuschlag für wen, der in der Saison weniger Sätze hat.')
+      + sl('cfgLowEloLossDamp','Schutz für Schwächere',c.lowDamp,0,100,' %','','Weniger Verlust unter dem Schnitt der vier.'))}
     <div class="card" style="margin-top:14px;border:1px solid rgba(228,242,74,.18);background:linear-gradient(155deg,rgba(228,242,74,.06),var(--surface) 80%)">
       <div class="mini-label" style="color:var(--acid);display:flex;align-items:center;gap:6px">${svgI('info')}Wirkung der Regler</div>
       <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:8px">
-        Änderungen an den Reglern wirken <b style="color:var(--acid)">nur auf neue Partien</b>.
-        Vergangene Partien behalten ihre Elo, abgeschlossene Saisons und Auszeichnungen bleiben, wie sie sind.
-      </p>
-      <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:6px">
-        Sollen die Regler auch rückwirkend gelten, lassen sich alle Partien neu berechnen.
-        <b style="color:var(--red)">Dabei wird die gespeicherte Elo jeder Partie überschrieben.</b>
+        Regler wirken auf <b style="color:var(--acid)">neue Partien</b>. Neu berechnen wendet sie auf alle an und
+        <b style="color:var(--red)">überschreibt die gespeicherte Elo</b>.
       </p>
       <button class="btn" id="recalcBtn" style="margin-top:14px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('neuRechnen')} Alle Partien neu berechnen</button>
     </div>
 
     <div class="card" style="margin-top:14px">
       <div class="mini-label">Sicherung und Export</div>
-      <p style="font-size:11.5px;color:var(--ink2);line-height:1.6;margin-top:10px">
-        Hier lässt sich jederzeit eine eigene Kopie der Liga speichern, falls in der Cloud etwas verloren geht.
-      </p>
+
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
         <button class="btn ghost" id="expXlsxBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('scroll')} Partien als Excel (.xlsx)</button>
         <button class="btn ghost" id="expSaveBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('sichern')} Sicherung speichern (.json)</button>
         <button class="btn ghost sm" id="expCsvBtn" style="width:100%;font-size:11px">Stattdessen als CSV</button>
       </div>
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px">
-        <b style="color:var(--acid)">Excel</b>: alle ${matches.length} Partien mit Namen, Seiten und Sätzen,
-        dazu Spieler und Saisons. Zum Anschauen und Weitergeben.<br>
-        <b style="color:var(--acid)">Sicherung</b>: die vollständige Kopie mit Elo und Einstellungen.
-        Mit ihr lässt sich die Liga im Ernstfall wieder aufbauen.
+        Excel zum Anschauen, die Sicherung zum Wiederherstellen der ganzen Liga.
       </p>
       <div style="height:1px;background:var(--line);margin:14px 0"></div>
       <button class="btn" id="impBackupBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('hochladen')} Datei einspielen</button>
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px">
-        Nimmt .xlsx, .csv und .json. Vorher zeigt eine Vorschau, was dazukommt.
-        <b style="color:var(--acid)">Es wird nie etwas gelöscht oder überschrieben</b>, nur fehlende Partien kommen dazu.
+        .xlsx, .csv oder .json. Nur fehlende Partien kommen dazu, nichts wird überschrieben.
       </p>
     </div>
 
@@ -494,8 +468,6 @@ function requestMatchPreview(){
     const html=validM()?anschlussHtml(M):'';
     if(an._html!==html){
       an.innerHTML=html; an._html=html;
-      const k=an.querySelector('[data-anschluss]');
-      if(k) k.onclick=()=>{ M.neu=k.dataset.anschluss==='aus'; requestMatchPreview(); };
     }
   }
   if(_matchPreviewPlan && _matchPreviewPlan.slot===slot) return;
@@ -557,9 +529,10 @@ function updatePreview(){
     </div>`;
   };
   const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
-  const angehaengt = !M.neu && !!partieFortsetzung(M, satzListe(M));
-  const zusatz = [n > 1 ? 'je Satz gerechnet' : '', !angehaengt && p.zuNull ? 'zu Null' : ''].filter(Boolean).join(' · ');
-  const titel = angehaengt ? (n > 1 ? 'Elo für diese Sätze' : 'Elo für diesen Satz') : 'Elo nach dieser Partie';
+  // Jeder Satz wird eine eigene Partie [§1.3]; die Zahlen davor sind die
+  // Elo je Satz, rechts ihre Summe.
+  const zusatz = n > 1 ? `${n} Sätze, je eine Partie` : '';
+  const titel = 'Elo';
   slot.innerHTML = `<div class="preview">
     <div class="prob-cap">${titel}${zusatz?' · '+zusatz:''}</div>
     <div class="delta-list">
@@ -595,86 +568,62 @@ async function doSaveMatch(){
   if(save){save.disabled=true;save.setAttribute('aria-busy','true');save.textContent='Speichere…';}
   let insertedRow=null;
   try {
-  // Setzt der Eintrag die Partie davor fort, wird er an sie angehängt
-  // [§5.6b], und die Partie ist danach eine — mit Sieger, Wende und Serie.
-  const fort = M.neu ? null : partieFortsetzung(M, satzListe(M));
-  if(fort){
-    const erg = await partieAnhaengen(fort);
-    if(!erg) return;
-    insertedRow = erg.neu;
-    if(unveraendert()){
-      M={...matchLeer(),A1:M.A1,A2:M.A2,B1:M.B1,B2:M.B2,fixA:M.fixA,fixB:M.fixB};
-      if(tab==='match') tab='ranking';
-    }
-    neuZeichnen();
-    loadAll();
-    nachDemBild().then(() => {
-      const toastWorthy = badgesEarnedInMatch(erg.neu.id).filter(e => rarityOf(e.badge.id) !== 'common');
-      if(toastWorthy.length) toastWorthy.forEach(e => showAchievementToast(pname(e.playerId), e.badge));
-      const p = partie(erg.neu);
-      const sieger = p.winner === 'A' ? [erg.neu.a1, erg.neu.a2] : [erg.neu.b1, erg.neu.b2];
-      toast('Satz angehängt', 'ok', {
-        sub: sieger.map(pname).join(' & ') + (p.setsA === p.setsB ? ' vorn nach Games, ' : ' vorn, ') + standFuer(erg.neu),
-        aktion: {label:'Rückgängig', fn: () => partieAnhangZurueck(erg)}});
-    });
-    return;
-  }
-  const felder = partieFelder(satzListe(M));
-  const winner = felder.winner;
-  const c = _matchInputResult();
+  // Jeder Satz wird eine eigene Partie [§1.3]: drei Sätze auf einmal geben
+  // drei Zeilen, genau wie drei einzeln gespeicherte. Die Deltas sind die
+  // der Vorschau (`computeMatch` rechnet dieselben Zeilen nacheinander).
   const {teamA,teamB} = teamsFromM();
-  const row = {
-    a1:M.A1, a1_side:teamA[0].pos, a2:M.A2, a2_side:teamA[1].pos,
-    b1:M.B1, b1_side:teamB[0].pos, b2:M.B2, b2_side:teamB[1].pos,
-    ...felder, deltas:c.res, exp_a:c.expA
-  };
-  // insert(...).select() gibt die erzeugte Zeile inkl. id + created_at zurück,
-  // damit die lokale Kopie exakt der DB entspricht (created_at wird für die
-  // Saison-Filterung in matchesInSeason zwingend gebraucht).
-  const{data:inserted, error} = await sb.from('matches').insert(row).select().single();
+  const c = computeMatch(teamA, teamB, partieFelder(satzListe(M)));
+  const rows = c.je.map(x => {
+    const z = {...x.zeile, deltas:x.res, exp_a:x.expA}; delete z.id; return z;
+  });
+  if(!rows.length){toast('Kein Satz mit Sieger',true);return;}
+  // insert(...).select() gibt die erzeugten Zeilen samt id zurück, damit
+  // die lokale Kopie exakt der Datenbank entspricht.
+  const{data:inserted, error} = await sb.from('matches').insert(rows).select();
   if(error){toast('Fehler: '+error.message,true);return;}
+  const savedRows = (Array.isArray(inserted) && inserted.length === rows.length) ? inserted : rows;
+  insertedRow = savedRows[0];
 
-  // Fallback: falls select() nicht greift, created_at lokal setzen,
-  // sonst fiele das frische Match aus matchesInSeason heraus.
-  const savedRow = inserted || {...row, created_at:new Date().toISOString()};
-  insertedRow=savedRow;
-
-  // Das Match steht in der Datenbank; ab hier wartet niemand mehr auf das
-  // Netz [§3.1c]. Lokal anhängen, zeichnen, und was die Datenbank daraus
-  // ableitet (Seitenprofil, Saison-Elo), schreibt die Kette danach. Ein
-  // neues Match ist ein neuer Datenstand: dieselben Töpfe wie nach einem
+  // Die Partien stehen in der Datenbank; ab hier wartet niemand mehr auf
+  // das Netz [§3.1c]. Lokal anhängen, zeichnen, und was die Datenbank
+  // daraus ableitet (Seitenprofil, Saison-Elo), schreibt die Kette danach.
+  // Neue Partien sind ein neuer Datenstand: dieselben Töpfe wie nach einem
   // Abruf (`LADEN_TOEPFE`), sonst zeigte ein Reiter den alten.
-  matches = [...matches, savedRow];
+  matches = [...matches, ...savedRows];
   invalidateCache(LADEN_TOEPFE);
   // Ein während des Wartens geänderter Entwurf und ein bewusst gewechselter
   // Reiter gehören dem Nutzer, nicht der verspäteten Speicherantwort. Wer
-  // mehrere Matches hintereinander mit denselben vier spielt, behält die
+  // mehrere Sätze hintereinander mit denselben vier spielt, behält die
   // Aufstellung; nur die Sätze beginnen neu.
   if(unveraendert()){
     M={...matchLeer(),A1:M.A1,A2:M.A2,B1:M.B1,B2:M.B2,fixA:M.fixA,fixB:M.fixB};
     if(tab==='match') tab='ranking';
   }
   neuZeichnen();
-  imHintergrund(() => persistNewMatch(savedRow.id));
+  const ids = savedRows.map(r => r.id).filter(Boolean);
+  imHintergrund(async () => { for(const id of ids) await persistNewMatch(id); });
   loadAll();
 
   // ─── ACHIEVEMENT-TOASTS ───────────────────────────────────────────
-  // badgesEarnedInMatch liefert genau die in DIESEM Match neu erreichten
-  // Badges. Gerechnet nach dem ersten Bild der neuen Ansicht: die
-  // Auszeichnungen der ganzen Liga zu rechnen kostet mehr als das Zeichnen.
-  // Common-Badges werden NICHT als Toast gezeigt, sonst entsteht eine
-  // Kaskade; sie bleiben im Match-Rückblick sichtbar.
+  // Gerechnet nach dem ersten Bild der neuen Ansicht: die Auszeichnungen
+  // der ganzen Liga zu rechnen kostet mehr als das Zeichnen. Common-Badges
+  // werden NICHT als Toast gezeigt, sonst entsteht eine Kaskade.
   nachDemBild().then(() => {
-    const toastWorthy = badgesEarnedInMatch(savedRow.id).filter(e => rarityOf(e.badge.id) !== 'common');
+    const toastWorthy = ids.flatMap(id => badgesEarnedInMatch(id)).filter(e => rarityOf(e.badge.id) !== 'common');
     if(toastWorthy.length){
       toastWorthy.forEach(e => showAchievementToast(pname(e.playerId), e.badge));
     } else {
       // Die Wirkung in der zweiten Zeile, und ein Weg zurück: wer sich beim
-      // Ergebnis vertippt hat, musste sonst das Match suchen und löschen.
-      const sieger = winner === 'A' ? [row.a1,row.a2] : [row.b1,row.b2];
-      toast('Partie gespeichert', 'ok', {
-        sub: sieger.map(pname).join(' & ') + ' gewinnen ' + standFuer(savedRow),
-        aktion: {label:'Rückgängig', fn: () => partieLoeschen(savedRow.id)}});
+      // Ergebnis vertippt hat, musste sonst die Partien suchen und löschen.
+      // Der Stand der Begegnung, wenn sie mehr als einen Satz hat [§1.3].
+      const letzte = savedRows[savedRows.length - 1];
+      const bg = begegnungVon(letzte);
+      const sieger = r => (r.winner === 'A' ? [r.a1, r.a2] : [r.b1, r.b2]).map(pname).join(' & ');
+      const sub = bg.n > 1 && bg.winner
+        ? `${(bg.winner === 'A' ? [letzte.a1, letzte.a2] : [letzte.b1, letzte.b2]).map(pname).join(' & ')} ${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)} in Sätzen`
+        : `${sieger(letzte)} gewinnen ${standFuer(letzte)}`;
+      toast(savedRows.length === 1 ? 'Satz gespeichert' : `${savedRows.length} Sätze gespeichert`, 'ok', {
+        sub, aktion: {label:'Rückgängig', fn: () => partieLoeschen(ids)}});
     }
   });
   } catch(e){

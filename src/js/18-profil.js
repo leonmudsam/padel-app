@@ -61,7 +61,8 @@ function zeigeProfilPosInfo(id){
   const pp = v => v == null ? '–' : _ppZeichen(v);
   const elo = v => v == null ? '–' : v >= .5 ? '+' + Math.round(v) : v <= -.5 ? '−' + Math.round(-v) : '0';
   const quote = v => v == null ? '–' : pct(v) + ' %';
-  const zeile = (lbl, a, d) => `<span class="l">${lbl}</span><span>${a}</span><span>${d}</span>`;
+  // Revés links, Drive rechts, wie auf dem Platz und in der Aufstellung.
+  const zeile = (lbl, a, d) => `<span class="l">${lbl}</span><span>${d}</span><span>${a}</span>`;
   // Die Wirkung in der Elo, für diesen Spieler ausgerechnet: die Seite mit
   // Bonus zuerst. Ein Ausschlag unter 0,05 % ist keiner.
   const fS = posFactor(lage, 'drive', cfg.pos_swing), fD = posFactor(lage, 'reves', cfg.pos_swing);

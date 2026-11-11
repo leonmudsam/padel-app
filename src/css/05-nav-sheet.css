@@ -20,6 +20,10 @@
   .mtag em{margin-left:auto;font-style:normal;font-family:'Sometype Mono',monospace;font-size:10px;color:var(--faint)}
   .mrow-bd{display:flex;gap:3px;align-items:center;margin-top:5px;flex-wrap:wrap}
   .mrow-bd > span{background:var(--surface3);padding:2px 6px;border-radius:7px;display:inline-flex;align-items:center;gap:4px;color:var(--ink2);font-size:10px}
+  /* Der Stand eines Matches über mehrere Sätze [§1.3] am letzten Satz: in
+     Court-Blau, weil er über die Partie hinaus etwas sagt. */
+  .mrow-bd > .mrow-match{background:rgba(47,111,214,.16);color:var(--ink);font-weight:700}
+  .mrow-match svg{width:12px;height:12px}
   .mrow-fuss{margin-top:6px}
   .mrow-edit{color:var(--acid2);display:inline-flex;align-items:center;gap:5px}
   .mdeltas .delta-v{font-size:11px}
@@ -51,6 +55,9 @@
   background:var(--bg2);border-radius:26px 26px 0 0;border:1px solid var(--line);border-bottom:none;
   padding:10px 20px calc(26px + var(--safe-bot));transform:translateY(100%);
   transition:transform .32s cubic-bezier(.2,.8,.2,1);max-height:88vh;overflow-y:auto;
+  /* Über der Tastatur [§C27]: --tastatur ist ihre Höhe (_sheetTastatur).
+     Ohne sie lag das Namensfeld eines neuen Spielers unter der Tastatur. */
+  bottom:var(--tastatur,0px);max-height:calc(88vh - var(--tastatur,0px));
   /* Das Blatt wird verschoben, nicht neu gezeichnet. Ohne diesen Hinweis
      liegt sein Inhalt in derselben Schicht wie die Seite, und der Browser
      malt ihn in jedem Bild der Bewegung neu — beim News-Feed waren das

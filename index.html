@@ -912,6 +912,8 @@
   .mtag em{margin-left:auto;font-style:normal;font-family:'Sometype Mono',monospace;font-size:10px;color:var(--faint)}
   .mrow-bd{display:flex;gap:3px;align-items:center;margin-top:5px;flex-wrap:wrap}
   .mrow-bd > span{background:var(--surface3);padding:2px 6px;border-radius:7px;display:inline-flex;align-items:center;gap:4px;color:var(--ink2);font-size:10px}
+  .mrow-bd > .mrow-match{background:rgba(47,111,214,.16);color:var(--ink);font-weight:700}
+  .mrow-match svg{width:12px;height:12px}
   .mrow-fuss{margin-top:6px}
   .mrow-edit{color:var(--acid2);display:inline-flex;align-items:center;gap:5px}
   .mdeltas .delta-v{font-size:11px}
@@ -937,6 +939,7 @@
   background:var(--bg2);border-radius:26px 26px 0 0;border:1px solid var(--line);border-bottom:none;
   padding:10px 20px calc(26px + var(--safe-bot));transform:translateY(100%);
   transition:transform .32s cubic-bezier(.2,.8,.2,1);max-height:88vh;overflow-y:auto;
+  bottom:var(--tastatur,0px);max-height:calc(88vh - var(--tastatur,0px));
   will-change:transform;
   touch-action:pan-y;
   overscroll-behavior-y:contain;
@@ -1150,6 +1153,7 @@
   .slider-wrap{margin:14px 0}
   .slider-wrap .sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .slider-wrap .sh .sn{font-size:13px;font-weight:600}
+  .sl-hint{margin-top:6px;font-size:11px;line-height:1.4;color:var(--muted)}
   .slider-wrap .sh .sv{font-family:'Sometype Mono',monospace;font-size:13px;color:var(--acid);font-weight:700}
   input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;
     background:var(--surface3);outline:none}
@@ -6762,7 +6766,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.fb6c2009';
+const BUILD_VERSION='2026.11.11.8abab9dc';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -6950,6 +6954,7 @@ const ICONS = {
   dropDouble:    `<g transform="translate(0 3.75)"><path d="M7 3s3 4 3 7.5a3 3 0 11-6 0c0-3.5 3-7.5 3-7.5z"/><path d="M17 3s3 4 3 7.5a3 3 0 11-6 0c0-3.5 3-7.5 3-7.5z"/></g>`,
   dropTriple:    `<g transform="translate(0 3.75)"><path d="M5 6s2 3 2 5a2 2 0 11-4 0c0-2 2-5 2-5z"/><path d="M12 3s3 4 3 7.5a3 3 0 11-6 0c0-3.5 3-7.5 3-7.5z"/><path d="M19 6s2 3 2 5a2 2 0 11-4 0c0-2 2-5 2-5z"/></g>`,
   info:          `<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16v.5"/>`,
+  frage:         `<circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1.1.9-1.1 1.6v.5M12 16.3v.4"/>`,
   peak:          `<path d="M3 20h18M5 20l5-10 3 6 2-3 4 7"/><polygon points="10,4 11,6 13,6.2 11.6,7.5 12,9.5 10,8.5 8,9.5 8.4,7.5 7,6.2 9,6"/>`,
   medal2:        `<g transform="translate(0 0.5)"><circle cx="12" cy="14" r="6"/><path d="M9 8L7 3h10l-2 5"/><polyline points="10,15 12,12 14,15"/></g>`,
   climb:         `<g transform="translate(0 0.5)"><path d="M3 20h18M3 20l5-8 4 4 5-7 4 4"/><polyline points="15,7 19,3 21,7"/><path d="M19 3v6"/></g>`,
@@ -7502,15 +7507,18 @@ function satzErgebnisse(m){
     .map(s => umdrehen ? s.b + ':' + s.a : s.a + ':' + s.b);
 }
 
-const GEWICHT_STUETZEN = [[1, 0.5], [3, 0.75], [6, 1]];
+const GEWICHT_STUETZEN_STANDARD = {eins:0.5, drei:0.75};
 const GEWICHT_JE_GAME_UEBER_6 = 0.1;
 const GEWICHT_MAX = 1.5;
 const GEWICHT_MTB_GAMES = 2;
 function satzGewichtNachGames(g){
-  if(g >= 6) return Math.min(GEWICHT_MAX, 1 + GEWICHT_JE_GAME_UEBER_6 * (g - 6));
-  if(g <= GEWICHT_STUETZEN[0][0]) return GEWICHT_STUETZEN[0][1];
-  for(let i = 1; i < GEWICHT_STUETZEN.length; i++){
-    const [g1, w1] = GEWICHT_STUETZEN[i - 1], [g2, w2] = GEWICHT_STUETZEN[i];
+  const ueber = cfg.gewicht_ueber6 ?? GEWICHT_JE_GAME_UEBER_6;
+  if(g >= 6) return Math.min(GEWICHT_MAX, 1 + ueber * (g - 6));
+  const stuetzen = [[1, cfg.gewicht_eins ?? GEWICHT_STUETZEN_STANDARD.eins],
+    [3, cfg.gewicht_drei ?? GEWICHT_STUETZEN_STANDARD.drei], [6, 1]];
+  if(g <= stuetzen[0][0]) return stuetzen[0][1];
+  for(let i = 1; i < stuetzen.length; i++){
+    const [g1, w1] = stuetzen[i - 1], [g2, w2] = stuetzen[i];
     if(g <= g2) return w1 + (w2 - w1) * (g - g1) / (g2 - g1);
   }
   return 1;
@@ -7538,6 +7546,50 @@ function partieFelder(saetze){
     games_a: p.gamesA, games_b: p.gamesB,
     winner: p.winner,
   };
+}
+
+const BEGEGNUNG_PAUSE_MIN = 90;
+const _BEGEGNUNG_LEER = Object.freeze({winner:null, setsA:0, setsB:0, zuNull:false, wende:false,
+  doppelBagel:false, umkaempft:false, saetze:[], n:0});
+let _begMemo = {liste:null, laenge:-1, gruppen:null};
+const _paarSchluessel = (p, q) => [p, q].sort().join('|');
+function _begegnungsGruppen(){
+  if(_begMemo.liste === matches && _begMemo.laenge === matches.length) return _begMemo.gruppen;
+  const gruppen = new Map();
+  const folge = matches.slice().sort((x, y) => mts(x) - mts(y));
+  let akt = null, vor = null;
+  for(const m of folge){
+    const a = _paarSchluessel(m.a1, m.a2), b = _paarSchluessel(m.b1, m.b2);
+    const gleich = vor && akt && ((a === akt.a && b === akt.b) || (a === akt.b && b === akt.a))
+      && tagKey(mts(m)) === tagKey(mts(vor)) && mts(m) - mts(vor) <= BEGEGNUNG_PAUSE_MIN * 60000;
+    if(!gleich) akt = {a, b, zeilen:[]};
+    akt.zeilen.push(m);
+    gruppen.set(m.id, akt);
+    vor = m;
+  }
+  _begMemo = {liste:matches, laenge:matches.length, gruppen};
+  return gruppen;
+}
+function begegnungVon(m){
+  const g = _begegnungsGruppen().get(m.id);
+  const zeilen = g ? g.zeilen : [m];
+  const aRef = _paarSchluessel(m.a1, m.a2);
+  const saetze = [];
+  zeilen.forEach(z => {
+    const gedreht = _paarSchluessel(z.a1, z.a2) !== aRef;
+    partieSaetze(z).forEach(s => saetze.push(gedreht ? {a:s.b, b:s.a, art:s.art} : s));
+  });
+  const p = saetzeAuswerten(saetze);
+  return Object.assign({}, p, {saetze, n:zeilen.length, zeilen, letzte:zeilen[zeilen.length - 1] === m || !g,
+    nr:zeilen.indexOf(m) + 1 || 1});
+}
+function begegnungAm(m){
+  const b = begegnungVon(m);
+  return b.letzte ? b : _BEGEGNUNG_LEER;
+}
+function begegnungGewonnen(m, id){
+  const b = begegnungAm(m);
+  return b.winner ? teamVon(m, id) === b.winner : null;
 }
 let _cache={version:0};
 
@@ -8191,31 +8243,29 @@ function movMult(m){
   return 1 + maxBoost * anteil * Math.min(1, Math.log(p.gameDiff + 1) / Math.log(7));
 }
 
-function computeMatch(teamA, teamB, felder){
-  const HYPO_ID = '__hypo__';
-  const hypo = {
-    id: HYPO_ID,
-    a1: teamA[0].id, a1_side: teamA[0].pos,
-    a2: teamA[1].id, a2_side: teamA[1].pos,
-    b1: teamB[0].id, b1_side: teamB[0].pos,
-    b2: teamB[1].id, b2_side: teamB[1].pos,
-    ...felder,
-    created_at: new Date().toISOString()
-  };
+function eintragZeilen(teamA, teamB, saetze, basis){
+  const t0 = basis == null ? Date.now() : basis;
+  return saetze.filter(s => saetzeAuswerten([s]).winner).map((s, i) => ({
+    a1: teamA[0].id, a1_side: teamA[0].pos, a2: teamA[1].id, a2_side: teamA[1].pos,
+    b1: teamB[0].id, b1_side: teamB[0].pos, b2: teamB[1].id, b2_side: teamB[1].pos,
+    ...partieFelder([s]), created_at: new Date(t0 + i * 1000).toISOString()
+  }));
+}
+function computeMatch(teamA, teamB, felder, basis){
+  const zeilen = eintragZeilen(teamA, teamB, partieSaetze(felder), basis)
+    .map((z, i) => Object.assign(z, {id:'__hypo__' + i}));
   const globalSim = getGlobalSim();
-  const sim = simulateEloWithSliders([hypo], {
-    initialState: globalSim,
-    initialCurSeason: globalSim.curSeason
+  const sim = simulateEloWithSliders(zeilen, {initialState: globalSim, initialCurSeason: globalSim.curSeason});
+  const je = zeilen.map(z => {
+    const e = sim.history.find(h => h.matchId === z.id);
+    return {zeile:z, res:e ? {...e.deltas} : {}, expA:e ? e.expA : 0.5};
   });
-  const entry = sim.history.find(h => h.matchId === HYPO_ID);
-  const res = entry ? {...entry.deltas} : {};
-  const expA = entry ? entry.expA : 0.5;
-  const saetze = {};
-  Object.keys(res).forEach(id => {
-    const bd = entry && entry.breakdowns && entry.breakdowns[id];
-    saetze[id] = bd && bd.saetze ? bd.saetze.map(b => b.delta) : [res[id]];
-  });
-  return {res, expA, saetze};
+  const res = {}, saetze = {};
+  je.forEach(x => Object.keys(x.res).forEach(id => {
+    res[id] = (res[id] || 0) + x.res[id];
+    (saetze[id] = saetze[id] || []).push(x.res[id]);
+  }));
+  return {res, expA:je.length ? je[0].expA : 0.5, saetze, je};
 }
 
 function _zahlAnders(a, b){ return !(Math.abs((+a || 0) - (+b || 0)) < 1e-6); }
@@ -10471,9 +10521,10 @@ function _statZaehlen(s, m, id, run){
   const pos = seiteVon(m, id);
   s.games++; s.gf += f.gamesFor; s.ga += f.gamesAgainst; s.sf += f.setsFor; s.sa += f.setsAgainst;
   s.tbW += f.tbWon; s.tbL += f.tbLost; s.bagelsFor += f.bagelsFor; s.bagelsAgainst += f.bagelsAgainst;
-  if(p.zuNull){ if(won) s.zuNullW++; else s.zuNullL++; }
-  if(p.umkaempft){ s.umkG++; if(won) s.umkW++; }
-  if(p.wende && won) s.wenden++;
+  const bg = begegnungAm(m), bgW = bg.winner === team;
+  if(bg.zuNull){ if(bgW) s.zuNullW++; else s.zuNullL++; }
+  if(bg.umkaempft){ s.umkG++; if(bgW) s.umkW++; }
+  if(bg.wende && bgW) s.wenden++;
   if(won){ s.wins++; run = run >= 0 ? run + 1 : 1; } else { s.losses++; run = run <= 0 ? run - 1 : -1; }
   if(pos === 'drive'){ s.drvG++; if(won) s.drvW++; s.drvGf += f.gamesFor; s.drvGa += f.gamesAgainst; }
   else               { s.revG++; if(won) s.revW++; s.revGf += f.gamesFor; s.revGa += f.gamesAgainst; }
@@ -10601,8 +10652,9 @@ function teamDetail(p1,p2){
 
     teamMatches.push({m,onA,won,myGf,myGa,diff,expected,t});
 
-    if(pd.zuNull){ if(won) shutouts++; else shutoutsAgainst++; }
-    if(pd.doppelBagel && won) perfectWins++;
+    const bg=begegnungAm(m), bgW=bg.winner===(onA?'A':'B');
+    if(bg.zuNull){ if(bgW) shutouts++; else shutoutsAgainst++; }
+    if(bg.doppelBagel && bgW) perfectWins++;
     tbW+=fd.tbWon; tbL+=fd.tbLost; sf+=fd.setsFor; sa+=fd.setsAgainst;
     const umdrehen = (pd.winner==='A') !== onA;
     satzErgebnisse(m).forEach(x => {
@@ -12181,7 +12233,7 @@ function simulateEloWithSliders(matchSubset, opts={}){
         bd.lowEloEffect=won?0:rawBase*mov*boost*expProtect*underdogMult*lowEloDamp - rawBase*mov*boost*expProtect*underdogMult;
 
         const vorTb=rawBase*mov*boost*expProtect*underdogMult*lowEloDamp;
-        const tbDamp=(!won&&satzUeberSechs(t))?1-TIEBREAK_AUSGLEICH:1;
+        const tbDamp=(!won&&satzUeberSechs(t))?1-(cfg.tb_ausgleich ?? TIEBREAK_AUSGLEICH):1;
         bd.tbDamp=tbDamp; bd.tbEffect=vorTb*tbDamp-vorTb;
 
         const afterMods=vorTb*tbDamp;
@@ -12369,19 +12421,16 @@ function formDotsHtml(erg, curStreak){
     glut && i >= erg.length - glut ? ' glut' : ''}"></div>`).join('');
 }
 function ligaVorschauHtml(){
-  const fehlt = Math.max(0, 4 - activePlayers().length);
-  return vorschauHtml('racket', 'So funktioniert die Liga',
-    fehlt
-      ? `Für die erste Partie fehlen noch <b>${fehlt} Spieler</b>. Danach füllt sich jede Ansicht von selbst.`
-      : 'Alle für die erste Partie sind da. Das Plus unten rechts trägt sie ein; danach füllt sich jede Ansicht von selbst.',
+  const n = activePlayers().length, fehlt = Math.max(0, 4 - n);
+  const haken = ok => ok ? 'check' : 'users';
+  return vorschauHtml('racket', 'So geht es los',
+    '',
     [
-      ['users', 'Spieler anlegen', 'Jeder, der mitspielt, bekommt einen Namen. Gespielt wird immer zwei gegen zwei.'],
-      ['court', 'Partie eintragen', 'Nach dem Spiel über das Plus: die vier Spieler auf ihre Seite stellen, rechts Drive, links Revés, dann die Games je Satz. Jedes Format zählt, ein Satz oder drei, mit oder ohne Tiebreak, auch ein Satz, der nicht zu Ende kam.'],
-      ['trendUp', 'Elo', `Jeder beginnt bei ${Math.round(cfg.start_elo || 0)}. Jeder Satz zählt einzeln: wer ihn gewinnt, bekommt Elo, auch in einer verlorenen Partie. Ein Satz gegen Stärkere bringt mehr als einer gegen Schwächere, ein Satz bis 6 mehr als ein Kurzsatz bis 3.`],
-      ['calendar', 'Saison, Tag, Gesamt', `Eine Saison ist ein Kalendermonat, und jeder beginnt sie bei ${Math.round(cfg.start_elo || 0)}. Der Tag zeigt den Spieltag mit dem Spieler des Tages (ab ${PERIODE_MIN_SIEGE.tag} Siegen), Gesamt die Laufbahn über alle Saisons.`],
-      ['shieldStar', 'Was daraus entsteht', 'Auszeichnungen, Rekorde, die Chronik jedes Monats, das Insignium am Wappen und die News füllen sich mit den Partien. Jeder Reiter zeigt schon jetzt, was dort stehen wird.'],
-    ],
-    `<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`);
+      [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
+      ['court', '2. Partie eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz wird eine eigene Partie.'],
+      ['chartBar', '3. Rangliste lesen', 'Saison ist der laufende Monat, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.'],
+      ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Partien. Das „?" an jeder Überschrift erklärt den Reiter.'],
+    ]);
 }
 function _vRankingCore(){
   const sid = ligaSaisonId(), laeuft = ligaSaisonLaeuft();
@@ -12394,11 +12443,12 @@ function _vRankingCore(){
     </div>`;
   const saisonWahl = period==='season' ? saisonWaehlerHtml('ligaSeasonPicker', sid) : '';
 
-  if(!matches.length) return `
-    <div class="view-head"><h2>${period==='all' ? 'Ewige Tafel' : 'Liga'}</h2><p>${
+  if(!matches.length && period !== 'all') return `
+    <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${
       activePlayers().length} Spieler · noch keine Partie</p></div>
     ${periodBar}
-    ${ligaVorschauHtml()}`;
+    ${ligaVorschauHtml()}
+    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
 
   if(period!=='all'){
     let ps=periodPlayerStats(period, saisonArg);
@@ -12652,7 +12702,7 @@ function _vRankingCore(){
         </div>`;
       };
       return `
-        <div class="view-head"><h2>Liga</h2><p>${periodLabel(period, saisonArg)} · ${
+        <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${
           duos.length} Duo${duos.length===1?'':'s'} · ${totalMatches} Partien</p></div>
         ${periodBar}
         ${kontextHtml}
@@ -12664,7 +12714,7 @@ function _vRankingCore(){
     }
 
     return `
-      <div class="view-head"><h2>Liga</h2><p>${periodLabel(period, saisonArg)} · ${ps.length} aktiv · ${totalMatches} Partien</p></div>
+      <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${ps.length} aktiv · ${totalMatches} Partien</p></div>
       ${periodBar}
       ${kontextHtml}
       ${saisonWahl}
@@ -12739,7 +12789,7 @@ function _vRankingCore(){
 
 
   return `
-    <div class="view-head"><h2>Ewige Tafel</h2><p>Karriere-Elo über ${
+    <div class="view-head"><h2>Ewige Tafel ${hilfeKnopf('liga')}</h2><p>Karriere-Elo über ${
       seasons.length} Saison${seasons.length===1?'':'s'} · ${matches.length} Partien</p></div>
     ${periodBar}
     ${hofHtml || `<div class="stat-strip">
@@ -12750,7 +12800,8 @@ function _vRankingCore(){
     ${hofPodsHtml}
     ${metrikLeisteHtml('all')}
     ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
-    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
+    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>
+    ${matches.length ? '' : ligaVorschauHtml()}`;
 
 }
 function rrow(p, s, i, metric, globalElo, letzte){
@@ -12818,13 +12869,8 @@ function positionsListe(pos, spieler){
 
 function positionsBlockHtml(arr, pos, ohneRang){
   if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
-    pos==='drive' ? 'Drive, die rechte Seite' : 'Revés, die linke Seite',
-    `Jede Partie stellt jeden Spieler auf eine Seite. Hier steht, wer ${pos==='drive'?'rechts':'links'} über der Erwartung spielt: Siege und Games, gemessen an der Stärke von Partner und Gegnern. Die erste Partie auf dieser Seite füllt die Liste.`,
-    [
-      ['posDrive', 'Drive, rechts', 'Die Vorhand in der Mitte. Baut die Punkte auf und hält den Ball im Spiel.'],
-      ['posReves', 'Revés, links', 'Die Rückhand an der Wand. Schließt die Punkte oft über Kopf ab.'],
-      ['posFlex', 'Das Seitenprofil', 'Im Profil steht, wie oft jemand wo spielt und auf welcher Seite er besser ist. Die Seiten-Landkarte darüber stellt alle nebeneinander.'],
-    ]);
+    pos==='drive' ? 'Drive · rechts' : 'Revés · links',
+    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jeder Partie.`);
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     const wert = Math.round(x.score*100);
@@ -12855,26 +12901,18 @@ function vPositions(){
   const arr = positionsListe(which);
   const ruhe = positionsListe(which, ruhestandSpieler()).length;
   return `
-    <div class="view-head"><h2>Seiten <button class="kopf-info" type="button" data-info="positionen" aria-label="So entsteht der Wert">${svgI('info')}</button></h2><p>Drive und Revés, über alle Partien</p></div>
+    <div class="view-head"><h2>Seiten ${hilfeKnopf('seiten')}</h2><p>Wer auf welcher Seite am stärksten ist</p></div>
     ${einblickHtml('rollen')}
     <div class="ui-switch">
-      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
       <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}Revés · links</span></button>
+      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
     </div>
-    <div class="mini-label">▲ über · ▼ unter der Erwartung, gemessen an Partner und Gegnern</div>
+    <div class="mini-label">▲ über · ▼ unter der Erwartung</div>
     ${positionsBlockHtml(arr, which)}
     ${ruhe ? `<div class="ruhe-ende">${einblickHtml('ruhe_pos', ruhe === 1 ? 'ein Spieler' : ruhe + ' Spieler')}</div>` : ''}`;
 }
 
 
-function zeigePositionsInfo(){
-  openSheet(blattKopfHtml({ic:'info', titel:'So entsteht der Wert', unter:'Seiten'})
-    + `<div class="pos-info">
-      <p>Im Padel steht jeder Spieler auf einer Seite: <b>rechts</b> spielt der Drive, <b>links</b> der Revés. Links steht bei Rechtshändern meist der Angriffsstärkere: er nimmt die Bälle durch die Mitte mit der Vorhand und die meisten Smashes. Rechts wird das Spiel aufgebaut.</p>
-      <p>Der Wert verbindet vier Dinge: die Siegquote auf dieser Seite, die Leistung gegen die Erwartung — gemessen an Partner und Gegnern —, den Anteil der Games, den das eigene Team dort holt, und die Erfahrung, also wie oft jemand dort gespielt hat.</p>
-      <p><b>▲</b> heißt über, <b>▼</b> unter der Erwartung. Gerechnet wird über alle Partien.</p>
-      <p>Der Wert vergleicht die Liga auf einer Seite. Auf welcher Seite jemand selbst stärker ist, sagt das Seitenprofil im Profil.</p></div>`);
-}
 const AW_MIN = {
   teamSpiele: 3,
   teamEnge: 2,
@@ -13077,8 +13115,9 @@ function _awardRankingsUncached(period, sid){
       }
     }
     
-    if(partie(m).zuNull){
-      (m.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{ agg.iceWins[id]=(agg.iceWins[id]||0)+1; });
+    const _bg=begegnungAm(m);
+    if(_bg.zuNull){
+      (_bg.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{ agg.iceWins[id]=(agg.iceWins[id]||0)+1; });
     }
     
     if(partie(m).knapp){
@@ -13505,8 +13544,9 @@ function _computeShowmaster(ms){
   const result={};
   for(let i=0; i<ms.length; i++){
     const m=ms[i];
-    if(!partie(m).wende) continue;
-    (m.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{result[id]=(result[id]||0)+1;});
+    const bg=begegnungAm(m);
+    if(!bg.wende) continue;
+    (bg.winner==='A' ? [m.a1,m.a2] : [m.b1,m.b2]).forEach(id=>{result[id]=(result[id]||0)+1;});
   }
   return Object.entries(result).filter(([,v])=>v>=1).map(([id,v])=>({id,v})).sort((a,b)=>b.v-a.v);
 }
@@ -13667,7 +13707,7 @@ function vAwards(){
       <button data-awview="rekorde" class="${awView==='rekorde'?'on':''}">Rekorde</button>
       <button data-awview="chronik" class="${awView==='chronik'?'on':''}">Chronik</button>
     </div>`;
-  const kopf = `<div class="view-head"><h2>Awards</h2><p>${unter}</p></div>${schalter}`;
+  const kopf = `<div class="view-head"><h2>Awards ${hilfeKnopf('awards')}</h2><p>${unter}</p></div>${schalter}`;
   if(awView === 'rekorde'){
     return kopf + ligaRekordeHtml(true);
   }
@@ -14284,12 +14324,8 @@ function vTeams(nurErgebnis=false){
   const ruheT=T0.filter(t=>t.ids.every(id=>sichtbar(id))&&t.ids.some(id=>imRuhestand(id)));
   if(!T.length&&!ruheT.length){
     const html=vorschauHtml('handshake','Die Duos der Liga',
-      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>. Die Liste zeigt, welche Paare zusammen am meisten gewinnen, und lässt sich nach Siegquote, Game-Bilanz und Elo sortieren.`,
-      [
-        ['duo','Das Duo im Detail','Getippt öffnet sich die gemeinsame Bilanz: Sätze, Games, Tiebreaks und welche Aufstellung, wer rechts und wer links, besser funktioniert.'],
-        ['crossedSwords','Direkter Vergleich','Aus jedem Profil heraus lassen sich zwei Spieler gegeneinander stellen, mit jeder Begegnung.'],
-      ]);
-    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>, mit Bilanz, Elo und der besseren Aufstellung.`);
+    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
   
@@ -14398,7 +14434,7 @@ function vTeams(nurErgebnis=false){
     ruhe, ruheZahl:ruheF.length};
   if(nurErgebnis) return ergebnis;
   return `
-    <div class="view-head"><h2>Teams</h2><p id="teamCount">${ergebnis.kopf}</p></div>
+    <div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p id="teamCount">${ergebnis.kopf}</p></div>
     ${einblickHtml('netz', `ab ${DUO_MIN} Partien`)}
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -14421,12 +14457,8 @@ function vTeams(nurErgebnis=false){
 
 
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
-    'Jede eingetragene Partie steht hier mit Sätzen, Aufstellung und Elo-Wirkung, filterbar nach Spieler.',
-    [
-      ['edit','Korrigieren','Getippt öffnet sich die Partie. Ein falsches Ergebnis lässt sich dort bearbeiten oder löschen, und die Liga rechnet sich neu.'],
-      ['medal','Was eine Partie auslöst','Unter jeder Partie stehen die Auszeichnungen, die sie gebracht hat.'],
-    ])}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
+    'Jede Partie steht hier mit Aufstellung und Elo. Getippt lässt sie sich bearbeiten oder löschen.')}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -14448,10 +14480,15 @@ function vHistory(){
       +`<span class="mteam-n">${esc(pname(ids[0]))} & ${esc(pname(ids[1]))}</span></div>`;
     const dl=ids=>ids.map(id=>{const d=(m.deltas||{})[id]||0;
       return `<span><b>${esc(pname(id))}</b> <span class="delta-v ${d>=0?'pos':'neg'}">${d>=0?'+':''}${Math.round(d)}</span></span>`;}).join('');
-    const earned=badgesEarnedInMatch(m.id);
-    const badgeChips=earned.length?`<div class="mrow-bd">${earned.map(e=>
-      `<span>${badgeIc(e.badge,'12px')}<span>${esc(pname(e.playerId).split(' ')[0])}</span></span>`
-    ).join('')}</div>`:'';
+    const earned=badgesEarnedInMatch(m.id).filter(e=>rarityOf(e.badge.id)!=='common');
+    const jeAbz=new Map();
+    earned.forEach(e=>{const k=e.badge.id;if(!jeAbz.has(k))jeAbz.set(k,{badge:e.badge,wer:[]});jeAbz.get(k).wer.push(pname(e.playerId).split(' ')[0]);});
+    const abz=[...jeAbz.values()];
+    const bg=begegnungAm(m);
+    const matchChip=bg.n>1&&bg.winner?`<span class="mrow-match">${svgI(bg.wende?'wende':'padelBall')}Match ${Math.max(bg.setsA,bg.setsB)}:${Math.min(bg.setsA,bg.setsB)}${bg.wende?' · Wende':bg.zuNull?' · zu Null':''}</span>`:'';
+    const badgeChips=(abz.length||matchChip)?`<div class="mrow-bd">${matchChip}${abz.slice(0,3).map(x=>
+      `<span title="${esc(x.badge.name)}">${badgeIc(x.badge,'12px')}<span>${esc(x.wer.join(', '))}</span></span>`
+    ).join('')}${abz.length>3?`<span>+${abz.length-3}</span>`:''}</div>`:'';
     const k=tagKey(mts(m));
     const kopf=k!==tagVorher?`<div class="mtag"><b>${esc(datumFmt(mts(m),'wt'))}</b><span>${esc(datumFmt(mts(m),'tm'))}</span>`
       +`<em class="num">${proTag[k]} ${proTag[k]===1?'Partie':'Partien'}</em></div>`:'';
@@ -14480,7 +14517,7 @@ function vHistory(){
   ` : '';
 
   return `
-    <div class="view-head"><h2>Verlauf</h2><p>${list.length} Partien</p></div>
+    <div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>${list.length} Partien</p></div>
     <div class="search" style="margin-bottom:14px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></svg>
       <select id="histSel" style="padding-left:40px">${opts}</select>
@@ -14507,7 +14544,7 @@ function vMatch(){
       <button class="seiten-tausch" data-tausch="${t}" title="Seiten tauschen" aria-label="Seiten von Team ${t} tauschen">${svgI('sideSwap')}</button></div>
       <div class="court-h">${slot(t,1)}${slot(t,2)}</div></div>`;
   return `
-    <div class="view-head"><h2>Neue Partie</h2><p>Aufstellen, Sätze eintragen, speichern</p></div>
+    <div class="view-head"><h2>Neue Partie ${hilfeKnopf('eingabe')}</h2><p>Aufstellen, Sätze eintragen, speichern</p></div>
     <div class="builder court">
       ${haelfte('A')}
       <div class="vs-mid court-netz"><span class="line"></span><span class="vs">NETZ</span><span class="line"></span></div>
@@ -14529,101 +14566,73 @@ function vMatch(){
 }
 
 function vSettings(){
-  const sl=(id,name,val,min,max,suf,zeig)=>`<div class="slider-wrap">
-    <div class="sh"><span class="sn">${name}</span><span class="sv"><span id="${id}v">${zeig==null?val:zeig}</span>${suf||''}</span></div>
-    <input type="range" id="${id}" min="${min}" max="${max}" value="${val}"></div>`;
+  const sl=(id,name,val,min,max,suf,zeig,hint)=>`<div class="slider-wrap">
+    <div class="sh"><span class="sn">${name}</span><span class="sv"><span id="${id}v">${zeig==null||zeig===''?val:zeig}</span>${suf||''}</span></div>
+    <input type="range" id="${id}" min="${min}" max="${max}" value="${val}">${hint?`<div class="sl-hint">${hint}</div>`:''}</div>`;
+  const pz = v => Math.round(v * 100);
   const c = {
-    k:          Math.round(cfg.k_factor),
-    risk:       Math.round((cfg.risk_split ?? 0.6)*100),
-    pos:        Math.round((cfg.pos_swing ?? 0.45)*100),
-    winBoost:   Math.round((cfg.win_boost ?? 1.12)*100),
-    movDamp:    Math.round((cfg.mov_loss_damp ?? 0.5)*100),
-    bonus:      komma(cfg.match_bonus ?? 1.5, 1),
-    startElo:   Math.round(cfg.start_elo ?? 0),
-    npMult:     Math.round((cfg.new_player_mult ?? 1.5)*100),
-    npMidMult:  Math.round((cfg.new_player_mid_mult ?? 1.2)*100),
-    vetDamp:    Math.round((cfg.veteran_damp ?? 0.85)*100),
-    movMax:     Math.round((cfg.mov_max_boost ?? 0.4)*100),
-    expProt:    Math.round((cfg.exp_protect_max ?? 0.1)*100),
-    udElo:      Math.round((cfg.underdog_elo_max ?? 0.15)*100),
-    udGames:    Math.round((cfg.underdog_games_max ?? 0.05)*100),
-    lowDamp:    Math.round((cfg.low_elo_loss_damp ?? 0)*100),
+    k:Math.round(cfg.k_factor ?? 32), startElo:Math.round(cfg.start_elo ?? 0),
+    eins:pz(cfg.gewicht_eins ?? GEWICHT_STUETZEN_STANDARD.eins), drei:pz(cfg.gewicht_drei ?? GEWICHT_STUETZEN_STANDARD.drei),
+    ueber6:pz(cfg.gewicht_ueber6 ?? GEWICHT_JE_GAME_UEBER_6), tb:pz(cfg.tb_ausgleich ?? TIEBREAK_AUSGLEICH),
+    winBoost:pz(cfg.win_boost ?? 1.12), movMax:pz(cfg.mov_max_boost ?? 0.4), movDamp:pz(cfg.mov_loss_damp ?? 0.5),
+    bonus:Math.round((cfg.match_bonus ?? 1.5) * 10),
+    risk:pz(cfg.risk_split ?? 0.6), pos:pz(cfg.pos_swing ?? 0.45),
+    npMult:pz(cfg.new_player_mult ?? 1.5), npMidMult:pz(cfg.new_player_mid_mult ?? 1.2),
+    vetDamp:pz(cfg.veteran_damp ?? 0.85), expProt:pz(cfg.exp_protect_max ?? 0.1),
+    udElo:pz(cfg.underdog_elo_max ?? 0.15), udGames:pz(cfg.underdog_games_max ?? 0.05), lowDamp:pz(cfg.low_elo_loss_damp ?? 0),
   };
+  const gruppe = (titel, inhalt) => `<div class="cfg-section-title">${titel}</div><div class="card">${inhalt}</div>`;
   return `
-    <div class="view-head"><h2>Elo-Formel</h2><p>Wie Siege und Niederlagen die Elo verändern</p></div>
-
-    <div class="cfg-section-title">Grundwerte</div>
-    <div class="card">
-      ${sl('cfgK','Tempo (K-Faktor)',c.k,8,64,'')}
-      ${sl('cfgStartElo','Start-Elo jeder Saison',c.startElo,0,1000,'')}
-      ${sl('cfgNpMult','Neulinge (erste ' + NEULING_BIS + ' Partien)',c.npMult,100,200,' %')}
-    </div>
-
-    <div class="cfg-section-title">Partner und Seite</div>
-    <div class="card">
-      ${sl('cfgRisk','Last des schwächeren Partners',c.risk,0,100,' %')}
-      ${sl('cfgPos','Ausgleich der Seite',c.pos,0,100,' %')}
-    </div>
-
-    <div class="cfg-section-title">Sieg und Ergebnis</div>
-    <div class="card">
-      ${sl('cfgWinBoost','Mehr für Siege',c.winBoost,100,140,' %')}
-      ${sl('cfgMovMax','Zuschlag für deutliche Siege',c.movMax,0,100,' %')}
-      ${sl('cfgBonus','Zuschlag je Satz',Math.round((cfg.match_bonus ?? 1.5)*10),0,50,' Elo',c.bonus)}
-      ${sl('cfgUdElo','Außenseiter-Zuschlag',c.udElo,0,100,' %')}
-    </div>
-
-    <div class="card">
-      <div class="mini-label">So wirken die Regler</div>
-      <div style="font-size:12px;color:var(--ink2);line-height:1.8">
-        <b style="color:var(--acid)">Je Satz</b> — Jeder Satz ist eine eigene Rechnung, nacheinander, jeder mit dem Stand nach dem vorigen. Drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene, und wer einen Satz gewinnt, bekommt dafür Elo, auch wenn er die Partie verliert.<br>
-        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach den Games des Siegers: ein Satz bis sechs zählt voll, gleich ob 6:0 oder 6:4. Bis drei zählt er 75 %, bis eins 50 %, dazwischen gestaffelt. Jedes Game über sechs bringt 10 % mehr, ein 7:5 oder 7:6 also 110 %, ein 8:6 120 %, höchstens 150 %. Ein Match-Tiebreak zählt wie ein Satz bis zwei.<br>
-        <b style="color:var(--acid)">Ausgleich im Tiebreak</b> — Geht ein Satz über sechs oder in einen Tiebreak, verliert der Verlierer ${Math.round(TIEBREAK_AUSGLEICH*100)} % weniger: er hat den Satz lange offen gehalten.<br>
-        <b style="color:var(--acid)">Start-Elo</b> — Mit diesem Wert beginnt jeder Spieler eine Saison.<br>
-        <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Sätzen einer Saison wirkt das Tempo zu ${c.npMult} %, bis zum ${EINGEWOEHNT_BIS}. Satz noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
-        <b style="color:var(--acid)">Last des schwächeren Partners</b> — Bei ${c.risk} % verliert weniger Elo, wer mit einem deutlich schwächeren Partner spielt.<br>
-        <b style="color:var(--acid)">Ausgleich der Seite</b> — Auf der schwächeren Seite bringt ein Sieg mehr und kostet eine Niederlage weniger, höchstens ${Math.round(POS_GRENZE*100)} %. Auf der stärkeren ist es umgekehrt, höchstens ${Math.round(POS_DAEMPFER*100)} %. Welche Seite die schwächere ist, zeigt das Seitenprofil im Profil.<br>
-        <b style="color:var(--acid)">Mehr für Siege</b> — Ein Sieg bringt ${c.winBoost-100} % mehr, als eine Niederlage kostet. So steigt die Elo über die Zeit.<br>
-        <b style="color:var(--acid)">Zuschlag für deutliche Siege</b> — Gemessen am Anteil der Games im Satz: ein 6:0 zählt bis zu ${100+c.movMax} % eines knappen Satzes, ein 6:4 kaum mehr.<br>
-        <b style="color:var(--acid)">Zuschlag je Satz</b> — ${c.bonus} Elo für jeden Satz, ob gewonnen oder verloren.<br>
-        <b style="color:var(--acid)">Außenseiter-Zuschlag</b> — Wer gegen deutlich Stärkere gewinnt, bekommt bis zu ${c.udElo} % mehr. Er kostet nie etwas.<br>
-        <b style="color:var(--acid)">Saison</b> — Mit jedem Monat beginnt die Elo neu beim Startwert. Die Elo der Laufbahn ist der gewichtete Schnitt der Saisonenden.
-      </div>
-    </div>
+    <div class="view-head"><h2>Elo-Formel</h2><p>Jeder Satz ist eine eigene Rechnung</p></div>
+    ${gruppe('Grundwerte',
+      sl('cfgK','Tempo',c.k,8,64,'','','Wie stark ein Satz die Elo bewegt.')
+      + sl('cfgStartElo','Start-Elo',c.startElo,0,1000,'','','Damit beginnt jeder eine Saison.'))}
+    ${gruppe('Länge des Satzes',
+      sl('cfgGewEins','Satz bis 1 Game',c.eins,20,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
+      + sl('cfgGewDrei','Satz bis 3 Games',c.drei,40,100,' %','','Satz bis 6 zählt voll, dazwischen gestaffelt.')
+      + sl('cfgGewUeber6','Je Game über 6',c.ueber6,0,30,' %','','7:5 und 7:6 bringen so viel mehr, höchstens 150 %.')
+      + sl('cfgTbAusgleich','Ausgleich im Tiebreak',c.tb,0,100,' %','','So viel weniger verliert, wer einen Satz über 6 verliert.'))}
+    ${gruppe('Ergebnis',
+      sl('cfgWinBoost','Mehr für Siege',c.winBoost,100,140,' %','','Ein gewonnener Satz bringt mehr, als ein verlorener kostet.')
+      + sl('cfgMovMax','Deutlicher Satz',c.movMax,0,100,' %','','Zuschlag bis zu einem 6:0, ein 6:4 kaum.')
+      + sl('cfgMovDamp','Deutlich verloren',c.movDamp,0,100,' %','','Welcher Teil davon bei einer Niederlage mitzählt.')
+      + sl('cfgBonus','Zuschlag je Satz',c.bonus,0,50,' Elo',komma(c.bonus / 10, 1),'Für jeden Satz, gewonnen oder verloren.'))}
+    ${gruppe('Partner und Seite',
+      sl('cfgRisk','Last des schwächeren Partners',c.risk,0,100,' %','','Wer mit einem deutlich Schwächeren spielt, verliert weniger.')
+      + sl('cfgPos','Ausgleich der Seite',c.pos,0,100,' %','','Auf der schwächeren Seite mehr Gewinn und weniger Verlust.'))}
+    ${gruppe('Neue und Erfahrene',
+      sl('cfgNpMult','Neulinge',c.npMult,100,200,' %','',`Tempo in den ersten ${NEULING_BIS} Sätzen einer Saison.`)
+      + sl('cfgNpMidMult','Eingewöhnung',c.npMidMult,100,200,' %','',`Tempo bis zum ${EINGEWOEHNT_BIS}. Satz.`)
+      + sl('cfgVetDamp','Spitze',c.vetDamp,50,100,' %','','Tempo ab 400 Elo über dem Start.')
+      + sl('cfgExpProt','Schutz für Erfahrene',c.expProt,0,30,' %','','Weniger Verlust nach vielen Sätzen in der Saison.'))}
+    ${gruppe('Außenseiter',
+      sl('cfgUdElo','Sieg gegen Stärkere',c.udElo,0,100,' %','','Zuschlag nach dem Elo-Abstand. Kostet nie etwas.')
+      + sl('cfgUdGames','Weniger gespielt',c.udGames,0,30,' %','','Zuschlag für wen, der in der Saison weniger Sätze hat.')
+      + sl('cfgLowEloLossDamp','Schutz für Schwächere',c.lowDamp,0,100,' %','','Weniger Verlust unter dem Schnitt der vier.'))}
     <div class="card" style="margin-top:14px;border:1px solid rgba(228,242,74,.18);background:linear-gradient(155deg,rgba(228,242,74,.06),var(--surface) 80%)">
       <div class="mini-label" style="color:var(--acid);display:flex;align-items:center;gap:6px">${svgI('info')}Wirkung der Regler</div>
       <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:8px">
-        Änderungen an den Reglern wirken <b style="color:var(--acid)">nur auf neue Partien</b>.
-        Vergangene Partien behalten ihre Elo, abgeschlossene Saisons und Auszeichnungen bleiben, wie sie sind.
-      </p>
-      <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:6px">
-        Sollen die Regler auch rückwirkend gelten, lassen sich alle Partien neu berechnen.
-        <b style="color:var(--red)">Dabei wird die gespeicherte Elo jeder Partie überschrieben.</b>
+        Regler wirken auf <b style="color:var(--acid)">neue Partien</b>. Neu berechnen wendet sie auf alle an und
+        <b style="color:var(--red)">überschreibt die gespeicherte Elo</b>.
       </p>
       <button class="btn" id="recalcBtn" style="margin-top:14px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('neuRechnen')} Alle Partien neu berechnen</button>
     </div>
 
     <div class="card" style="margin-top:14px">
       <div class="mini-label">Sicherung und Export</div>
-      <p style="font-size:11.5px;color:var(--ink2);line-height:1.6;margin-top:10px">
-        Hier lässt sich jederzeit eine eigene Kopie der Liga speichern, falls in der Cloud etwas verloren geht.
-      </p>
+
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
         <button class="btn ghost" id="expXlsxBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('scroll')} Partien als Excel (.xlsx)</button>
         <button class="btn ghost" id="expSaveBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('sichern')} Sicherung speichern (.json)</button>
         <button class="btn ghost sm" id="expCsvBtn" style="width:100%;font-size:11px">Stattdessen als CSV</button>
       </div>
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px">
-        <b style="color:var(--acid)">Excel</b>: alle ${matches.length} Partien mit Namen, Seiten und Sätzen,
-        dazu Spieler und Saisons. Zum Anschauen und Weitergeben.<br>
-        <b style="color:var(--acid)">Sicherung</b>: die vollständige Kopie mit Elo und Einstellungen.
-        Mit ihr lässt sich die Liga im Ernstfall wieder aufbauen.
+        Excel zum Anschauen, die Sicherung zum Wiederherstellen der ganzen Liga.
       </p>
       <div style="height:1px;background:var(--line);margin:14px 0"></div>
       <button class="btn" id="impBackupBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('hochladen')} Datei einspielen</button>
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px">
-        Nimmt .xlsx, .csv und .json. Vorher zeigt eine Vorschau, was dazukommt.
-        <b style="color:var(--acid)">Es wird nie etwas gelöscht oder überschrieben</b>, nur fehlende Partien kommen dazu.
+        .xlsx, .csv oder .json. Nur fehlende Partien kommen dazu, nichts wird überschrieben.
       </p>
     </div>
 
@@ -14687,8 +14696,6 @@ function requestMatchPreview(){
     const html=validM()?anschlussHtml(M):'';
     if(an._html!==html){
       an.innerHTML=html; an._html=html;
-      const k=an.querySelector('[data-anschluss]');
-      if(k) k.onclick=()=>{ M.neu=k.dataset.anschluss==='aus'; requestMatchPreview(); };
     }
   }
   if(_matchPreviewPlan && _matchPreviewPlan.slot===slot) return;
@@ -14745,9 +14752,8 @@ function updatePreview(){
     </div>`;
   };
   const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
-  const angehaengt = !M.neu && !!partieFortsetzung(M, satzListe(M));
-  const zusatz = [n > 1 ? 'je Satz gerechnet' : '', !angehaengt && p.zuNull ? 'zu Null' : ''].filter(Boolean).join(' · ');
-  const titel = angehaengt ? (n > 1 ? 'Elo für diese Sätze' : 'Elo für diesen Satz') : 'Elo nach dieser Partie';
+  const zusatz = n > 1 ? `${n} Sätze, je eine Partie` : '';
+  const titel = 'Elo';
   slot.innerHTML = `<div class="preview">
     <div class="prob-cap">${titel}${zusatz?' · '+zusatz:''}</div>
     <div class="delta-list">
@@ -14779,62 +14785,41 @@ async function doSaveMatch(){
   if(save){save.disabled=true;save.setAttribute('aria-busy','true');save.textContent='Speichere…';}
   let insertedRow=null;
   try {
-  const fort = M.neu ? null : partieFortsetzung(M, satzListe(M));
-  if(fort){
-    const erg = await partieAnhaengen(fort);
-    if(!erg) return;
-    insertedRow = erg.neu;
-    if(unveraendert()){
-      M={...matchLeer(),A1:M.A1,A2:M.A2,B1:M.B1,B2:M.B2,fixA:M.fixA,fixB:M.fixB};
-      if(tab==='match') tab='ranking';
-    }
-    neuZeichnen();
-    loadAll();
-    nachDemBild().then(() => {
-      const toastWorthy = badgesEarnedInMatch(erg.neu.id).filter(e => rarityOf(e.badge.id) !== 'common');
-      if(toastWorthy.length) toastWorthy.forEach(e => showAchievementToast(pname(e.playerId), e.badge));
-      const p = partie(erg.neu);
-      const sieger = p.winner === 'A' ? [erg.neu.a1, erg.neu.a2] : [erg.neu.b1, erg.neu.b2];
-      toast('Satz angehängt', 'ok', {
-        sub: sieger.map(pname).join(' & ') + (p.setsA === p.setsB ? ' vorn nach Games, ' : ' vorn, ') + standFuer(erg.neu),
-        aktion: {label:'Rückgängig', fn: () => partieAnhangZurueck(erg)}});
-    });
-    return;
-  }
-  const felder = partieFelder(satzListe(M));
-  const winner = felder.winner;
-  const c = _matchInputResult();
   const {teamA,teamB} = teamsFromM();
-  const row = {
-    a1:M.A1, a1_side:teamA[0].pos, a2:M.A2, a2_side:teamA[1].pos,
-    b1:M.B1, b1_side:teamB[0].pos, b2:M.B2, b2_side:teamB[1].pos,
-    ...felder, deltas:c.res, exp_a:c.expA
-  };
-  const{data:inserted, error} = await sb.from('matches').insert(row).select().single();
+  const c = computeMatch(teamA, teamB, partieFelder(satzListe(M)));
+  const rows = c.je.map(x => {
+    const z = {...x.zeile, deltas:x.res, exp_a:x.expA}; delete z.id; return z;
+  });
+  if(!rows.length){toast('Kein Satz mit Sieger',true);return;}
+  const{data:inserted, error} = await sb.from('matches').insert(rows).select();
   if(error){toast('Fehler: '+error.message,true);return;}
+  const savedRows = (Array.isArray(inserted) && inserted.length === rows.length) ? inserted : rows;
+  insertedRow = savedRows[0];
 
-  const savedRow = inserted || {...row, created_at:new Date().toISOString()};
-  insertedRow=savedRow;
-
-  matches = [...matches, savedRow];
+  matches = [...matches, ...savedRows];
   invalidateCache(LADEN_TOEPFE);
   if(unveraendert()){
     M={...matchLeer(),A1:M.A1,A2:M.A2,B1:M.B1,B2:M.B2,fixA:M.fixA,fixB:M.fixB};
     if(tab==='match') tab='ranking';
   }
   neuZeichnen();
-  imHintergrund(() => persistNewMatch(savedRow.id));
+  const ids = savedRows.map(r => r.id).filter(Boolean);
+  imHintergrund(async () => { for(const id of ids) await persistNewMatch(id); });
   loadAll();
 
   nachDemBild().then(() => {
-    const toastWorthy = badgesEarnedInMatch(savedRow.id).filter(e => rarityOf(e.badge.id) !== 'common');
+    const toastWorthy = ids.flatMap(id => badgesEarnedInMatch(id)).filter(e => rarityOf(e.badge.id) !== 'common');
     if(toastWorthy.length){
       toastWorthy.forEach(e => showAchievementToast(pname(e.playerId), e.badge));
     } else {
-      const sieger = winner === 'A' ? [row.a1,row.a2] : [row.b1,row.b2];
-      toast('Partie gespeichert', 'ok', {
-        sub: sieger.map(pname).join(' & ') + ' gewinnen ' + standFuer(savedRow),
-        aktion: {label:'Rückgängig', fn: () => partieLoeschen(savedRow.id)}});
+      const letzte = savedRows[savedRows.length - 1];
+      const bg = begegnungVon(letzte);
+      const sieger = r => (r.winner === 'A' ? [r.a1, r.a2] : [r.b1, r.b2]).map(pname).join(' & ');
+      const sub = bg.n > 1 && bg.winner
+        ? `${(bg.winner === 'A' ? [letzte.a1, letzte.a2] : [letzte.b1, letzte.b2]).map(pname).join(' & ')} ${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)} in Sätzen`
+        : `${sieger(letzte)} gewinnen ${standFuer(letzte)}`;
+      toast(savedRows.length === 1 ? 'Satz gespeichert' : `${savedRows.length} Sätze gespeichert`, 'ok', {
+        sub, aktion: {label:'Rückgängig', fn: () => partieLoeschen(ids)}});
     }
   });
   } catch(e){
@@ -15065,39 +15050,35 @@ function seitenTauschen(st, team){
   st['fix' + team] = true;
 }
 
-const BEGEGNUNG_STUNDEN = 4;
 function partieFortsetzung(st, saetze, jetzt){
   const ids = [st.A1, st.A2, st.B1, st.B2];
   if(!ids.every(Boolean) || new Set(ids).size !== 4 || !saetze || !saetze.length) return null;
   let L = null;
   for(const m of matches) if(!L || mts(m) > mts(L)) L = m;
   if(!L) return null;
-  const paar = (p, q) => [p, q].sort().join('|');
-  const la = paar(L.a1, L.a2), lb = paar(L.b1, L.b2), na = paar(st.A1, st.A2), nb = paar(st.B1, st.B2);
+  const la = _paarSchluessel(L.a1, L.a2), lb = _paarSchluessel(L.b1, L.b2);
+  const na = _paarSchluessel(st.A1, st.A2), nb = _paarSchluessel(st.B1, st.B2);
   let gedreht;
   if(la === na && lb === nb) gedreht = false;
   else if(la === nb && lb === na) gedreht = true;
   else return null;
   const t = jetzt == null ? Date.now() : jetzt;
-  if(tagKey(t) !== tagKey(L.created_at) || t < mts(L) || t - mts(L) > BEGEGNUNG_STUNDEN * 3600000) return null;
-  const alt = partieSaetze(L);
-  if(alt.length + saetze.length > SATZ_MAX) return null;
-  const dazu = saetze.map(s => gedreht ? {a:s.b, b:s.a, art:s.art} : s);
-  return {partie:L, gedreht, saetze:alt.concat(dazu), satzNr:alt.length + 1};
+  if(tagKey(t) !== tagKey(mts(L)) || t < mts(L) || t - mts(L) > BEGEGNUNG_PAUSE_MIN * 60000) return null;
+  const bg = begegnungVon(L);
+  const alt = bg.saetze;
+  const dazu = saetze.filter(s => saetzeAuswerten([s]).winner).map(s => gedreht ? {a:s.b, b:s.a, art:s.art} : s);
+  return {partie:L, gedreht, saetze:alt.concat(dazu), satzNr:alt.length + 1, beginn:bg.zeilen[0]};
 }
 function anschlussHtml(st){
   const f = partieFortsetzung(st, satzListe(st));
   if(!f) return '';
-  const uhr = datumFmt(f.partie.created_at, 'uhr');
-  if(st.neu) return `<div class="m-anschluss aus"><span>Wird eine neue Partie.</span>
-    <button type="button" class="m-anschluss-k" data-anschluss="an">An die Partie von ${uhr} anhängen</button></div>`;
+  const uhr = datumFmt(f.beginn.created_at, 'uhr');
   const p = saetzeAuswerten(f.saetze);
   const a = f.gedreht ? p.setsB : p.setsA, b = f.gedreht ? p.setsA : p.setsB;
   const namen = (x, y) => esc(pname(x)) + ' & ' + esc(pname(y));
   const stand = a === b ? `${a}:${b}` : a > b ? `${a}:${b} für ${namen(st.A1, st.A2)}` : `${b}:${a} für ${namen(st.B1, st.B2)}`;
   const n = f.saetze.length - f.satzNr + 1;
-  return `<div class="m-anschluss"><span>${n === 1 ? `Satz ${f.satzNr}` : `Satz ${f.satzNr} bis ${f.saetze.length}`} der Partie von ${uhr}, danach steht es <b>${stand}</b>.</span>
-    <button type="button" class="m-anschluss-k" data-anschluss="aus">Neue Partie</button></div>`;
+  return `<div class="m-anschluss"><span>${n === 1 ? `Satz ${f.satzNr}` : `Satz ${f.satzNr} bis ${f.saetze.length}`} des Matches von ${uhr}, danach steht es <b>${stand}</b>.</span></div>`;
 }
 let _sheetStack = [];
 let _sheetReopen = null;
@@ -15209,6 +15190,15 @@ function buehneHtml(m, o){
     o.zeile ? `<div class="buehne-zeile num">${esc(o.zeile)}</div>` : ''}</div>`;
 }
 
+function _sheetTastatur(){
+  const vv = window.visualViewport; if(!vv) return;
+  const h = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+  document.documentElement.style.setProperty('--tastatur', (h > 80 ? Math.round(h) : 0) + 'px');
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', _sheetTastatur);
+  window.visualViewport.addEventListener('scroll', _sheetTastatur);
+}
 function openSheet(html, opts){
   opts = opts || {};
   const sheet=document.getElementById('sheet');
@@ -15514,11 +15504,12 @@ const BG = {
 };
 const PERIODE_MIN_SIEGE = {tag:2, woche:3, monat:6};
 const PERIODE_SAMMLER = {tag:3, woche:1};
-function bgDoppelBagel(id, m){ return partie(m).doppelBagel; }
+function bgDoppelBagel(id, m){ return begegnungAm(m).doppelBagel; }
+function bgBegegnungSieg(id, m){ return begegnungGewonnen(m, id) === true; }
 function bgZitter(m){ return partie(m).entscheidTb; }
 function bgKlar(id, m){ return won(id, m) && partie(m).deutlich; }
 function bgKnapp(m){ return partie(m).knapp; }
-function bgWende(id, m){ return won(id, m) && partie(m).wende; }
+function bgWende(id, m){ return begegnungAm(m).wende && bgBegegnungSieg(id, m); }
 function bgBagels(id, m){ const t = teamVon(m, id); return t ? partieFuer(m, t) : {bagelsFor:0, bagelsAgainst:0}; }
 function bgTiebreaks(id, m){ const t = teamVon(m, id); return partie(m).tiebreaks.map(x => x.sieger === t); }
 
@@ -15565,9 +15556,9 @@ const BADGES=[
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Niederlagen in Folge',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
   {id:'perfect_loss',ic:'dizzy',name:'Absoluter Verlierer',desc:'Zu-Null-Niederlage ohne ein einziges Game (etwa 0:6 0:6)',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>!won(id,m)&&bgDoppelBagel(id,m)).length},
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgDoppelBagel(id,m)&&!bgBegegnungSieg(id,m)).length},
   {id:'perfect_win',ic:'hundred',name:'Absoluter Sieger',desc:'Zu-Null-Sieg ohne ein abgegebenes Game (etwa 6:0 6:0)',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&bgDoppelBagel(id,m)).length},
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgDoppelBagel(id,m)&&bgBegegnungSieg(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
   {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Sieg, entschieden im Tiebreak oder Match-Tiebreak',
@@ -16437,8 +16428,8 @@ function getBadgeEarnedCache(){
       if(pRevG<BG.seite && s.revG>=BG.seite)        fire('reves50');
       if(pDrvG<BG.seite && s.drvG>=BG.seite)        fire('drive50');
 
-      if(w  && bgDoppelBagel(id,m))                 fire('perfect_win');
-      if(!w && bgDoppelBagel(id,m))                 fire('perfect_loss');
+      if(bgDoppelBagel(id,m) &&  bgBegegnungSieg(id,m)) fire('perfect_win');
+      if(bgDoppelBagel(id,m) && !bgBegegnungSieg(id,m)) fire('perfect_loss');
       if(w  && bgZitter(m))                         fire('nail_biter');
       if(!w && bgZitter(m))                         fire('bitter_loss');
       if(bgWende(id,m))                             fire('wall_badge');
@@ -16811,7 +16802,7 @@ function zeigeProfilPosInfo(id){
   const pp = v => v == null ? '–' : _ppZeichen(v);
   const elo = v => v == null ? '–' : v >= .5 ? '+' + Math.round(v) : v <= -.5 ? '−' + Math.round(-v) : '0';
   const quote = v => v == null ? '–' : pct(v) + ' %';
-  const zeile = (lbl, a, d) => `<span class="l">${lbl}</span><span>${a}</span><span>${d}</span>`;
+  const zeile = (lbl, a, d) => `<span class="l">${lbl}</span><span>${d}</span><span>${a}</span>`;
   const fS = posFactor(lage, 'drive', cfg.pos_swing), fD = posFactor(lage, 'reves', cfg.pos_swing);
   const proz = f => { const q = Math.abs(f - 1) * 100; return q >= 9.95 ? String(Math.round(q)) : komma(q, 1); };
   const [plus, minus] = fS >= fD ? [['rechts', fS], ['links', fD]] : [['links', fD], ['rechts', fS]];
@@ -18502,16 +18493,18 @@ function showAddPlayer(){
     <button class="btn" id="confirmAdd" style="margin-top:12px">Hinzufügen</button>`);
   const ni=document.getElementById('newName');ni.focus();
   const go=async()=>{const n=ni.value.trim();if(!n){toast('Name fehlt',true);return;}
-    const{error}=await sb.from('players').insert({name:n,elo:cfg.start_elo,drive:0.5});
+    const{data,error}=await sb.from('players').insert({name:n,elo:cfg.start_elo,drive:0.5}).select().single();
     if(error){toast(error.message.includes('duplicate')?'Der Name ist schon vergeben':'Fehler',true);return;}
-    closeSheet(true);toast('Spieler angelegt','ok');await loadAll();};
+    closeSheet(true);toast('Spieler angelegt','ok');await loadAll();
+    const neu=data&&players.find(p=>p.id===data.id);
+    if(neu) showPlayer(neu.id);};
   document.getElementById('confirmAdd').onclick=go;
   ni.onkeydown=e=>{if(e.key==='Enter')go();};
 }
 
 function bind(){
   const main=document.getElementById('main');if(!main) return;
-  main.querySelectorAll('[data-info="positionen"]').forEach(b => b.onclick = zeigePositionsInfo);
+  main.querySelectorAll('[data-hilfe]').forEach(b => b.onclick = () => zeigeHilfe(b.dataset.hilfe));
   einblickBinden(document.getElementById('main'));
   main.querySelectorAll('.einblick.auf .einblick-i').forEach(bindDetailLinks);
 
@@ -18660,12 +18653,18 @@ function bind(){
   bindSlider('cfgNpMult','new_player_mult',v=>v/100,v=>Math.round(v));
   bindSlider('cfgNpMidMult','new_player_mid_mult',v=>v/100,v=>Math.round(v));
   bindSlider('cfgVetDamp','veteran_damp',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgGewEins','gewicht_eins',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgGewDrei','gewicht_drei',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgGewUeber6','gewicht_ueber6',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgTbAusgleich','tb_ausgleich',v=>v/100,v=>Math.round(v));
   const recalcBtn=document.getElementById('recalcBtn');
   if(recalcBtn) recalcBtn.onclick=async()=>{
     if(!(await bestaetigen({ic:'alert', gefahr:true, ja:'Neu berechnen',
       titel:'Alle Partien neu berechnen?',
-      text:'Die gespeicherte Elo jeder Partie wird mit den aktuellen Reglern überschrieben. Vergangene Saisons und Auszeichnungen können sich dadurch ändern. Das lässt sich nicht rückgängig machen.'}))) return;
+      text:'Partien mit mehreren Sätzen werden in Sätze geteilt, und die Elo jeder Partie wird mit den aktuellen Reglern neu gerechnet. Vergangene Saisons und Auszeichnungen können sich ändern. Das lässt sich nicht rückgängig machen.'}))) return;
     toast('Alle Partien werden neu berechnet …');
+    try { await partienAufteilen(); }
+    catch(e){ toast('Aufteilen fehlgeschlagen', true, {sub:e.message||''}); return; }
     await persistRecalc(matches);
     toast('Neuberechnung abgeschlossen','ok');
     await loadAll();
@@ -19334,7 +19333,13 @@ function showMatchDetail(mid){
   const _expA = _h && _h.expA != null ? _h.expA : (typeof m.exp_a === 'number' ? m.exp_a : null);
   const chance = _expA == null ? null
     : Math.max(1, Math.round((m.winner==='A' ? _expA : 1 - _expA) * 100));
-  openSheet(`${blattKopfHtml({ic:'ball', titel:'Partie', unter:dateStr(m.created_at)})}
+  const _bg = begegnungVon(m);
+  const _bgZeile = _bg.n > 1 ? (() => {
+    const z = _bg.zeilen[_bg.zeilen.length - 1], b = begegnungAm(z);
+    const w = b.winner ? (b.winner === 'A' ? [z.a1, z.a2] : [z.b1, z.b2]).map(pname).join(' & ') : '';
+    return `Satz ${_bg.nr} von ${_bg.n} im Match` + (w ? ` · ${w} ${Math.max(b.setsA, b.setsB)}:${Math.min(b.setsA, b.setsB)}` : '');
+  })() : '';
+  openSheet(`${blattKopfHtml({ic:'padelBall', titel:'Partie', unter:dateStr(m.created_at) + (_bgZeile ? ' · ' + _bgZeile : '')})}
     ${buehneHtml(m, {zeile: sieger.map(pname).join(' und ') + ' gewinnen'
       + (chance != null ? ' · Siegchance vorher ' + chance + ' %' : '')})}
     <div class="preview" style="margin-top:16px"><div class="delta-list">
@@ -19457,45 +19462,36 @@ function showMatchDetail(mid){
   });
 }
 
-function _neueId(){
-  const c = typeof crypto !== 'undefined' ? crypto : null;
-  if(c && c.randomUUID) return c.randomUUID();
-  const roh = c && c.getRandomValues ? [...c.getRandomValues(new Uint8Array(16))]
-    : Array.from({length:16}, () => Math.floor(Math.random() * 256));
-  const h = roh.map(b => b.toString(16).padStart(2, '0')).join('');
-  return `${h.slice(0,8)}-${h.slice(8,12)}-4${h.slice(13,16)}-a${h.slice(17,20)}-${h.slice(20,32)}`;
+async function partienAufteilen(){
+  const neu = [];
+  for(const m of matches.slice()){
+    const saetze = partieSaetze(m).filter(s => saetzeAuswerten([s]).winner);
+    if(saetze.length < 2) continue;
+    const spieler = {a1:m.a1, a1_side:m.a1_side, a2:m.a2, a2_side:m.a2_side,
+      b1:m.b1, b1_side:m.b1_side, b2:m.b2, b2_side:m.b2_side};
+    const erste = partieFelder(saetze.slice(0, 1));
+    const weitere = saetze.slice(1).map((s, i) => ({...spieler, ...partieFelder([s]), deltas:{}, exp_a:0.5,
+      created_at:new Date(mts(m) + (i + 1) * 10).toISOString()}));
+    const u = await sb.from('matches').update(erste).eq('id', m.id);
+    if(u.error) throw u.error;
+    const ins = await sb.from('matches').insert(weitere).select();
+    if(ins.error) throw ins.error;
+    matches = matches.map(x => x.id === m.id ? {...x, ...erste} : x).concat(ins.data || []);
+    neu.push(...(ins.data || []));
+  }
+  if(neu.length) invalidateCache(LADEN_TOEPFE);
+  return neu;
 }
-async function partieAnhaengen(f){
-  const alt = f.partie;
-  const zeile = {id:_neueId(), ...partieFelder(f.saetze)};
-  const {error} = await sb.from('matches').update(zeile).eq('id', alt.id);
-  if(error){ toast('Nicht angehängt', true, {sub:error.message}); return null; }
-  const neu = {...alt, ...zeile};
-  const r = ligaNeuRechnen(matches.map(x => x.id === alt.id ? neu : x));
-  imHintergrund(() => rechnungSchreiben(r), true);
-  return {neu:matches.find(x => x.id === neu.id) || neu, alt};
-}
-async function partieAnhangZurueck(erg){
-  const a = erg.alt;
-  const zeile = {id:a.id, sets:a.sets, set_kind:a.set_kind, sets_a:a.sets_a, sets_b:a.sets_b,
-    games_a:a.games_a, games_b:a.games_b, winner:a.winner, deltas:a.deltas, exp_a:a.exp_a};
-  const {error} = await sb.from('matches').update(zeile).eq('id', erg.neu.id);
-  if(error){ toast('Nicht zurückgenommen', true, {sub:error.message}); return; }
-  const r = ligaNeuRechnen(matches.map(x => x.id === erg.neu.id ? {...x, ...zeile} : x));
-  neuZeichnen();
-  toast('Satz zurückgenommen', 'ok');
-  imHintergrund(() => rechnungSchreiben(r), true);
-  loadAll();
-}
-async function partieLoeschen(mid){
+async function partieLoeschen(mids){
+  const ids = Array.isArray(mids) ? mids : [mids];
   toast('Lösche…');
-  const {error} = await sb.from('matches').delete().eq('id', mid);
+  const {error} = await sb.from('matches').delete().in('id', ids);
   if(error){ toast('Nicht gelöscht', 'err', {sub:'Die Verbindung zur Datenbank ist fehlgeschlagen.'}); return; }
-  const weg = matches.find(x => x.id === mid);
-  const r = ligaNeuRechnen(matches.filter(x => x.id !== mid));
+  const weg = matches.filter(x => ids.includes(x.id));
+  const r = ligaNeuRechnen(matches.filter(x => !ids.includes(x.id)));
   neuZeichnen();
   toast('Gelöscht', 'ok');
-  imHintergrund(() => rechnungSchreiben(r, weg ? [seasonOf(weg.created_at).id] : []), true);
+  imHintergrund(() => rechnungSchreiben(r, [...new Set(weg.map(x => seasonOf(x.created_at).id))]), true);
   loadAll();
 }
 let E={};
@@ -19558,14 +19554,24 @@ function showEditMatch(mid){
     const state=E,draft=JSON.parse(JSON.stringify(E)),save=document.getElementById('saveEdit');
     speichert=true;save.disabled=true;save.setAttribute('aria-busy','true');
     toast('Speichere…');
-    const felder=partieFelder(satzListe(draft));
-    const zeile={a1:draft.A1,a1_side:SLOT_SEITE[1],a2:draft.A2,a2_side:SLOT_SEITE[2],
-      b1:draft.B1,b1_side:SLOT_SEITE[1],b2:draft.B2,b2_side:SLOT_SEITE[2],...felder};
+    const saetze=satzListe(draft).filter(s=>saetzeAuswerten([s]).winner);
+    const spieler={a1:draft.A1,a1_side:SLOT_SEITE[1],a2:draft.A2,a2_side:SLOT_SEITE[2],
+      b1:draft.B1,b1_side:SLOT_SEITE[1],b2:draft.B2,b2_side:SLOT_SEITE[2]};
+    const zeile={...spieler,...partieFelder(saetze.slice(0,1))};
+    const t0=mts(m);
+    const weitere=saetze.slice(1).map((s,i)=>({...spieler,...partieFelder([s]),deltas:{},exp_a:0.5,
+      created_at:new Date(t0+(i+1)*10).toISOString()}));
     try {
     const {error}=await sb.from('matches').update(zeile).eq('id',draft.id);
     if(error){toast('Fehler: '+error.message,true);return;}
+    let neue=[];
+    if(weitere.length){
+      const ins=await sb.from('matches').insert(weitere).select();
+      if(ins.error){toast('Fehler: '+ins.error.message,true);return;}
+      neue=ins.data||[];
+    }
     if(save.isConnected && E===state && JSON.stringify(E)===JSON.stringify(draft)) closeSheet(true);
-    const updated=matches.map(x=>x.id===draft.id?{...x,...zeile}:x);
+    const updated=[...matches.map(x=>x.id===draft.id?{...x,...zeile}:x),...neue];
     const r = ligaNeuRechnen(updated);
     neuZeichnen();
     toast('Gespeichert','ok');
@@ -19701,7 +19707,7 @@ function vorschauHtml(ic, titel, satz, punkte, fuss){
     : '';
   return `<div class="vorschau">
     <div class="vs-kopf"><span class="vs-ic">${svgI(ic)}</span><b>${esc(titel)}</b></div>
-    <p class="vs-satz">${satz}</p>${liste}${fuss || ''}
+    ${satz ? `<p class="vs-satz">${satz}</p>` : ''}${liste}${fuss || ''}
   </div>`;
 }
 let tt;
@@ -19779,6 +19785,40 @@ function _processAchToastQueue(){
   }, 2600);
 }
 
+const HILFE = {
+  liga: {titel:'Liga', absaetze:[
+    '<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.',
+    'Die Reiter über der Liste sortieren um: Elo, Quote, Game-Bilanz und mehr. Ein Name öffnet das Profil.',
+    'Neue Partie: das Plus unten rechts. Jeder Satz ist eine Partie; mehrere Sätze derselben Paare hintereinander zählen außerdem als Match.']},
+  seiten: {titel:'Seiten', absaetze:[
+    'Wer auf welcher Seite am stärksten ist. Die Seite kommt aus der Aufstellung jeder Partie.',
+    'Der Wert verbindet die Siegquote dort, die Leistung gegen die Erwartung (Partner und Gegner), den Anteil der Games und wie oft jemand dort stand. <b>▲</b> heißt über, <b>▼</b> unter der Erwartung.',
+    'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
+  awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
+    '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage, getippt zeigt sie die ersten drei.',
+    '<b>Rekorde</b> sind Bestwerte über alle Saisons. Wer einen übertrifft, nimmt ihn dem Halter ab.',
+    () => `<b>Chronik</b>: jeder Monat schreibt Einträge für das, worin jemand besonders war, ab ${CHRONIK_MIN_SPIELE} Partien im Monat.`,
+    'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
+  teams: {titel:'Teams', absaetze:[
+    () => `Jedes Duo ab ${DUO_MIN} gemeinsamen Partien, sortiert nach Quote, Game-Bilanz oder Elo.`,
+    'Ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
+  verlauf: {titel:'Verlauf', absaetze:[
+    'Jede Partie, die neueste zuerst; oben lässt sich nach einem Spieler filtern.',
+    'Eine Partie öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt sie sich bearbeiten oder löschen; die Liga rechnet danach neu.']},
+  eingabe: {titel:'Neue Partie', absaetze:[
+    'Vier Spieler wählen. Links steht Revés, rechts Drive; ⇄ tauscht die Seiten eines Teams.',
+    'Die Games je Satz eintragen. Jeder Satz wird eine eigene Partie, „+ Satz" trägt mehrere auf einmal ein. Ein Satz, der nicht zu Ende kam, zählt mit, wenn er einen Vorsprung hat.',
+    'Spielen dieselben Paare weiter, gehört der nächste Satz zum selben Match; die Zeile über der Elo nennt den Stand.']},
+};
+function hilfeKnopf(key){
+  const h = HILFE[key];
+  return h ? `<button class="kopf-info" type="button" data-hilfe="${key}" aria-label="So funktioniert ${esc(h.titel)}">${svgI('frage')}</button>` : '';
+}
+function zeigeHilfe(key){
+  const h = HILFE[key]; if(!h) return;
+  openSheet(blattKopfHtml({ic:'frage', titel:h.titel, unter:'So funktioniert es'})
+    + `<div class="pos-info">${h.absaetze.map(a => `<p>${typeof a === 'function' ? a() : a}</p>`).join('')}</div>`);
+}
 
 const NEWS_DEBUG = false;
 
@@ -21598,11 +21638,13 @@ function _buildStories(){
         .filter(x => x.d > 0).sort((x, y) => y.d - x.d)[0] || null;
       const plus = _best ? _best.d : 0;
       const pz = partie(m), stand = standFuer(m);
+      const bg = begegnungAm(m), bgHier = bg.n > 1 && bg.winner === m.winner;
+      const bgStand = bgHier ? `${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)}` : '';
       let art = 'normal', rang = 0, title = '', desc = '', ic = 'padelBall';
-      if(pz.doppelBagel){
+      if(bgHier && bg.doppelBagel){
         art = 'zu_null'; rang = 10; ic = 'hundred';
         title = `${wn} lassen kein Game zu`;
-        desc = `${stand} gegen ${ln}. Ein Doppel-Bagel: auf der anderen Seite steht kein einziges Game.`;
+        desc = `${bgStand} in Sätzen gegen ${ln}, jeder Satz 6:0. Ein Doppel-Bagel.`;
       } else if(chance >= CHANCE_SENSATION && chance < CHANCE_UPSET){
         art = 'upset'; rang = 8; ic = 'giantSlayer';
         title = `${wn} stürzen die Favoriten`;
@@ -21611,18 +21653,22 @@ function _buildStories(){
         art = 'krimi'; rang = 6; ic = 'thriller';
         title = `${wn} gewinnen im ${pz.mtb ? 'Match-Tiebreak' : 'Tiebreak'}`;
         desc = `${stand} gegen ${ln}. Entschieden hat der letzte Ballwechsel.`;
-      } else if(pz.wende){
+      } else if(bgHier && bg.wende){
         art = 'eng'; rang = 5; ic = 'wende';
-        title = `${wn} drehen die Partie`;
-        desc = `Den ersten Satz verloren, am Ende ${stand} gegen ${ln}.`;
+        title = `${wn} drehen das Match`;
+        desc = `Den ersten Satz verloren, am Ende ${bgStand} in Sätzen gegen ${ln}.`;
       } else if(pz.deutlich){
         art = 'kanter'; rang = 4; ic = 'thumbsUp';
         title = `${wn} setzen ein klares Zeichen`;
         desc = `${stand} gegen ${ln}. Mit ${diff} Games Abstand ist das eine klare Angelegenheit.`;
-      } else if(pz.umkaempft){
+      } else if(bgHier && bg.umkaempft){
         art = 'eng'; rang = 2; ic = 'thriller';
-        title = `${wn} gewinnen über drei Sätze`;
-        desc = `${ln} holen einen Satz und halten die Partie offen. Am Ende steht ein ${stand}.`;
+        title = `${wn} gewinnen das Match ${bgStand}`;
+        desc = `${ln} holen einen Satz und halten das Match offen, der letzte Satz endet ${stand}.`;
+      } else if(bgHier && bg.zuNull){
+        art = 'kanter'; rang = 3; ic = 'zuNull';
+        title = `${wn} gewinnen das Match ${bgStand} zu Null`;
+        desc = `Kein Satz für ${ln}, der letzte endet ${stand}.`;
       } else {
         title = `${wn} setzen sich gegen ${ln} durch`;
         desc = `Vor der Partie lag die Siegchance bei ${pct} %.`
@@ -27079,7 +27125,7 @@ function _spKontext(F){
   return wahl[_spVisualHash(F.m.id + '|kontext') % wahl.length];
 }
 const _spKrimi = x => partie(x).entscheidTb;
-const _spZuNull = x => partie(x).doppelBagel;
+const _spZuNull = x => { const bg = begegnungAm(x); return bg.doppelBagel && bg.winner === x.winner; };
 
 const SP_FORM = {
   mosaik:{rang:12, ic:'chartBar',
@@ -27248,7 +27294,7 @@ const SP_FORM = {
   weste:{rang:60, ic:'zuNull', v2:true,
     wann:F => _spZuNull(F.m) ? {} : null,
     daten:F => {
-      const vor = _spBasis().chrono.slice(0, F.i).filter(y => partie(y).zuNull);
+      const vor = _spBasis().chrono.slice(0, F.i).filter(y => begegnungAm(y).zuNull);
       const z = vor[vor.length - 1];
       return {W:F.W, L:F.L, hoch:F.hoch, tief:F.tief, n:vor.length + 1, zuletzt:z ? mts(z) : null};
     },
@@ -34182,8 +34228,9 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       const pos = id===m.a1 ? m.a1_side : id===m.a2 ? m.a2_side : id===m.b1 ? m.b1_side : m.b2_side;
       const pz = partie(m), fz = partieFuer(m, onA ? 'A' : 'B');
       const knapp = pz.knapp, deutlich = pz.deutlich, zitter = pz.entscheidTb;
+      const bg = begegnungAm(m), bgW = bg.winner === (onA ? 'A' : 'B');
       p.partien.push({win:w, gf, ga, pos, tag:day, wk:_wochenKey(m.created_at), mid:m.id,
-                      knapp, deutlich, zitter, zuNull:pz.zuNull, wende:pz.wende,
+                      knapp, deutlich, zitter, zuNull:bg.zuNull, wende:bg.wende && bgW,
                       sf:fz.setsFor, sa:fz.setsAgainst, tbW:fz.tbWon, tbL:fz.tbLost,
                       bF:fz.bagelsFor, bA:fz.bagelsAgainst, erg:standFuer(m, w),
                       mate:mateOf(id),
@@ -34194,15 +34241,15 @@ function _seasonTitleCtxRechnen(sid, bisMs){
       else             { p.revG++; if(w) p.revW++; }
       p.sf += fz.setsFor; p.sa += fz.setsAgainst; p.tbW += fz.tbWon; p.tbL += fz.tbLost;
       p.bagelsF += fz.bagelsFor; p.bagelsA += fz.bagelsAgainst;
-      if(w && pz.zuNull) p.zuNull++;
-      if(w && pz.wende) p.wenden++;
+      if(bgW && bg.zuNull) p.zuNull++;
+      if(bgW && bg.wende) p.wenden++;
       const gegSerie = (onA ? [m.b1, m.b2] : [m.a1, m.a2])
         .reduce((mx, g) => Math.max(mx, g ? (serieVor[g] || 0) : 0), 0);
       if(gegSerie >= 3){ p.brechG++; if(w) p.brechW++; }
       if(w && zitter)  p.nail++;
       if(!w && zitter) p.bitter++;
-      if(w && pz.zuNull)  p.perfect++;
-      if(!w && pz.zuNull) p.debacle++;
+      if(bg.zuNull &&  bgW) p.perfect++;
+      if(bg.zuNull && !bgW) p.debacle++;
       const exp = myExp(id, m);
       if(w && exp < CHANCE_UPSET) p.upsets++;
       if(exp < 0.50){ p.favG++; p.favExp += exp; if(w) p.favW++; }
@@ -34794,7 +34841,8 @@ function _chronicleCtx(bisMs){
       if(pos === 'drive'){ p.drvG++; p.drvGf += gf; p.drvGa += ga; if(w) p.drvW++; p.drvPerf += (w?1:0) - exp; p.drvGm += posGameLeistung(gf, ga, exp); }
       else             { p.revG++; p.revGf += gf; p.revGa += ga; if(w) p.revW++; p.revPerf += (w?1:0) - exp; p.revGm += posGameLeistung(gf, ga, exp); }
       const pz = partie(m), fz = partieFuer(m, onA ? 'A' : 'B');
-      if(!w && pz.zuNull) p.debacle++;
+      const bg = begegnungAm(m);
+      if(bg.zuNull && bg.winner !== (onA ? 'A' : 'B')) p.debacle++;
       if(w && pz.entscheidTb)  p.nail++;
       if(!w && pz.entscheidTb) p.bitter++;
       if(pz.knapp){ p.close++; if(w) p.closeW++; }

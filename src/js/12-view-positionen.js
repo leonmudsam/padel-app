@@ -30,16 +30,11 @@ function positionsListe(pos, spieler){
 // stehen in keiner Rangfolge der aktiven Liga, also trägt die Zeile keinen
 // Platz und kein Metall der ersten drei.
 function positionsBlockHtml(arr, pos, ohneRang){
-  // Ohne Partie auf dieser Seite sagt die Ansicht, was sie misst: der Satz
-  // „Noch keine Partien auf dieser Seite" ließ offen, was hier stehen wird.
+  // Ohne Partie auf dieser Seite sagt die Ansicht, was hier stehen wird —
+  // und nicht, was Drive und Revés im Padel sind: das weiß, wer spielt.
   if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
-    pos==='drive' ? 'Drive, die rechte Seite' : 'Revés, die linke Seite',
-    `Jede Partie stellt jeden Spieler auf eine Seite. Hier steht, wer ${pos==='drive'?'rechts':'links'} über der Erwartung spielt: Siege und Games, gemessen an der Stärke von Partner und Gegnern. Die erste Partie auf dieser Seite füllt die Liste.`,
-    [
-      ['posDrive', 'Drive, rechts', 'Die Vorhand in der Mitte. Baut die Punkte auf und hält den Ball im Spiel.'],
-      ['posReves', 'Revés, links', 'Die Rückhand an der Wand. Schließt die Punkte oft über Kopf ab.'],
-      ['posFlex', 'Das Seitenprofil', 'Im Profil steht, wie oft jemand wo spielt und auf welcher Seite er besser ist. Die Seiten-Landkarte darüber stellt alle nebeneinander.'],
-    ]);
+    pos==='drive' ? 'Drive · rechts' : 'Revés · links',
+    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jeder Partie.`);
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     // Rechts steht der Wert, nach dem sortiert wird; der Game-Anteil hat
@@ -73,28 +68,15 @@ function vPositions(){
   const arr = positionsListe(which);
   const ruhe = positionsListe(which, ruhestandSpieler()).length;
   return `
-    <div class="view-head"><h2>Seiten <button class="kopf-info" type="button" data-info="positionen" aria-label="So entsteht der Wert">${svgI('info')}</button></h2><p>Drive und Revés, über alle Partien</p></div>
+    <div class="view-head"><h2>Seiten ${hilfeKnopf('seiten')}</h2><p>Wer auf welcher Seite am stärksten ist</p></div>
     ${einblickHtml('rollen')}
     <div class="ui-switch">
-      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
       <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}Revés · links</span></button>
+      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
     </div>
-    <div class="mini-label">▲ über · ▼ unter der Erwartung, gemessen an Partner und Gegnern</div>
+    <div class="mini-label">▲ über · ▼ unter der Erwartung</div>
     ${positionsBlockHtml(arr, which)}
     ${ruhe ? `<div class="ruhe-ende">${einblickHtml('ruhe_pos', ruhe === 1 ? 'ein Spieler' : ruhe + ' Spieler')}</div>` : ''}`;
 }
 
 
-// ── Wie der Wert entsteht ────────────────────────────────────────────
-// Die Erklärung steht hinter dem kleinen Knopf neben dem Wort — wer sie
-// braucht, tippt, alle anderen sehen die Liste. Sie grenzt sich vom
-// Seitenprofil ab [§C44]: der Wert hier fragt, wer auf einer Seite der
-// Beste der Liga ist, das Profil, wo jemand selbst besser ist.
-function zeigePositionsInfo(){
-  openSheet(blattKopfHtml({ic:'info', titel:'So entsteht der Wert', unter:'Seiten'})
-    + `<div class="pos-info">
-      <p>Im Padel steht jeder Spieler auf einer Seite: <b>rechts</b> spielt der Drive, <b>links</b> der Revés. Links steht bei Rechtshändern meist der Angriffsstärkere: er nimmt die Bälle durch die Mitte mit der Vorhand und die meisten Smashes. Rechts wird das Spiel aufgebaut.</p>
-      <p>Der Wert verbindet vier Dinge: die Siegquote auf dieser Seite, die Leistung gegen die Erwartung — gemessen an Partner und Gegnern —, den Anteil der Games, den das eigene Team dort holt, und die Erfahrung, also wie oft jemand dort gespielt hat.</p>
-      <p><b>▲</b> heißt über, <b>▼</b> unter der Erwartung. Gerechnet wird über alle Partien.</p>
-      <p>Der Wert vergleicht die Liga auf einer Seite. Auf welcher Seite jemand selbst stärker ist, sagt das Seitenprofil im Profil.</p></div>`);
-}

@@ -1838,12 +1838,19 @@ function _buildStories(){
       // sieg, im Tiebreak entschieden, Satzrückstand gedreht, deutlich,
       // umkämpft. Die Schlüssel (`zu_null`, `krimi`, `kanter`, `eng`) stammen
       // aus der Kicker-Liga und stehen in gespeicherten Karten.
+      // Eine Karte ist ein Satz. Was nur über mehrere Sätze gilt — der
+      // Doppel-Bagel, die Wende, drei umkämpfte Sätze, der Stand 2:1 —
+      // erzählt der letzte Satz der Begegnung (`begegnungAm`), und nur,
+      // wenn sein Sieger auch die Begegnung gewann; sonst erzählte die Karte
+      // eines verlorenen dritten Satzes, wer die Partie gewann.
       const pz = partie(m), stand = standFuer(m);
+      const bg = begegnungAm(m), bgHier = bg.n > 1 && bg.winner === m.winner;
+      const bgStand = bgHier ? `${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)}` : '';
       let art = 'normal', rang = 0, title = '', desc = '', ic = 'padelBall';
-      if(pz.doppelBagel){
+      if(bgHier && bg.doppelBagel){
         art = 'zu_null'; rang = 10; ic = 'hundred';
         title = `${wn} lassen kein Game zu`;
-        desc = `${stand} gegen ${ln}. Ein Doppel-Bagel: auf der anderen Seite steht kein einziges Game.`;
+        desc = `${bgStand} in Sätzen gegen ${ln}, jeder Satz 6:0. Ein Doppel-Bagel.`;
       } else if(chance >= CHANCE_SENSATION && chance < CHANCE_UPSET){
         art = 'upset'; rang = 8; ic = 'giantSlayer';
         title = `${wn} stürzen die Favoriten`;
@@ -1852,18 +1859,22 @@ function _buildStories(){
         art = 'krimi'; rang = 6; ic = 'thriller';
         title = `${wn} gewinnen im ${pz.mtb ? 'Match-Tiebreak' : 'Tiebreak'}`;
         desc = `${stand} gegen ${ln}. Entschieden hat der letzte Ballwechsel.`;
-      } else if(pz.wende){
+      } else if(bgHier && bg.wende){
         art = 'eng'; rang = 5; ic = 'wende';
-        title = `${wn} drehen die Partie`;
-        desc = `Den ersten Satz verloren, am Ende ${stand} gegen ${ln}.`;
+        title = `${wn} drehen das Match`;
+        desc = `Den ersten Satz verloren, am Ende ${bgStand} in Sätzen gegen ${ln}.`;
       } else if(pz.deutlich){
         art = 'kanter'; rang = 4; ic = 'thumbsUp';
         title = `${wn} setzen ein klares Zeichen`;
         desc = `${stand} gegen ${ln}. Mit ${diff} Games Abstand ist das eine klare Angelegenheit.`;
-      } else if(pz.umkaempft){
+      } else if(bgHier && bg.umkaempft){
         art = 'eng'; rang = 2; ic = 'thriller';
-        title = `${wn} gewinnen über drei Sätze`;
-        desc = `${ln} holen einen Satz und halten die Partie offen. Am Ende steht ein ${stand}.`;
+        title = `${wn} gewinnen das Match ${bgStand}`;
+        desc = `${ln} holen einen Satz und halten das Match offen, der letzte Satz endet ${stand}.`;
+      } else if(bgHier && bg.zuNull){
+        art = 'kanter'; rang = 3; ic = 'zuNull';
+        title = `${wn} gewinnen das Match ${bgStand} zu Null`;
+        desc = `Kein Satz für ${ln}, der letzte endet ${stand}.`;
       } else {
         // Eine Partie ohne Muster hat trotzdem zwei Zahlen, die jede hat.
         // Das Ergebnis selbst steht im Band darüber und gehört nicht in

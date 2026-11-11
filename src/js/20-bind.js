@@ -3,7 +3,8 @@
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function bind(){
   const main=document.getElementById('main');if(!main) return;
-  main.querySelectorAll('[data-info="positionen"]').forEach(b => b.onclick = zeigePositionsInfo);
+  // Die „?"-Knöpfe der Reiter [§C27]: ein Blatt, wie der Reiter funktioniert.
+  main.querySelectorAll('[data-hilfe]').forEach(b => b.onclick = () => zeigeHilfe(b.dataset.hilfe));
   // Die Einblicke über den Ranglisten klappen auf, ohne neu zu zeichnen.
   einblickBinden(document.getElementById('main'));
   main.querySelectorAll('.einblick.auf .einblick-i').forEach(bindDetailLinks);
@@ -205,12 +206,21 @@ function bind(){
   bindSlider('cfgNpMult','new_player_mult',v=>v/100,v=>Math.round(v));
   bindSlider('cfgNpMidMult','new_player_mid_mult',v=>v/100,v=>Math.round(v));
   bindSlider('cfgVetDamp','veteran_damp',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgGewEins','gewicht_eins',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgGewDrei','gewicht_drei',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgGewUeber6','gewicht_ueber6',v=>v/100,v=>Math.round(v));
+  bindSlider('cfgTbAusgleich','tb_ausgleich',v=>v/100,v=>Math.round(v));
   const recalcBtn=document.getElementById('recalcBtn');
   if(recalcBtn) recalcBtn.onclick=async()=>{
     if(!(await bestaetigen({ic:'alert', gefahr:true, ja:'Neu berechnen',
       titel:'Alle Partien neu berechnen?',
-      text:'Die gespeicherte Elo jeder Partie wird mit den aktuellen Reglern überschrieben. Vergangene Saisons und Auszeichnungen können sich dadurch ändern. Das lässt sich nicht rückgängig machen.'}))) return;
+      text:'Partien mit mehreren Sätzen werden in Sätze geteilt, und die Elo jeder Partie wird mit den aktuellen Reglern neu gerechnet. Vergangene Saisons und Auszeichnungen können sich ändern. Das lässt sich nicht rückgängig machen.'}))) return;
     toast('Alle Partien werden neu berechnet …');
+    // Erst alte Zeilen mit mehreren Sätzen in Sätze teilen [§1.3], dann
+    // rechnen: sonst stünde eine Partie weiter als „2:1" mit der Elo der
+    // alten Rechnung neben den Sätzen der neuen.
+    try { await partienAufteilen(); }
+    catch(e){ toast('Aufteilen fehlgeschlagen', true, {sub:e.message||''}); return; }
     await persistRecalc(matches);
     toast('Neuberechnung abgeschlossen','ok');
     await loadAll();

@@ -117,23 +117,21 @@ function formDotsHtml(erg, curStreak){
     glut && i >= erg.length - glut ? ' glut' : ''}"></div>`).join('');
 }
 // ── Die Liga vor der ersten Partie [§C27] ───────────────────────────
-// Eine Vorschau statt leerer Tabellen: was die Liga ist, wie eine Partie
-// hineinkommt und was daraus entsteht. Der Knopf zum Anlegen steht IN der
-// Karte: am Ende der Seite lag er unter dem Plus unten rechts.
+// Schritt für Schritt, wie man anfängt — und nur, was die App betrifft;
+// was Padel ist, weiß, wer sie öffnet. Die angelegten Spieler stehen unter
+// „Gesamt" (die Ewige Tafel nennt jeden); Saison und Tag zeigen, wer im
+// Zeitraum gespielt hat, und vor der ersten Partie also niemanden.
 function ligaVorschauHtml(){
-  const fehlt = Math.max(0, 4 - activePlayers().length);
-  return vorschauHtml('racket', 'So funktioniert die Liga',
-    fehlt
-      ? `Für die erste Partie fehlen noch <b>${fehlt} Spieler</b>. Danach füllt sich jede Ansicht von selbst.`
-      : 'Alle für die erste Partie sind da. Das Plus unten rechts trägt sie ein; danach füllt sich jede Ansicht von selbst.',
+  const n = activePlayers().length, fehlt = Math.max(0, 4 - n);
+  const haken = ok => ok ? 'check' : 'users';
+  return vorschauHtml('racket', 'So geht es los',
+    '',
     [
-      ['users', 'Spieler anlegen', 'Jeder, der mitspielt, bekommt einen Namen. Gespielt wird immer zwei gegen zwei.'],
-      ['court', 'Partie eintragen', 'Nach dem Spiel über das Plus: die vier Spieler auf ihre Seite stellen, rechts Drive, links Revés, dann die Games je Satz. Jedes Format zählt, ein Satz oder drei, mit oder ohne Tiebreak, auch ein Satz, der nicht zu Ende kam.'],
-      ['trendUp', 'Elo', `Jeder beginnt bei ${Math.round(cfg.start_elo || 0)}. Jeder Satz zählt einzeln: wer ihn gewinnt, bekommt Elo, auch in einer verlorenen Partie. Ein Satz gegen Stärkere bringt mehr als einer gegen Schwächere, ein Satz bis 6 mehr als ein Kurzsatz bis 3.`],
-      ['calendar', 'Saison, Tag, Gesamt', `Eine Saison ist ein Kalendermonat, und jeder beginnt sie bei ${Math.round(cfg.start_elo || 0)}. Der Tag zeigt den Spieltag mit dem Spieler des Tages (ab ${PERIODE_MIN_SIEGE.tag} Siegen), Gesamt die Laufbahn über alle Saisons.`],
-      ['shieldStar', 'Was daraus entsteht', 'Auszeichnungen, Rekorde, die Chronik jedes Monats, das Insignium am Wappen und die News füllen sich mit den Partien. Jeder Reiter zeigt schon jetzt, was dort stehen wird.'],
-    ],
-    `<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`);
+      [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
+      ['court', '2. Partie eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz wird eine eigene Partie.'],
+      ['chartBar', '3. Rangliste lesen', 'Saison ist der laufende Monat, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.'],
+      ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Partien. Das „?" an jeder Überschrift erklärt den Reiter.'],
+    ]);
 }
 function _vRankingCore(){
   // Welche Saison gezeigt wird, steht an EINER Stelle — und nur unter
@@ -162,11 +160,12 @@ function _vRankingCore(){
   // gleich. Vorher standen hier Kacheln mit „noch keine Daten" und eine
   // Tabelle mit lauter Nullen, und niemand erfuhr, was eine Saison ist oder
   // wie eine Partie in die Liga kommt.
-  if(!matches.length) return `
-    <div class="view-head"><h2>${period==='all' ? 'Ewige Tafel' : 'Liga'}</h2><p>${
+  if(!matches.length && period !== 'all') return `
+    <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${
       activePlayers().length} Spieler · noch keine Partie</p></div>
     ${periodBar}
-    ${ligaVorschauHtml()}`;
+    ${ligaVorschauHtml()}
+    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
 
   // ZEITRAUM-ANSICHT (Tag/Woche/Monat)
   if(period!=='all'){
@@ -548,7 +547,7 @@ function _vRankingCore(){
         </div>`;
       };
       return `
-        <div class="view-head"><h2>Liga</h2><p>${periodLabel(period, saisonArg)} · ${
+        <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${
           duos.length} Duo${duos.length===1?'':'s'} · ${totalMatches} Partien</p></div>
         ${periodBar}
         ${kontextHtml}
@@ -560,7 +559,7 @@ function _vRankingCore(){
     }
 
     return `
-      <div class="view-head"><h2>Liga</h2><p>${periodLabel(period, saisonArg)} · ${ps.length} aktiv · ${totalMatches} Partien</p></div>
+      <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${ps.length} aktiv · ${totalMatches} Partien</p></div>
       ${periodBar}
       ${kontextHtml}
       ${saisonWahl}
@@ -698,7 +697,7 @@ function _vRankingCore(){
   // unerreichbare Ansichten; sie sind entfernt.
 
   return `
-    <div class="view-head"><h2>Ewige Tafel</h2><p>Karriere-Elo über ${
+    <div class="view-head"><h2>Ewige Tafel ${hilfeKnopf('liga')}</h2><p>Karriere-Elo über ${
       seasons.length} Saison${seasons.length===1?'':'s'} · ${matches.length} Partien</p></div>
     ${periodBar}
     ${hofHtml || `<div class="stat-strip">
@@ -709,7 +708,8 @@ function _vRankingCore(){
     ${hofPodsHtml}
     ${metrikLeisteHtml('all')}
     ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
-    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
+    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>
+    ${matches.length ? '' : ligaVorschauHtml()}`;
 
 }
 function rrow(p, s, i, metric, globalElo, letzte){

@@ -156,49 +156,51 @@ const [w64, l64] = satzDelta(6, 4), [w76, l76] = satzDelta(7, 6);
 ok(w76 > w64, `Der Sieger eines 7:6 bekommt mehr als der eines 6:4 (${w76} gegen ${w64})`);
 ok(l76 > l64, `Der Verlierer eines 7:6 verliert weniger als der eines 6:4, der Ausgleich im Tiebreak (${l76} gegen ${l64})`);
 
-// ── Sätze einzeln eingetragen sind eine Partie [§5.6b] ───────────────
-// B gewinnt den ersten Satz, A den zweiten und dritten, jeder Satz einzeln
-// gespeichert, nichts dazwischen: das ist EINE Partie, 2:1 für A, eine
-// Wende. Die Datenbank ist eine Attrappe, die jede Anfrage annimmt.
+// ── Ein Satz ist eine Partie, mehrere Sätze sind eine Begegnung [§1.3] ─
+// Drei Sätze auf einmal geben drei Zeilen, wie drei einzeln gespeicherte.
+// B gewinnt den ersten, A den zweiten und dritten: drei Partien in Verlauf
+// und Statistik, und über alle drei eine Begegnung 2:1 für A mit Wende —
+// gewertet einmal, an ihrem letzten Satz. Die Datenbank ist eine Attrappe.
 K(`(()=>{const ok=()=>{const c=new Proxy(function(){},{get(_,p){if(p==='then')return (a,b)=>Promise.resolve({error:null,data:null}).then(a,b);return c;},apply(){return c;}});return c;};
-  sb.from=()=>ok();0})()`);
-const zeile1 = `{id:'satz1',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
-  ...partieFelder([{a:4,b:6,art:'n'}]),deltas:{p1:-10,p2:-10,p3:12,p4:12},exp_a:.5,created_at:new Date(2026,7,26,18,0).toISOString()}`;
-K(`players=['p1','p2','p3','p4','p5'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];matches=[${zeile1}];invalidateCache();0`);
+  sb.from=()=>ok();toast=()=>{};neuZeichnen=()=>{};0})()`);
+K(`players=['p1','p2','p3','p4','p5'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];matches=[];invalidateCache();0`);
+setNow(new Date(2026, 7, 26, 18, 0).getTime());
+const eintrag = J(`(()=>{const c=computeMatch([{id:'p1',pos:'reves'},{id:'p2',pos:'drive'}],[{id:'p3',pos:'reves'},{id:'p4',pos:'drive'}],
+  partieFelder([{a:4,b:6,art:'n'},{a:6,b:3,art:'n'},{a:3,b:3,art:'open'},{a:6,b:2,art:'n'}]));
+  return c.je.map(x=>({s:x.zeile.sets.length,w:x.zeile.winner,d:x.res.p1}));})()`);
+ok(eintrag.length === 3 && eintrag.every(x => x.s === 1) && eintrag.map(x => x.w).join('') === 'BAA',
+  'Drei Sätze auf einmal werden drei Zeilen mit je einem Satz; ein offener Satz im Gleichstand fällt weg');
+const zeile = (id, min, a1, a2, b1, b2, a, b) => `{id:'${id}',a1:'${a1}',a2:'${a2}',b1:'${b1}',b2:'${b2}',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+  ...partieFelder([{a:${a},b:${b},art:'n'}]),deltas:{},exp_a:.5,created_at:new Date(2026,7,26,18,${min}).toISOString()}`;
+// Einzeln gespeichert, der zweite Satz mit den Teams andersherum eingetragen.
+K(`matches=[${zeile('s1', 0, 'p1', 'p2', 'p3', 'p4', 4, 6)},${zeile('s2', 40, 'p3', 'p4', 'p1', 'p2', 3, 6)},${zeile('s3', 80, 'p1', 'p2', 'p3', 'p4', 6, 2)}];invalidateCache();0`);
+const bg = J(`(()=>{const b=begegnungAm(matches[2]);return {n:b.n,st:b.setsA+':'+b.setsB,w:b.winner,wende:b.wende,
+  erste:begegnungAm(matches[0]).n,zweite:begegnungAm(matches[1]).wende};})()`);
+ok(bg.n === 3 && bg.st === '2:1' && bg.w === 'A' && bg.wende,
+  `Drei Sätze derselben Paare hintereinander sind eine Begegnung, 2:1 mit Wende (${bg.st}), auch andersherum eingetragen`);
+ok(bg.erste === 0 && bg.zweite === false, 'Gewertet wird die Begegnung nur an ihrem letzten Satz, sonst zählte die Wende je Satz');
+const r = J(`(()=>{const s=playerStats('p1');return {g:s.games,w:s.wins,wenden:s.wenden,abz:BADGES.find(b=>b.id==='wall_badge').count('p1',matches)};})()`);
+ok(r.g === 3 && r.w === 2 && r.wenden === 1 && r.abz === 1,
+  `Drei Partien, zwei Siege, eine Wende, einmal „Die Wende" (${r.g}/${r.w}/${r.wenden}/${r.abz})`);
+K(`matches=[${zeile('t1', 0, 'p1', 'p2', 'p3', 'p4', 4, 6)},${zeile('t2', 10, 'p1', 'p5', 'p3', 'p4', 6, 1)},${zeile('t3', 20, 'p1', 'p2', 'p3', 'p4', 6, 2)}];invalidateCache();0`);
+ok(J(`begegnungAm(matches[2]).n`) === 1, 'Eine andere Partie dazwischen beendet die Begegnung');
+K(`matches=[${zeile('u1', 0, 'p1', 'p2', 'p3', 'p4', 4, 6)}];invalidateCache();0`);
 setNow(new Date(2026, 7, 26, 18, 40).getTime());
-const fort = (st, s) => J(`(()=>{const f=partieFortsetzung(${st},${JSON.stringify(s)});return f&&{id:f.partie.id,gedreht:f.gedreht,saetze:f.saetze.map(x=>x.a+':'+x.b),nr:f.satzNr};})()`);
-const f2 = fort(`{A1:'p3',A2:'p4',B1:'p1',B2:'p2'}`, [{a:3, b:6, art:'n'}]);
-ok(f2 && f2.id === 'satz1' && f2.gedreht && f2.saetze.join(' ') === '4:6 6:3' && f2.nr === 2,
-  'Ein Satz derselben Paare schließt an, auch mit den Teams auf der anderen Seite des Netzes eingetragen');
-ok(fort(`{A1:'p1',A2:'p5',B1:'p3',B2:'p4'}`, [{a:6, b:3, art:'n'}]) === null, 'Andere Paare sind eine neue Partie');
-setNow(new Date(2026, 7, 27, 18, 10).getTime());
-ok(fort(`{A1:'p1',A2:'p2',B1:'p3',B2:'p4'}`, [{a:6, b:3, art:'n'}]) === null, 'Am nächsten Tag beginnt eine neue Partie');
-setNow(new Date(2026, 7, 26, 18, 40).getTime());
-ok(J(`(()=>{const html=anschlussHtml({A1:'p1',A2:'p2',B1:'p3',B2:'p4',saetze:[{a:'6',b:'3'}]});return html.includes('Satz 2')&&html.includes('1:1');})()`),
-  'Die Eingabe sagt vor dem Speichern, an welche Partie angehängt wird und wie es danach steht');
+ok(J(`(()=>{const h=anschlussHtml({A1:'p3',A2:'p4',B1:'p1',B2:'p2',saetze:[{a:'3',b:'6'}]});return h.includes('Satz 2')&&h.includes('1:1');})()`),
+  'Die Eingabe nennt den Satz der Partie und den Stand danach');
+ok(J(`_mergeStorySnapshots([{id:'spiel_weg',dataRef:{matchId:'weg'},when:new Date()},{id:'spiel_u1',dataRef:{matchId:'u1'},when:new Date()}],[],new Date()).map(s=>s.id).join()`)
+  === 'spiel_u1', 'Die Story einer gelöschten Partie verschwindet aus dem Feed');
 
 const ANSCHLUSS = (async () => {
-  const haenge = (st, s) => K(`(async()=>{const f=partieFortsetzung(${st},${JSON.stringify(s)});const e=await partieAnhaengen(f);return e?e.neu.id:null;})()`);
-  const id2 = await haenge(`{A1:'p3',A2:'p4',B1:'p1',B2:'p2'}`, [{a:3, b:6, art:'n'}]);
-  setNow(new Date(2026, 7, 26, 19, 20).getTime());
-  const id3 = await haenge(`{A1:'p1',A2:'p2',B1:'p3',B2:'p4'}`, [{a:6, b:2, art:'n'}]);
-  const r = J(`(()=>{const m=matches[0],p=partie(m);return {n:matches.length,id:m.id,stand:p.setsA+':'+p.setsB,w:p.winner,wende:p.wende,
-    siege:getGlobalSim().wins.p1,niederlagen:getGlobalSim().losses.p1,
-    wendeAbz:BADGES.find(b=>b.id==='wall_badge').count('p1',matches),
-    saetzeElo:((simulateEloWithSliders(matches).history[0].breakdowns.p1||{}).saetze||[]).length};})()`);
-  ok(r.n === 1 && r.stand === '2:1' && r.w === 'A' && id2 && id3 && id2 !== 'satz1' && id3 !== id2,
-    `Drei einzeln gespeicherte Sätze sind eine Partie, 2:1 für A, mit neuer ID je Anhang (${r.n} Partie, ${r.stand})`);
-  ok(r.wende && r.wendeAbz === 1, 'Nach verlorenem ersten Satz gewonnen: die Wende zählt, auch in den Auszeichnungen');
-  ok(r.siege === 1 && r.niederlagen === 0 && r.saetzeElo === 3,
-    `Ein Sieg statt zweier Siege und einer Niederlage, die Elo weiter je Satz (${r.siege}–${r.niederlagen}, ${r.saetzeElo} Sätze)`);
-  ok(J(`_mergeStorySnapshots([{id:'spiel_satz1',dataRef:{matchId:'satz1'},when:new Date()},{id:'spiel_'+matches[0].id,dataRef:{matchId:matches[0].id},when:new Date()}],[],new Date()).map(s=>s.id).join()`)
-    === 'spiel_' + id3, 'Die Story der Partie vor dem Anhängen verschwindet, die der ganzen Partie bleibt');
-  await K(`(async()=>{toast=()=>{};neuZeichnen=()=>{};await partieAnhangZurueck({alt:{...matches[0],id:'zwei',sets:[[4,6],[6,3]],set_kind:['n','n'],...partieFelder([{a:4,b:6,art:'n'},{a:6,b:3,art:'n'}])},neu:matches[0]});})()`);
-  ok(J(`matches.length===1&&matches[0].id==='zwei'&&partie(matches[0]).setsA===1`), 'Rückgängig holt die Partie mit ihrer alten ID und ihren alten Sätzen zurück');
-  setNow(new Date(2026, 7, 26, 19, 30).getTime());
-  ok(J(`(()=>{const f=partieFortsetzung({A1:'p1',A2:'p2',B1:'p3',B2:'p4',neu:true},[{a:6,b:1,art:'n'}]);
-    return !!f && anschlussHtml({A1:'p1',A2:'p2',B1:'p3',B2:'p4',neu:true,saetze:[{a:'6',b:'1'}]}).includes('neue Partie');})()`),
-    'Abgewählt wird es eine neue Partie, und die Zeile bietet das Anhängen wieder an');
+  // Eine alte Zeile mit drei Sätzen wird beim Neuberechnen geteilt.
+  K(`(()=>{const ok=()=>{const c=new Proxy(function(){},{get(_,p){if(p==='then')return (a,b)=>Promise.resolve({error:null,data:[]}).then(a,b);return c;},apply(){return c;}});return c;};
+    sb.from=t=>({update:()=>({eq:async()=>({error:null})}),insert:z=>({select:async()=>({error:null,data:z.map((x,i)=>({...x,id:'neu'+i}))})})});0})()`);
+  K(`matches=[{id:'alt',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a:5,b:7,art:'n'},{a:6,b:4,art:'n'},{a:7,b:5,art:'n'}]),deltas:{},exp_a:.5,created_at:new Date(2026,7,26,9,57).toISOString()}];invalidateCache();0`);
+  await K(`partienAufteilen()`);
+  const t = J(`(()=>{const l=matches.slice().sort((x,y)=>mts(x)-mts(y));return {n:l.length,s:l.map(m=>standFuer(m,true)).join(' '),eins:l.every(m=>partieSaetze(m).length===1),bg:begegnungAm(l[2]).setsA+':'+begegnungAm(l[2]).setsB};})()`);
+  ok(t.n === 3 && t.eins && t.bg === '2:1',
+    `Eine alte Partie mit drei Sätzen wird in drei Sätze geteilt, als Begegnung weiter 2:1 (${t.n} Zeilen, ${t.bg})`);
 })();
 
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.

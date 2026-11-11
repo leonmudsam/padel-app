@@ -158,8 +158,7 @@ function _eloErgebnis(st){
 // Gezählt in Sätzen der Saison, weil je Satz gerechnet wird: acht Sätze
 // sind rund vier Partien, zwanzig rund zehn.
 // Wie viel vom Verlust eines Satzes über sechs oder im Tiebreak der
-// Verlierer zurückbekommt. Ein fester Wert und kein Regler: ein Regler
-// bräuchte eine eigene Spalte in der Datenbank.
+// Verlierer zurückbekommt; der Regler ist `tb_ausgleich`.
 const TIEBREAK_AUSGLEICH = 0.4;
 const NEULING_BIS = 8;
 const EINGEWOEHNT_BIS = 20;
@@ -276,7 +275,7 @@ function simulateEloWithSliders(matchSubset, opts={}){
         // als bei einem 0:6. Deshalb nimmt ihm der Ausgleich einen festen
         // Teil des Verlusts ab, wie der Schutz für Schwächere.
         const vorTb=rawBase*mov*boost*expProtect*underdogMult*lowEloDamp;
-        const tbDamp=(!won&&satzUeberSechs(t))?1-TIEBREAK_AUSGLEICH:1;
+        const tbDamp=(!won&&satzUeberSechs(t))?1-(cfg.tb_ausgleich ?? TIEBREAK_AUSGLEICH):1;
         bd.tbDamp=tbDamp; bd.tbEffect=vorTb*tbDamp-vorTb;
 
         const afterMods=vorTb*tbDamp;

@@ -180,6 +180,22 @@ function buehneHtml(m, o){
     o.zeile ? `<div class="buehne-zeile num">${esc(o.zeile)}</div>` : ''}</div>`;
 }
 
+// ── Das Blatt über der Tastatur ──────────────────────────────────────
+// Ein Blatt steht unten fest; geht auf dem Telefon die Tastatur auf, liegt
+// sie über seinem unteren Teil, und das Namensfeld eines neuen Spielers war
+// nicht zu sehen. Die Höhe der Tastatur ist der Teil des Fensters, den der
+// sichtbare Ausschnitt (visualViewport) nicht mehr zeigt; das Blatt rückt um
+// genau sie nach oben. Unter 80 px ist es keine Tastatur, sondern die
+// Adressleiste, die ein- und ausfährt.
+function _sheetTastatur(){
+  const vv = window.visualViewport; if(!vv) return;
+  const h = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+  document.documentElement.style.setProperty('--tastatur', (h > 80 ? Math.round(h) : 0) + 'px');
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', _sheetTastatur);
+  window.visualViewport.addEventListener('scroll', _sheetTastatur);
+}
 function openSheet(html, opts){
   opts = opts || {};
   const sheet=document.getElementById('sheet');

@@ -393,7 +393,8 @@ function _chronicleCtx(bisMs){
       // debacle = zu Null verloren, nail/bitter = im Tiebreak gewonnen
       // bzw. verloren, close = knapp, blowW = deutlicher Sieg.
       const pz = partie(m), fz = partieFuer(m, onA ? 'A' : 'B');
-      if(!w && pz.zuNull) p.debacle++;
+      const bg = begegnungAm(m);
+      if(bg.zuNull && bg.winner !== (onA ? 'A' : 'B')) p.debacle++;
       if(w && pz.entscheidTb)  p.nail++;
       if(!w && pz.entscheidTb) p.bitter++;
       if(pz.knapp){ p.close++; if(w) p.closeW++; }

@@ -107,6 +107,7 @@
   .slider-wrap{margin:14px 0}
   .slider-wrap .sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .slider-wrap .sh .sn{font-size:13px;font-weight:600}
+  .sl-hint{margin-top:6px;font-size:11px;line-height:1.4;color:var(--muted)}
   .slider-wrap .sh .sv{font-family:'Sometype Mono',monospace;font-size:13px;color:var(--acid);font-weight:700}
   input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;
     background:var(--surface3);outline:none}

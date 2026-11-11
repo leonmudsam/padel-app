@@ -92,6 +92,8 @@ const ICONS = {
   dropDouble:    `<g transform="translate(0 3.75)"><path d="M7 3s3 4 3 7.5a3 3 0 11-6 0c0-3.5 3-7.5 3-7.5z"/><path d="M17 3s3 4 3 7.5a3 3 0 11-6 0c0-3.5 3-7.5 3-7.5z"/></g>`,
   dropTriple:    `<g transform="translate(0 3.75)"><path d="M5 6s2 3 2 5a2 2 0 11-4 0c0-2 2-5 2-5z"/><path d="M12 3s3 4 3 7.5a3 3 0 11-6 0c0-3.5 3-7.5 3-7.5z"/><path d="M19 6s2 3 2 5a2 2 0 11-4 0c0-2 2-5 2-5z"/></g>`,
   info:          `<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16v.5"/>`,
+  // Der Knopf, der erklärt, wie ein Reiter funktioniert (hilfeKnopf).
+  frage:         `<circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1.1.9-1.1 1.6v.5M12 16.3v.4"/>`,
   // Peak Elo: zwei Berggipfel mit Stern oben am höchsten
   peak:          `<path d="M3 20h18M5 20l5-10 3 6 2-3 4 7"/><polygon points="10,4 11,6 13,6.2 11.6,7.5 12,9.5 10,8.5 8,9.5 8.4,7.5 7,6.2 9,6"/>`,
   // ─── Neue Badge-Icons (keine Dopplung zu bestehenden) ───

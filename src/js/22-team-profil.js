@@ -428,7 +428,15 @@ function showMatchDetail(mid){
   // Kopf und Bühne wie in jedem Blatt einer Partie [§C27]: die Sieger hell,
   // die Verlierer leiser, der Stand in der Mitte. Vorher stand der Stand als
   // Überschrift und darunter zwei graue Kästen „Team A" und „Team B".
-  openSheet(`${blattKopfHtml({ic:'ball', titel:'Partie', unter:dateStr(m.created_at)})}
+  // Gehört der Satz zu einer Begegnung über mehrere Sätze [§1.3], sagt der
+  // Kopf, der wievielte er ist und wie die Partie ausging.
+  const _bg = begegnungVon(m);
+  const _bgZeile = _bg.n > 1 ? (() => {
+    const z = _bg.zeilen[_bg.zeilen.length - 1], b = begegnungAm(z);
+    const w = b.winner ? (b.winner === 'A' ? [z.a1, z.a2] : [z.b1, z.b2]).map(pname).join(' & ') : '';
+    return `Satz ${_bg.nr} von ${_bg.n} im Match` + (w ? ` · ${w} ${Math.max(b.setsA, b.setsB)}:${Math.min(b.setsA, b.setsB)}` : '');
+  })() : '';
+  openSheet(`${blattKopfHtml({ic:'padelBall', titel:'Partie', unter:dateStr(m.created_at) + (_bgZeile ? ' · ' + _bgZeile : '')})}
     ${buehneHtml(m, {zeile: sieger.map(pname).join(' und ') + ' gewinnen'
       + (chance != null ? ' · Siegchance vorher ' + chance + ' %' : '')})}
     <div class="preview" style="margin-top:16px"><div class="delta-list">
@@ -594,55 +602,44 @@ function showMatchDetail(mid){
 // [§3.1c]. Vorher stand „Lösche & berechne neu…" sechs Sekunden da, und ein
 // Fehler beim Löschen fiel nicht auf: die Liga wurde trotzdem ohne die
 // Partie neu gerechnet, die in der Datenbank noch stand.
-// ── Einen Satz an die Partie davor hängen [§5.6b] ────────────────────
-// Die Zeile bekommt ihre neuen Sätze UND eine neue ID, in einer Anfrage.
-// Stories sind eingefügt und werden nie geändert [§C33]: unter der alten
-// ID stünde im Feed weiter „gewinnt 1:0", nachdem die Partie 1:2 ausging.
-// Mit neuer ID entstehen ihre Stories neu, und die der alten verschwinden,
-// weil der Feed keine Story einer Partie zeigt, die es nicht mehr gibt
-// (`_storyPartieDa`). Die Elo rechnet danach die Liga neu wie beim
-// Bearbeiten; die Partie ist die letzte, also ändert sich nur sie.
-function _neueId(){
-  const c = typeof crypto !== 'undefined' ? crypto : null;
-  if(c && c.randomUUID) return c.randomUUID();
-  const roh = c && c.getRandomValues ? [...c.getRandomValues(new Uint8Array(16))]
-    : Array.from({length:16}, () => Math.floor(Math.random() * 256));
-  const h = roh.map(b => b.toString(16).padStart(2, '0')).join('');
-  return `${h.slice(0,8)}-${h.slice(8,12)}-4${h.slice(13,16)}-a${h.slice(17,20)}-${h.slice(20,32)}`;
+// ── Alte Zeilen mit mehreren Sätzen aufteilen [§1.3] ─────────────────
+// Bis jede Zeile ein Satz war, trug eine Zeile die ganze Partie. Die
+// Neuberechnung teilt solche Zeilen: der erste Satz bleibt, jeder weitere
+// wird eine Zeile direkt dahinter (zehn Millisekunden auseinander, damit
+// nichts dazwischen rutscht). Zurück kommen die neuen Zeilen; die Deltas
+// rechnet die Neuberechnung danach.
+async function partienAufteilen(){
+  const neu = [];
+  for(const m of matches.slice()){
+    const saetze = partieSaetze(m).filter(s => saetzeAuswerten([s]).winner);
+    if(saetze.length < 2) continue;
+    const spieler = {a1:m.a1, a1_side:m.a1_side, a2:m.a2, a2_side:m.a2_side,
+      b1:m.b1, b1_side:m.b1_side, b2:m.b2, b2_side:m.b2_side};
+    const erste = partieFelder(saetze.slice(0, 1));
+    const weitere = saetze.slice(1).map((s, i) => ({...spieler, ...partieFelder([s]), deltas:{}, exp_a:0.5,
+      created_at:new Date(mts(m) + (i + 1) * 10).toISOString()}));
+    const u = await sb.from('matches').update(erste).eq('id', m.id);
+    if(u.error) throw u.error;
+    const ins = await sb.from('matches').insert(weitere).select();
+    if(ins.error) throw ins.error;
+    matches = matches.map(x => x.id === m.id ? {...x, ...erste} : x).concat(ins.data || []);
+    neu.push(...(ins.data || []));
+  }
+  if(neu.length) invalidateCache(LADEN_TOEPFE);
+  return neu;
 }
-async function partieAnhaengen(f){
-  const alt = f.partie;
-  const zeile = {id:_neueId(), ...partieFelder(f.saetze)};
-  const {error} = await sb.from('matches').update(zeile).eq('id', alt.id);
-  if(error){ toast('Nicht angehängt', true, {sub:error.message}); return null; }
-  const neu = {...alt, ...zeile};
-  const r = ligaNeuRechnen(matches.map(x => x.id === alt.id ? neu : x));
-  imHintergrund(() => rechnungSchreiben(r), true);
-  return {neu:matches.find(x => x.id === neu.id) || neu, alt};
-}
-// Zurück: dieselbe Zeile wieder mit ihrer alten ID, ihren alten Sätzen und
-// Deltas. Ihre alten Stories zeigt der Feed dann wieder.
-async function partieAnhangZurueck(erg){
-  const a = erg.alt;
-  const zeile = {id:a.id, sets:a.sets, set_kind:a.set_kind, sets_a:a.sets_a, sets_b:a.sets_b,
-    games_a:a.games_a, games_b:a.games_b, winner:a.winner, deltas:a.deltas, exp_a:a.exp_a};
-  const {error} = await sb.from('matches').update(zeile).eq('id', erg.neu.id);
-  if(error){ toast('Nicht zurückgenommen', true, {sub:error.message}); return; }
-  const r = ligaNeuRechnen(matches.map(x => x.id === erg.neu.id ? {...x, ...zeile} : x));
-  neuZeichnen();
-  toast('Satz zurückgenommen', 'ok');
-  imHintergrund(() => rechnungSchreiben(r), true);
-  loadAll();
-}
-async function partieLoeschen(mid){
+// Eine Partie oder mehrere: „Rückgängig" nach dem Speichern nimmt alle
+// Sätze eines Eintrags zurück, die je eine Zeile sind [§1.3].
+async function partieLoeschen(mids){
+  const ids = Array.isArray(mids) ? mids : [mids];
   toast('Lösche…');
-  const {error} = await sb.from('matches').delete().eq('id', mid);
+  const {error} = await sb.from('matches').delete().in('id', ids);
   if(error){ toast('Nicht gelöscht', 'err', {sub:'Die Verbindung zur Datenbank ist fehlgeschlagen.'}); return; }
-  const weg = matches.find(x => x.id === mid);
-  const r = ligaNeuRechnen(matches.filter(x => x.id !== mid));
+  const weg = matches.filter(x => ids.includes(x.id));
+  const r = ligaNeuRechnen(matches.filter(x => !ids.includes(x.id)));
   neuZeichnen();
   toast('Gelöscht', 'ok');
   // Der Monat der Partie ändert sich auch, wenn keine andere Delta es tut.
-  imHintergrund(() => rechnungSchreiben(r, weg ? [seasonOf(weg.created_at).id] : []), true);
+  imHintergrund(() => rechnungSchreiben(r, [...new Set(weg.map(x => seasonOf(x.created_at).id))]), true);
   loadAll();
 }

@@ -194,15 +194,20 @@ function satzErgebnisse(m){
 // einzeln ein, mal drei Sätze als eine Partie, und beides soll dieselbe Elo
 // geben. Vorher wog die ganze Partie nach ihren Games zusammen, und ein
 // 2:1 brachte dem Sieger alles und dem Verlierer nichts für seinen Satz.
-const GEWICHT_STUETZEN = [[1, 0.5], [3, 0.75], [6, 1]];
+// Die drei Stufen stehen als Regler in den Einstellungen (`gewicht_eins`,
+// `gewicht_drei`, `gewicht_ueber6`); hier die Werte, die die Liga vorgab.
+const GEWICHT_STUETZEN_STANDARD = {eins:0.5, drei:0.75};
 const GEWICHT_JE_GAME_UEBER_6 = 0.1;
 const GEWICHT_MAX = 1.5;
 const GEWICHT_MTB_GAMES = 2;
 function satzGewichtNachGames(g){
-  if(g >= 6) return Math.min(GEWICHT_MAX, 1 + GEWICHT_JE_GAME_UEBER_6 * (g - 6));
-  if(g <= GEWICHT_STUETZEN[0][0]) return GEWICHT_STUETZEN[0][1];
-  for(let i = 1; i < GEWICHT_STUETZEN.length; i++){
-    const [g1, w1] = GEWICHT_STUETZEN[i - 1], [g2, w2] = GEWICHT_STUETZEN[i];
+  const ueber = cfg.gewicht_ueber6 ?? GEWICHT_JE_GAME_UEBER_6;
+  if(g >= 6) return Math.min(GEWICHT_MAX, 1 + ueber * (g - 6));
+  const stuetzen = [[1, cfg.gewicht_eins ?? GEWICHT_STUETZEN_STANDARD.eins],
+    [3, cfg.gewicht_drei ?? GEWICHT_STUETZEN_STANDARD.drei], [6, 1]];
+  if(g <= stuetzen[0][0]) return stuetzen[0][1];
+  for(let i = 1; i < stuetzen.length; i++){
+    const [g1, w1] = stuetzen[i - 1], [g2, w2] = stuetzen[i];
     if(g <= g2) return w1 + (w2 - w1) * (g - g1) / (g2 - g1);
   }
   return 1;
@@ -240,4 +245,67 @@ function partieFelder(saetze){
     games_a: p.gamesA, games_b: p.gamesB,
     winner: p.winner,
   };
+}
+
+// ── Die Partie über mehrere Sätze [§1.3] ─────────────────────────────
+// Eine Zeile ist ein Satz: wer drei Sätze auf einmal einträgt, bekommt drei
+// Zeilen, wie wer jeden einzeln speichert. Vorher war eine Zeile die ganze
+// Partie, und dieselbe Partie stand im Verlauf als „18:16", im Blatt als
+// „2:1" mit der Elo der alten Rechnung und in der Story mit einer dritten
+// Zahl. Was nur über mehrere Sätze Sinn ergibt — wer die Partie gewann, 2:1,
+// die Wende, Zu Null ab 2:0, der Doppel-Bagel, drei umkämpfte Sätze —
+// steht in der Begegnung: Sätze derselben zwei Paare direkt hintereinander,
+// ohne andere Partie dazwischen, am selben Tag und höchstens
+// BEGEGNUNG_PAUSE_MIN nach dem Satz davor. Gewertet wird sie an ihrem
+// LETZTEN Satz (`begegnungAm`); an jedem anderen ist sie leer, sonst zählte
+// eine Wende einmal je Satz. Kommt ein Satz dazu, wandert die Wertung zu ihm.
+const BEGEGNUNG_PAUSE_MIN = 90;
+const _BEGEGNUNG_LEER = Object.freeze({winner:null, setsA:0, setsB:0, zuNull:false, wende:false,
+  doppelBagel:false, umkaempft:false, saetze:[], n:0});
+let _begMemo = {liste:null, laenge:-1, gruppen:null};
+const _paarSchluessel = (p, q) => [p, q].sort().join('|');
+function _begegnungsGruppen(){
+  if(_begMemo.liste === matches && _begMemo.laenge === matches.length) return _begMemo.gruppen;
+  const gruppen = new Map();
+  const folge = matches.slice().sort((x, y) => mts(x) - mts(y));
+  let akt = null, vor = null;
+  for(const m of folge){
+    const a = _paarSchluessel(m.a1, m.a2), b = _paarSchluessel(m.b1, m.b2);
+    const gleich = vor && akt && ((a === akt.a && b === akt.b) || (a === akt.b && b === akt.a))
+      && tagKey(mts(m)) === tagKey(mts(vor)) && mts(m) - mts(vor) <= BEGEGNUNG_PAUSE_MIN * 60000;
+    if(!gleich) akt = {a, b, zeilen:[]};
+    akt.zeilen.push(m);
+    gruppen.set(m.id, akt);
+    vor = m;
+  }
+  _begMemo = {liste:matches, laenge:matches.length, gruppen};
+  return gruppen;
+}
+// Die ganze Begegnung, zu der ein Satz gehört, aus Sicht SEINES Teams A:
+// die Sätze in ihrer Reihenfolge (gedreht, wo die Paare andersherum
+// eingetragen waren) und ihre Wertung. Ein Satz, der in keiner Liste steht
+// (die Vorschau beim Eintragen), ist für sich allein eine Begegnung.
+function begegnungVon(m){
+  const g = _begegnungsGruppen().get(m.id);
+  const zeilen = g ? g.zeilen : [m];
+  const aRef = _paarSchluessel(m.a1, m.a2);
+  const saetze = [];
+  zeilen.forEach(z => {
+    const gedreht = _paarSchluessel(z.a1, z.a2) !== aRef;
+    partieSaetze(z).forEach(s => saetze.push(gedreht ? {a:s.b, b:s.a, art:s.art} : s));
+  });
+  const p = saetzeAuswerten(saetze);
+  return Object.assign({}, p, {saetze, n:zeilen.length, zeilen, letzte:zeilen[zeilen.length - 1] === m || !g,
+    nr:zeilen.indexOf(m) + 1 || 1});
+}
+// Die Wertung über mehrere Sätze, nur am letzten Satz der Begegnung.
+function begegnungAm(m){
+  const b = begegnungVon(m);
+  return b.letzte ? b : _BEGEGNUNG_LEER;
+}
+// Aus Sicht eines Spielers: gewann sein Team die Begegnung, die an diesem
+// Satz endet? Null, wenn hier keine endet.
+function begegnungGewonnen(m, id){
+  const b = begegnungAm(m);
+  return b.winner ? teamVon(m, id) === b.winner : null;
 }

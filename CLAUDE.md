@@ -15,19 +15,19 @@ Vorlage liegt nur lokal und ist in `.gitignore`.
 
 ### Padel in einem Absatz
 
-Eine Partie trägt ihre Sätze in Games (`matches.sets`, aus Sicht von
-Team A) und je Satz eine Art (`set_kind`: normal, Tiebreak, Match-
-Tiebreak, offen). Alles, was ein Ergebnis liest, fragt `03b-padel.js`
-[§1.3]: Sieger, Sätze, Games, Zu Null (alle Sätze, mindestens zwei —
-ein 1:0 ist keins), Bagel, Doppel-Bagel, Wende, knapp, deutlich, im
-Tiebreak entschieden. Jeder Spieler steht auf einer Seite: `drive`
+**Eine Partie ist ein Satz.** Jede Zeile in `matches` trägt genau einen
+Satz in Games (`sets`, aus Sicht von Team A) und seine Art (`set_kind`:
+normal, Tiebreak, Match-Tiebreak, offen). Wer drei Sätze auf einmal
+einträgt, bekommt drei Zeilen (`eintragZeilen`), genau wie wer jeden
+einzeln speichert — so zeigen Verlauf, Story, Elo und Statistik überall
+dasselbe. Was nur über mehrere Sätze gilt — wer die Partie gewann, 2:1,
+Wende, Zu Null (alle Sätze, mindestens zwei), Doppel-Bagel, drei
+umkämpfte Sätze — steht in der **Begegnung**: Sätze derselben zwei Paare
+direkt hintereinander am selben Tag (`begegnungVon`), gewertet nur an
+ihrem letzten Satz (`begegnungAm`). Alles, was ein Ergebnis liest, fragt
+`03b-padel.js` [§1.3]. Jeder Spieler steht auf einer Seite: `drive`
 (rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
-[§C44]. Die Elo rechnet jeden Satz einzeln und nacheinander (`partieTeile`):
-drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene.
-Einzeln eingetragene Sätze derselben zwei Paare, direkt hintereinander am
-selben Tag, hängt die Eingabe an die Partie davor (`partieFortsetzung`,
-`partieAnhaengen`): Sieger, Wende, Zu Null und Serien sehen eine Partie.
-Ein Satz wiegt nach den Games des Siegers (bis 1 50 %, bis 3 75 %, bis 6 voll,
+[§C44]. Ein Satz wiegt nach den Games des Siegers (bis 1 50 %, bis 3 75 %, bis 6 voll,
 je Game darüber +10 %, `partieGewicht`) und nach der Deutlichkeit
 (`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
 spielt etwa fünf Tage im Monat mit drei bis fünf Partien — alle Schwellen
@@ -162,7 +162,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1635**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1646**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---
