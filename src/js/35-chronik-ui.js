@@ -81,7 +81,7 @@ function showSeasonTable(sid){
     return;
   }
   const emptyNames = T.empty.map(pname).filter(Boolean);
-  // Wer im Monat gespielt hat, aber unter fünfzehn Partien blieb, ist nicht
+  // Wer im Monat gespielt hat, aber unter CHRONIK_MIN_SPIELE Sätzen blieb, ist nicht
   // gewertet [§C39]. In der Matrix steht dort nichts, und ohne diese Zeile
   // läse sich das wie ein Fehler.
   const zuWenigNames = (T.zuWenig || []).filter(id => sichtbar(id)).map(pname).filter(Boolean);

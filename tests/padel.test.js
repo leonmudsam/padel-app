@@ -232,6 +232,42 @@ const ANSCHLUSS = (async () => {
     `Eine alte Partie mit drei Sätzen wird in drei Sätze geteilt, als Begegnung weiter 2:1 (${t.n} Zeilen, ${t.bg})`);
 })();
 
+// ── Chronik und Rekorde: jede Schwelle der Rechnung steht im Text ────
+// Seit eine Zeile ein Satz ist, stehen die Schwellen in Sätzen; vorher
+// nannten die Texte oft andere Zahlen als die Rechnung („die letzten 40"
+// bei einem Fenster von zwanzig, „ab 3" bei einem Tor von fünf). Gelesen
+// werden die Vergleiche in der eigenen Bedingung, der Stichprobe und der
+// Wertfunktion, mit aufgelösten Konstanten (ST_TEIL, ST_TAG, RF …); eine
+// Schwelle, die als Bruch im Text steht („zwei Drittel", „3 Siege mehr"
+// von fünf), ist ausgenommen.
+const _schwelle = J(`(()=>{
+  const KONST={ST_TEIL,ST_TAG,ST_TAG_LANG,CHRONIK_MIN_SPIELE,TITLE_MIN_GAMES};
+  Object.keys(RF).forEach(k=>KONST['RF.'+k]=RF[k]);
+  const aufloesen=src=>{let x=src.replace(/2\\s*\\*\\s*(ST_TEIL|ST_TAG|RF\\.\\w+)/g,(m,k)=>String(2*KONST[k]));
+    Object.keys(KONST).sort((a,b)=>b.length-a.length).forEach(k=>{x=x.split(k).join(String(KONST[k]));});return x;};
+  const WORT={2:'zwei',3:'drei',4:'vier',5:'fünf',6:'sechs',7:'sieben',8:'acht',9:'neun',10:'zehn',11:'elf',12:'zwölf'};
+  const hat=(txt,n)=>{const k=[String(n),String(n).replace('.',',')];if(WORT[n])k.push(WORT[n]);
+    if(n>0&&n<1){k.push(String(Math.round(n*1000)/10).replace('.',','));k.push(String(Math.round(n*100)));}
+    return k.some(v=>/^[0-9]/.test(v)?new RegExp('(^|[^0-9.,])'+v.replace(/[.]/g,'\\\\.')+'([^0-9]|$)').test(txt):txt.toLowerCase().indexOf(v)>=0);};
+  const fehlt=[];
+  const pruef=(name,txt,src)=>{const z=new Set();const re=/(?:>=|<=|>|<)\\s*([0-9]+(?:\\.[0-9]+)?)/g;let m;
+    const s=aufloesen(src);while((m=re.exec(s)))z.add(parseFloat(m[1]));
+    txt=txt.replace(/\\u00a0/g,' ');
+    [...z].forEach(n=>{if(n!==0&&n!==1&&!hat(txt,n))fehlt.push(name+': '+n);});};
+  const BRUCH=['wochenkrone','nachzuegler','strohfeuer'];
+  let monate=0;
+  DISZIPLINEN.forEach(d=>{const m=d.monat;if(!m||!m.mind)return;monate++;
+    pruef(d.name,(m.cond||'')+' '+(m.wie||''),String(m.mind.eigen||'')+' '+String(m.stichprobe||''));
+    if(m.ab>0&&m.ab<1&&!BRUCH.includes(d.id)&&!hat(String(m.cond||'').replace(/\\u00a0/g,' '),m.ab))fehlt.push(d.name+' ab '+m.ab);});
+  CHRONICLES.forEach(c=>pruef(c.name,(c.cond||'')+' '+(c.wie||'')+' '+(c.mind||''),String(c.raw||c.val||'')));
+  return {fehlt, monate, rekorde:CHRONICLES.length,
+    alt:DISZIPLINEN.filter(d=>/Partie|Tor\\b|Tore\\b/.test(JSON.stringify([d.name,d.monat&&d.monat.cond,d.monat&&d.monat.wie,d.allzeit&&d.allzeit.cond,d.allzeit&&d.allzeit.wie,d.allzeit&&d.allzeit.mind]))).map(d=>d.id)};})()`);
+ok(_schwelle.fehlt.length === 0 && _schwelle.monate > 50 && _schwelle.rekorde > 50,
+  'Jede Schwelle der Chronik und der Rekorde steht auch in ihrem Text: ' + (_schwelle.fehlt.slice(0, 6).join(' · ') || _schwelle.monate + ' Monatschroniken, ' + _schwelle.rekorde + ' Rekorde'));
+ok(_schwelle.alt.length === 0, 'Kein Chronik-Text spricht noch von Partien oder Toren: ' + _schwelle.alt.join(', '));
+ok(J('[CHRONIK_MIN_SPIELE, ST_TEIL, ST_TAG, CHRON_MIN_GAMES, RF.lauf]').join(',') === '8,5,5,40,50',
+  'Chronik in Sätzen: 8 im Monat, Teilmengen ab 5, ein Spieltag ab 5, Rekorde ab 40, der Lauf über 50');
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 ANSCHLUSS.catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);

@@ -800,7 +800,7 @@ function seasonTitles(sid, bisMs){
 
   const C = _seasonTitleCtx(sid, bisMs);
   const out = [];
-  // Gewertet wird vom ersten Spieltag an, je Spieler ab fünfzehn Partien
+  // Gewertet wird vom ersten Spieltag an, je Spieler ab CHRONIK_MIN_SPIELE Sätzen
   // (`CHRONIK_MIN_SPIELE` in `_stWertung`) [§C39].
   if(Object.keys(C.P).length){
     // ─── Die Vergabe [§C32] ────────────────────────────────────────
@@ -837,7 +837,7 @@ function seasonTitles(sid, bisMs){
                champ: C.rank[0] ? {pid:C.rank[0].id, elo:C.rank[0].elo,
                                    wins:C.rank[0].wins, games:C.rank[0].games} : null,
                // Ohne Eintrag ist, wer gewertet wurde und nichts hält; wer
-               // unter fünfzehn Partien blieb, ist nicht gewertet und steht
+               // unter CHRONIK_MIN_SPIELE Sätzen blieb, ist nicht gewertet und steht
                // als `zuWenig` daneben — in der Matrix leer, nicht als Strich.
                awarded:out, empty:Object.keys(C.P).filter(id => C.P[id].games >= CHRONIK_MIN_SPIELE && !out.some(o => o.pid === id)),
                zuWenig:C.rankAll.filter(r => r.games > 0 && r.games < CHRONIK_MIN_SPIELE).map(r => r.id)};

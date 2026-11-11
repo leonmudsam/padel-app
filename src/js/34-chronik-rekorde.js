@@ -547,7 +547,7 @@ function _chronicleCtx(bisMs){
     // Fenster, derselben Mindestbasis und derselben Rechnung — sonst waeren
     // es zwei verschiedene Fragen mit zwei verschiedenen Haltern.
     {
-      const voll = _tagListe.filter(t => _tage[t].length >= 3 && tagZu(t));
+      const voll = _tagListe.filter(t => _tage[t].length >= ST_TAG && tagZu(t));
       if(voll.length){
         const letzte = [], vorher = [], erste = [], danach = [];
         voll.forEach(t => { const a = _tage[t];
