@@ -178,18 +178,30 @@ function satzErgebnisse(m){
     .map(s => umdrehen ? s.b + ':' + s.a : s.a + ':' + s.b);
 }
 
-// Was eine Partie an Elo bewegen darf, nach ihrer Länge — und Länge heißt
+// Was ein Satz an Elo bewegen darf, nach seiner Länge — und Länge heißt
 // hier der Weg bis zum Sieg, nicht wie knapp es war: gezählt werden die
 // Games, die der Sieger gewinnen musste. Ein 6:0 und ein 6:4 wiegen gleich
-// (sechs Games bis zum Sieg) und mehr als ein Kurzsatz 3:0 oder 2:0; zwei
-// Sätze bis sechs (zwölf Games) sind 1. Ein Match-Tiebreak zählt wie zwei
-// Games. Ohne das wöge ein Tag mit fünf Kurzsätzen fünfmal so viel wie ein
-// Abend mit einem langen Match. Wie knapp es war, sagt die MoV (`movMult`).
-const GEWICHT_VOLL_GAMES = 12;
+// (sechs Games bis zum Sieg, das volle Gewicht) und mehr als ein Kurzsatz
+// 3:0 oder 2:0; ein 7:6 etwas mehr. Ein Match-Tiebreak zählt wie zwei
+// Games. Wie knapp es war, sagt die MoV (`movMult`).
+// Gerechnet wird je Satz (`partieTeile`): die Gruppe trägt mal jeden Satz
+// einzeln ein, mal drei Sätze als eine Partie, und beides soll dieselbe Elo
+// geben. Vorher wog die ganze Partie nach ihren Games zusammen, und ein
+// 2:1 brachte dem Sieger alles und dem Verlierer nichts für seinen Satz.
+const GEWICHT_VOLL_GAMES = 6;
 function partieGewicht(m){
   const p = partie(m);
   const g = p.gamesSieger + (p.mtb ? 1 : 0);
   return Math.max(0.35, Math.min(1.3, Math.sqrt(Math.max(g, 1) / GEWICHT_VOLL_GAMES)));
+}
+
+// Die Sätze einer Partie, jeder als eigene Partie mit denselben Spielern
+// und Seiten — so, als wäre er einzeln eingetragen. Die Elo rechnet sie
+// nacheinander [§3.6]. Ein offener Satz zählt nach seinen Games; steht er
+// gleich, hat er keinen Sieger und bewegt nichts.
+function partieTeile(m){
+  return partieSaetze(m).map((s, i) => Object.assign({}, m, partieFelder([s]), {satzNr:i + 1}))
+    .filter(t => t.winner === 'A' || t.winner === 'B');
 }
 
 // Die Speicherfelder einer Partie aus ihren Sätzen: was in der Zeile neben

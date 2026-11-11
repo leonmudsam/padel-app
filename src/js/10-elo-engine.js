@@ -44,11 +44,15 @@ function simulateElo(matchSubset, opts={}){
 // auf einem anderen Stand als die Rangliste.
 function _eloStand(opts){
   const startElo=opts.startElo ?? cfg.start_elo;
-  const st={startElo, elo:{}, played:{}, playedSeason:{}, wins:{}, losses:{}, curStreak:{}, bestStreak:{},
+  // `saetzeSeason` zählt die gewerteten Sätze der Saison: die Elo rechnet je
+  // Satz [§3.6], und Neulingsbonus, Schutz und Außenseiter-Zuschlag zählen
+  // deshalb Sätze — sonst gäbe ein einzeln eingetragener Satz einen anderen
+  // K-Faktor als derselbe Satz in einer Partie mit dreien.
+  const st={startElo, elo:{}, played:{}, playedSeason:{}, saetzeSeason:{}, wins:{}, losses:{}, curStreak:{}, bestStreak:{},
     eloGain:{}, eloLoss:{}, gd:{}, peakElo:{}, teamElo:{}, seasonTeamElo:{}, history:[], posTracker:{},
     seasonEndElos:{}, seasonPlayed:{}, curSeason:null};
   players.forEach(p=>{
-    st.elo[p.id]=startElo; st.played[p.id]=0; st.playedSeason[p.id]=0;
+    st.elo[p.id]=startElo; st.played[p.id]=0; st.playedSeason[p.id]=0; st.saetzeSeason[p.id]=0;
     st.wins[p.id]=0; st.losses[p.id]=0; st.curStreak[p.id]=0; st.bestStreak[p.id]=0;
     st.eloGain[p.id]=0; st.eloLoss[p.id]=0; st.gd[p.id]=0; st.peakElo[p.id]=startElo;
     st.posTracker[p.id]=posZaehler();
@@ -57,7 +61,7 @@ function _eloStand(opts){
   // `initialCurSeason` griffe der Saisonwechsel vor der ersten Partie nicht.
   const s=opts.initialState;
   if(s){
-    ['elo','played','playedSeason','wins','losses','curStreak','bestStreak','eloGain','eloLoss','gd','peakElo']
+    ['elo','played','playedSeason','saetzeSeason','wins','losses','curStreak','bestStreak','eloGain','eloLoss','gd','peakElo']
       .forEach(k=>Object.assign(st[k], s[k]||{}));
     // Der Zähler je Spieler ist ein eigenes Objekt: flach kopiert zählte
     // die Vorschau in den Stand der Rangliste hinein.
@@ -75,7 +79,7 @@ function _eloSaisonZu(st){
   });
 }
 function _eloSaisonNeu(st){
-  players.forEach(p=>{ st.elo[p.id]=st.startElo; st.playedSeason[p.id]=0; });
+  players.forEach(p=>{ st.elo[p.id]=st.startElo; st.playedSeason[p.id]=0; st.saetzeSeason[p.id]=0; });
 }
 // Vor jeder Partie: ein neuer Monat schließt den alten und setzt Elo und
 // Saisonspiele zurück; der Positions-Zähler läuft über die Saisons weiter.
@@ -143,24 +147,26 @@ function _eloErgebnis(st){
     });
     careerElo[p.id]=sumGames>0?sumElo/sumGames:null;
   });
-  const {elo,played,playedSeason,wins,losses,curStreak,bestStreak,eloGain,eloLoss,gd,
+  const {elo,played,playedSeason,saetzeSeason,wins,losses,curStreak,bestStreak,eloGain,eloLoss,gd,
          teamElo,seasonTeamElo,history,seasonEndElos,seasonPlayed,posTracker,peakElo,curSeason}=st;
-  return {elo,played,playedSeason,wins,losses,curStreak,bestStreak,eloGain,eloLoss,gd,
+  return {elo,played,playedSeason,saetzeSeason,wins,losses,curStreak,bestStreak,eloGain,eloLoss,gd,
           teamElo,seasonTeamElo,history,seasonEndElos,seasonPlayed,careerElo,
           posTracker,peakElo,curSeason};
 }
 
 // ─── §3.6 Slider-basierte Berechnung (für Match-Eingabe + Recalc) ────
-const NEULING_BIS = 4;
-const EINGEWOEHNT_BIS = 10;
+// Gezählt in Sätzen der Saison, weil je Satz gerechnet wird: acht Sätze
+// sind rund vier Partien, zwanzig rund zehn.
+const NEULING_BIS = 8;
+const EINGEWOEHNT_BIS = 20;
 function simulateEloWithSliders(matchSubset, opts={}){
   const st=_eloStand(opts);
-  const {elo,playedSeason,posTracker}=st;
+  const {elo,saetzeSeason,posTracker}=st;
   // Neulinge bewegen sich schneller, bis ihre Elo zu ihnen passt. Die
-  // Grenzen sind auf das Padel-Volumen gesetzt (rund zwanzig Matches je
-  // Spieler im Monat): beim Tischkicker galten 5 und 15, und ein Padel-
-  // Spieler wäre damit die halbe Saison über „neu" gewesen.
-  const localDynK=(id)=>{const g=playedSeason[id]||0,e=elo[id];
+  // Grenzen sind auf das Padel-Volumen gesetzt (rund vierzig Sätze je
+  // Spieler im Monat): beim Tischkicker galten 5 und 15 Partien, und ein
+  // Padel-Spieler wäre damit die halbe Saison über „neu" gewesen.
+  const localDynK=(id)=>{const g=saetzeSeason[id]||0,e=elo[id];
     if(g<NEULING_BIS)return cfg.k_factor*(cfg.new_player_mult ?? 1.5);
     if(g<EINGEWOEHNT_BIS)return cfg.k_factor*(cfg.new_player_mid_mult ?? 1.2);
     if(e>cfg.start_elo+400)return cfg.k_factor*(cfg.veteran_damp ?? 0.85);
@@ -171,15 +177,26 @@ function simulateEloWithSliders(matchSubset, opts={}){
     const ids=[m.a1,m.a2,m.b1,m.b2];
     const teamA=[{id:m.a1,pos:m.a1_side},{id:m.a2,pos:m.a2_side}];
     const teamB=[{id:m.b1,pos:m.b1_side},{id:m.b2,pos:m.b2_side}];
+    // ── Jeder Satz ist eine eigene Rechnung ──────────────────────────
+    // Die Gruppe trägt mal jeden Satz einzeln ein, mal drei Sätze als eine
+    // Partie; beides gibt dieselbe Elo. Die Sätze laufen nacheinander, und
+    // jeder rechnet mit dem Stand nach dem vorigen — so, als wären sie
+    // einzeln eingetragen. Wer einen Satz gewinnt, bekommt für ihn Elo,
+    // auch wenn er die Partie verliert. Siege, Serien und Bilanz zählen
+    // weiter je Partie (_eloBuchen).
+    const summe={}, bdSaetze={};
+    ids.forEach(id=>{ summe[id]=0; bdSaetze[id]=[]; });
+    let expA0=null;
+    partieTeile(m).forEach(t=>{
     const aAvg=(elo[m.a1]+elo[m.a2])/2,bAvg=(elo[m.b1]+elo[m.b2])/2;
     const expA=expected(aAvg,bAvg);
-    const rawMov=movMult(m);
-    // Die Länge des Matches [§1.3]: ein Satz bewegt weniger als drei.
-    const gewicht=partieGewicht(m);
+    const rawMov=movMult(t);
+    // Die Länge des Satzes [§1.3]: ein Kurzsatz bewegt weniger als einer bis 6.
+    const gewicht=partieGewicht(t);
     const res={}, breakdowns={};
 
-    // Durchschnittliche Spielanzahl aller 4 Spieler (für Underdog-Berechnung)
-    const avgGames=ids.reduce((s,id)=>s+(playedSeason[id]||0),0)/4;
+    // Durchschnittliche Satzzahl aller 4 Spieler (für Underdog-Berechnung)
+    const avgGames=ids.reduce((s,id)=>s+(saetzeSeason[id]||0),0)/4;
     const avgElo=ids.reduce((s,id)=>s+elo[id],0)/4;
     // Match-Ø-K: alle 4 Spieler eines Matches teilen denselben K-Faktor (Mittelwert
     // ihrer individuellen dyn. K-Werte). Innerhalb eines Matches gilt damit dieselbe
@@ -208,8 +225,9 @@ function simulateEloWithSliders(matchSubset, opts={}){
         bd.winBoost=boost; bd.winBoostEffect=rawBase*mov*boost-rawBase*mov;
 
         // Erfahrungs-Schutz
-        const g=playedSeason[slot.id]||0;
-        const protectShare=Math.max(0,Math.min(1,(g-5)/25));
+        // In Sätzen: zehn Sätze sind rund fünf Partien, wie beim Tischkicker.
+        const g=saetzeSeason[slot.id]||0;
+        const protectShare=Math.max(0,Math.min(1,(g-10)/50));
         const protectMax = cfg.exp_protect_max ?? 0.1;
         const expProtect=won?1:(1-protectMax*protectShare);
         bd.expProtect=expProtect; bd.expProtectEffect=won?0:rawBase*mov*boost*expProtect-rawBase*mov*boost;
@@ -217,7 +235,7 @@ function simulateEloWithSliders(matchSubset, opts={}){
         // Underdog-Boost
         const myElo=elo[slot.id];
         const eloDiff=oppAvg-myElo;
-        const gamesDiff=avgGames-(playedSeason[slot.id]||0);
+        const gamesDiff=avgGames-(saetzeSeason[slot.id]||0);
         const eloMax = cfg.underdog_elo_max ?? 0.15;
         const gamesMax = cfg.underdog_games_max ?? 0.05;
         // Jede Komponente einzeln auf >=0 begrenzt: der Bonus belohnt nur, die Faktoren
@@ -225,7 +243,7 @@ function simulateEloWithSliders(matchSubset, opts={}){
         // Elo-Boost trotz vieler Spiele; ein Neuling mit hohem Elo bekommt den
         // Spiele-Boost trotz Top-Elo. Niemand wird durch eine zweite Komponente bestraft.
         const eloFactor=Math.max(0, Math.tanh(eloDiff/400)*eloMax);
-        const gamesFactor=Math.max(0, Math.tanh(gamesDiff/30)*gamesMax);
+        const gamesFactor=Math.max(0, Math.tanh(gamesDiff/60)*gamesMax);
         const underdogRaw=eloFactor+gamesFactor;
         // Favoriten-Malus entfernt: nur Underdog-Boost (Sieg als Schwächerer) wirkt.
         // Favoriten/Veteranen, die verlieren, nehmen den vollen Elo-Hit.
@@ -279,10 +297,29 @@ function simulateEloWithSliders(matchSubset, opts={}){
       });
     };
 
-    const aWon=m.winner==='A';
+    const aWon=t.winner==='A';
     applyTeam(teamA,teamB,aWon,expA);
     applyTeam(teamB,teamA,!aWon,1-expA);
-    _eloBuchen(st,m,res,expA,breakdowns);
+    // Der Satz steht, bevor der nächste rechnet. Verbucht wird jeder Satz
+    // in ganzen Elo, wie eine einzeln eingetragene Partie.
+    if(expA0===null) expA0=expA;
+    ids.forEach(id=>{
+      st.elo[id]+=res[id]; summe[id]+=res[id];
+      saetzeSeason[id]=(saetzeSeason[id]||0)+1;
+      breakdowns[id].satzNr=t.satzNr; breakdowns[id].satz=t.sets[0]; breakdowns[id].delta=res[id];
+      bdSaetze[id].push(breakdowns[id]);
+    });
+    });
+    // Zurück auf den Stand vor der Partie: _eloBuchen bucht die Summe und
+    // braucht ihn für eloBefore und das Seitenprofil.
+    ids.forEach(id=>{ st.elo[id]-=summe[id]; });
+    const bds={};
+    ids.forEach(id=>{
+      const l=bdSaetze[id]; if(!l.length) return;
+      bds[id]=Object.assign({}, l[0], {saetze:l, endElo:l[l.length-1].endElo,
+        finalDelta:l.reduce((x,b)=>x+b.finalDelta,0)});
+    });
+    _eloBuchen(st,m,summe,expA0===null?0.5:expA0,bds);
   });
   return _eloErgebnis(st);
 }

@@ -44,7 +44,7 @@ ok(J(`satzAuswertung({saetze:[{a:'4',b:'2'}]}).winner`) === 'A', 'Jedes Ergebnis
 const gw = sets => J(`partieGewicht({sets:${JSON.stringify(sets)},set_kind:${JSON.stringify(sets.map(() => 'n'))},winner:'A'})`);
 ok(gw([[6,4]]) > gw([[3,0]]) && gw([[6,0]]) > gw([[2,0]]), 'Ein Satz bis 6 wiegt mehr als ein Kurzsatz bis 3 oder 2');
 ok(Math.abs(gw([[6,0]]) - gw([[6,4]])) < 1e-9, '6:0 und 6:4 wiegen gleich lang — wie knapp, sagt die MoV');
-ok(Math.abs(gw([[6,4],[6,3]]) - 1) < 1e-9, 'Zwei Sätze bis 6 sind das volle Gewicht');
+ok(Math.abs(gw([[6,4]]) - 1) < 1e-9 && gw([[7,6]]) > 1, 'Ein Satz bis 6 ist das volle Gewicht, ein 7:6 etwas mehr');
 
 // ── Elo: längere Partien geben mehr ──────────────────────────────────
 K(`players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];0`);
@@ -119,6 +119,28 @@ ok(J(`(()=>{period='day';players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidd
   const h=_vRankingCore();return h.includes('Player of the Day') && h.includes('nw-name');})()`),
   'Spieler des Tages ab zwei Siegen, dieselbe Schwelle wie die Auszeichnung');
 
+
+// ── Jeder Satz ist eine eigene Rechnung ──────────────────────────────
+// Drei Sätze als eine Partie gegen dieselben drei Sätze einzeln. Gleich bis
+// auf den Seitenbonus: das Seitenprofil zählt Partien und lernt zwischen
+// zwei einzeln eingetragenen Sätzen dazu, innerhalb einer Partie nicht.
+const satzLauf = liste => J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  matches=${JSON.stringify(liste)}.map((s,i)=>({id:'s'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder(s.map(([a,b])=>({a,b,art:satzArt([a,b])}))),created_at:new Date(Date.UTC(2026,7,10,18,i)).toISOString()}));
+  invalidateCache();const sim=simulateEloWithSliders(matches);
+  return {elo:sim.elo, je:((sim.history[0].breakdowns.p3||{}).saetze||[]).map(b=>b.delta)};})()`);
+const eine = satzLauf([[[5,7],[6,4],[7,5]]]), drei = satzLauf([[[5,7]],[[6,4]],[[7,5]]]);
+ok(['p1','p2','p3','p4'].every(id => Math.abs(eine.elo[id] - drei.elo[id]) <= 2),
+  `Drei Sätze als eine Partie geben die Elo von drei einzeln eingetragenen (${eine.elo.p1}/${eine.elo.p3} gegen ${drei.elo.p1}/${drei.elo.p3})`);
+ok(eine.je.length === 3 && eine.je[0] > 0 && eine.je[1] < 0 && eine.je[2] < 0,
+  `Wer einen Satz gewinnt, bekommt dafür Elo, auch in der verlorenen Partie (${eine.je.join(' ')})`);
+ok(J(`(()=>{const t=partieTeile({sets:[[6,4],[3,3]],set_kind:['n','open']});return t.length===1&&t[0].winner==='A';})()`),
+  'Ein offener Satz im Gleichstand hat keinen Sieger und bewegt keine Elo');
+ok(J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));matches=[];invalidateCache();
+  const c=computeMatch([{id:'p1',pos:'reves'},{id:'p2',pos:'drive'}],[{id:'p3',pos:'reves'},{id:'p4',pos:'drive'}],
+    partieFelder([{a:5,b:7,art:'n'},{a:6,b:4,art:'n'},{a:7,b:5,art:'n'}]));
+  return c.saetze.p1.length===3 && c.saetze.p1.reduce((x,y)=>x+y,0)===c.res.p1;})()`),
+  'Die Vorschau beim Eintragen nennt die Elo je Satz, und sie ergibt die Summe');
 
 console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
 process.exit(fails ? 1 : 0);

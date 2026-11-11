@@ -358,21 +358,22 @@ function vSettings(){
     <div class="card">
       ${sl('cfgWinBoost','Mehr für Siege',c.winBoost,100,140,' %')}
       ${sl('cfgMovMax','Zuschlag für deutliche Siege',c.movMax,0,100,' %')}
-      ${sl('cfgBonus','Zuschlag je Partie',Math.round((cfg.match_bonus ?? 1.5)*10),0,50,' Elo',c.bonus)}
+      ${sl('cfgBonus','Zuschlag je Satz',Math.round((cfg.match_bonus ?? 1.5)*10),0,50,' Elo',c.bonus)}
       ${sl('cfgUdElo','Außenseiter-Zuschlag',c.udElo,0,100,' %')}
     </div>
 
     <div class="card">
       <div class="mini-label">So wirken die Regler</div>
       <div style="font-size:12px;color:var(--ink2);line-height:1.8">
-        <b style="color:var(--acid)">Tempo</b> — Wie stark eine Partie die Elo verändert. Gewogen nach dem Weg bis zum Sieg: zwei Sätze bis sechs zählen voll, ein Satz bis sechs (6:0 oder 6:4) gut zwei Drittel, ein Kurzsatz bis drei die Hälfte, drei Sätze etwas mehr. Wie knapp es war, zählt dabei nicht.<br>
+        <b style="color:var(--acid)">Je Satz</b> — Jeder Satz ist eine eigene Rechnung, nacheinander, jeder mit dem Stand nach dem vorigen. Drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene, und wer einen Satz gewinnt, bekommt dafür Elo, auch wenn er die Partie verliert.<br>
+        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach dem Weg bis zum Sieg: ein Satz bis sechs (6:0 oder 6:4) zählt voll, ein 7:6 etwas mehr, ein Kurzsatz bis drei gut zwei Drittel, ein Match-Tiebreak gut die Hälfte. Wie knapp es war, zählt dabei nicht.<br>
         <b style="color:var(--acid)">Start-Elo</b> — Mit diesem Wert beginnt jeder Spieler eine Saison.<br>
-        <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Partien einer Saison wirkt das Tempo zu ${c.npMult} %, bis zur ${EINGEWOEHNT_BIS}. Partie noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
+        <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Sätzen einer Saison wirkt das Tempo zu ${c.npMult} %, bis zum ${EINGEWOEHNT_BIS}. Satz noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
         <b style="color:var(--acid)">Last des schwächeren Partners</b> — Bei ${c.risk} % verliert weniger Elo, wer mit einem deutlich schwächeren Partner spielt.<br>
         <b style="color:var(--acid)">Ausgleich der Seite</b> — Auf der schwächeren Seite bringt ein Sieg mehr und kostet eine Niederlage weniger, höchstens ${Math.round(POS_GRENZE*100)} %. Auf der stärkeren ist es umgekehrt, höchstens ${Math.round(POS_DAEMPFER*100)} %. Welche Seite die schwächere ist, zeigt das Seitenprofil im Profil.<br>
         <b style="color:var(--acid)">Mehr für Siege</b> — Ein Sieg bringt ${c.winBoost-100} % mehr, als eine Niederlage kostet. So steigt die Elo über die Zeit.<br>
-        <b style="color:var(--acid)">Zuschlag für deutliche Siege</b> — Gemessen am Anteil der Games: ein 6:0 6:0 zählt bis zu ${100+c.movMax} % einer knappen Partie, ein 6:4 kaum mehr.<br>
-        <b style="color:var(--acid)">Zuschlag je Partie</b> — ${c.bonus} Elo für jede Partie, ob Sieg oder Niederlage.<br>
+        <b style="color:var(--acid)">Zuschlag für deutliche Siege</b> — Gemessen am Anteil der Games im Satz: ein 6:0 zählt bis zu ${100+c.movMax} % eines knappen Satzes, ein 6:4 kaum mehr.<br>
+        <b style="color:var(--acid)">Zuschlag je Satz</b> — ${c.bonus} Elo für jeden Satz, ob gewonnen oder verloren.<br>
         <b style="color:var(--acid)">Außenseiter-Zuschlag</b> — Wer gegen deutlich Stärkere gewinnt, bekommt bis zu ${c.udElo} % mehr. Er kostet nie etwas.<br>
         <b style="color:var(--acid)">Saison</b> — Mit jedem Monat beginnt die Elo neu beim Startwert. Die Elo der Laufbahn ist der gewichtete Schnitt der Saisonenden.
       </div>
@@ -527,18 +528,22 @@ function updatePreview(){
 
   const p = satzAuswertung(M);
   const{teamA, teamB} = teamsFromM();
+  // Jeder Satz ist eine eigene Rechnung [§3.6]; neben der Summe steht,
+  // was jeder Satz gebracht hat, in der Reihenfolge der Eingabe.
+  const vz = d => (d>=0?'+':'\u2212') + Math.abs(Math.round(d));
   const line = s => {
-    const d = c.res[s.id];
+    const d = c.res[s.id], je = (c.saetze && c.saetze[s.id]) || [];
     return `<div class="delta-row">
       <span class="dn">${esc(P[s.id].name)}
         <span class="chip ${s.pos}">${s.pos==='drive'?'R':'L'}</span>
       </span>
+      ${je.length > 1 ? `<span class="delta-saetze num">${je.map(x =>
+        `<i class="${x>=0?'pos':'neg'}">${vz(x)}</i>`).join('')}</span>` : ''}
       <span class="delta-v ${d>=0?'pos':'neg'}">${d>=0?'+':''}${Math.round(d)}</span>
     </div>`;
   };
-  const zusatz = [p.zuNull ? 'zu Null' : '', c.mov>1.15 ? 'deutlich ×'+komma(c.mov,2) : '',
-    c.gewicht<0.9 ? 'kurze Partie ×'+komma(c.gewicht,2) : c.gewicht>1.1 ? 'lange Partie ×'+komma(c.gewicht,2) : '']
-    .filter(Boolean).join(' · ');
+  const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
+  const zusatz = [n > 1 ? 'je Satz gerechnet' : '', p.zuNull ? 'zu Null' : ''].filter(Boolean).join(' · ');
   slot.innerHTML = `<div class="preview">
     <div class="prob-cap">Elo nach dieser Partie${zusatz?' · '+zusatz:''}</div>
     <div class="delta-list">

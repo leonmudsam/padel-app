@@ -22,8 +22,10 @@ Tiebreak, offen). Alles, was ein Ergebnis liest, fragt `03b-padel.js`
 ein 1:0 ist keins), Bagel, Doppel-Bagel, Wende, knapp, deutlich, im
 Tiebreak entschieden. Jeder Spieler steht auf einer Seite: `drive`
 (rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
-[§C44]. Die Elo wiegt eine Partie nach dem Weg bis zum Sieg (Games des
-Siegers, `partieGewicht`) und nach der Deutlichkeit (`movMult`). Die Liga
+[§C44]. Die Elo rechnet jeden Satz einzeln und nacheinander (`partieTeile`):
+drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene.
+Ein Satz wiegt nach dem Weg bis zum Sieg (Games des Siegers,
+`partieGewicht`) und nach der Deutlichkeit (`movMult`). Die Liga
 spielt etwa fünf Tage im Monat mit drei bis fünf Partien — alle Schwellen
 (Mindestspiele, Serien, Fenster) sind darauf gesetzt und stehen je System
 an einer Stelle: `BG` (Auszeichnungen), `CHRONIK_MIN_SPIELE`/`ST_TEIL`
@@ -153,7 +155,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1624**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1625**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---

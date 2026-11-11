@@ -129,7 +129,7 @@ function ligaVorschauHtml(){
     [
       ['users', 'Spieler anlegen', 'Jeder, der mitspielt, bekommt einen Namen. Gespielt wird immer zwei gegen zwei.'],
       ['court', 'Partie eintragen', 'Nach dem Spiel über das Plus: die vier Spieler auf ihre Seite stellen, rechts Drive, links Revés, dann die Games je Satz. Jedes Format zählt, ein Satz oder drei, mit oder ohne Tiebreak, auch ein Satz, der nicht zu Ende kam.'],
-      ['trendUp', 'Elo', `Jeder beginnt bei ${Math.round(cfg.start_elo || 0)}. Ein Sieg gegen Stärkere bringt mehr als einer gegen Schwächere, und ein langer Weg zum Sieg mehr als ein kurzer: ein 6:0 mehr als ein 3:0.`],
+      ['trendUp', 'Elo', `Jeder beginnt bei ${Math.round(cfg.start_elo || 0)}. Jeder Satz zählt einzeln: wer ihn gewinnt, bekommt Elo, auch in einer verlorenen Partie. Ein Satz gegen Stärkere bringt mehr als einer gegen Schwächere, ein Satz bis 6 mehr als ein Kurzsatz bis 3.`],
       ['calendar', 'Saison, Tag, Gesamt', `Eine Saison ist ein Kalendermonat, und jeder beginnt sie bei ${Math.round(cfg.start_elo || 0)}. Der Tag zeigt den Spieltag mit dem Spieler des Tages (ab ${PERIODE_MIN_SIEGE.tag} Siegen), Gesamt die Laufbahn über alle Saisons.`],
       ['shieldStar', 'Was daraus entsteht', 'Auszeichnungen, Rekorde, die Chronik jedes Monats, das Insignium am Wappen und die News füllen sich mit den Partien. Jeder Reiter zeigt schon jetzt, was dort stehen wird.'],
     ],

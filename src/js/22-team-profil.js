@@ -481,9 +481,13 @@ function showMatchDetail(mid){
       // Ausgeblendet wird nur, was als 0,00 dastünde. Mit einer Schwelle von
       // 0,1 fehlten kleine Posten, und die Zeilen ergaben die Summe nicht.
       const zeigt=v=>Math.abs(v)>=0.005;
+      // Die Posten EINES Satzes. Jeder Satz ist eine eigene Rechnung
+      // [§3.6]; bei mehreren steht je Satz ein Kopf mit Stand und Elo und
+      // darunter seine Posten, und die Summe oben ist ihre Summe.
+      const faktorZeilen=b=>{
       const factors=[];
       factors.push({label:'Basis (Erwartung)',val:b.rawBase,desc:(b.won?'Sieg'+(b.expected<0.5?' gegen stärkeres Team':''):'Niederlage'+(b.expected>0.5?' gegen schwächeres Team':''))
-        +(b.gewicht&&Math.abs(b.gewicht-1)>=0.02?' · '+(b.gewicht<1?'kurze':'lange')+' Partie ×'+komma(b.gewicht,2):'')});
+        +(b.gewicht&&Math.abs(b.gewicht-1)>=0.02?' · '+(b.gewicht<1?'kurzer':'langer')+' Satz ×'+komma(b.gewicht,2):'')});
       if(zeigt(b.movEffect)) factors.push({label:'Deutlichkeit',val:b.movEffect,desc:b.won?'Deutlicher Sieg':'Deutliche Niederlage'+(b.movMult<1.2?' (gedämpft)':'')});
       if(zeigt(b.winBoostEffect)) factors.push({label:'Mehr für Siege',val:b.winBoostEffect,desc:'+'+komma(((b.winBoost-1)*100),1)+'\u00A0% für Siege'});
       if(b.expProtect<1) factors.push({label:'Schutz für Erfahrene',val:b.expProtectEffect,desc:komma(((1-b.expProtect)*100),1)+'\u00A0% Schutz'});
@@ -495,7 +499,7 @@ function showMatchDetail(mid){
         // (Elo-Gap + Spiele-Gap). Wir zeigen nur die wirksamen (positiven) Anteile,
         // weil negative Differenzen keinen Effekt mehr haben.
         const eloPart   = b.underdogEloDiff>0   ? b.underdogEloDiff+' Elo schwächer'   : null;
-        const gamesPart = b.underdogGamesDiff>0 ? b.underdogGamesDiff+' Partien weniger' : null;
+        const gamesPart = b.underdogGamesDiff>0 ? b.underdogGamesDiff+' Sätze weniger' : null;
         const desc = [eloPart, gamesPart].filter(Boolean).join(' · ') || 'Außenseiter';
         // Effekt ohne lowElo-Anteil: rawBase*mov*boost*expProtect*(underdogMult-1)
         const undEffect = b.rawBase*b.movMult*b.winBoost*b.expProtect*(b.underdogMult-1);
@@ -512,11 +516,22 @@ function showMatchDetail(mid){
         factors.push({label:'Ausgleich der Seite',val:b.posEffect,
           desc:(schwach?'Schwache':'Starke')+' Seite · '+pz+(schwach?(b.won?'Bonus':'Schutz'):(b.won?'Dämpfer':'Abzug'))});
       }
-      factors.push({label:'Zuschlag je Partie',val:b.matchBonus,desc:'fest +'+komma(b.matchBonus,2)}); 
+      factors.push({label:'Zuschlag je Satz',val:b.matchBonus,desc:'fest +'+komma(b.matchBonus,2)}); 
       const factorRows=factors.map(f=>`<div class="ea-posten" style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px">
         <div><span style="color:var(--ink)">${f.label}</span> <span style="color:var(--muted);font-size:10px">${f.desc}</span></div>
         <span class="ea-wert" style="font-family:'Sometype Mono',monospace;font-weight:700;color:${f.val>=0?'var(--acid)':'var(--red)'}">${sign(f.val)}</span>
       </div>`).join('');
+      };
+      const aufA=id===m.a1||id===m.a2;
+      const factorRows=b.saetze&&b.saetze.length>1
+        ? b.saetze.map(x=>{
+            const st=x.satz?(aufA?x.satz[0]+':'+x.satz[1]:x.satz[1]+':'+x.satz[0]):'';
+            return `<div class="ea-satz" style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--ink2);margin-top:8px;padding-top:6px;border-top:1px dashed var(--line)">
+              <span>Satz ${x.satzNr}${st?' · '+st:''}</span>
+              <span style="font-family:'Sometype Mono',monospace;color:${x.finalDelta>=0?'var(--acid)':'var(--red)'}">${sign(x.finalDelta)}</span>
+            </div>${faktorZeilen(x)}`;
+          }).join('')
+        : faktorZeilen(b);
       // Gespeichert ist das Delta vom Tag der Partie; die Faktoren rechnen mit
       // den Einstellungen von heute. Stehen sie mehr als eine Elo auseinander,
       // sagt die Zeile, was damals verbucht wurde.

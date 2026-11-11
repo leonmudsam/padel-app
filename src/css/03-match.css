@@ -90,6 +90,11 @@
   .delta-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}
   .delta-row .dn{display:flex;align-items:center;gap:7px;color:var(--ink2)}
   .delta-v{font-family:'Sometype Mono',monospace;font-weight:700;font-size:14px}
+  /* Die Elo je Satz zwischen Name und Summe, leiser als die Summe: sie
+     erklärt die Zahl rechts, sie ersetzt sie nicht. */
+  .delta-saetze{margin-left:auto;margin-right:12px;display:flex;gap:6px;font-size:11px;
+    font-family:'Sometype Mono',monospace;opacity:.75}
+  .delta-saetze i{font-style:normal} .delta-saetze .pos{color:var(--acid)} .delta-saetze .neg{color:var(--red)}
   .delta-v.pos{color:var(--acid)} .delta-v.neg{color:var(--red)}
   .delta-div{height:1px;background:var(--line);margin:3px 0}
 

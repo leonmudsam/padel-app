@@ -362,11 +362,24 @@ const SEITE_NAME = {drive:'Drive', reves:'Revés'};
 // 1 = alles), und an der Game-Differenz, logarithmisch gedämpft: ein 6:0 im
 // einzigen Satz bringt rund drei Viertel des Aufschlags, ein 6:0 6:0 den
 // vollen. Beim Tischkicker war das auf ein 10:0 geeicht.
+// Die Deutlichkeit eines Satzes: der Anteil der Games des Siegers und der
+// Abstand, ein 6:0 trägt den vollen Aufschlag. Gerechnet wird je Satz
+// (`partieTeile`); über eine ganze Partie stand hier ln 13 als Maß, und ein
+// einzelner Satz 6:0 kam damit nur auf drei Viertel. Ein Match-Tiebreak
+// liest seine Punkte: als ein Game 1:0 hätte jedes 10:8 als Zu-Null-Satz
+// gegolten.
 function movMult(m){
-  const p = m && m.sets !== undefined ? partie(m) : saetzeAuswerten(partieSaetze(m || {}));
-  const anteil = Math.max(0, Math.min(1, (p.gameAnteil - .5) * 2));
   const maxBoost = cfg.mov_max_boost ?? 0.4;
-  return 1 + maxBoost * anteil * Math.min(1, Math.log(p.gameDiff + 1) / Math.log(13));
+  const saetze = partieSaetze(m || {});
+  if(saetze.length === 1 && saetze[0].art === 'mtb'){
+    const {a, b} = saetze[0], n = a + b;
+    if(!n) return 1;
+    const anteil = Math.max(0, Math.min(1, (Math.max(a, b) / n - .5) * 2));
+    return 1 + maxBoost * anteil * Math.min(1, Math.log(Math.abs(a - b) + 1) / Math.log(11));
+  }
+  const p = m && m.sets !== undefined ? partie(m) : saetzeAuswerten(saetze);
+  const anteil = Math.max(0, Math.min(1, (p.gameAnteil - .5) * 2));
+  return 1 + maxBoost * anteil * Math.min(1, Math.log(p.gameDiff + 1) / Math.log(7));
 }
 
 // computeMatch nutzt DIESELBE Engine wie der Recalc, damit die beim
@@ -393,8 +406,14 @@ function computeMatch(teamA, teamB, felder){
   const entry = sim.history.find(h => h.matchId === HYPO_ID);
   const res = entry ? {...entry.deltas} : {};
   const expA = entry ? entry.expA : 0.5;
-  // Nur für die Anzeige — dieselbe Formel wie in der Engine.
-  return {res, expA, mov: movMult(hypo), gewicht: partieGewicht(hypo)};
+  // Die Elo je Satz, für die Vorschau beim Eintragen: die Summe allein
+  // sagte nicht, dass ein gewonnener Satz auch in der Niederlage zählt.
+  const saetze = {};
+  Object.keys(res).forEach(id => {
+    const bd = entry && entry.breakdowns && entry.breakdowns[id];
+    saetze[id] = bd && bd.saetze ? bd.saetze.map(b => b.delta) : [res[id]];
+  });
+  return {res, expA, saetze};
 }
 
 // ─── Schreiben, was sich geändert hat ───────────────────────────────
