@@ -1,13 +1,10 @@
 # Baut src/ zu einer Datei zusammen und veröffentlicht sie auf GitHub Pages.
 #
-# Solange Pages noch "Deploy from a branch" ist, läuft nur der Job `pruefen`.
-# Zum Umschalten sind zwei Handgriffe nötig:
-#   1. Settings › Pages › Source: GitHub Actions
-#   2. Settings › Secrets and variables › Actions › Variables:
-#      PAGES_VIA_ACTIONS = true
-# Erst dann übernimmt `veroeffentlichen`. Zurück geht es genauso schnell:
-# Variable löschen, Source wieder auf den Branch — index.html liegt weiterhin
-# im Wurzelverzeichnis.
+# Veröffentlicht wird bei jedem Push auf main. Einmalig nötig: Settings ›
+# Pages › Source „GitHub Actions“. Steht die Quelle noch auf „Deploy from a
+# branch“ oder ist Pages aus, schlägt der Job `veroeffentlichen` fehl — Bau
+# und Prüfung bleiben davon unberührt. Die Kicker-Liga verlangte zusätzlich
+# eine Variable PAGES_VIA_ACTIONS als Schalter; die Padel Liga braucht ihn nicht.
 #
 # Veröffentlicht wird nur aus einem Push auf main oder von Hand, nie aus einem
 # Pull Request. Die Bedingung stand allein an `github.ref`, und im Lauf zu
@@ -67,13 +64,13 @@ jobs:
       # durch. Eine Nummer aus der Laufnummer hätte jedem Durchlauf eine neue
       # Version gegeben, auch ohne Änderung: genau das Update, das keines ist.
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.PAGES_VIA_ACTIONS == 'true'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
 
   veroeffentlichen:
     name: Veröffentlichen
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.PAGES_VIA_ACTIONS == 'true'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: pruefen
     runs-on: ubuntu-24.04
     environment:

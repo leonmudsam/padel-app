@@ -12,8 +12,8 @@ Supabase.
 
 1. `datenbank/schema.sql` einmal im Supabase-SQL-Editor des Projekts
    ausführen (Tabellen, Zugriff, Realtime).
-2. GitHub → Settings → Pages → Source „GitHub Actions"; unter Settings →
-   Secrets and variables → Actions → Variables `PAGES_VIA_ACTIONS` = `true`.
+2. GitHub → Settings → Pages → Source „GitHub Actions". Danach veröffentlicht
+   jeder Push auf `main` von selbst.
 3. In der App über „Spieler hinzufügen" die Gruppe anlegen, dann über den
    Plus-Knopf die erste Partie eintragen.
 

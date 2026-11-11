@@ -91,7 +91,7 @@ blockiert. Lokal: `npm install --no-save playwright-core`.
 ## Veröffentlichung
 
 Veröffentlicht wird über GitHub Actions (`.github/workflows/pages.yml`,
-Pages-Quelle „GitHub Actions" und die Variable `PAGES_VIA_ACTIONS` = `true`):
+Pages-Quelle „GitHub Actions"):
 bei jedem Push auf `main` wird gebaut, geprüft und das Ergebnis aus `dist/`
 veröffentlicht. Jeder andere Zweig und jeder Pull Request läuft nur durch
 den Prüf-Job. Die Läufe stehen je Zweig in einer eigenen Reihe: mit einer
@@ -99,6 +99,6 @@ gemeinsamen Gruppe verdrängte ein Push auf einen Arbeitszweig den wartenden
 Lauf von `main`, und dessen Fassung kam nie ins Netz.
 
 `index.html` und `sw.js` werden trotzdem mitversioniert, und Wächter 1 prüft,
-dass sie zu `src/` passen: zurück auf „Deploy from a branch" geht es mit zwei
-Handgriffen (Variable löschen, Pages-Quelle wieder auf den Branch), und dann
+dass sie zu `src/` passen: zurück auf „Deploy from a branch" geht es mit einem
+Handgriff (Pages-Quelle wieder auf den Branch), und dann
 ist der Stand im Repository der Stand im Netz.
