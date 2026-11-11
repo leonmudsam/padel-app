@@ -6774,7 +6774,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.8e529a27';
+const BUILD_VERSION='2026.11.11.34fc625d';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -10431,19 +10431,19 @@ function showPotdRecap(opts){
     const uniquePlayers=new Set();
     dayMatches.forEach(m=>[m.a1,m.a2,m.b1,m.b2].forEach(id=>uniquePlayers.add(id)));
 
-    const tagSaetze = {};
+    const tagGames = {};
     dayMatches.forEach(m => {
       [m.a1, m.a2, m.b1, m.b2].forEach(id => {
         const t = teamVon(m, id); if(!t) return;
         const f = partieFuer(m, t);
-        if(!tagSaetze[id]) tagSaetze[id] = {g:0, s:0};
-        tagSaetze[id].g++; tagSaetze[id].s += f.setsFor;
+        if(!tagGames[id]) tagGames[id] = {g:0, d:0};
+        tagGames[id].g++; tagGames[id].d += f.gamesFor - f.gamesAgainst;
       });
     });
-    const tagScorer = Object.keys(tagSaetze)
-      .map(id => ({id, g:tagSaetze[id].g, s:tagSaetze[id].s}))
-      .filter(x => x.s > 0 && sichtbar(pm[x.id]))
-      .sort((a,b) => b.s - a.s || a.g - b.g)[0];
+    const tagScorer = Object.keys(tagGames)
+      .map(id => ({id, g:tagGames[id].g, d:tagGames[id].d}))
+      .filter(x => x.d > 0 && sichtbar(pm[x.id]))
+      .sort((a,b) => b.d - a.d || a.g - b.g)[0];
 
     let tagUpset = null;
     for(const m of dayMatches){
@@ -10458,8 +10458,8 @@ function showPotdRecap(opts){
     const tagKacheln = [];
     const tagHl = (ic, label, name, wert, attr) => tagKacheln.push(rcpKachelHtml(
       name ? {ic, label, name, wert, ton:'metall', attr} : {ic, label, leer:true}));
-    tagHl('padelBall', 'Meiste Sätze', tagScorer ? pname(tagScorer.id) : null,
-          tagScorer ? tagScorer.s + (tagScorer.s === 1 ? ' Satz' : ' Sätze') : null,
+    tagHl('plusMinus', 'Beste Game-Bilanz', tagScorer ? pname(tagScorer.id) : null,
+          tagScorer ? '+' + tagScorer.d + ' Games' : null,
           tagScorer ? `data-potd-player="${esc(tagScorer.id)}"` : '');
     tagHl('bolt', 'Größte Überraschung', upsetSieger ? pname(upsetSieger[0])+' & '+pname(upsetSieger[1]) : null,
           tagUpset ? Math.round(tagUpset.chance*100)+'\u00A0% Chance' : null,
@@ -27158,15 +27158,15 @@ function _spKontext(F){
       : s * 2 === n ? `${W} gleichen gegen ${L} aus` : `${W} verkürzen gegen ${L}`,
     d:`Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.`});
   if(F.duo.p >= 2) wahl.push({t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
-    d:`Das sind ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} % der ${_spZahl(F.duo.p)} gemeinsamen Sätze.`});
+    d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   const tag = F.W.map(id => { const l = F.tag.filter(x => [x.a1, x.a2, x.b1, x.b2].includes(id));
     return {id, k:l.length, w:l.filter(x => _spGew(x, id)).length}; }).filter(x => x.k >= 3).sort((a, b) => b.w - a.w)[0];
   if(tag) wahl.push({t:`${_spName(tag.id)} holt den ${_spZahl(tag.w)}. Sieg des Tages`,
-    d:`${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen an diesem Tag.`});
+    d:`${_spName(tag.id)} kommt an diesem Tag auf ${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen.`});
   if(!wahl.length) wahl.push(F.duo.p <= 1 ? {t:`${W} gewinnen den ersten gemeinsamen Satz`,
       d:n > 1 ? `Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.` : `Es ist das erste Treffen dieser beiden Duos.`}
     : {t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
-      d:`Das sind ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} % der ${_spZahl(F.duo.p)} gemeinsamen Sätze.`});
+      d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   return wahl[_spVisualHash(F.m.id + '|kontext') % wahl.length];
 }
 const _spKrimi = x => partie(x).entscheidTb;

@@ -278,8 +278,8 @@ function showTeam(p1Id,p2Id){
     </div>` : '';
 
   // ─── FUN FACTS ───
-  // Satzbilanz, Tiebreaks, Zu-Null-Siege (mindestens zwei Sätze, keiner
-  // abgegeben), Doppel-Bagel und das häufigste Satzergebnis — bewusst
+  // Satzbilanz, Tiebreaks, Sätze zu Null (6:0), Doppel-Bagel (ein Match mit
+  // zwei davon) und das häufigste Satzergebnis — bewusst
   // kompakt, höchstens vier Karten in einer Reihe.
   let funFactsHtml = '';
   if(d.games >= 2){

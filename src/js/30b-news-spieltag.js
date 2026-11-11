@@ -999,6 +999,9 @@ function _spImMonat(F, art){
 // Duell dieser zwei Duos, die gemeinsamen Siege, den Tag eines Siegers.
 // Welche, entscheidet die Partie selbst (`_spVisualHash`), damit nicht
 // jede Karte dieselbe Sorte Satz trägt.
+// Die zweite Zeile steht oft unter einem anderen Titel („gewinnen im
+// Tiebreak", „stürzen die Favoriten"): sie muss für sich stehen. Vorher
+// begann sie mit „Das sind …" und bezog sich auf ihren eigenen Titel.
 function _spKontext(F){
   const W = _spNl(F.W), L = _spNl(F.L), n = F.treffen.length;
   const s = F.treffen.filter(x => _spGew(x, F.W[0])).length;
@@ -1008,15 +1011,15 @@ function _spKontext(F){
       : s * 2 === n ? `${W} gleichen gegen ${L} aus` : `${W} verkürzen gegen ${L}`,
     d:`Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.`});
   if(F.duo.p >= 2) wahl.push({t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
-    d:`Das sind ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} % der ${_spZahl(F.duo.p)} gemeinsamen Sätze.`});
+    d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   const tag = F.W.map(id => { const l = F.tag.filter(x => [x.a1, x.a2, x.b1, x.b2].includes(id));
     return {id, k:l.length, w:l.filter(x => _spGew(x, id)).length}; }).filter(x => x.k >= 3).sort((a, b) => b.w - a.w)[0];
   if(tag) wahl.push({t:`${_spName(tag.id)} holt den ${_spZahl(tag.w)}. Sieg des Tages`,
-    d:`${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen an diesem Tag.`});
+    d:`${_spName(tag.id)} kommt an diesem Tag auf ${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen.`});
   if(!wahl.length) wahl.push(F.duo.p <= 1 ? {t:`${W} gewinnen den ersten gemeinsamen Satz`,
       d:n > 1 ? `Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.` : `Es ist das erste Treffen dieser beiden Duos.`}
     : {t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
-      d:`Das sind ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} % der ${_spZahl(F.duo.p)} gemeinsamen Sätze.`});
+      d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   return wahl[_spVisualHash(F.m.id + '|kontext') % wahl.length];
 }
 // Im Tiebreak entschieden, nach §1.3. Zu Null ist ein Satz 6:0, kein
@@ -1029,8 +1032,8 @@ const _spZuNull = x => partie(x).zuNull;
 // Bild braucht — nur Zahlen und IDs, damit `tests/blatt` jedes Bild auch
 // mit Grenzwerten zeichnen kann [§11.6c].
 const SP_FORM = {
-  // Das Mosaik: wie gewöhnlich dieses Ergebnis ist. Zehn Felder von 10:0
-  // bis 10:9, jedes so hell, wie oft die Liga bis hier so endete.
+  // Das Mosaik: wie gewöhnlich dieses Ergebnis ist, je Abstand in Games ein
+  // Feld, jedes so hell, wie oft die Liga bis hier so endete.
   mosaik:{rang:12, ic:'chartBar',
     wann:() => null,
     gewicht:x => x.grund === 'selten' ? 28 : (x.grund === 'haeufig' ? 22 : 18),

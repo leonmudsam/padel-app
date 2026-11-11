@@ -444,21 +444,22 @@ function showPotdRecap(opts){
     // Der Tages-Rückblick zeigte bisher nur den Sieger und vier Zahlen.
     // Ein Spieltag hat aber dieselben Geschichten wie eine Woche, nur
     // kürzer — dieselben drei Kacheln, aus denselben Daten gerechnet.
-    // Die meisten gewonnenen Sätze des Tages — beim Tischkicker stand hier
-    // der Torjäger.
-    const tagSaetze = {};
+    // Die beste Game-Bilanz des Tages. Hier standen „die meisten gewonnenen
+    // Sätze" — das ist, seit ein Sieg ein Satz ist, genau der Spieler des
+    // Tages, und die Kachel sagte dasselbe zweimal.
+    const tagGames = {};
     dayMatches.forEach(m => {
       [m.a1, m.a2, m.b1, m.b2].forEach(id => {
         const t = teamVon(m, id); if(!t) return;
         const f = partieFuer(m, t);
-        if(!tagSaetze[id]) tagSaetze[id] = {g:0, s:0};
-        tagSaetze[id].g++; tagSaetze[id].s += f.setsFor;
+        if(!tagGames[id]) tagGames[id] = {g:0, d:0};
+        tagGames[id].g++; tagGames[id].d += f.gamesFor - f.gamesAgainst;
       });
     });
-    const tagScorer = Object.keys(tagSaetze)
-      .map(id => ({id, g:tagSaetze[id].g, s:tagSaetze[id].s}))
-      .filter(x => x.s > 0 && sichtbar(pm[x.id]))
-      .sort((a,b) => b.s - a.s || a.g - b.g)[0];
+    const tagScorer = Object.keys(tagGames)
+      .map(id => ({id, g:tagGames[id].g, d:tagGames[id].d}))
+      .filter(x => x.d > 0 && sichtbar(pm[x.id]))
+      .sort((a,b) => b.d - a.d || a.g - b.g)[0];
 
     let tagUpset = null;
     for(const m of dayMatches){
@@ -473,8 +474,8 @@ function showPotdRecap(opts){
     const tagKacheln = [];
     const tagHl = (ic, label, name, wert, attr) => tagKacheln.push(rcpKachelHtml(
       name ? {ic, label, name, wert, ton:'metall', attr} : {ic, label, leer:true}));
-    tagHl('padelBall', 'Meiste Sätze', tagScorer ? pname(tagScorer.id) : null,
-          tagScorer ? tagScorer.s + (tagScorer.s === 1 ? ' Satz' : ' Sätze') : null,
+    tagHl('plusMinus', 'Beste Game-Bilanz', tagScorer ? pname(tagScorer.id) : null,
+          tagScorer ? '+' + tagScorer.d + ' Games' : null,
           tagScorer ? `data-potd-player="${esc(tagScorer.id)}"` : '');
     // Größter Aufwind ist keine Kachel mehr: die Elo jedes Spielers steht im
     // Feld des Tages, dieselbe Zahl stand sonst zweimal da.
