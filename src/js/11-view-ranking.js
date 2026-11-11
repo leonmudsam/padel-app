@@ -1,5 +1,5 @@
 // ╔═══ §5.1 ─── VIEW: RANKING ──────────────────────────────────────────╗
-//     Zeigt Saison/Woche/Gesamt-Rangliste, Hall of Fame, POTW/POTD.
+//     Zeigt Saison/Tag/Gesamt-Rangliste, Hall of Fame, POTD.
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function vRanking(){
   // Ein abgeschlossener Monat ist Geschichte [§C40].
@@ -116,6 +116,25 @@ function formDotsHtml(erg, curStreak){
   return erg.map((w, i) => `<div class="dot ${w ? 'w' : 'l'}${
     glut && i >= erg.length - glut ? ' glut' : ''}"></div>`).join('');
 }
+// ── Die Liga vor der ersten Partie [§C27] ───────────────────────────
+// Eine Vorschau statt leerer Tabellen: was die Liga ist, wie eine Partie
+// hineinkommt und was daraus entsteht. Der Knopf zum Anlegen steht IN der
+// Karte: am Ende der Seite lag er unter dem Plus unten rechts.
+function ligaVorschauHtml(){
+  const fehlt = Math.max(0, 4 - activePlayers().length);
+  return vorschauHtml('racket', 'So funktioniert die Liga',
+    fehlt
+      ? `Für die erste Partie fehlen noch <b>${fehlt} Spieler</b>. Danach füllt sich jede Ansicht von selbst.`
+      : 'Alle für die erste Partie sind da. Das Plus unten rechts trägt sie ein; danach füllt sich jede Ansicht von selbst.',
+    [
+      ['users', 'Spieler anlegen', 'Jeder, der mitspielt, bekommt einen Namen. Gespielt wird immer zwei gegen zwei.'],
+      ['court', 'Partie eintragen', 'Nach dem Spiel über das Plus: die vier Spieler auf ihre Seite stellen, rechts Drive, links Revés, dann die Games je Satz. Jedes Format zählt, ein Satz oder drei, mit oder ohne Tiebreak, auch ein Satz, der nicht zu Ende kam.'],
+      ['trendUp', 'Elo', `Jeder beginnt bei ${Math.round(cfg.start_elo || 0)}. Ein Sieg gegen Stärkere bringt mehr als einer gegen Schwächere, und ein langer Weg zum Sieg mehr als ein kurzer: ein 6:0 mehr als ein 3:0.`],
+      ['calendar', 'Saison, Tag, Gesamt', `Eine Saison ist ein Kalendermonat, und jeder beginnt sie bei ${Math.round(cfg.start_elo || 0)}. Der Tag zeigt den Spieltag mit dem Spieler des Tages (ab ${PERIODE_MIN_SIEGE.tag} Siegen), Gesamt die Laufbahn über alle Saisons.`],
+      ['shieldStar', 'Was daraus entsteht', 'Auszeichnungen, Rekorde, die Chronik jedes Monats, das Insignium am Wappen und die News füllen sich mit den Partien. Jeder Reiter zeigt schon jetzt, was dort stehen wird.'],
+    ],
+    `<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`);
+}
 function _vRankingCore(){
   // Welche Saison gezeigt wird, steht an EINER Stelle — und nur unter
   // „Saison" gibt es dazu etwas zu wählen. Woche, Tag und Gesamt kennen
@@ -125,10 +144,11 @@ function _vRankingCore(){
   // Der Zeitraum ist die erste Wahl dieser Seite, also der äußere Wähler
   // [§C27] — wie „Awards · Rekorde · Chronik" im Awards-Reiter. Als innere
   // Ebene stand er gleichrangig über „Spieler · Teams" und der Metrik.
+  // Keine Woche: die Liga spielt meist an einem Tag in der Woche, und die
+  // Woche zeigte dieselbe Tabelle wie der Tag noch einmal.
   const periodBar=`
     <div class="ui-switch">
       <button data-period="season" class="${period==='season'?'on':''}">Saison</button>
-      <button data-period="week" class="${period==='week'?'on':''}">Woche</button>
       <button data-period="day" class="${period==='day'?'on':''}">Tag</button>
       <button data-period="all" class="${period==='all'?'on':''}">Gesamt</button>
     </div>`;
@@ -137,6 +157,16 @@ function _vRankingCore(){
   // Überschrift für ihn. Unten ist er, was er ist: ein Griff, mit dem man
   // die Tabelle darunter umstellt.
   const saisonWahl = period==='season' ? saisonWaehlerHtml('ligaSeasonPicker', sid) : '';
+
+  // Vor der ersten Partie erklärt die Liga sich selbst, in jedem Zeitraum
+  // gleich. Vorher standen hier Kacheln mit „noch keine Daten" und eine
+  // Tabelle mit lauter Nullen, und niemand erfuhr, was eine Saison ist oder
+  // wie eine Partie in die Liga kommt.
+  if(!matches.length) return `
+    <div class="view-head"><h2>${period==='all' ? 'Ewige Tafel' : 'Liga'}</h2><p>${
+      activePlayers().length} Spieler · noch keine Partie</p></div>
+    ${periodBar}
+    ${ligaVorschauHtml()}`;
 
   // ZEITRAUM-ANSICHT (Tag/Woche/Monat)
   if(period!=='all'){
@@ -166,7 +196,10 @@ function _vRankingCore(){
     if(period==='season'){
       winner=ps.length&&ps[0].games>0?ps[0]:null;
     } else {
-      const minWins = period==='week' ? 5 : period==='day' ? 3 : 1;
+      // Dieselbe Schwelle wie die Auszeichnung (PERIODE_MIN_SIEGE): hier standen die
+      // Kicker-Zahlen (3 und 5), und die Karte nannte einen Spieler des Tages
+      // erst einen Sieg später als das Zeichen, das er dafür bekam.
+      const minWins = period==='week' ? PERIODE_MIN_SIEGE.woche : period==='day' ? PERIODE_MIN_SIEGE.tag : 1;
       const qual=ps.filter(x=>x.wins>=minWins);
       // ────────────────────────────────────────────────────────────────
       // Tie-Break IDENTISCH zur POTW/POTD-Badge-Logik:
@@ -301,8 +334,8 @@ function _vRankingCore(){
       // Spieler gross genug steht, um es zu tragen; in der Tabelle darunter
       // bleibt es beim Reif, weil eine Zeile die Hoehe nicht hat.
       const titelTxt   = period==='day' ? 'Player of the Day' : 'Player of the Week';
-      const regelTxt   = period==='day' ? 'ab 3 Siegen · die meisten Siege'
-                                        : 'ab 5 Siegen · die beste Quote';
+      const regelTxt   = period==='day' ? `ab ${PERIODE_MIN_SIEGE.tag} Siegen · die meisten Siege`
+                                        : `ab ${PERIODE_MIN_SIEGE.woche} Siegen · die beste Quote`;
       const eloLabel   = period==='day' ? 'Elo Tag' : 'Elo Woche';
       if(winner){
         const wp=pmap()[winner.id];
@@ -534,8 +567,10 @@ function _vRankingCore(){
       ${nebenHtml}
       ${sichtBar}
       ${metrikLeisteHtml(period)}
-      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar','Keine Partien in diesem Zeitraum')}
-      ${activePlayers().length<4?`<button class="btn ghost sm" id="addPlayerBtn" style="margin-top:14px">+ Spieler anlegen</button>`:''}`;
+      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar', period==='day'
+        ? 'Heute noch keine Partie. Die Tabelle des Tages beginnt mit der ersten.'
+        : 'In dieser Saison noch keine Partie. Die Tabelle beginnt mit der ersten.')}
+      ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
 
 
@@ -674,7 +709,7 @@ function _vRankingCore(){
     ${hofPodsHtml}
     ${metrikLeisteHtml('all')}
     ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
-    <button class="btn ghost sm" id="addPlayerBtn" style="margin-top:14px">+ Spieler anlegen</button>`;
+    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
 
 }
 function rrow(p, s, i, metric, globalElo, letzte){

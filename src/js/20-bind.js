@@ -67,7 +67,6 @@ function bind(){
 
   // awards anklickbar
   main.querySelectorAll('[data-award]').forEach(el=>el.onclick=()=>showAward(el.dataset.award));
-  main.querySelectorAll('[data-awperiod]').forEach(b=>b.onclick=()=>{awPeriod=b.dataset.awperiod;if(awPeriod!=='season')awSeasonId=null;if(awPeriod!=='week')awWeekStart=null;_renderNachEingabe();});
   main.querySelectorAll('[data-awview]').forEach(b=>b.onclick=()=>{awView=b.dataset.awview;rekKammer='';_renderNachEingabe();});
   main.querySelectorAll('[data-rekkammer]').forEach(b=>b.onclick=()=>{rekKammer=b.dataset.rekkammer;_renderNachEingabe();});
   // Rekorde- und Chronik-Reiter tragen dieselben Elemente wie das

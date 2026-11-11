@@ -555,7 +555,10 @@ function _titlePillHtml(pid){
 function ligaRekordeHtml(weit){
   const holders = chronicleHolders();
   const recs = CHRONICLES.filter(d => holders[d.id]);
-  if(!recs.length) return '';
+  // Die kleine Form (Profil) entfällt ohne Rekord; der Reiter zeigt die
+  // ganze Tafel auch dann, jede Karte noch niemandes. Vorher stand dort nur
+  // „Noch hält niemand einen Liga-Rekord." — und keiner wusste, welche es gibt.
+  if(!recs.length && !weit) return '';
   if(!weit) return `
     <div class="pp-sec-title" style="margin-top:20px">
       <div class="l"><span class="ic svg-ic">${svgI('rekord')}</span><h4>Liga-Rekorde</h4></div>
@@ -708,7 +711,9 @@ function ligaRekordeHtml(weit){
         `<span data-tplayer="${esc(pid)}">${avHtml(pmap()[pid], 'width:16px;height:16px;font-size:7px;border-radius:5px')}<b class="num">${n[pid]}</b></span>`).join('')}</span>` : ''}
     </div>`;
   };
-  return leiste + filter + sicht.map(g => kopfVon(g)
+  const vorschau = recs.length ? '' : vorschauHtml('rekord', 'Die Liga-Rekorde',
+    'Noch hält niemand einen Rekord. Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Jede Karte nennt ihre Bedingung, getippt zeigt sie, wie gezählt wird.');
+  return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }
 
@@ -739,6 +744,34 @@ function _rekFeldHtml(d, h){
 // [§C40] — dieselbe Tabelle, nur mit seinen Zeilen. In der Matrix der
 // aktiven Liga stand er sonst zwischen denen, die um die nächste Chronik
 // spielen, und konnte nie mehr eine Zelle dazubekommen.
+// ── Die Chronik vor dem ersten Monat [§C39] ─────────────────────────
+// Ohne gewerteten Monat gibt es keine Matrix. Statt eines Satzes auf leerer
+// Fläche steht der Katalog: jede Monatschronik mit ihrer Bedingung, nach
+// Klasse, noch niemandes — dieselbe Karte wie ein offener Rekord [§C27].
+const CHRONIK_VORSCHAU_JE_KLASSE = 3;
+function chronikVorschauHtml(){
+  const kopf = vorschauHtml('scroll', 'Die Chronik',
+    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Partien</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt dann die Monate nebeneinander; bis dahin stehen hier alle Einträge, die es gibt.`);
+  // Drei je Klasse offen, der Rest klappt auf: alle hundert untereinander
+  // waren zehn Bildschirme, und die Klassen darunter sah niemand mehr.
+  const karte = t => `<div class="rek offen">
+        <div class="rek-ic">${svgI(t.ic)}</div>
+        <div class="rek-b">
+          <div class="rek-z1"><span class="rek-nt">${esc(t.name)}</span>
+            <span class="rek-h"><span class="rek-hn">noch offen</span></span></div>
+          <div class="rek-ev">${esc(t.cond)}</div>
+        </div>
+      </div>`;
+  return kopf + LC_STUFEN.map(kl => {
+    const liste = SEASON_TITLES.filter(t => t.klasse === kl);
+    if(!liste.length) return '';
+    const rest = liste.slice(CHRONIK_VORSCHAU_JE_KLASSE);
+    return `<div class="vs-kat" data-kl="${kl}">${esc(CHRONIK_KLASSE_NAME[kl])} · ${liste.length}</div>
+      <div class="rek-liste">${liste.slice(0, CHRONIK_VORSCHAU_JE_KLASSE).map(karte).join('')}</div>${rest.length
+        ? `<details class="vs-mehr"><summary>${rest.length} weitere</summary>
+            <div class="rek-liste">${rest.map(karte).join('')}</div></details>` : ''}`;
+  }).join('');
+}
 function ligaChronikMatrixHtml(){
   const all = allSeasonTitles();           // neueste zuerst
   const cols = all.slice(0, 8).reverse();  // älteste links, wie eine Zeitleiste

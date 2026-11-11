@@ -3,6 +3,8 @@
 //
 //   node tools/rauchtest.cjs                  nur Fehler
 //   node tools/rauchtest.cjs --fotos=<Ordner> dazu je Ansicht ein PNG (390 px)
+//   node tools/rauchtest.cjs --leer           eine Liga mit einem Spieler und
+//                                             ohne Partie, wie am ersten Tag
 //
 // Kein Ersatz für die Suiten: er sagt nur, ob etwas beim Zeichnen bricht,
 // und zeigt, wie es aussieht. Genau das braucht ein Umbau zuerst.
@@ -14,13 +16,20 @@ const fotoArg = process.argv.find(a => a.startsWith('--fotos='));
 const fotos = fotoArg ? path.resolve(fotoArg.slice(8)) : null;
 if (fotos) fs.mkdirSync(fotos, {recursive: true});
 const nur = (process.argv.find(a => a.startsWith('--nur=')) || '').slice(6);
+// Die leere Liga ist der erste Eindruck: ein Spieler, keine Partie. Jede
+// Ansicht muss dann sagen, was sie zeigen wird, statt leer zu stehen.
+const leer = process.argv.includes('--leer');
+const LEER_ID = '00000000-0000-4000-8000-000000000001';
+const LEER = {players:[{id:LEER_ID, name:'Leon', elo:1000, drive:0.5, hidden:false,
+  created_at:'2026-11-01T10:00:00Z'}], matches:[], seasons:[]};
 
-const id = fixtures.ids[4], id2 = fixtures.ids[6];
+const id = leer ? LEER_ID : fixtures.ids[4], id2 = fixtures.ids[6];
 const m0 = fixtures.matches[fixtures.matches.length - 1].id;
+const NUR_VOLL = ['eingabe-voll', 'duo', 'h2h', 'match', 'match-bearbeiten'];
 const FAELLE = [
   ['liga', `closeSheet(true);tab='ranking';period='season';render()`],
   ['liga-tafel', `closeSheet(true);tab='ranking';period='all';render()`],
-  ['liga-woche', `closeSheet(true);tab='ranking';period='week';render()`],
+  ['liga-tag', `closeSheet(true);tab='ranking';period='day';render()`],
   ['seiten', `closeSheet(true);tab='positions';rankMetric='drive';render()`],
   ['awards', `closeSheet(true);tab='awards';awView='awards';render()`],
   ['rekorde', `closeSheet(true);tab='awards';awView='rekorde';rekKammer='';render()`],
@@ -39,11 +48,12 @@ const FAELLE = [
 ];
 
 (async () => {
-  const {browser, page, K, errors} = await createHarness();
+  const {browser, page, K, errors} = await createHarness(leer ? {daten: LEER} : {});
   let rot = 0;
   try {
     for (const [name, code] of FAELLE) {
       if (nur && !name.includes(nur)) continue;
+      if (leer && NUR_VOLL.includes(name)) continue;
       const vorher = errors.length;
       let fehler = null;
       try { await K(code); await page.waitForTimeout(fotos ? 1400 : 250); }

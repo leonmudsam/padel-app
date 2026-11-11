@@ -1178,7 +1178,18 @@ function _renderNewsFeed(){
   // gezogen — es trägt stattdessen einen roten Kopfbalken.
   let listHtml, nachreichen = [];
   if(!cards.length){
-    listHtml = '<div class="nf-empty">Keine Stories in dieser Auswahl.</div>';
+    // Ein leerer Feed vor der ersten Partie erklärt, was hier erscheinen
+    // wird; Stories entstehen erst aus Partien [§C33].
+    listHtml = stories.length ? '<div class="nf-empty">Keine Stories in dieser Auswahl.</div>'
+      : vorschauHtml('newspaper', 'Die Liga-News',
+        'Aus jeder Partie entstehen Stories, die erste mit der ersten eingetragenen Partie.',
+        [
+          ['spielfeld', 'Spieltag', 'Jede Partie als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
+          ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
+          ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
+          ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
+          ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
+        ]);
   } else {
     // Über alle Karten des Feeds, nicht nur die des Filters: der Faden
     // gehört der Geschichte und nicht der Auswahl.

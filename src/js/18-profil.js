@@ -556,7 +556,7 @@ const rankProgHtml = rInfo ? `
         if(tot === 0){
           return `<div class="pp-pos-combined">
             <div class="head"><div class="t">Revés und Drive</div></div>
-            <div class="pp-roles-empty">Keine Partien</div>
+            <div class="pp-roles-empty">Nach der ersten Partie: wie oft rechts und links, und auf welcher Seite besser</div>
           </div>`;
         }
         // Die staerkere Rolle traegt ihre Farbe, die schwaechere steht

@@ -30,7 +30,16 @@ function positionsListe(pos, spieler){
 // stehen in keiner Rangfolge der aktiven Liga, also trägt die Zeile keinen
 // Platz und kein Metall der ersten drei.
 function positionsBlockHtml(arr, pos, ohneRang){
-  if(!arr.length) return emptyState(pos==='drive'?'posDrive':'posReves','Noch keine Partien auf dieser Seite');
+  // Ohne Partie auf dieser Seite sagt die Ansicht, was sie misst: der Satz
+  // „Noch keine Partien auf dieser Seite" ließ offen, was hier stehen wird.
+  if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
+    pos==='drive' ? 'Drive, die rechte Seite' : 'Revés, die linke Seite',
+    `Jede Partie stellt jeden Spieler auf eine Seite. Hier steht, wer ${pos==='drive'?'rechts':'links'} über der Erwartung spielt: Siege und Games, gemessen an der Stärke von Partner und Gegnern. Die erste Partie auf dieser Seite füllt die Liste.`,
+    [
+      ['posDrive', 'Drive, rechts', 'Die Vorhand in der Mitte. Baut die Punkte auf und hält den Ball im Spiel.'],
+      ['posReves', 'Revés, links', 'Die Rückhand an der Wand. Schließt die Punkte oft über Kopf ab.'],
+      ['posFlex', 'Das Seitenprofil', 'Im Profil steht, wie oft jemand wo spielt und auf welcher Seite er besser ist. Die Seiten-Landkarte darüber stellt alle nebeneinander.'],
+    ]);
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     // Rechts steht der Wert, nach dem sortiert wird; der Game-Anteil hat

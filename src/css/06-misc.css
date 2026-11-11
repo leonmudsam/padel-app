@@ -9,6 +9,40 @@
      Sekunde groß, weiß und links, bevor er in seine Form sprang. */
   .leerstand{text-align:center;color:var(--muted);padding:48px 20px;font-size:13px}
   .leerstand .ee{font-size:34px;margin-bottom:12px;opacity:.5}
+  /* Die Vorschau einer leeren Ansicht (vorschauHtml): was hier erscheinen
+     wird und wie. Eine ruhige Fläche wie jede Karte, kein Leuchten — sie ist
+     eine Erklärung und kein Ereignis. */
+  .vorschau{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
+    background:var(--surface)}
+  .vs-kopf{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}
+  .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:rgba(228,242,74,.1);color:var(--acid)}
+  .vs-ic svg{width:17px;height:17px}
+  .vs-satz{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.5}
+  .vs-satz b{color:var(--ink);font-weight:600}
+  .vs-punkte{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
+  .vs-punkte li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;
+    font-size:12.5px;line-height:1.45;color:var(--muted)}
+  .vs-punkte li b{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:2px}
+  .vs-pi{width:24px;height:24px;display:grid;place-items:center;color:var(--muted)}
+  .vs-pi svg{width:16px;height:16px}
+  .vorschau > .btn{margin-top:16px}
+  /* Ein Knopf am Ende einer Ansicht ist so breit wie sein Wort [§C27]. Über
+     die ganze Breite lag „+ Spieler anlegen" unter dem Plus unten rechts,
+     sobald die Seite kurz genug war, dass er unten stand. */
+  .btn.knopf-wort{width:auto;display:inline-flex;margin-top:14px;padding-inline:18px}
+  /* Ein Katalog, der als Vorschau steht (Awards, Chronik): die Karten
+     darunter sind echt, nur noch niemandes. */
+  .vs-kat{margin:18px 2px 8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:700}
+  .vs-kat[data-kl="legendaer"]{color:var(--gold)}
+  .vs-kat[data-kl="selten"]{color:var(--purple)}
+  .vs-kat[data-kl="schatten"]{color:var(--red)}
+  .vs-mehr{margin-top:8px}
+  .vs-mehr > summary{list-style:none;cursor:pointer;display:inline-flex;padding:7px 12px;
+    border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--ink2)}
+  .vs-mehr > summary::-webkit-details-marker{display:none}
+  .vs-mehr[open] > summary{margin-bottom:8px}
 
   /* ── Der Glanz [§C25] ──────────────────────────────────────────────
      Breaking glimmt und die Karte des Tages trägt ein Lauflicht. Dasselbe

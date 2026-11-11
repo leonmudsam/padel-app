@@ -78,5 +78,47 @@ ok(zaehl('perfect_win', [S(6,0), S(6,0)]) === 1 && zaehl('perfect_win', [S(6,0)]
 ok(zaehl('nail_biter', [S(4,6), S(6,4), S(10,8,'mtb')]) === 1, 'Ein Sieg im Match-Tiebreak ist ein Zittersieg');
 ok(zaehl('wall_badge', [S(4,6), S(6,3)]) === 1, 'Satzrückstand gedreht ist „Die Wende"');
 
+// ── Das Insignium auf Padel-Volumen ──────────────────────────────────
+ok(J(`INSIGNIEN.map(x=>x.min).join(',')`) === '0,400,800,1200,1700,2500,3200',
+  'Die Stufen: Reif 0, Schildring 400, Volutenkranz 800, Zierkranz 1200, Lorbeerreif 1700, Kronenreif 2500, Ordensstern 3200');
+ok(J(`insigniumGradSchwellen(4).join(',')`) === '1700,1900,2200' && J(`insigniumGradSchwellen(6).join(',')`) === '3200,3600,4000',
+  'Die Grade: Lorbeerreif 1700/1900/2200, Ordensstern 3200/3600/4000');
+ok(J('insigniumStufeVon(399)') === 0 && J('insigniumStufeVon(400)') === 1 && J('insigniumStufeVon(3199)') === 5,
+  'Die Grenzen liegen genau auf den Schwellen');
+
+// ── Der erste Tag: keine Woche, keine leere Ansicht ──────────────────
+// Eine Liga mit einem Spieler und ohne Partie, wie nach dem Anlegen. Jede
+// Ansicht trägt dann eine Vorschau statt „noch keine Daten".
+K(`players=[{id:'p1',name:'Leon',hidden:false,elo:0,drive:.5}];matches=[];seasons=[];invalidateCache();0`);
+const ANSICHTEN = {
+  'Liga Saison': "period='season';_vRankingCore()", 'Liga Tag': "period='day';_vRankingCore()",
+  'Ewige Tafel': "period='all';_vRankingCore()", 'Awards': "awView='awards';vAwards()",
+  'Rekorde': "awView='rekorde';vAwards()", 'Chronik': "awView='chronik';vAwards()",
+  'Seiten': "rankMetric='drive';vPositions()", 'Teams': 'vTeams()', 'Verlauf': 'vHistory()',
+};
+const html = {};
+for(const [n, c] of Object.entries(ANSICHTEN)) html[n] = K(c);
+const ohne = Object.keys(html).filter(n => !html[n].includes('class="vorschau"'));
+ok(!ohne.length, 'Jede Ansicht der leeren Liga trägt eine Vorschau' + (ohne.length ? ': fehlt in ' + ohne.join(', ') : ''));
+ok(!/data-period="week"|data-awperiod="week"/.test(html['Liga Saison'] + html['Awards']),
+  'Kein Wochenfilter: die Liga kennt Saison, Tag und Gesamt, die Awards nur die Saison');
+ok(/data-period="season"[\s\S]*data-period="day"[\s\S]*data-period="all"/.test(html['Liga Saison']),
+  'Die Liga bietet Saison, Tag und Gesamt in dieser Reihenfolge');
+ok((html['Awards'].match(/class="aw-trophy/g) || []).length >= 30,
+  'Die Awards zeigen ohne Partie die ganze Vitrine, jede Kachel noch niemandes');
+ok((html['Rekorde'].match(/class="rek offen"/g) || []).length === J('CHRONICLES.length'),
+  'Die Rekorde zeigen ohne Halter jeden Rekord als offene Karte');
+ok((html['Chronik'].match(/class="rek offen"/g) || []).length === J('SEASON_TITLES.length'),
+  'Die Chronik zeigt vor dem ersten Monat jede Monatschronik mit ihrer Bedingung');
+ok(!/id="addPlayerBtn" style="margin-top:14px"/.test(html['Liga Saison'] + html['Ewige Tafel'])
+  && html['Liga Saison'].includes('knopf-wort'), '„Spieler anlegen" ist nur so breit wie sein Wort und liegt nicht unter dem Plus');
+ok(J(`(()=>{period='day';players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));
+  const m={id:'d',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a:6,b:3,art:'n'}]),deltas:{p1:5,p2:5,p3:-5,p4:-5},exp_a:.5,created_at:new Date(Date.now()-3600000).toISOString()};
+  matches=[m,{...m,id:'e',created_at:new Date(Date.now()-1800000).toISOString()}];invalidateCache();
+  const h=_vRankingCore();return h.includes('Player of the Day') && h.includes('nw-name');})()`),
+  'Spieler des Tages ab zwei Siegen, dieselbe Schwelle wie die Auszeichnung');
+
+
 console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
 process.exit(fails ? 1 : 0);

@@ -147,8 +147,8 @@ Partien und fällt, wenn es kippt:
 | der Ordensstern ist von niemandem erreicht | dasselbe, eine Stufe höher |
 | nur Kronenreif und Ordensstern sind die obersten Stufen | die Breaking-Grenze beim Einfügen einer Stufe verrutscht [§C33] |
 | Glut und Hof in der Rangfarbe werden mit der Leiter nicht schwächer, die Lichter tragen die Rangfarbe | der Schimmer nicht mehr sagt, wer weiter oben steht [§C30] |
-| keine Spanne ist kürzer als 500 | eine Stufe fast geschenkt ist |
-| der Ordensstern hat drei Grade, I ab 6000, II ab 6500, III ab 7000, der Kronenreif 4500, 5000, 5500, und Ordensstern III ist das oberste Feld | er wieder anders zählt als jede andere Stufe [§C30] |
+| keine Spanne ist kürzer als 400 | eine Stufe fast geschenkt ist |
+| der Ordensstern hat drei Grade, I ab 3200, II ab 3600, III ab 4000, der Kronenreif 2500, 2700, 2900, und Ordensstern III ist das oberste Feld | er wieder anders zählt als jede andere Stufe [§C30] |
 | die Spitze trägt den Lorbeerreif im ersten Grad, die beiden dahinter stehen darunter, im Zierkranz oder in der Volute | Schwellen und Grade die heutige Liga falsch abbilden. Gemessen wird ohne Namen und ohne Reihenfolge: die war festgeschrieben, und damit fiel die Zusicherung bei jedem Rekord, der Punkte verschiebt — kalibriert ist die Leiter und nicht die Tabelle |
 | nur die Rekorde des Niveaus folgen der Siegquote | ein Rekord die Siegquote anders verpackt noch einmal zählt und damit dem Besten Prestige schenkt, das er schon hat [§C35] |
 | das Langzeitmodell kann den Ordensstern erreichen | ein weicher Deckel zur harten Obergrenze wird |

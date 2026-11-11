@@ -1077,6 +1077,32 @@
   .blatt-text{font-size:12.5px;color:var(--ink2);line-height:1.55;padding:0 2px}
   .leerstand{text-align:center;color:var(--muted);padding:48px 20px;font-size:13px}
   .leerstand .ee{font-size:34px;margin-bottom:12px;opacity:.5}
+  .vorschau{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
+    background:var(--surface)}
+  .vs-kopf{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}
+  .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:rgba(228,242,74,.1);color:var(--acid)}
+  .vs-ic svg{width:17px;height:17px}
+  .vs-satz{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.5}
+  .vs-satz b{color:var(--ink);font-weight:600}
+  .vs-punkte{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
+  .vs-punkte li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;
+    font-size:12.5px;line-height:1.45;color:var(--muted)}
+  .vs-punkte li b{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:2px}
+  .vs-pi{width:24px;height:24px;display:grid;place-items:center;color:var(--muted)}
+  .vs-pi svg{width:16px;height:16px}
+  .vorschau > .btn{margin-top:16px}
+  .btn.knopf-wort{width:auto;display:inline-flex;margin-top:14px;padding-inline:18px}
+  .vs-kat{margin:18px 2px 8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:700}
+  .vs-kat[data-kl="legendaer"]{color:var(--gold)}
+  .vs-kat[data-kl="selten"]{color:var(--purple)}
+  .vs-kat[data-kl="schatten"]{color:var(--red)}
+  .vs-mehr{margin-top:8px}
+  .vs-mehr > summary{list-style:none;cursor:pointer;display:inline-flex;padding:7px 12px;
+    border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--ink2)}
+  .vs-mehr > summary::-webkit-details-marker{display:none}
+  .vs-mehr[open] > summary{margin-bottom:8px}
 
   @keyframes glanzZug{0%,78%{transform:translateX(-84%)}100%{transform:translateX(24%)}}
   .glanz-bahn{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
@@ -6725,7 +6751,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.c94f13df';
+const BUILD_VERSION='2026.11.11.3215c58a';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -12275,17 +12301,37 @@ function formDotsHtml(erg, curStreak){
   return erg.map((w, i) => `<div class="dot ${w ? 'w' : 'l'}${
     glut && i >= erg.length - glut ? ' glut' : ''}"></div>`).join('');
 }
+function ligaVorschauHtml(){
+  const fehlt = Math.max(0, 4 - activePlayers().length);
+  return vorschauHtml('racket', 'So funktioniert die Liga',
+    fehlt
+      ? `Für die erste Partie fehlen noch <b>${fehlt} Spieler</b>. Danach füllt sich jede Ansicht von selbst.`
+      : 'Alle für die erste Partie sind da. Das Plus unten rechts trägt sie ein; danach füllt sich jede Ansicht von selbst.',
+    [
+      ['users', 'Spieler anlegen', 'Jeder, der mitspielt, bekommt einen Namen. Gespielt wird immer zwei gegen zwei.'],
+      ['court', 'Partie eintragen', 'Nach dem Spiel über das Plus: die vier Spieler auf ihre Seite stellen, rechts Drive, links Revés, dann die Games je Satz. Jedes Format zählt, ein Satz oder drei, mit oder ohne Tiebreak, auch ein Satz, der nicht zu Ende kam.'],
+      ['trendUp', 'Elo', `Jeder beginnt bei ${Math.round(cfg.start_elo || 0)}. Ein Sieg gegen Stärkere bringt mehr als einer gegen Schwächere, und ein langer Weg zum Sieg mehr als ein kurzer: ein 6:0 mehr als ein 3:0.`],
+      ['calendar', 'Saison, Tag, Gesamt', `Eine Saison ist ein Kalendermonat, und jeder beginnt sie bei ${Math.round(cfg.start_elo || 0)}. Der Tag zeigt den Spieltag mit dem Spieler des Tages (ab ${PERIODE_MIN_SIEGE.tag} Siegen), Gesamt die Laufbahn über alle Saisons.`],
+      ['shieldStar', 'Was daraus entsteht', 'Auszeichnungen, Rekorde, die Chronik jedes Monats, das Insignium am Wappen und die News füllen sich mit den Partien. Jeder Reiter zeigt schon jetzt, was dort stehen wird.'],
+    ],
+    `<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`);
+}
 function _vRankingCore(){
   const sid = ligaSaisonId(), laeuft = ligaSaisonLaeuft();
   const saisonArg = period==='season' ? sid : undefined;
   const periodBar=`
     <div class="ui-switch">
       <button data-period="season" class="${period==='season'?'on':''}">Saison</button>
-      <button data-period="week" class="${period==='week'?'on':''}">Woche</button>
       <button data-period="day" class="${period==='day'?'on':''}">Tag</button>
       <button data-period="all" class="${period==='all'?'on':''}">Gesamt</button>
     </div>`;
   const saisonWahl = period==='season' ? saisonWaehlerHtml('ligaSeasonPicker', sid) : '';
+
+  if(!matches.length) return `
+    <div class="view-head"><h2>${period==='all' ? 'Ewige Tafel' : 'Liga'}</h2><p>${
+      activePlayers().length} Spieler · noch keine Partie</p></div>
+    ${periodBar}
+    ${ligaVorschauHtml()}`;
 
   if(period!=='all'){
     let ps=periodPlayerStats(period, saisonArg);
@@ -12308,7 +12354,7 @@ function _vRankingCore(){
     if(period==='season'){
       winner=ps.length&&ps[0].games>0?ps[0]:null;
     } else {
-      const minWins = period==='week' ? 5 : period==='day' ? 3 : 1;
+      const minWins = period==='week' ? PERIODE_MIN_SIEGE.woche : period==='day' ? PERIODE_MIN_SIEGE.tag : 1;
       const qual=ps.filter(x=>x.wins>=minWins);
       if(period==='week'){
         winner=qual.length?[...qual].sort((a,b)=>
@@ -12394,8 +12440,8 @@ function _vRankingCore(){
 
     if(period==='week'||period==='day'){
       const titelTxt   = period==='day' ? 'Player of the Day' : 'Player of the Week';
-      const regelTxt   = period==='day' ? 'ab 3 Siegen · die meisten Siege'
-                                        : 'ab 5 Siegen · die beste Quote';
+      const regelTxt   = period==='day' ? `ab ${PERIODE_MIN_SIEGE.tag} Siegen · die meisten Siege`
+                                        : `ab ${PERIODE_MIN_SIEGE.woche} Siegen · die beste Quote`;
       const eloLabel   = period==='day' ? 'Elo Tag' : 'Elo Woche';
       if(winner){
         const wp=pmap()[winner.id];
@@ -12558,8 +12604,10 @@ function _vRankingCore(){
       ${nebenHtml}
       ${sichtBar}
       ${metrikLeisteHtml(period)}
-      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar','Keine Partien in diesem Zeitraum')}
-      ${activePlayers().length<4?`<button class="btn ghost sm" id="addPlayerBtn" style="margin-top:14px">+ Spieler anlegen</button>`:''}`;
+      ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`:emptyState('calendar', period==='day'
+        ? 'Heute noch keine Partie. Die Tabelle des Tages beginnt mit der ersten.'
+        : 'In dieser Saison noch keine Partie. Die Tabelle beginnt mit der ersten.')}
+      ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
 
 
@@ -12635,7 +12683,7 @@ function _vRankingCore(){
     ${hofPodsHtml}
     ${metrikLeisteHtml('all')}
     ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
-    <button class="btn ghost sm" id="addPlayerBtn" style="margin-top:14px">+ Spieler anlegen</button>`;
+    <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`;
 
 }
 function rrow(p, s, i, metric, globalElo, letzte){
@@ -12702,7 +12750,14 @@ function positionsListe(pos, spieler){
 }
 
 function positionsBlockHtml(arr, pos, ohneRang){
-  if(!arr.length) return emptyState(pos==='drive'?'posDrive':'posReves','Noch keine Partien auf dieser Seite');
+  if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
+    pos==='drive' ? 'Drive, die rechte Seite' : 'Revés, die linke Seite',
+    `Jede Partie stellt jeden Spieler auf eine Seite. Hier steht, wer ${pos==='drive'?'rechts':'links'} über der Erwartung spielt: Siege und Games, gemessen an der Stärke von Partner und Gegnern. Die erste Partie auf dieser Seite füllt die Liste.`,
+    [
+      ['posDrive', 'Drive, rechts', 'Die Vorhand in der Mitte. Baut die Punkte auf und hält den Ball im Spiel.'],
+      ['posReves', 'Revés, links', 'Die Rückhand an der Wand. Schließt die Punkte oft über Kopf ab.'],
+      ['posFlex', 'Das Seitenprofil', 'Im Profil steht, wie oft jemand wo spielt und auf welcher Seite er besser ist. Die Seiten-Landkarte darüber stellt alle nebeneinander.'],
+    ]);
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     const wert = Math.round(x.score*100);
@@ -13444,18 +13499,14 @@ function longestLossStreaks(ms){
 
 function _vAwardsCore(){
   awWeekStart=null;
+  awPeriod='season';
   const selSeason=awSeasonId||currentSeason().id;
   const seasonPicker=awPeriod==='season'?saisonWaehlerHtml('awSeasonPicker',selSeason):'';
-  const periodBar=`
-    <div class="ui-tabs" style="margin-bottom:${awPeriod==='season'?'10':'14'}px">
-      <button data-awperiod="season" class="${awPeriod==='season'?'on':''}">Saison</button>
-      <button data-awperiod="week" class="${awPeriod==='week'?'on':''}">Woche</button>
-    </div>
-    ${seasonPicker}`;
+  const periodBar=seasonPicker;
   const R=awardRankings(awPeriod);
   const pl=awPeriodLabel();
-  if(!R.counts.matches)
-    return `${periodBar}${emptyState('trophy','Keine Partien in diesem Zeitraum')}`;
+  const vorschau = R.counts.matches ? '' : vorschauHtml('trophy', 'Die Auszeichnungen der Saison',
+    `In ${esc(pl)} ist noch keine Partie gespielt. Jede Kachel unten gehört dem, der ihre Frage in der Saison am besten beantwortet, und füllt sich mit den Partien. Tippen zeigt, wofür es sie gibt und ab wann sie zählt.`);
   const zeigen = key => !(awPeriod === 'week' && (key === 'weekKing' || key === 'dayKing'));
   let html='';
   const _coll = {};
@@ -13534,7 +13585,7 @@ function _vAwardsCore(){
     <div class="line r"></div>
   </div>` + awVitrineHtml(neg, 'red');
 
-  return `${periodBar}${html}`;
+  return `${periodBar}${vorschau}${html}`;
 }
 
 function vAwards(){
@@ -13551,12 +13602,10 @@ function vAwards(){
     </div>`;
   const kopf = `<div class="view-head"><h2>Awards</h2><p>${unter}</p></div>${schalter}`;
   if(awView === 'rekorde'){
-    const liste = ligaRekordeHtml(true);
-    return kopf + (liste || emptyState('trophyStar','Noch hält niemand einen Liga-Rekord.'));
+    return kopf + ligaRekordeHtml(true);
   }
   if(awView === 'chronik'){
-    const matrix = ligaChronikMatrixHtml();
-    return kopf + (matrix || emptyState('scroll','Sobald ein Monat gespielt ist, füllt sich die Chronik.'));
+    return kopf + (ligaChronikMatrixHtml() || chronikVorschauHtml());
   }
   let bis = null;
   if(awPeriod==='season' && awSeasonId && awSeasonId !== currentSeason().id) bis = seasonEnd(awSeasonId).getTime();
@@ -14167,7 +14216,12 @@ function vTeams(nurErgebnis=false){
   const T=T0.filter(t=>t.ids.every(id=>ligaAktiv(id)));
   const ruheT=T0.filter(t=>t.ids.every(id=>sichtbar(id))&&t.ids.some(id=>imRuhestand(id)));
   if(!T.length&&!ruheT.length){
-    const html=emptyState('handshake','Noch nicht genug Daten');
+    const html=vorschauHtml('handshake','Die Duos der Liga',
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>. Die Liste zeigt, welche Paare zusammen am meisten gewinnen, und lässt sich nach Siegquote, Game-Bilanz und Elo sortieren.`,
+      [
+        ['duo','Das Duo im Detail','Getippt öffnet sich die gemeinsame Bilanz: Sätze, Games, Tiebreaks und welche Aufstellung, wer rechts und wer links, besser funktioniert.'],
+        ['crossedSwords','Direkter Vergleich','Aus jedem Profil heraus lassen sich zwei Spieler gegeneinander stellen, mit jeder Begegnung.'],
+      ]);
     return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
@@ -14300,7 +14354,12 @@ function vTeams(nurErgebnis=false){
 
 
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf</h2></div>${emptyState('scroll','Noch keine Partien')}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
+    'Jede eingetragene Partie steht hier mit Sätzen, Aufstellung und Elo-Wirkung, filterbar nach Spieler.',
+    [
+      ['edit','Korrigieren','Getippt öffnet sich die Partie. Ein falsches Ergebnis lässt sich dort bearbeiten oder löschen, und die Liga rechnet sich neu.'],
+      ['medal','Was eine Partie auslöst','Unter jeder Partie stehen die Auszeichnungen, die sie gebracht hat.'],
+    ])}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -17005,7 +17064,7 @@ const rankProgHtml = rInfo ? `
         if(tot === 0){
           return `<div class="pp-pos-combined">
             <div class="head"><div class="t">Revés und Drive</div></div>
-            <div class="pp-roles-empty">Keine Partien</div>
+            <div class="pp-roles-empty">Nach der ersten Partie: wie oft rechts und links, und auf welcher Seite besser</div>
           </div>`;
         }
         const _stark = posLage.staerker;
@@ -18356,7 +18415,6 @@ function bind(){
   main.querySelectorAll('[data-possort]').forEach(b=>b.onclick=()=>{posSort=b.dataset.possort;_renderNachEingabe();});
 
   main.querySelectorAll('[data-award]').forEach(el=>el.onclick=()=>showAward(el.dataset.award));
-  main.querySelectorAll('[data-awperiod]').forEach(b=>b.onclick=()=>{awPeriod=b.dataset.awperiod;if(awPeriod!=='season')awSeasonId=null;if(awPeriod!=='week')awWeekStart=null;_renderNachEingabe();});
   main.querySelectorAll('[data-awview]').forEach(b=>b.onclick=()=>{awView=b.dataset.awview;rekKammer='';_renderNachEingabe();});
   main.querySelectorAll('[data-rekkammer]').forEach(b=>b.onclick=()=>{rekKammer=b.dataset.rekkammer;_renderNachEingabe();});
   if(awView!=='awards'){
@@ -19451,6 +19509,16 @@ function standFuer(m, gewonnen = true){ return saetzeText(m, gewonnen); }
 function emptyState(e,t){
   const inner = icPfad(e) ? `<div class="ee svg-ic">${svgI(e)}</div>` : `<div class="ee">${e}</div>`;
   return `<div class="leerstand">${inner}${t}</div>`;
+}
+function vorschauHtml(ic, titel, satz, punkte, fuss){
+  const liste = punkte && punkte.length
+    ? `<ol class="vs-punkte">${punkte.map(([pi, n, t]) =>
+        `<li><span class="vs-pi">${svgI(pi)}</span><span><b>${esc(n)}</b>${t}</span></li>`).join('')}</ol>`
+    : '';
+  return `<div class="vorschau">
+    <div class="vs-kopf"><span class="vs-ic">${svgI(ic)}</span><b>${esc(titel)}</b></div>
+    <p class="vs-satz">${satz}</p>${liste}${fuss || ''}
+  </div>`;
 }
 let tt;
 const TOAST_ROLLE = {ok:['check','gruen'], err:['x','rot'], info:['info',''], lauf:['hourglass','']};
@@ -25975,7 +26043,16 @@ function _renderNewsFeed(){
 
   let listHtml, nachreichen = [];
   if(!cards.length){
-    listHtml = '<div class="nf-empty">Keine Stories in dieser Auswahl.</div>';
+    listHtml = stories.length ? '<div class="nf-empty">Keine Stories in dieser Auswahl.</div>'
+      : vorschauHtml('newspaper', 'Die Liga-News',
+        'Aus jeder Partie entstehen Stories, die erste mit der ersten eingetragenen Partie.',
+        [
+          ['spielfeld', 'Spieltag', 'Jede Partie als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
+          ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
+          ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
+          ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
+          ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
+        ]);
   } else {
     const faeden = _newsFaeden(stories);
     const jeTag = new Map();
@@ -31358,7 +31435,7 @@ const DISZIPLINEN = [
       kammer:'mark', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ein einzelner Monat',
       mind:'6 Partien im Monat',
-      wie:'Gewertet wird der beste einzelne Monat einer Laufbahn und nicht der Schnitt über alle Monate. Monate mit weniger als fünfzehn eigenen Partien bleiben außen vor.',
+      wie:'Gewertet wird der beste einzelne Monat einer Laufbahn und nicht der Schnitt über alle Monate. Monate mit weniger als sechs eigenen Partien bleiben außen vor.',
       cond:'Höchste Siegquote in einem einzelnen Monat, ab 6 Partien in diesem Monat',
       val:p => p.bestMonth ? p.bestMonth.q : null,
       ev:(p,v) => `${Math.round(v*100)} % aus ${p.bestMonth.g} Partien`,
@@ -35536,7 +35613,7 @@ function _titlePillHtml(pid){
 function ligaRekordeHtml(weit){
   const holders = chronicleHolders();
   const recs = CHRONICLES.filter(d => holders[d.id]);
-  if(!recs.length) return '';
+  if(!recs.length && !weit) return '';
   if(!weit) return `
     <div class="pp-sec-title" style="margin-top:20px">
       <div class="l"><span class="ic svg-ic">${svgI('rekord')}</span><h4>Liga-Rekorde</h4></div>
@@ -35633,7 +35710,9 @@ function ligaRekordeHtml(weit){
         `<span data-tplayer="${esc(pid)}">${avHtml(pmap()[pid], 'width:16px;height:16px;font-size:7px;border-radius:5px')}<b class="num">${n[pid]}</b></span>`).join('')}</span>` : ''}
     </div>`;
   };
-  return leiste + filter + sicht.map(g => kopfVon(g)
+  const vorschau = recs.length ? '' : vorschauHtml('rekord', 'Die Liga-Rekorde',
+    'Noch hält niemand einen Rekord. Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Jede Karte nennt ihre Bedingung, getippt zeigt sie, wie gezählt wird.');
+  return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }
 
@@ -35651,6 +35730,28 @@ function _rekFeldHtml(d, h){
   } catch(e){ return ''; }
 }
 
+const CHRONIK_VORSCHAU_JE_KLASSE = 3;
+function chronikVorschauHtml(){
+  const kopf = vorschauHtml('scroll', 'Die Chronik',
+    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Partien</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt dann die Monate nebeneinander; bis dahin stehen hier alle Einträge, die es gibt.`);
+  const karte = t => `<div class="rek offen">
+        <div class="rek-ic">${svgI(t.ic)}</div>
+        <div class="rek-b">
+          <div class="rek-z1"><span class="rek-nt">${esc(t.name)}</span>
+            <span class="rek-h"><span class="rek-hn">noch offen</span></span></div>
+          <div class="rek-ev">${esc(t.cond)}</div>
+        </div>
+      </div>`;
+  return kopf + LC_STUFEN.map(kl => {
+    const liste = SEASON_TITLES.filter(t => t.klasse === kl);
+    if(!liste.length) return '';
+    const rest = liste.slice(CHRONIK_VORSCHAU_JE_KLASSE);
+    return `<div class="vs-kat" data-kl="${kl}">${esc(CHRONIK_KLASSE_NAME[kl])} · ${liste.length}</div>
+      <div class="rek-liste">${liste.slice(0, CHRONIK_VORSCHAU_JE_KLASSE).map(karte).join('')}</div>${rest.length
+        ? `<details class="vs-mehr"><summary>${rest.length} weitere</summary>
+            <div class="rek-liste">${rest.map(karte).join('')}</div></details>` : ''}`;
+  }).join('');
+}
 function ligaChronikMatrixHtml(){
   const all = allSeasonTitles();
   const cols = all.slice(0, 8).reverse();
@@ -36839,12 +36940,12 @@ const PRESTIGE_REICHWEITE = 0.5;
 
 const INSIGNIEN = [
   {key:'reif',    name:'Reif',          min:0},
-  {key:'schild',  name:'Schildring',    min:600},
-  {key:'volute',  name:'Volutenkranz',  min:1200},
-  {key:'zier',    name:'Zierkranz',     min:2100},
-  {key:'lorbeer', name:'Lorbeerreif',   min:3100},
-  {key:'krone',   name:'Kronenreif',    min:4500},
-  {key:'stern',   name:'Ordensstern',   min:6000},
+  {key:'schild',  name:'Schildring',    min:400},
+  {key:'volute',  name:'Volutenkranz',  min:800},
+  {key:'zier',    name:'Zierkranz',     min:1200},
+  {key:'lorbeer', name:'Lorbeerreif',   min:1700},
+  {key:'krone',   name:'Kronenreif',    min:2500},
+  {key:'stern',   name:'Ordensstern',   min:3200},
 ];
 const INSIGNIUM_OBEN = INSIGNIEN.length - 2;
 const INSIGNIUM_GRADE = 3;
@@ -36854,7 +36955,7 @@ function insigniumStufeVon(punkte){
   while(i + 1 < INSIGNIEN.length && punkte >= INSIGNIEN[i + 1].min) i++;
   return i;
 }
-const ORDENSSTERN_GRAD = 500;
+const ORDENSSTERN_GRAD = 400;
 function insigniumGradSchwellen(i){
   const st = INSIGNIEN[i], nx = INSIGNIEN[i + 1];
   if(!st) return [0];

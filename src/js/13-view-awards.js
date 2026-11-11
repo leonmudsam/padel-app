@@ -882,23 +882,22 @@ function _vAwardsCore(){
   // Beim Tab-Rendern: stale awWeekStart vom POTW-Click zurücksetzen, damit der Awards-Tab
   // immer die aktuelle Woche zeigt (POTW-Detail wird per Sheet überlagert).
   awWeekStart=null;
+  // Kein Zeitraumwähler: die Auszeichnungen gelten der Saison. Die Woche
+  // stand hier als zweiter Reiter und zeigte bei einem Spieltag in der Woche
+  // dieselben Kacheln wie der Tag; der Spieler der Woche bleibt als Blatt.
+  awPeriod='season';
   // Saison-Picker: Dropdown mit allen verfügbaren Saisons
   const selSeason=awSeasonId||currentSeason().id;
   // Dasselbe Bauteil wie im Liga-Tab — ein Saisonwähler, eine Form.
   const seasonPicker=awPeriod==='season'?saisonWaehlerHtml('awSeasonPicker',selSeason):'';
-  // Unterstrich statt Pille: die Pille darüber trägt schon den Reiterwechsel,
-  // zwei gestapelte Pillen lesen sich als zwei gleich wichtige Entscheidungen.
-  // Der Zeitraum ist aber der Filter INNERHALB des Reiters.
-  const periodBar=`
-    <div class="ui-tabs" style="margin-bottom:${awPeriod==='season'?'10':'14'}px">
-      <button data-awperiod="season" class="${awPeriod==='season'?'on':''}">Saison</button>
-      <button data-awperiod="week" class="${awPeriod==='week'?'on':''}">Woche</button>
-    </div>
-    ${seasonPicker}`;
+  const periodBar=seasonPicker;
   const R=awardRankings(awPeriod);
   const pl=awPeriodLabel();
-  if(!R.counts.matches)
-    return `${periodBar}${emptyState('trophy','Keine Partien in diesem Zeitraum')}`;
+  // Ohne Partie steht die Vitrine trotzdem, jede Kachel noch niemandes:
+  // „Keine Partien in diesem Zeitraum" auf leerer Fläche sagte nicht, was
+  // es hier zu holen gibt. Getippt zeigt jede Kachel ihre Frage.
+  const vorschau = R.counts.matches ? '' : vorschauHtml('trophy', 'Die Auszeichnungen der Saison',
+    `In ${esc(pl)} ist noch keine Partie gespielt. Jede Kachel unten gehört dem, der ihre Frage in der Saison am besten beantwortet, und füllt sich mit den Partien. Tippen zeigt, wofür es sie gibt und ab wann sie zählt.`);
   // Wer eine Kachel trägt, wie viel und woraus, sagt AW_WERT [§5.3d];
   // gezeichnet wird sie von awKachelHtml. Hier steht nur noch, welche
   // Kacheln in welchem Abschnitt stehen.
@@ -1030,7 +1029,7 @@ function _vAwardsCore(){
     <div class="line r"></div>
   </div>` + awVitrineHtml(neg, 'red');
 
-  return `${periodBar}${html}`;
+  return `${periodBar}${vorschau}${html}`;
 }
 
 // ── Der Awards-Tab hat drei Reiter ───────────────────────────────────
@@ -1056,12 +1055,10 @@ function vAwards(){
     // Keine eigene Überschrift mehr: die Liste bringt jetzt ihre drei
     // Gruppenüberschriften mit, und „LIGA-REKORDE" stand dadurch zweimal
     // direkt untereinander.
-    const liste = ligaRekordeHtml(true);
-    return kopf + (liste || emptyState('trophyStar','Noch hält niemand einen Liga-Rekord.'));
+    return kopf + ligaRekordeHtml(true);
   }
   if(awView === 'chronik'){
-    const matrix = ligaChronikMatrixHtml();
-    return kopf + (matrix || emptyState('scroll','Sobald ein Monat gespielt ist, füllt sich die Chronik.'));
+    return kopf + (ligaChronikMatrixHtml() || chronikVorschauHtml());
   }
   // Ein abgeschlossener Monat oder eine vergangene Woche ist Geschichte [§C40].
   let bis = null;

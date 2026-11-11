@@ -210,34 +210,22 @@ const PRESTIGE_REICHWEITE = 0.5;
 
 // Die sieben Stufen. `min` ist die Schwelle, ab der die Stufe getragen wird.
 //
-// 0, 600, 1200, 2100, 3100, 4500, 6000 — vorgegeben, nicht gerechnet. Jede
-// Spanne ist mindestens so teuer wie die vorige (600, 600, 900, 1000, 1400,
-// 1500), und die letzte führt zum Ordensstern, dessen Grade je 500 Prestige
-// auseinanderliegen (ORDENSSTERN_GRAD). Kronenreif und Ordensstern lagen bei
-// 4300 und 5600: die Spitze der Liga stand mit 4208 Prestige 92 vor dem
-// Kronenreif, und die beiden obersten Stufen — deren erster Aufstieg
-// Breaking ist [§C33] — wären nach wenigen Spieltagen gefallen. Mit 1400
-// und 1500 bleiben sie, was sie sein sollen; die Grade des Kronenreifs
-// liegen jetzt wie die des Ordenssterns je 500 auseinander (4500, 5000,
-// 5500). Davor lagen alle Schwellen bei 500 bis 4500;
-// mit den höheren Startwerten der Auszeichnungen und Rekorde [§C34] stieg
-// das Prestige der Spitze um gut ein Viertel, und ohne neue Schwellen wäre
-// sie über Nacht eine Stufe höher gestanden, ohne etwas dafür getan zu haben.
-// Als die Meilensteine der Laufbahn eigene Werte bekamen, blieben die
-// Schwellen bewusst stehen: wer 300 Siege oder 300 Partien hinter sich hat,
-// hat den Aufstieg erarbeitet — an den echten Partien drei Spieler vom
-// Zierkranz zum Lorbeerreif, der Ordensstern weiter für niemanden.
-//
-// Der Reif beginnt sofort. Der Schildring markiert ab 600 den ersten großen
-// Laufbahnschritt.
+// 0, 400, 800, 1200, 1700, 2500, 3200 — vorgegeben, nicht gerechnet, und
+// auf das Volumen der Padel-Liga gesetzt: rund fünf Spieltage im Monat mit
+// drei bis fünf Partien. Die Leiter der Kicker-Liga (600 bis 6000) war an
+// hunderten Partien im Monat geeicht; mit ihr hätte hier nach einer Saison
+// jeder noch den Reif getragen, und das Zeichen hätte nichts unterschieden.
+// Die ersten drei Spannen sind gleich kurz (je 400), damit der erste
+// Aufstieg in den ersten Wochen kommt; Lorbeerreif und Kronenreif kosten
+// dann 800 und 700, und darüber zählt nur noch der Ordensstern.
 const INSIGNIEN = [
   {key:'reif',    name:'Reif',          min:0},
-  {key:'schild',  name:'Schildring',    min:600},
-  {key:'volute',  name:'Volutenkranz',  min:1200},
-  {key:'zier',    name:'Zierkranz',     min:2100},
-  {key:'lorbeer', name:'Lorbeerreif',   min:3100},
-  {key:'krone',   name:'Kronenreif',    min:4500},
-  {key:'stern',   name:'Ordensstern',   min:6000},
+  {key:'schild',  name:'Schildring',    min:400},
+  {key:'volute',  name:'Volutenkranz',  min:800},
+  {key:'zier',    name:'Zierkranz',     min:1200},
+  {key:'lorbeer', name:'Lorbeerreif',   min:1700},
+  {key:'krone',   name:'Kronenreif',    min:2500},
+  {key:'stern',   name:'Ordensstern',   min:3200},
 ];
 // Die beiden obersten Stufen. Ihr ERSTER Aufstieg ist Breaking [§C33] —
 // als Zahl im Generator („stufe >= 3") wäre die Grenze beim Einfügen einer
@@ -251,8 +239,8 @@ const INSIGNIUM_OBEN = INSIGNIEN.length - 2;
 const INSIGNIUM_GRADE = 3;
 const INSIGNIUM_GRAD_NAME = ['I', 'II', 'III'];
 // Die Grade teilen die Spanne bis zur nächsten Stufe in Drittel, abgerundet
-// auf volle Hundert: der Zierkranz (2100 bis 3099) hat Grad II ab 2400 und
-// Grad III ab 2700. Sie lagen bei 16 und 40 % der Spanne, und damit waren
+// auf volle Hundert: der Lorbeerreif (1700 bis 2499) hat Grad II ab 1900 und
+// Grad III ab 2200. Sie lagen bei 16 und 40 % der Spanne, und damit waren
 // Grad I und II kurz und Grad III über die halbe Stufe lang: wer Grad III
 // erreichte, trug ihn länger als die beiden davor zusammen. Eine runde
 // Schwelle kann man sich merken und im Laufbahnblatt nachprüfen.
@@ -268,11 +256,11 @@ function insigniumStufeVon(punkte){
 }
 // Der Ordensstern hat keine nächste Stufe, deren Spanne man dritteln
 // könnte; seine Grade liegen deshalb je ORDENSSTERN_GRAD auseinander: I ab
-// 6000, II ab 6500, III ab 7000. Er zählte vorher Zacken, acht beim
+// 3200, II ab 3600, III ab 4000 — so weit wie ein Grad des Kronenreifs. Er zählte vorher Zacken, acht beim
 // Erreichen und alle 500 eine mehr, und war damit die einzige Stufe, die
 // anders zählte: in der Laufbahn stand „8 9 10“ neben „I II III“, auf der
 // Karte „erreicht die 9. Zacke“ neben „steigt auf Zierkranz III“.
-const ORDENSSTERN_GRAD = 500;
+const ORDENSSTERN_GRAD = 400;
 function insigniumGradSchwellen(i){
   const st = INSIGNIEN[i], nx = INSIGNIEN[i + 1];
   if(!st) return [0];

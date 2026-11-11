@@ -13,7 +13,14 @@ function vTeams(nurErgebnis=false){
   const T=T0.filter(t=>t.ids.every(id=>ligaAktiv(id)));
   const ruheT=T0.filter(t=>t.ids.every(id=>sichtbar(id))&&t.ids.some(id=>imRuhestand(id)));
   if(!T.length&&!ruheT.length){
-    const html=emptyState('handshake','Noch nicht genug Daten');
+    // „Noch nicht genug Daten" sagte nicht, wie viel genug ist und was dann
+    // kommt.
+    const html=vorschauHtml('handshake','Die Duos der Liga',
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>. Die Liste zeigt, welche Paare zusammen am meisten gewinnen, und lässt sich nach Siegquote, Game-Bilanz und Elo sortieren.`,
+      [
+        ['duo','Das Duo im Detail','Getippt öffnet sich die gemeinsame Bilanz: Sätze, Games, Tiebreaks und welche Aufstellung, wer rechts und wer links, besser funktioniert.'],
+        ['crossedSwords','Direkter Vergleich','Aus jedem Profil heraus lassen sich zwei Spieler gegeneinander stellen, mit jeder Begegnung.'],
+      ]);
     return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
@@ -176,7 +183,12 @@ function vTeams(nurErgebnis=false){
 //     Filterbar nach Spieler. Zeigt Badge-Chips pro Match.
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf</h2></div>${emptyState('scroll','Noch keine Partien')}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
+    'Jede eingetragene Partie steht hier mit Sätzen, Aufstellung und Elo-Wirkung, filterbar nach Spieler.',
+    [
+      ['edit','Korrigieren','Getippt öffnet sich die Partie. Ein falsches Ergebnis lässt sich dort bearbeiten oder löschen, und die Liga rechnet sich neu.'],
+      ['medal','Was eine Partie auslöst','Unter jeder Partie stehen die Auszeichnungen, die sie gebracht hat.'],
+    ])}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));

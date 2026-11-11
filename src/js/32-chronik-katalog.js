@@ -694,7 +694,7 @@ const DISZIPLINEN = [
       kammer:'mark', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ein einzelner Monat',
       mind:'6 Partien im Monat',
-      wie:'Gewertet wird der beste einzelne Monat einer Laufbahn und nicht der Schnitt über alle Monate. Monate mit weniger als fünfzehn eigenen Partien bleiben außen vor.',
+      wie:'Gewertet wird der beste einzelne Monat einer Laufbahn und nicht der Schnitt über alle Monate. Monate mit weniger als sechs eigenen Partien bleiben außen vor.',
       cond:'Höchste Siegquote in einem einzelnen Monat, ab 6 Partien in diesem Monat',
       val:p => p.bestMonth ? p.bestMonth.q : null,
       ev:(p,v) => `${Math.round(v*100)} % aus ${p.bestMonth.g} Partien`,

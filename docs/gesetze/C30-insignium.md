@@ -2,9 +2,9 @@
 
 ## Regel
 
-- Sieben Stufen (`INSIGNIEN`): Reif ab 0, Schildring ab 600, Volutenkranz ab 1200, Zierkranz ab 2100, Lorbeerreif ab 3100, Kronenreif ab 4500, Ordensstern ab 6000 Prestige. Keine Spanne ist kürzer als die vorige.
+- Sieben Stufen (`INSIGNIEN`): Reif ab 0, Schildring ab 400, Volutenkranz ab 800, Zierkranz ab 1200, Lorbeerreif ab 1700, Kronenreif ab 2500, Ordensstern ab 3200 Prestige — gesetzt auf das Volumen der Padel-Liga.
 - Die Stufe ist eine Ableitung aus den Punkten (`insigniumStufeVon`), nie eine gespeicherte Zahl.
-- Zwischen zwei Schwellen liegen drei Grade (`INSIGNIUM_GRADE`, `insigniumGradSchwellen`: Drittel, abgerundet auf Hundert). Der Ordensstern hat dieselben drei Grade, je `ORDENSSTERN_GRAD` (500) auseinander: I ab 6000, II ab 6500, III ab 7000; darüber zählt er nicht weiter. Die beiden obersten Stufen stehen als `INSIGNIUM_OBEN`.
+- Zwischen zwei Schwellen liegen drei Grade (`INSIGNIUM_GRADE`, `insigniumGradSchwellen`: Drittel, abgerundet auf Hundert). Der Ordensstern hat dieselben drei Grade, je `ORDENSSTERN_GRAD` (400) auseinander: I ab 3200, II ab 3600, III ab 4000; darüber zählt er nicht weiter. Die beiden obersten Stufen stehen als `INSIGNIUM_OBEN`.
 - Jede Stufe ist ein eigener Gegenstand, gezeichnet als Vektor nach der Vorlage (`INS_ZEICHEN`, je Stufe drei Zeichnungen); die Leiter steigt, kein Grad trägt mehr als der erste der nächsten Stufe.
 - Der Bau ist Silber (ab Schildring III Platin), Gold ist Akzent ab dem Lorbeerreif, in der Fläche erst am Ordensstern. Der Rang ist ein Schimmer in den Tönen der Rangfarbe (`INS_RANGFARBE`, `_izStein`), dazu Glut und Hof (`data-schein`).
 - Groß Vektor, klein Bild (`_insZeichnung`, `insBild`, `INS_VEKTOR_PX`); das Bild unter einer kurzen Blob-Adresse (`insBildHref`). Keine Zeichnung trägt einen Filter, keine Ebene darüber einen Filter oder eine Skalierung.
@@ -28,20 +28,14 @@ Wie es dazu kam und was vorher falsch war — der Grund jeder Regel oben.
 
 Das
 Insignium hat sieben Stufen (`INSIGNIEN`): **Reif** ab 0, **Schildring**
-ab 600, **Volutenkranz** ab 1200, **Zierkranz** ab 2100, **Lorbeerreif**
-ab 3100, **Kronenreif** ab 4500 und **Ordensstern** ab 6000 Prestige. Jede
-Spanne kostet mindestens so viel wie die vorige (600, 600, 900, 1000,
-1400, 1500); der Ordensstern liegt weit über der heutigen Ligaspitze,
-bleibt durch die stetig wachsenden Erfolgsfolgen aber erreichbar.
-Kronenreif und Ordensstern lagen bei 4300 und 5600: die Spitze der Liga
-stand mit 4208 Prestige 92 vor dem Kronenreif, und die beiden obersten
-Stufen, deren erster Aufstieg Breaking ist [§C33], wären nach wenigen
-Spieltagen gefallen. Die Grade des Kronenreifs liegen seitdem wie die des
-Ordenssterns je 500 auseinander (4500, 5000, 5500). Davor lagen alle
-Schwellen bei 500 bis 4500: mit den höheren Startwerten der Auszeichnungen und
-Rekorde [§C34] stieg das Prestige der Spitze um gut ein Viertel, und ohne
-neue Schwellen hätte sie über Nacht eine Stufe höher gestanden, ohne etwas
-dafür getan zu haben.
+ab 400, **Volutenkranz** ab 800, **Zierkranz** ab 1200, **Lorbeerreif**
+ab 1700, **Kronenreif** ab 2500 und **Ordensstern** ab 3200 Prestige. Die
+Leiter der Kicker-Liga (600 bis 6000) war an hunderten Partien im Monat
+geeicht. Die Padel-Liga spielt rund fünf Tage im Monat mit drei bis fünf
+Partien; mit der alten Leiter hätte nach einer Saison noch jeder den Reif
+getragen, und das Zeichen hätte niemanden unterschieden. Die ersten drei
+Spannen sind gleich kurz (je 400), damit der erste Aufstieg in den ersten
+Wochen kommt; Lorbeerreif und Kronenreif kosten 800 und 700.
 **Die Stufe ist eine Ableitung aus den Punkten** (`insigniumStufeVon`).
 Das Blatt eines Tafel-Moments las sie als Zahl aus der gespeicherten Karte,
 und die gehörte einer älteren Leiter: Leon stand dort mit 2687 Prestige als
@@ -134,13 +128,12 @@ Mitte: so liegt der Innenrand jedes Reifs auf dem Innenrand des Bands, und
 Gesicht, Reif und Raute stehen in jeder Stufe an derselben Stelle.
 Zwischen zwei Schwellen liegen drei Grade (`INSIGNIUM_GRADE`), je Grad ein
 Bild. Sie teilen die Spanne in Drittel, abgerundet auf volle Hundert
-(`insigniumGradSchwellen`): der Zierkranz (2100 bis 3099) hat Grad II ab
-2400 und Grad III ab 2700. Sie lagen bei 16 und 40 % der Spanne, und Grad
+(`insigniumGradSchwellen`): der Lorbeerreif (1700 bis 2499) hat Grad II ab
+1900 und Grad III ab 2200. Sie lagen bei 16 und 40 % der Spanne, und Grad
 III war damit länger als die beiden davor zusammen. Der Grad baut den
-Gegenstand aus, die Stufe wechselt ihn: Leon, Julian und Martin tragen in
-den Referenzdaten Zierkranz III. Der **Ordensstern** hat keine nächste
+Gegenstand aus, die Stufe wechselt ihn. Der **Ordensstern** hat keine nächste
 Stufe, deren Spanne man dritteln könnte; seine Grade liegen je
-`ORDENSSTERN_GRAD` (500) auseinander: I ab 6000, II ab 6500, III ab 7000.
+`ORDENSSTERN_GRAD` (400) auseinander: I ab 3200, II ab 3600, III ab 4000.
 Er zählte vorher Zacken, acht beim Erreichen und alle 500 eine mehr, ohne
 Ende: in der Laufbahn stand „8 9 10" neben dem „I II III" jeder anderen
 Stufe, auf der Karte „erreicht die 9. Zacke" neben „steigt auf Zierkranz

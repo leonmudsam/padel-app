@@ -64,6 +64,28 @@ function emptyState(e,t){
   const inner = icPfad(e) ? `<div class="ee svg-ic">${svgI(e)}</div>` : `<div class="ee">${e}</div>`;
   return `<div class="leerstand">${inner}${t}</div>`;
 }
+// ── Die Vorschau [§C27] ──────────────────────────────────────────────
+// Eine leere Ansicht sagt, was sie zeigen wird und wie es dahin kommt. Am
+// ersten Tag stand in sechs von acht Reitern nur „noch keine Daten", und
+// wer die App öffnete, erfuhr nicht, wozu Seiten, Chronik oder Tafel da
+// sind — er sah eine leere Fläche und hielt sie für einen Fehler.
+//   ic     Zeichen aus ICONS
+//   titel  was die Ansicht ist
+//   satz   was hier erscheint, sobald gespielt ist (Markup erlaubt)
+//   punkte [[ic, name, text], …] wie es funktioniert, wahlweise
+//   fuss   ein Knopf oder eine Zeile darunter, wahlweise
+// Die Texte sind feste Sätze aus dem Code, keine Eingaben; nur der Titel
+// und die Namen werden maskiert, weil sie auch aus Katalogen kommen.
+function vorschauHtml(ic, titel, satz, punkte, fuss){
+  const liste = punkte && punkte.length
+    ? `<ol class="vs-punkte">${punkte.map(([pi, n, t]) =>
+        `<li><span class="vs-pi">${svgI(pi)}</span><span><b>${esc(n)}</b>${t}</span></li>`).join('')}</ol>`
+    : '';
+  return `<div class="vorschau">
+    <div class="vs-kopf"><span class="vs-ic">${svgI(ic)}</span><b>${esc(titel)}</b></div>
+    <p class="vs-satz">${satz}</p>${liste}${fuss || ''}
+  </div>`;
+}
 // ── Der Hinweis [§C27] ───────────────────────────────────────────────
 // Ein Balken in voller Farbe mit einem Satz: grün hieß „gespeichert", rot
 // „Fehler", und alles andere stand weiß da — auch „Berechne neu…", das
