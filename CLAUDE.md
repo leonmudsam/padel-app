@@ -20,9 +20,11 @@ Satz in Games (`sets`, aus Sicht von Team A) und seine Art (`set_kind`:
 normal, Tiebreak, Match-Tiebreak, offen). Wer drei Sätze auf einmal
 einträgt, bekommt drei Zeilen (`eintragZeilen`), genau wie wer jeden
 einzeln speichert — so zeigen Verlauf, Story, Elo und Statistik überall
-dasselbe. Was nur über mehrere Sätze gilt — wer die Partie gewann, 2:1,
-Wende, Zu Null (alle Sätze, mindestens zwei), Doppel-Bagel, drei
-umkämpfte Sätze — steht in der **Begegnung**: Sätze derselben zwei Paare
+dasselbe. Gezählt wird überall in Sätzen: ein Sieg ist ein gewonnener
+Satz, eine Serie sind Sätze in Folge, Zu Null ist ein Satz 6:0. Was nur
+über mehrere Sätze gilt — wer das Match gewann, 2:1, die Wende, der
+Doppel-Bagel, drei umkämpfte Sätze — steht in der **Begegnung** (in der
+Oberfläche „Match"): Sätze derselben zwei Paare
 direkt hintereinander am selben Tag (`begegnungVon`), gewertet nur an
 ihrem letzten Satz (`begegnungAm`). Alles, was ein Ergebnis liest, fragt
 `03b-padel.js` [§1.3]. Jeder Spieler steht auf einer Seite: `drive`
@@ -30,9 +32,10 @@ ihrem letzten Satz (`begegnungAm`). Alles, was ein Ergebnis liest, fragt
 [§C44]. Ein Satz wiegt nach den Games des Siegers (bis 1 50 %, bis 3 75 %, bis 6 voll,
 je Game darüber +10 %, `partieGewicht`) und nach der Deutlichkeit
 (`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
-spielt etwa fünf Tage im Monat mit drei bis fünf Partien — alle Schwellen
-(Mindestspiele, Serien, Fenster) sind darauf gesetzt und stehen je System
-an einer Stelle: `BG` (Auszeichnungen), `CHRONIK_MIN_SPIELE`/`ST_TEIL`
+spielt etwa fünf Tage im Monat, ein Spieler kommt an einem Tag auf sechs
+bis zehn Sätze — alle Schwellen (Mindestzahlen, Serien, Fenster) sind
+darauf gesetzt, runde Zahlen, und stehen je System an einer Stelle: `BG`
+(Auszeichnungen), `AW_MIN` (Awards), `CHRONIK_MIN_SPIELE`/`ST_TEIL`/`ST_TAG`
 (Monatschronik), `CHRON_MIN_GAMES`/`RF` (Rekorde), `PERIODE_MIN_SIEGE`.
 
 > **Diese Datei ist Teil des Codes, nicht Begleitmaterial.**
@@ -162,7 +165,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1646**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1648**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---

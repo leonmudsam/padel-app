@@ -154,5 +154,5 @@ function _einblickNetz(){
   // Die Namen im Uhrzeigersinn, oben beginnend: so sind die Gesichter zuzuordnen.
   return `<div class="netz"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">${linien}</svg>${gesichter}</div>
     <div class="rk-l"><span>Im Uhrzeigersinn ab oben: ${esc(_namenListe(ids.map(pname)))}.</span></div>
-    <div class="netz-leg"><span class="w">gewinnt öfter</span><span class="m">ausgeglichen</span><span class="l">verliert öfter</span><span class="d">Dicke: Zahl der Partien</span></div>`;
+    <div class="netz-leg"><span class="w">gewinnt öfter</span><span class="m">ausgeglichen</span><span class="l">verliert öfter</span><span class="d">Dicke: Zahl der Sätze</span></div>`;
 }

@@ -78,14 +78,14 @@ function zeigeProfilPosInfo(id){
   openSheet(blattKopfHtml({ic:'info', titel:'So entsteht die Einstufung', unter:pname(id)})
     + `<div class="pos-info">
       <div class="pos-info-tab">${zeile('', '<b>Drive · rechts</b>', '<b>Revés · links</b>')}${
-        zeile('Partien', t.aG, t.dG)}${zeile('Siegquote', quote(t.aWr), quote(t.dWr))}${
+        zeile('Sätze', t.aG, t.dG)}${zeile('Siegquote', quote(t.aWr), quote(t.dWr))}${
         zeile('Gegner, Elo-Abstand', elo(t.aGegAvg), elo(t.dGegAvg))}${
         zeile('Partner, Elo-Abstand', elo(t.aMitAvg), elo(t.dMitAvg))}${
         zeile('Siege gegen die Erwartung, %-Punkte', pp(t.aPerfAvg), pp(t.dPerfAvg))}${
         zeile('Games gegen die Erwartung, %-Punkte', pp(t.aGmAvg), pp(t.dGmAvg))}${
         zeile('Leistung gegen den eigenen Schnitt', pp(lage.rA), pp(lage.rD))}</div>
-      <p>Die Erwartung jeder Partie kommt aus der Elo aller vier: gegen stärkere Gegner liegt sie niedriger, mit einem stärkeren Partner höher. Der Elo-Abstand zeigt, wie viel stärker (+) oder schwächer (−) Gegner und Partner im Schnitt waren. Gegen die Erwartung zählen Sieg und Anteil der Games je zur Hälfte.</p>
-      <p>Die Einstufung rückt zu der Seite, auf der die Leistung besser ist. Wo jemand spielt, zählt vor allem, solange eine Seite wenige Partien hat; dort sagt die Leistung noch wenig.</p>
+      <p>Die Erwartung jedes Satzes kommt aus der Elo aller vier: gegen stärkere Gegner liegt sie niedriger, mit einem stärkeren Partner höher. Der Elo-Abstand zeigt, wie viel stärker (+) oder schwächer (−) Gegner und Partner im Schnitt waren. Gegen die Erwartung zählen Sieg und Anteil der Games je zur Hälfte.</p>
+      <p>Die Einstufung rückt zu der Seite, auf der die Leistung besser ist. Wo jemand spielt, zählt vor allem, solange eine Seite wenige Sätze hat; dort sagt die Leistung noch wenig.</p>
       <p>${wirkung}</p>
       <p><b>${pct(lage.wert)} % Drive</b> · eingestuft als <b>${esc(posClassify(lage.wert).label)}</b></p></div>`);
 }
@@ -557,7 +557,7 @@ const rankProgHtml = rInfo ? `
         if(tot === 0){
           return `<div class="pp-pos-combined">
             <div class="head"><div class="t">Revés und Drive</div></div>
-            <div class="pp-roles-empty">Nach der ersten Partie: wie oft rechts und links, und auf welcher Seite besser</div>
+            <div class="pp-roles-empty">Nach dem ersten Satz: wie oft rechts und links, und auf welcher Seite besser</div>
           </div>`;
         }
         // Die staerkere Rolle traegt ihre Farbe, die schwaechere steht
@@ -567,7 +567,7 @@ const rankProgHtml = rInfo ? `
         // das Seitenprofil darunter [§C44]: die Leistung gegen die
         // Erwartung je Seite, am eigenen Schnitt gemessen. Hier stand die
         // rohe Siegquote, die nichts von Partnern und Gegnern wusste und
-        // nichts davon, dass fünf Partien wenig sagen — die Karte konnte
+        // nichts davon, dass fünf Sätze wenig sagen — die Karte konnte
         // eine andere Rolle hell zeichnen, als das Profil einstufte. Bis
         // drei Prozentpunkte Abstand gelten beide als gleichauf.
         const _stark = posLage.staerker;
@@ -578,7 +578,7 @@ const rankProgHtml = rInfo ? `
                 <div class="pp-rd-inner"><div class="pp-rd-wr" style="color:var(--muted)">–</div></div>
               </div>
               <div class="pp-rd-lbl"><span class="ic">${svgI(icon)}</span>${lbl}</div>
-              <div class="pp-rd-empty">noch keine Partien</div>
+              <div class="pp-rd-empty">noch keine Sätze</div>
             </div>`;
           const matt = (_stark !== 'beide' && _stark !== cls);
           return `
@@ -605,7 +605,7 @@ const rankProgHtml = rInfo ? `
     <div class="pp-sec" style="animation-delay:.35s">
       <div class="pp-sec-title">
         <div class="l"><span class="ic svg-ic">${svgI('chartBar')}</span><h4>Gesamtbilanz</h4></div>
-        <div class="m">${s.games} ${s.games === 1 ? 'Partie' : 'Partien'}</div>
+        <div class="m">${s.games} ${s.games === 1 ? 'Satz' : 'Sätze'}</div>
       </div>
       <div class="pp-kpi">
         <div class="pp-k"><div class="v">${s.wins}</div><div class="l">Siege</div></div>
@@ -931,7 +931,7 @@ const rankProgHtml = rInfo ? `
   const karriere=async(beenden)=>{
     const ja = await bestaetigen(beenden
       ? {ic:'hourglass', ja:'Karriere beenden', nein:'Abbrechen', titel:p.name + ' beendet die Karriere',
-         text:'Jede Partie bleibt und mit ihr jeder Tag, jede Woche und jeder Monat, in dem ' + p.name + ' gespielt hat, samt Auszeichnungen und Titeln. Ewige Tafel und Rekorde vergleichen ab jetzt ohne ' + p.name + '. Das Profil bleibt stehen, sobald diese Woche und dieser Monat vorbei sind.'}
+         text:'Jeder Satz bleibt und mit ihm jeder Tag, jede Woche und jeder Monat, in dem ' + p.name + ' gespielt hat, samt Auszeichnungen und Titeln. Ewige Tafel und Rekorde vergleichen ab jetzt ohne ' + p.name + '. Das Profil bleibt stehen, sobald diese Woche und dieser Monat vorbei sind.'}
       : {ic:'hourglass', ja:'Karriere fortsetzen', nein:'Abbrechen', titel:p.name + ' kehrt zurück',
          text:p.name + ' steht danach wieder in Ewiger Tafel, Rekorden und Rangliste.'});
     if(!ja) return;
@@ -960,11 +960,11 @@ const rankProgHtml = rInfo ? `
   if(dp) dp.onclick=async()=>{
     if(!_hatPartien){
       if(!(await bestaetigen({ic:'trash', gefahr:true, ja:'Löschen', nein:'Behalten',
-        titel:p.name+' löschen?', text:'Ohne Partie bleibt nichts zurück: Name und Bild werden endgültig gelöscht.'}))) return;
+        titel:p.name+' löschen?', text:'Ohne Satz bleibt nichts zurück: Name und Bild werden endgültig gelöscht.'}))) return;
       const r = await spielerLoeschen(id);
       if(!r.ok){
         toast('Nicht gelöscht', 'err', {sub: r.grund === 'partien'
-          ? p.name + ' hat ' + r.zahl + (r.zahl === 1 ? ' Partie' : ' Partien') + ' in der Datenbank.'
+          ? p.name + ' hat ' + r.zahl + (r.zahl === 1 ? ' Satz' : ' Sätze') + ' in der Datenbank.'
           : 'Die Verbindung zur Datenbank ist fehlgeschlagen.'});
         return;
       }
@@ -975,7 +975,7 @@ const rankProgHtml = rInfo ? `
     _pushCurrentSheet(); // Spielerprofil stapeln → „Zurück" möglich
     const ruhe = imRuhestand(id);
     openSheet(`
-      ${blattKopfHtml({ic:'trash', ton:'rot', titel:'Spieler entfernen', unter:p.name + ' · ' + gamesPlayed(id) + ' Partien'})}
+      ${blattKopfHtml({ic:'trash', ton:'rot', titel:'Spieler entfernen', unter:p.name + ' · ' + gamesPlayed(id) + ' Sätze'})}
       <div class="pp-weg">
         ${ruhe ? '' : `<button class="btn ghost" id="retirePlayerBtn" type="button">
           <b>Karriere beenden</b>
@@ -983,9 +983,9 @@ const rankProgHtml = rInfo ? `
         </button>`}
         <button class="btn ghost" id="hidePlayerBtn" type="button">
           <b>Ausblenden</b>
-          <span>Für einen versehentlich angelegten Spieler. Der Name fällt aus jeder Rechnung, auch aus abgeschlossenen Monaten; die Partien bleiben gespeichert.</span>
+          <span>Für einen versehentlich angelegten Spieler. Der Name fällt aus jeder Rechnung, auch aus abgeschlossenen Monaten; die Sätze bleiben gespeichert.</span>
         </button>
-        <p class="pp-weg-n">Löschen lässt sich nur ein Spieler ohne Partie: jede Partie von ${esc(p.name)} gehört auch drei anderen.</p>
+        <p class="pp-weg-n">Löschen lässt sich nur ein Spieler ohne Satz: jeder Satz von ${esc(p.name)} gehört auch drei anderen.</p>
         <button class="btn ghost sm" id="cancelDelBtn" type="button">Abbrechen</button>
       </div>
     `);

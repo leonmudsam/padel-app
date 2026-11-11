@@ -30,10 +30,12 @@ Alles in `17-badges.js`, außer wo anders genannt.
 
 Die ersten fünf Zeilen der goldenen Vitrine folgen `BADGE_PROFIL_ORDER`, je
 zwei Einträge pro Zeile: Dynastie/Dominator, 20er/15er Serie,
-Meister/Team der Saison, Untouchable/Award-Sammler und Absoluter Sieger/
-Mr. Perfect. Danach bleibt die Reihenfolge aus `BADGES[]` stabil. „Absoluter
-Sieger" ist Legendary, „Allwetter" Rare; die wiederholbare 10:0-Leistung ist
-damit wertvoller als das einmalige Wochentags-Sammelziel.
+Meister/Team der Saison, Untouchable/Award-Sammler und Tag der Götter/
+Bagel-Bäcker. Danach bleibt die Reihenfolge aus `BADGES[]` stabil. Gezählt
+wird in Sätzen (`BG`): Serien 5/10/15/20, Saison-Elo 75/150/300 für
+Aufsteiger, Dominator und Dynastie. „Absoluter Sieger" ist ein einzelner
+Satz zu Null und deshalb Rare; fünf davon in einer Saison („Bagel-Bäcker")
+sind Legendary, ebenso drei Spieltage in Folge als Player of the Day.
 
 # 10.2 Eine Disziplin (Monatswertung, Liga-Rekord oder beides)
 

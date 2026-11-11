@@ -512,26 +512,26 @@ function _backupStamp(){
 
 // ─── §12.7 — Export-Aktionen ─────────────────────────────────────────
 async function exportMatchesXlsx(){
-  if(!matches.length){ toast('Keine Matches zum Exportieren','info'); return; }
+  if(!matches.length){ toast('Keine Sätze zum Exportieren','info'); return; }
   try{
     const data = await _xlsxBuild([
-      {name:'Matches', rows:_backupMatchRows()},
+      {name:'Sätze', rows:_backupMatchRows()},
       {name:'Spieler', rows:_backupPlayerRows()},
       {name:'Saisons', rows:_backupSeasonRows()}
     ]);
     const blob = new Blob([data], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     await _saveFile(blob, 'padel-liga_' + _backupStamp() + '.xlsx');
-    toast(matches.length + ' Matches als Excel exportiert','ok');
+    toast(matches.length + ' Sätze als Excel exportiert','ok');
   }catch(e){
     toast('Export fehlgeschlagen: ' + e.message, true);
   }
 }
 async function exportMatchesCsv(){
-  if(!matches.length){ toast('Keine Matches zum Exportieren','info'); return; }
+  if(!matches.length){ toast('Keine Sätze zum Exportieren','info'); return; }
   try{
     const blob = new Blob([_csvBuild(_backupMatchRows())], {type:'text/csv;charset=utf-8'});
     await _saveFile(blob, 'padel-matches_' + _backupStamp() + '.csv');
-    toast(matches.length + ' Matches als CSV exportiert','ok');
+    toast(matches.length + ' Sätze als CSV exportiert','ok');
   }catch(e){
     toast('Export fehlgeschlagen: ' + e.message, true);
   }
@@ -555,7 +555,7 @@ async function exportSavepoint(){
     const json = JSON.stringify(_buildSavepoint(), null, 1);
     const blob = new Blob([json], {type:'application/json'});
     await _saveFile(blob, 'padel-sicherung_' + _backupStamp() + '.json');
-    toast('Sicherung gespeichert · ' + matches.length + ' Matches','ok');
+    toast('Sicherung gespeichert · ' + matches.length + ' Sätze','ok');
   }catch(e){
     toast('Sicherung fehlgeschlagen: ' + e.message, true);
   }
@@ -645,7 +645,7 @@ function _analyseMatchRows(rows, opts){
       pids[key] = pid;
     }
     if(bad){ res.fehler.push({zeile, grund: bad}); continue; }
-    if(new Set(Object.values(pids)).size !== 4){ res.fehler.push({zeile, grund: 'Ein Spieler steht mehrfach im selben Match.'}); continue; }
+    if(new Set(Object.values(pids)).size !== 4){ res.fehler.push({zeile, grund: 'Ein Spieler steht mehrfach im selben Satz.'}); continue; }
 
     const pos = {};
     for(const [key, label] of seats){
@@ -787,11 +787,11 @@ function _showImportPreview(filename){
       <div class="nd-section">Sicherung</div>
       ${line('Erstellt', new Date(sp.createdAt).toLocaleString('de-DE'))}
       ${line('App-Version', sp.build || '—')}
-      ${line('Enthält', `${(sp.players||[]).length} Spieler · ${sp.matches.length} Matches`)}
+      ${line('Enthält', `${(sp.players||[]).length} Spieler · ${sp.matches.length} Sätze`)}
       <div class="nd-section">Wird ergänzt</div>
       ${line('Neue Spieler', p.neuP.length, p.neuP.length ? 'var(--acid)' : '')}
       ${line('Neue Saisons', p.neuS.length, p.neuS.length ? 'var(--acid)' : '')}
-      ${line('Neue Matches', p.neuM.length, p.neuM.length ? 'var(--acid)' : '')}
+      ${line('Neue Sätze', p.neuM.length, p.neuM.length ? 'var(--acid)' : '')}
       ${line('Bereits vorhanden', sp.matches.length - p.neuM.length)}`;
   } else {
     const a = p.analyse;
@@ -804,7 +804,7 @@ function _showImportPreview(filename){
          <b style="color:var(--red)">Zeile ${f.zeile}</b> — ${esc(f.grund)}</div>`).join('');
     body = `
       <div class="nd-section">Gefunden</div>
-      ${line('Neue Matches', a.neu.length, a.neu.length ? 'var(--acid)' : '')}
+      ${line('Neue Sätze', a.neu.length, a.neu.length ? 'var(--acid)' : '')}
       ${p.neueSpieler.length ? line('Neue Spieler', p.neueSpieler.length, 'var(--acid)') : ''}
       ${line('Bereits vorhanden', a.vorhanden)}
       ${line('Übersprungen', a.fehler.length, a.fehler.length ? 'var(--red)' : '')}
@@ -878,7 +878,7 @@ async function _applyBackupImport(){
     invalidateCache();
     await loadAll();
     const parts = [];
-    if(addedM) parts.push(addedM + ' Matches');
+    if(addedM) parts.push(addedM + ' Sätze');
     if(addedP) parts.push(addedP + ' Spieler');
     if(addedS) parts.push(addedS + ' Saisons');
     toast(parts.length ? (parts.join(' · ') + ' ergänzt') : 'Nichts zu ergänzen', 'ok');
@@ -896,7 +896,7 @@ async function _insertMatchChunks(rows){
   for(let i = 0; i < rows.length; i += SIZE){
     const chunk = rows.slice(i, i + SIZE);
     const {error} = await sb.from('matches').insert(chunk);
-    if(error) throw new Error('Matches ab Zeile ' + (i + 1) + ': ' + error.message);
+    if(error) throw new Error('Sätze ab Zeile ' + (i + 1) + ': ' + error.message);
     n += chunk.length;
   }
   return n;

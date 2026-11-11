@@ -120,13 +120,13 @@ function _badgeProgress(badgeId, playerId){
   const marke = (n, tgt, label) => ({cur: Math.min(n, tgt), tgt, label});
   const seite = s => playerMs.filter(m => seiteVon(m, playerId) === s).length;
   switch(badgeId){
-    case 'first_match': return marke(playerMs.length, 1, 'Partien');
-    case 'games25':     return marke(playerMs.length, BG.stammgast, 'Partien');
-    case 'games150':    return marke(playerMs.length, BG.dauerbrenner, 'Partien');
-    case 'games250':    return marke(playerMs.length, BG.urgestein, 'Partien');
+    case 'first_match': return marke(playerMs.length, 1, 'Sätze');
+    case 'games25':     return marke(playerMs.length, BG.stammgast, 'Sätze');
+    case 'games150':    return marke(playerMs.length, BG.dauerbrenner, 'Sätze');
+    case 'games250':    return marke(playerMs.length, BG.urgestein, 'Sätze');
     case 'wins200':     return marke(playerMs.filter(m => won(playerId, m)).length, BG.siegermaschine, 'Siege');
-    case 'reves50':     return marke(seite('reves'), BG.seite, 'Partien links');
-    case 'drive50':     return marke(seite('drive'), BG.seite, 'Partien rechts');
+    case 'reves50':     return marke(seite('reves'), BG.seite, 'Sätze links');
+    case 'drive50':     return marke(seite('drive'), BG.seite, 'Sätze rechts');
     case 'streak5':
     case 'streak10':
     case 'streak15':
@@ -212,7 +212,7 @@ function _badgeStreakState(badgeId, playerId){
     case 'krimi': {
       let cur = 0;
       ordered.forEach(m => { cur = bgKnapp(m) ? cur + 1 : 0; });
-      return {cur, tgt:BG.krimi, label:'knappe Partien in Folge', hint:'Setzt bei einem deutlichen Ergebnis zurück'};
+      return {cur, tgt:BG.krimi, label:'knappe Sätze in Folge', hint:'Setzt bei einem deutlichen Ergebnis zurück'};
     }
     case 'repeat_score': {
       let lastScore=null, cur=0;
@@ -339,7 +339,7 @@ function showBadgePopover(badgeId, playerId){
         </div>`;
       }).join('');
       bodyHtml = `
-        <div class="bp-section">Geholt in ${hits.length} ${hits.length===1?'Partie':'Partien'}</div>
+        <div class="bp-section">Geholt in ${hits.length} ${hits.length===1?'Satz':'Sätze'}</div>
         ${rowsHtml}`;
     } else {
       // Ohne Partie: der Tag, die Woche oder der Monat, dessen Schluss sie
@@ -350,7 +350,7 @@ function showBadgePopover(badgeId, playerId){
         ${sl.map(_badgeSchlussZeile).join('')}` : `
         <div class="bp-section">Status</div>
         <div class="bp-locked-hint">
-          Sie hängt an keiner einzelnen Partie.
+          Sie hängt an keinem einzelnen Satz.
           ${isRepeatable
             ? `<br><br><span class="bp-locked-em">${cnt}×</span> bisher erreicht.`
             : `<br><br><span class="bp-locked-em">Freigeschaltet.</span>`}
@@ -376,7 +376,7 @@ function showBadgePopover(badgeId, playerId){
         <div class="bp-section">Status</div>
         <div class="bp-locked-hint">
           Noch <span class="bp-locked-em">nicht erreicht</span>.<br>
-          Erfüll die Voraussetzung im nächsten Spiel oder über die Saison hinweg.
+          Möglich schon im nächsten Satz oder über die Saison hinweg.
         </div>`;
     }
   }

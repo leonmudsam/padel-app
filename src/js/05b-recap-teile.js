@@ -438,7 +438,7 @@ function saisonPodestHtml(sid, rang, o){
                               px:platz === 1 ? (o.px1 || 88) : (o.px || 70), klasse:'pod-av'});
     // Ohne Titel steht dort die Spielzahl — ein Strich sähe aus, als fehlte
     // die Zahl, statt zu sagen: dieser Spieler hat noch keinen.
-    const sub = titelBis ? titelBis + ' Titel' : (e.wins + e.losses) + (e.wins + e.losses === 1 ? ' Partie' : ' Partien');
+    const sub = titelBis ? titelBis + ' Titel' : (e.wins + e.losses) + (e.wins + e.losses === 1 ? ' Satz' : ' Sätze');
     return `<div class="pod-karte ${METALL[platz - 1]}${platz === 1 ? ' erster' : ''}" ${o.attr || 'data-detail'}="${esc(e.id)}">
       <div class="pod-platz num">${String(platz).padStart(2, '0')}</div>
       ${av}
@@ -637,7 +637,7 @@ function rcpEloBahnHtml(ms, pid){
     <path class="rcp-elo-fl" d="${d}L${x(pts.length - 1)},${null0}L${x(0)},${null0}Z"/>
     <path class="rcp-elo-l" pathLength="1" d="${d}"/>
     ${pts.map((v, i) => i ? `<circle class="${v >= pts[i - 1] ? 'w' : 'l'}" style="--i:${(i / (pts.length - 1)).toFixed(2)}" cx="${x(i)}" cy="${y(v)}" r="3"/>` : '').join('')}
-  </svg><div class="rcp-elo-z num"><span>Erste Partie</span><b class="${s >= 0 ? 'pos' : 'neg'}">${s >= 0 ? '+' : ''}${s} Elo</b></div></div>`;
+  </svg><div class="rcp-elo-z num"><span>Erster Satz</span><b class="${s >= 0 ? 'pos' : 'neg'}">${s >= 0 ? '+' : ''}${s} Elo</b></div></div>`;
 }
 
 // ╔═══ §C31 ─── DIE GRAFIKEN DER RÜCKBLICKE ────────────────────────────╗
@@ -740,7 +740,7 @@ function rcpTeamHtml(sid, ms){
     <div class="rcp-team-l">${svgI('users')}Team der Saison</div>
     <div class="rcp-team-m">${rcpPaarHtml([a, b], 46)}
       <span class="rcp-team-t"><b>${esc(pname(a))} &amp; ${esc(pname(b))}</b>
-        <small class="num">${zusammen.length} Partien · ${w}:${l}</small></span>
+        <small class="num">${zusammen.length} Sätze · ${w}:${l}</small></span>
       <span class="rcp-team-e"><b class="num ${elo >= 0 ? 'auf' : 'ab'}">${elo >= 0 ? '+' : '−'}${Math.abs(elo)}</b><small>Elo zusammen</small></span>
     </div>
     <div class="srn-z">${zusammen.map((m, i) => `<i class="${sieg(m) ? 'w' : 'l'}" style="--i:${i}"></i>`).join('')}</div>

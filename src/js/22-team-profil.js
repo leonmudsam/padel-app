@@ -13,7 +13,7 @@ function showTeam(p1Id,p2Id){
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:var(--muted);font-weight:700;font-family:'Sometype Mono',monospace">Team</div>
         <h3 style="margin-top:8px">${esc(pA.name)} &amp; ${esc(pB.name)}</h3>
       </div>
-      ${emptyState('handshake','Noch keine gemeinsamen Partien')}
+      ${emptyState('handshake','Noch keine gemeinsamen Sätze')}
     `);
     return;
   }
@@ -134,10 +134,10 @@ function showTeam(p1Id,p2Id){
         <div class="duo-kz-s num">${d.wins} ${d.wins === 1 ? 'Sieg' : 'Siege'} · ${d.losses} ${d.losses === 1 ? 'Niederlage' : 'Niederlagen'}${folge.length > 50 ? ' · die letzten 50' : ''}</div></div>
       <div class="duo-kz-k"><div class="duo-kz-w"><b class="${d.gd >= 0 ? 'auf' : 'ab'}">${gdStr}</b><span>Game-Bilanz</span></div>
         <div class="duo-kz-skala"><i class="${jePartie >= 0 ? 'auf' : 'ab'}" style="${jePartie >= 0 ? 'left:50%' : 'right:50%'};width:${bw.toFixed(1)}%"></i></div>
-        <div class="duo-kz-s num">Ø ${jePartie >= 0 ? '+' : ''}${komma(jePartie, 1)} je Partie</div></div>
+        <div class="duo-kz-s num">Ø ${jePartie >= 0 ? '+' : ''}${komma(jePartie, 1)} je Satz</div></div>
       <div class="duo-kz-k"><div class="duo-kz-w"><b class="${d.eloDelta >= 0 ? 'auf' : 'ab'}">${eloStr}</b><span>Elo zusammen</span></div>
         <svg class="duo-kz-linie ${d.eloDelta >= 0 ? 'auf' : 'ab'}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pfad}"/></svg>
-        <div class="duo-kz-s num">aus ${d.games} ${d.games === 1 ? 'Partie' : 'Partien'}, alle Saisons</div></div>
+        <div class="duo-kz-s num">aus ${d.games} ${d.games === 1 ? 'Satz' : 'Sätze'}, alle Saisons</div></div>
       <div class="duo-kz-k"><div class="duo-kz-w"><b class="${cs > 0 ? 'auf' : cs < 0 ? 'ab' : ''}">${serieZ}</b><span>${serieE}</span></div>
         ${lauf ? `<div class="aw-lauf duo-kz-lauf ${cs > 0 ? 'auf' : 'ab'}">${'<i></i>'.repeat(lauf)}</div>` : ''}
         <div class="duo-kz-s num">am längsten ${d.longestWinStreak || 0} ${d.longestWinStreak === 1 ? 'Sieg' : 'Siege'} · ${d.longestLossStreak || 0} ${d.longestLossStreak === 1 ? 'Niederlage' : 'Niederlagen'}</div></div>
@@ -227,7 +227,7 @@ function showTeam(p1Id,p2Id){
     };
     const lineupFooter = d.games >= 2 ? `
       <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-family:'Sometype Mono',monospace;font-size:10.5px">
-        <span style="color:var(--ink2)">In <span style="color:var(--ink);font-weight:700">${d.dominantCount} / ${d.games}</span> Partien</span>
+        <span style="color:var(--ink2)">In <span style="color:var(--ink);font-weight:700">${d.dominantCount} / ${d.games}</span> Sätze</span>
         <span style="color:var(--ink2)"><span style="color:var(--muted)">⇄</span> ${d.swapped}× getauscht</span>
       </div>` : '';
     lineupHtml = `
@@ -359,7 +359,7 @@ function showTeam(p1Id,p2Id){
 
     ${recentRows?`
     <div>
-      ${blattAbschnittHtml('clock', d.recent.length === 1 ? 'Letzte Partie' : 'Letzte ' + Math.min(10,d.recent.length) + ' Partien')}
+      ${blattAbschnittHtml('clock', d.recent.length === 1 ? 'Letzter Satz' : 'Letzte ' + Math.min(10,d.recent.length) + ' Sätze')}
       <div style="display:flex;flex-direction:column;gap:6px">${recentRows}</div>
     </div>`:''}
   `);
@@ -393,7 +393,7 @@ function showMatchDetail(mid){
   // Auszeichnungen durch dieses Match
   const earned=badgesEarnedInMatch(mid);
   const earnedHtml=earned.length?`
-    <div class="mini-label" style="margin-top:14px">Auszeichnungen in dieser Partie</div>
+    <div class="mini-label" style="margin-top:14px">Auszeichnungen in diesem Satz</div>
     <div style="display:flex;flex-direction:column;gap:5px">
       ${(()=>{
         // Eine Zeile je Spieler, nicht je Auszeichnung: fünf Marken zweier
@@ -436,7 +436,7 @@ function showMatchDetail(mid){
     const w = b.winner ? (b.winner === 'A' ? [z.a1, z.a2] : [z.b1, z.b2]).map(pname).join(' & ') : '';
     return `Satz ${_bg.nr} von ${_bg.n} im Match` + (w ? ` · ${w} ${Math.max(b.setsA, b.setsB)}:${Math.min(b.setsA, b.setsB)}` : '');
   })() : '';
-  openSheet(`${blattKopfHtml({ic:'padelBall', titel:'Partie', unter:dateStr(m.created_at) + (_bgZeile ? ' · ' + _bgZeile : '')})}
+  openSheet(`${blattKopfHtml({ic:'padelBall', titel:'Satz', unter:dateStr(m.created_at) + (_bgZeile ? ' · ' + _bgZeile : '')})}
     ${buehneHtml(m, {zeile: sieger.map(pname).join(' und ') + ' gewinnen'
       + (chance != null ? ' · Siegchance vorher ' + chance + ' %' : '')})}
     <div class="preview" style="margin-top:16px"><div class="delta-list">
@@ -545,7 +545,7 @@ function showMatchDetail(mid){
       // Gespeichert ist das Delta vom Tag der Partie; die Faktoren rechnen mit
       // den Einstellungen von heute. Stehen sie mehr als eine Elo auseinander,
       // sagt die Zeile, was damals verbucht wurde.
-      const divergeNote=rowDiverged?`<div class="ea-heute" style="font-size:10px;color:var(--gold);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-family:'Sometype Mono',monospace">Verbucht wurden ${dbDeltas[id]>=0?'+':''}${dbDeltas[id]} mit den Einstellungen vom Tag der Partie</div>`:'';
+      const divergeNote=rowDiverged?`<div class="ea-heute" style="font-size:10px;color:var(--gold);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-family:'Sometype Mono',monospace">Verbucht wurden ${dbDeltas[id]>=0?'+':''}${dbDeltas[id]} mit den Einstellungen vom Tag des Satzes</div>`:'';
       return `<div class="ea-spieler" style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;margin-top:8px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-weight:700;font-size:13px">${esc(pname(id))}</span>
@@ -562,7 +562,7 @@ function showMatchDetail(mid){
       </div>`;
     }).join('');
     const banner=anyDiverged?`<div style="background:rgba(247,207,74,.08);border:1px solid rgba(247,207,74,.3);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11.5px;color:var(--gold);line-height:1.5">
-      Verbucht wurde, was am Tag der Partie galt; die Zeilen darunter rechnen mit den heutigen Einstellungen. <b>Alle Partien neu berechnen</b> in den Einstellungen bringt beides zusammen.
+      Verbucht wurde, was am Tag des Satzes galt; die Zeilen darunter rechnen mit den heutigen Einstellungen. <b>Alle Sätze neu berechnen</b> in den Einstellungen bringt beides zusammen.
     </div>`:'';
     slot.innerHTML=`<div class="mini-label" style="margin-top:14px">Elo-Analyse</div>${banner}${rows}`;
     document.getElementById('showBreakdownBtn').style.display='none';
@@ -573,7 +573,7 @@ function showMatchDetail(mid){
     // Die Frage nennt, was verloren geht: diese Partie und alles, was aus
     // ihr gerechnet wurde.
     const ja = await bestaetigen({ic:'trash', gefahr:true, ja:'Löschen', nein:'Behalten',
-      titel:'Partie löschen?',
+      titel:'Satz löschen?',
       text:`${pname(m.a1)} & ${pname(m.a2)} gegen ${pname(m.b1)} & ${pname(m.b2)}, ${m.games_a}:${m.games_b} vom ${dateStr(m.created_at)}. Elo, Serien und Rekorde werden danach neu gerechnet.`});
     if(!ja) return;
     closeSheet(true);

@@ -168,7 +168,7 @@ async function _loadAllDurchlauf(){
     const _today = new Date().toDateString() + (_tagZu(tagKey(Date.now())) ? '|zu' : '');
     if(_fp === _lastLoadFingerprint && _today === _lastLoadDay){
       // Nichts geändert seit dem letzten Tick → UI in Ruhe lassen.
-      setConn(activePlayers().length+' Spieler · '+matches.length+' Partien','ok');
+      setConn(activePlayers().length+' Spieler · '+matches.length+' Sätze','ok');
       return;
     }
     _lastLoadFingerprint = _fp;
@@ -187,7 +187,7 @@ async function _loadAllDurchlauf(){
     _overridesNachziehen();
     // Nur aktive Spieler zählen für Anzeige
     const active=activePlayers();
-    setConn(active.length+' Spieler · '+matches.length+' Partien','ok');
+    setConn(active.length+' Spieler · '+matches.length+' Sätze','ok');
     // Erst zeichnen, dann archivieren: `autoArchiveSeasons` wartet je
     // abgeschlossenem Monat auf einen Upsert, und am ersten Tag eines Monats
     // stand die Rangliste so lange leer. Ändert das Archiv etwas, wird neu
@@ -326,7 +326,7 @@ function imHintergrund(auftrag, nachholen){
   }, e => {
     _schreibFehler = true;
     console.warn('Nachschreiben:', e);
-    toast('Nicht alles gespeichert', 'err', {sub:'Die Partie steht. Die Elo der Liga wird beim nächsten Laden nachgetragen.'});
+    toast('Nicht alles gespeichert', 'err', {sub:'Der Satz steht. Die Elo der Liga wird beim nächsten Laden nachgetragen.'});
   }).finally(() => { _schreibOffen--; });
   return _schreibKette;
 }
@@ -595,7 +595,7 @@ function showSeasonRecap(season, opts){
   const zahlenHtml = rcpAbschnitt('Der Monat in Zahlen')
     + rcpKalenderHtml(ms, seasonStart(sid), seasonEnd(sid).getDate())
     + rcpZahlenHtml([
-        {v:ms.length, l:'Partien', d:unterschied(ms.length, vorMs.length)},
+        {v:ms.length, l:'Sätze', d:unterschied(ms.length, vorMs.length)},
         {v:tage, l:'Spieltage', d:unterschied(tage, new Set(vorMs.map(mdayKey)).size)},
         {v:spielerImMonat.size, l:'Spieler', d:unterschied(spielerImMonat.size, vorSpieler)},
         {v:tore, l:'Games', d:unterschied(tore, vorTore)}])

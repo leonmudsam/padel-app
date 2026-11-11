@@ -115,7 +115,7 @@ const PRESTIGE_AUSZEICHNUNG_SPEZIAL = {
   allrounder:     {basis:50,  abnahme:0.18},
   games150:       {basis:50,  abnahme:0.25},
   streak10:       {basis:40,  abnahme:0.18},
-  perfect_win:    {basis:40,  abnahme:0.15},
+  perfect_win:    {basis:20,  abnahme:0.25},
   streak5:        {basis:15,  abnahme:0.25},
   potd:           {basis:10,  abnahme:0.25},
   games25:        {basis:10,  abnahme:0.25},

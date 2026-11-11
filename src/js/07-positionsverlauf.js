@@ -264,7 +264,7 @@ function _renderPosvDetail(el, data, hlId){
         {v:String(vorn), l:vorn === 1 ? 'Spieltag vorn' : 'Spieltage vorn'}
       ])
     + `<div class="nd-section">Platz an jedem Tag</div><div class="posv-tz">${zellen}</div>`
-    + `<div class="nd-section">Die Partien der Saison</div>${saisonZellenHtml(data.seasonId, hlId)}`;
+    + `<div class="nd-section">Die Sätze der Saison</div>${saisonZellenHtml(data.seasonId, hlId)}`;
 }
 
 // Highlight-Logik: zentraler Click-Handler auf das Sheet-Root via Event-Delegation,
@@ -317,7 +317,7 @@ function showPositionHistory(seasonId){
     openSheet(`
       <div class="posv-empty">
         <div class="posv-empty-title">Noch kein Verlauf</div>
-        <div>Sobald in dieser Saison die ersten Partien gespielt sind,<br>steht hier die Entwicklung der Tabellenplätze.</div>
+        <div>Sobald in dieser Saison die ersten Sätze gespielt sind,<br>steht hier die Entwicklung der Tabellenplätze.</div>
       </div>
     `);
     return;

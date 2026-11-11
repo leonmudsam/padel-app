@@ -84,7 +84,7 @@ function rankBadgeHtml(id, size='sm'){
 // beides ist „die Elo dieses Zeitraums", nur einmal als Strecke und einmal
 // als Punkt.
 const METRIC_LABEL={elo:'Elo',wins:'Siege',winrate:'Siegquote',
-  goaldiff:'Game-Bilanz',prestige:'Prestige',games:'Partien'};
+  goaldiff:'Game-Bilanz',prestige:'Prestige',games:'Sätze'};
 // Fünf Reiter teilen sich 328 px: „Siegquote" stand dort als „Siegq…".
 // Im Reiter reicht das Wort, das die Spalte meint; unter der Zahl steht
 // weiter der volle Name.

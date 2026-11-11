@@ -32,7 +32,7 @@ function showH2H(idA, idB){
         </div>
         <div style="font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:-.02em;line-height:1.1;margin-top:12px">${esc(pA.name)} <span style="color:var(--muted);font-size:14px">vs</span> ${esc(pB.name)}</div>
       </div>
-      ${emptyState('crossedSwords','Noch keine gemeinsamen Partien')}
+      ${emptyState('crossedSwords','Noch keine gemeinsamen Sätze')}
     `);
     return;
   }
@@ -56,7 +56,7 @@ function showH2H(idA, idB){
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         <span class="svg-ic" style="color:var(--blue);width:16px;height:16px">${svgI('handshake')}</span>
         <span style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--blue);font-weight:700;font-family:'Sometype Mono',monospace">Als Team</span>
-        <span style="margin-left:auto;font-size:11px;color:var(--muted);font-family:'Sometype Mono',monospace">${d.asTeam.g} ${d.asTeam.g === 1 ? 'Partie' : 'Partien'}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted);font-family:'Sometype Mono',monospace">${d.asTeam.g} ${d.asTeam.g === 1 ? 'Satz' : 'Sätze'}</span>
       </div>
       <div style="display:flex;height:7px;border-radius:99px;overflow:hidden;background:var(--line);margin-bottom:6px">
         <div style="width:${teamWr}%;background:var(--acid)"></div>
@@ -89,7 +89,7 @@ function showH2H(idA, idB){
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         <span class="svg-ic" style="color:var(--purple);width:16px;height:16px">${svgI('crossedSwords')}</span>
         <span style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--purple);font-weight:700;font-family:'Sometype Mono',monospace">Als Gegner</span>
-        <span style="margin-left:auto;font-size:11px;color:var(--muted);font-family:'Sometype Mono',monospace">${d.asOppForA.g} ${d.asOppForA.g === 1 ? 'Partie' : 'Partien'}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted);font-family:'Sometype Mono',monospace">${d.asOppForA.g} ${d.asOppForA.g === 1 ? 'Satz' : 'Sätze'}</span>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Sometype Mono',monospace">
         <span style="color:var(--ink)">${esc(pA.name)}</span> vs <span style="color:var(--ink)">${esc(pB.name)}</span>

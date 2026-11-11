@@ -457,7 +457,7 @@ function _consolidateStoriesLegacy(list){
     loss_streak:     { label:'Pechvögel',           ic:'dropDouble', frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.streak})`, desc:f=>`Niederlagen nacheinander: ${f}.` },
     top_form:        { label:'über dem eigenen Schnitt', ic:'flame',  frag:s=>`${nameOf(s.dataRef.pid)} (+${s.dataRef.vorsprung ?? 0} Punkte)`, desc:f=>`Weiter vorn als sonst: ${f}.` },
     win_streak:      { label:'Serien im Gleichschritt', ic:'flame', frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.streak})`, desc:f=>`Siege in Folge: ${f}.` },
-    jubilee:         { label:'Jubiläen',            ic:'calendar',   frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.total}.)`, desc:f=>`Runde Partien: ${f}.` },
+    jubilee:         { label:'Jubiläen',            ic:'calendar',   frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.total}.)`, desc:f=>`Runde Sätze: ${f}.` },
     milestone_wins:  { label:'Sieg-Meilensteine',   ic:'medalTrio',  frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.milestone})`, desc:f=>`Erreicht: ${f}.` },
     milestone_goals: { label:'Game-Meilensteine',    ic:'thriller',   frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.milestone})`, desc:f=>`Erreicht: ${f}.` },
     milestone_elo:   { label:'Elo-Meilensteine',    ic:'peak',       frag:s=>`${nameOf(s.dataRef.pid)} (${s.dataRef.milestone})`, desc:f=>`Neue Bestwerte: ${f}.` },
@@ -804,8 +804,8 @@ function _consolidateStoriesLegacy(list){
     },
     jubilee: {
       sache: d => 'jub|' + (d.total || ''),
-      titel: (nm, d) => `${nm} feiern die ${d.total}. Partie`,
-      satz:  (n, d) => `${_alleN(n)} erreichen die ${d.total} in derselben Partie.`,
+      titel: (nm, d) => `${nm} feiern den ${d.total}. Satz`,
+      satz:  (n, d) => `${_alleN(n)} erreichen die ${d.total} in demselben Satz.`,
       zeile: nm => nm
     },
     milestone_wins: {
@@ -817,13 +817,13 @@ function _consolidateStoriesLegacy(list){
     milestone_goals: {
       sache: d => 'mg|' + (d.milestone || ''),
       titel: (nm, d) => `${nm} feiern das ${parseInt(d.milestone, 10)}. gewonnene Game`,
-      satz:  n => `${_alleN(n)} erreichen die Marke in derselben Partie.`,
+      satz:  n => `${_alleN(n)} erreichen die Marke in demselben Satz.`,
       zeile: nm => nm
     },
     milestone_elo: {
       sache: d => 'me|' + (d.mark || d.milestone || ''),
       titel: (nm, d) => `${nm} knacken ${d.mark || parseInt(d.milestone, 10)} Elo`,
-      satz:  n => `${_alleN(n)} erreichen die Marke in derselben Partie.`,
+      satz:  n => `${_alleN(n)} erreichen die Marke in demselben Satz.`,
       zeile: nm => nm
     }
   };
@@ -1257,7 +1257,7 @@ function _consolidateStoriesLegacy(list){
       if(dt.type === 'loss_streak' && dt.pid && dt.streak) return `${nm(dt.pid)} verliert zum ${dt.streak}. Mal in Folge`;
       if(dt.type === 'team_streak' && dt.a && dt.b && dt.streak) return `${und([dt.a, dt.b])} gewinnen zusammen zum ${dt.streak}. Mal in Folge`;
       if(dt.type === 'team_loss_streak' && dt.a && dt.b && dt.streak) return `${und([dt.a, dt.b])} verlieren zusammen zum ${dt.streak}. Mal in Folge`;
-      if(dt.type === 'top_form' && dt.pid && dt.wins != null) return `${nm(dt.pid)} gewinnt ${dt.wins} der letzten ${FORM_FENSTER} Partien`;
+      if(dt.type === 'top_form' && dt.pid && dt.wins != null) return `${nm(dt.pid)} gewinnt ${dt.wins} der letzten ${FORM_FENSTER} Sätze`;
       if((dt.type === 'rivalry_milestone' || dt.type === 'rivalry') && dt.a && dt.b && dt.n)
         return `${nm(dt.a)} und ${nm(dt.b)} treffen zum ${dt.n}. Mal aufeinander`;
       if(dt.type === 'milestone_wins' && dt.pid && zahl(dt.milestone)) return `${nm(dt.pid)} feiert den ${zahl(dt.milestone)}. Sieg`;
@@ -1307,7 +1307,7 @@ function _consolidateStoriesLegacy(list){
           + `${pids.length > 1 ? 'setzen' : 'setzt'} Marken auf kurzer Strecke`
         : `${_zahlwortDe(teile.length, true)} Marken auf kurzer Strecke`;
       neuText = `${_zahlwortDe(teile.length, true)} `
-        + `${mz ? 'Bestmarken' : 'Bestmarke'} aus den letzten Partien. `
+        + `${mz ? 'Bestmarken' : 'Bestmarke'} aus den letzten Sätzen. `
         + `${mz ? 'Sie halten' : 'Sie hält'}, solange das Fenster reicht.`;
     } else if(istTafel){
       const bilder = [];
@@ -1418,8 +1418,8 @@ function _consolidateStoriesLegacy(list){
       const MEHRZAHL = {Siegesserie:'Siegesserien', Teamserie:'Teamserien', Durststrecke:'Durststrecken',
         'gemeinsame Durststrecke':'gemeinsame Durststrecken', Formlauf:'Formläufe', 'Jubiläum':'Jubiläen',
         Siegmarke:'Siegmarken', Gamemarke:'Gamemarken', 'Elo-Marke':'Elo-Marken', Serienbruch:'Serienbrüche'};
-      const ERGEBNIS_ORT = {zu_null:'mit einem Doppel-Bagel', upset:'im Favoritensturz',
-        krimi:'im Tiebreak-Krimi', kanter:'mit einem klaren Sieg', eng:'in der umkämpften Partie'};
+      const ERGEBNIS_ORT = {zu_null:'mit einem Satz zu Null', upset:'im Favoritensturz',
+        krimi:'im Tiebreak-Krimi', kanter:'mit einem klaren Sieg', eng:'im umkämpften Satz'};
       const _etikett = t => {
         const dt = (t && t.dataRef) || {};
         const typ = dt.type === 'group' ? (dt.sub || '') : (dt.type || '');
@@ -1560,7 +1560,7 @@ function _consolidateStoriesLegacy(list){
       } else if(brkBundle){
         neuText = `${folge}, und jede davon kommt nur wenige Male je Saison.`;
       } else {
-        neuText = `${folge}. Für ${wer} wirkt der Schlusspfiff damit über die Partie hinaus.`;
+        neuText = `${folge}. Für ${wer} wirkt der letzte Ballwechsel damit über den Satz hinaus.`;
       }
     }
     gesammelt.push({

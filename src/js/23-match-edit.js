@@ -25,7 +25,7 @@ function showEditMatch(mid){
   const haelfte=t=>`<div class="team-block ${t}"><div class="team-label">Team ${t}
     <button class="seiten-tausch" data-etausch="${t}" title="Seiten tauschen" aria-label="Seiten von Team ${t} tauschen">${svgI('sideSwap')}</button></div>
     <div class="court-h">${slot(t,1)}${slot(t,2)}</div></div>`;
-  openSheet(`${blattKopfHtml({ic:'edit', titel:'Partie bearbeiten', unter:'Änderungen lösen eine Neuberechnung aus'})}
+  openSheet(`${blattKopfHtml({ic:'edit', titel:'Satz bearbeiten', unter:'Änderungen lösen eine Neuberechnung aus'})}
     <div class="builder court" style="margin-top:16px">
       ${haelfte('A')}
       <div class="vs-mid court-netz"><span class="line"></span><span class="vs">NETZ</span><span class="line"></span></div>
@@ -42,7 +42,7 @@ function showEditMatch(mid){
     const ids=[E.A1,E.A2,E.B1,E.B2];
     if(ids.some(x=>!x)) return ' ';
     const spaet=ids.find(x=>zuSpaet(x));
-    if(spaet) return (pmap()[spaet]||{}).name+' hat die Karriere vor dieser Partie beendet.';
+    if(spaet) return (pmap()[spaet]||{}).name+' hat die Karriere vor diesem Satz beendet.';
     if(new Set(ids).size!==4) return 'Ein Spieler steht doppelt.';
     return satzAuswertung(E).fehler || '';
   };

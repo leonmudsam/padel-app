@@ -113,7 +113,7 @@ function openTopList(kind){
         return {ids:w, matchId:u.m.id, name:w.map(pname).join(' & '),
           val:u.winPct+'\u00A0%', detail:standFuer(u.m)+' · '+dateStr(u.m.created_at)};
       }),
-      why:'Der Sieg mit der niedrigsten Siegchance vor der Partie.'});
+      why:'Der Sieg mit der niedrigsten Siegchance vor dem Satz.'});
   }
   if(kind==='periodKing'){
     const isWeek=period==='week';
@@ -155,7 +155,7 @@ function showAward(key){
         : dateStr(m.created_at) + ' · Siegchance ' + Math.round((1 - top.sp) * 100) + ' %';
       bodyHtml = buehneHtml(m, {zeile});
       fuss = blattFussHtml([
-        {label:'Zur Partie', ic:'clock', prim:true, attr:`data-li-match="${esc(m.id)}"`},
+        {label:'Zum Satz', ic:'clock', prim:true, attr:`data-li-match="${esc(m.id)}"`},
         {label:'Zum Duo', ic:'users', attr:`data-li-team="${esc(_awSieger(top).slice().sort().join('|'))}"`}]);
     } else {
       bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
@@ -170,7 +170,7 @@ function showAward(key){
       const m = top.m;
       bodyHtml = buehneHtml(m, {zeile: dateStr(m.created_at) + ' · ' + top.v + ' Elo überwunden'});
       fuss = blattFussHtml([
-        {label:'Zur Partie', ic:'clock', prim:true, attr:`data-li-match="${esc(m.id)}"`},
+        {label:'Zum Satz', ic:'clock', prim:true, attr:`data-li-match="${esc(m.id)}"`},
         {label:'Zum Duo', ic:'users', attr:`data-li-team="${esc(top.ids.slice().sort().join('|'))}"`}]);
       // Weitere Plätze als kompakte Liste — andere Teams mit ihren best-Coups
       if(arr.length > 1){

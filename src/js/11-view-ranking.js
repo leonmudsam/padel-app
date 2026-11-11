@@ -86,7 +86,7 @@ function ruhestandTafelHtml(){
     // stehen in einer eigenen Zeile: neben dem Datum liefen sie bei 390 px
     // in die Zahl hinein.
     const r = getPlayerRank(p.id);
-    const zweite = [s.games + (s.games === 1 ? ' Partie' : ' Partien'), t ? t + ' Titel' : '',
+    const zweite = [s.games + (s.games === 1 ? ' Satz' : ' Sätze'), t ? t + ' Titel' : '',
                     rek ? rek + (rek === 1 ? ' Rekord' : ' Rekorde') : ''].filter(Boolean).join(' · ');
     return `<div class="rrow ruhe-row" data-detail="${esc(p.id)}">
       ${avHtml(p, '', {ins:true, px:52})}
@@ -128,9 +128,9 @@ function ligaVorschauHtml(){
     '',
     [
       [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
-      ['court', '2. Partie eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz wird eine eigene Partie.'],
+      ['court', '2. Sätze eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz zählt für sich.'],
       ['chartBar', '3. Rangliste lesen', 'Saison ist der laufende Monat, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.'],
-      ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Partien. Das „?" an jeder Überschrift erklärt den Reiter.'],
+      ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
     ]);
 }
 function _vRankingCore(){
@@ -241,7 +241,7 @@ function _vRankingCore(){
       if(metrik==='goaldiff') return {big:(x.gd>=0?'+':'')+x.gd, small:'Game-Bilanz'};
       if(metrik==='streak')   return {big:x.curStreak>0?x.curStreak+'W':x.curStreak<0?(-x.curStreak)+'L':'–',
                                       small:x.curStreak>0?'Siege':x.curStreak<0?'Niederlagen':'neutral'};
-      if(metrik==='games')    return {big:x.games, small:'Partien'};
+      if(metrik==='games')    return {big:x.games, small:'Sätze'};
       return period==='season'
         ? {big:x.elo, small:'Elo'}
         : {big:(x.eloNet>=0?'+':'')+x.eloNet, small:'Elo'};
@@ -537,18 +537,18 @@ function _vRankingCore(){
       };
       return `
         <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${
-          duos.length} Duo${duos.length===1?'':'s'} · ${totalMatches} Partien</p></div>
+          duos.length} Duo${duos.length===1?'':'s'} · ${totalMatches} Sätze</p></div>
         ${periodBar}
         ${kontextHtml}
         ${saisonWahl}
         ${sichtBar}
         ${duos.length
           ? `<div class="rlist">${duos.map(duoZeile).join('')}</div>`
-          : emptyState('handshake','Noch kein Duo mit zwei gemeinsamen Partien')}`;
+          : emptyState('handshake','Noch kein Duo mit zwei gemeinsamen Sätzen')}`;
     }
 
     return `
-      <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${ps.length} aktiv · ${totalMatches} Partien</p></div>
+      <div class="view-head"><h2>Liga ${hilfeKnopf('liga')}</h2><p>${periodLabel(period, saisonArg)} · ${ps.length} aktiv · ${totalMatches} Sätze</p></div>
       ${periodBar}
       ${kontextHtml}
       ${saisonWahl}
@@ -556,12 +556,12 @@ function _vRankingCore(){
       ${sichtBar}
       ${metrikLeisteHtml(period)}
       ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`
-        // Vor der ersten Partie der Liga stehen statt des leeren Satzes die
+        // Vor dem ersten Satz der Liga stehen statt des leeren Satzes die
         // Schritte zum Anfangen; das Gerüst des Zeitraums darüber bleibt,
         // wie es an jedem Tag steht (Fortschritt, Spieler des Tages, Kacheln).
         : !matches.length ? '' : emptyState('calendar', period==='day'
-        ? 'Heute noch keine Partie. Die Tabelle des Tages beginnt mit der ersten.'
-        : 'In dieser Saison noch keine Partie. Die Tabelle beginnt mit der ersten.')}
+        ? 'Heute noch kein Satz. Die Tabelle des Tages beginnt mit der ersten.'
+        : 'In dieser Saison noch kein Satz. Die Tabelle beginnt mit der ersten.')}
       ${matches.length ? '' : ligaVorschauHtml()}
       ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
@@ -660,7 +660,7 @@ function _vRankingCore(){
       const rek = chroniclesOfPlayer(pp.id).filter(x => !x.neg).length;
       // Ausgeschrieben: „90 Sp." und „10 Rek." waren die letzten Kürzel
       // der Tafel, und jede Zeile steht auf einer eigenen Linie.
-      const sub = [t ? t + ' Titel' : '', entry.s.games + (entry.s.games === 1 ? ' Partie' : ' Partien'),
+      const sub = [t ? t + ' Titel' : '', entry.s.games + (entry.s.games === 1 ? ' Satz' : ' Sätze'),
                    rek ? rek + (rek === 1 ? ' Rekord' : ' Rekorde') : '']
         .filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('');
       return `
@@ -692,11 +692,11 @@ function _vRankingCore(){
 
   return `
     <div class="view-head"><h2>Ewige Tafel ${hilfeKnopf('liga')}</h2><p>Karriere-Elo über ${
-      seasons.length} Saison${seasons.length===1?'':'s'} · ${matches.length} Partien</p></div>
+      seasons.length} Saison${seasons.length===1?'':'s'} · ${matches.length} Sätze</p></div>
     ${periodBar}
     ${hofHtml || `<div class="stat-strip">
       <div class="s"><div class="v num">${activePlayers().length}</div><div class="l">Spieler</div></div>
-      <div class="s"><div class="v num">${matches.length}</div><div class="l">Partien</div></div>
+      <div class="s"><div class="v num">${matches.length}</div><div class="l">Sätze</div></div>
       <div class="s"><div class="v num">${top||'–'}</div><div class="l">Top-Elo</div></div>
     </div>`}
     ${hofPodsHtml}
@@ -727,7 +727,7 @@ function rrow(p, s, i, metric, globalElo, letzte){
     // Bilanz der Zeile. Wer noch unter der Schwelle liegt, erfährt, warum
     // er hinten steht.
     big = AW_WERT.plusMinus.z({v: s.games ? s.gd / s.games : 0});
-    small = s.games >= AW_MIN.spielerSaldo ? 'je Partie' : 'ab ' + AW_MIN.spielerSaldo + ' Partien';
+    small = s.games >= AW_MIN.spielerSaldo ? 'je Satz' : 'ab ' + AW_MIN.spielerSaldo + ' Sätzen';
   }
   else if(metric==='prestige'){
     // Die Zahl groß, die Stufe klein. Das Zeichen trägt der Avatar links
@@ -737,7 +737,7 @@ function rrow(p, s, i, metric, globalElo, letzte){
     big=pr.punkte;
     small=pr.insignie.name;
   }
-  else{big=s.games; small='Partien';}
+  else{big=s.games; small='Sätze';}
   const neutral = metric!=='elo' && !(metric==='goaldiff'&&s.gd>=0) ? ' neutral':'';
   const pleite = lossStreakInline(s.curStreak);
   return `<div class="rrow ${cls}" data-detail="${p.id}">

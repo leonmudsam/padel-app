@@ -140,7 +140,7 @@ function _ffPause(d){
   const zellen = Array.from({length:len}, (_, i) => i === 0 ? '<i class="sp"></i>'
     : `<i class="${i <= n ? 'still' : ''}${i === rek && rek < len ? ' pz-max' : ''}"></i>`).join('');
   return `<div class="ff ff-pause"><span class="ff-zl">${zellen}</span>`
-    + `<div class="ff-pz-l"><span>letzte Partie</span>`
+    + `<div class="ff-pz-l"><span>letzter Satz</span>`
     + (rek && rek !== n ? `<span>längste Pause: <b class="num">${rek}</b> Tage</span>` : '') + `</div></div>`;
 }
 
@@ -207,9 +207,9 @@ function _ffRolle(b){
   const s = Math.max(0, Math.min(100, b.s | 0)), a = Math.max(0, Math.min(100, b.a | 0));
   const stark = Math.abs(s - a) < 10 ? '' : s > a ? 's' : 'a';
   return `<div class="ff-rl-k">${_ffChip(b.p)}${_ffNm(b.p)}</div>`
-    + `<div class="ff-rl${stark ? ' st-' + stark : ''}"><span class="ff-rl-l"><b class="num">${s} %</b><small>Drive · ${b.gs | 0} Partien</small></span>`
+    + `<div class="ff-rl${stark ? ' st-' + stark : ''}"><span class="ff-rl-l"><b class="num">${s} %</b><small>Drive · ${b.gs | 0} Sätze</small></span>`
     + `<span class="ff-rl-b"><span><i class="s" style="width:${s}%"></i></span><span><i class="a" style="width:${a}%"></i></span></span>`
-    + `<span class="ff-rl-r"><b class="num">${a} %</b><small>Revés · ${b.ga | 0} Partien</small></span></div>`;
+    + `<span class="ff-rl-r"><b class="num">${a} %</b><small>Revés · ${b.ga | 0} Sätze</small></span></div>`;
 }
 
 // ── Die Verteilung der Satzergebnisse 6:0 bis 7:6 ───────────────────────

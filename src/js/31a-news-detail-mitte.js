@@ -214,13 +214,13 @@ function _ndMitteRoh(s){
       // Zeilen aus aelteren Laeufen: der Generator bildet den Typ nicht mehr.
       case 'match_result': {
         const fakten = {
-          zu_null: ['Doppel-Bagel', 'Kein Game für die Gegenseite'],
-          upset:   ['Vor der Partie', d.chance != null ? `${Math.max(1, Math.round(d.chance * 100))} % Siegchance` : 'Außenseiter'],
+          zu_null: ['Zu Null', 'Kein Game für die Gegenseite'],
+          upset:   ['Vor dem Satz', d.chance != null ? `${Math.max(1, Math.round(d.chance * 100))} % Siegchance` : 'Außenseiter'],
           krimi:   ['Entscheidung', 'im Tiebreak'],
           kanter:  ['Entscheidung', `${d.margin || 0} Games Unterschied`],
           eng:     ['Entscheidung', 'über drei Sätze']
-        }[d.resultKind] || ['Ergebnis', 'Besondere Partie'];
-        return `<div class="nd-section">Was diese Partie besonders macht</div>
+        }[d.resultKind] || ['Ergebnis', 'Besonderer Satz'];
+        return `<div class="nd-section">Was diesen Satz besonders macht</div>
           <div class="nd-stat-row"><div class="nd-stat-label">${esc(fakten[0])}</div>
             <div class="nd-stat-val acid">${esc(fakten[1])}</div></div>`;
       }
@@ -268,9 +268,9 @@ function _ndMitteRoh(s){
         const tag = _newsTagPartien(d.dayKey, pids);
         const bahn = _ndTagesbahn(pids, tag);
         const spiele = bahn
-          ? `<div class="nd-section">${pids.length > 1 ? 'Der Tag der Tagessieger' : 'Der Tag in Partien'}</div>` + bahn
+          ? `<div class="nd-section">${pids.length > 1 ? 'Der Tag der Tagessieger' : 'Der Tag in Sätzen'}</div>` + bahn
           : (tag.length
-              ? `<div class="nd-section">Die Partien an diesem Tag</div>`
+              ? `<div class="nd-section">Die Sätze an diesem Tag</div>`
                 + tag.map(m => _newsMatchVsBlock(m.id)).join('')
               : '');
         return satz + gitter + weitere + spiele;
@@ -288,10 +288,10 @@ function _ndMitteRoh(s){
         // Der Text sagt „20 Spiele an 4 Tagen", die Zeile „20 an 4 Tagen" —
         // verglichen wurde nur die zweite Form, und beide standen da.
         const nennt = [kopfWert, `${d.spiele || 0} Spiele an ${d.tage || 0}`,
-          `${d.spiele || 0} Partien an ${d.tage || 0}`]
+          `${d.spiele || 0} Sätze an ${d.tage || 0}`]
           .some(v => _ndOben.indexOf(_ndNormal(v)) >= 0);
         const kopf = nennt ? '' : `<div class="nd-stat-row">
-            <div class="nd-stat-label">Partien in dieser Woche</div>
+            <div class="nd-stat-label">Sätze in dieser Woche</div>
             <div class="nd-stat-val acid">${esc(kopfWert)}</div></div>`;
         // Jede Wertung als Zeile: Gesicht, Name, Wertung und Zahl — bei einem
         // geteilten Platz jeder, nicht die ersten zwei. Darunter
@@ -516,8 +516,8 @@ function _ndMitteRoh(s){
           : d.quelle === 'form' ? 'Auf kurzer Strecke'
           : d.quelle === 'spieler' ? 'Alles in diesem Moment'
           : d.quelle === 'erfolg' ? 'Alle mit diesem Erfolg'
-          : d.quelle === 'ergebnis' ? 'Diese beiden Partien'
-          : 'In dieser Partie';
+          : d.quelle === 'ergebnis' ? 'Diese beiden Sätze'
+          : 'In diesem Satz';
         // ── Eine Ueberschrift ueber Ueberschriften sagt nichts ─────────
         // „An der Ewigen Tafel" stand als Sammelueberschrift direkt ueber
         // „Bestmarken 1" und „Monatschroniken 2" — und dieselbe Aussage stand
@@ -641,11 +641,11 @@ function _ndMitteRoh(s){
             <div class="nd-stat-val acid">#${rankInfo.pre} → #${rankInfo.post}</div>
           </div>` : ''}
           ${wechselHtml ? `<div class="nd-section">Alle ${ev.length} Wechsel des Tages</div>${wechselHtml}` : ''}
-          ${matchHtml ? `<div class="nd-section">Die Partie</div>${matchHtml}` : ''}`;
+          ${matchHtml ? `<div class="nd-section">Der Satz</div>${matchHtml}` : ''}`;
       }
       case 'top_form': {
         const form = _newsRecentForm(d.pid, 10, s);
-        return `<div class="nd-section">Die letzten 10 Partien bis hierher</div>
+        return `<div class="nd-section">Die letzten 10 Sätze bis hierher</div>
           ${form.strip ? `<div class="nd-form-strip">${form.strip}</div>` : ''}
           <div class="nd-stat-row" data-pid="${esc(d.pid)}" style="cursor:pointer">
             <div class="nd-stat-label">${esc(nameOf(d.pid))}</div>
@@ -662,7 +662,7 @@ function _ndMitteRoh(s){
         const form = d.streak < 10 ? _newsRecentForm(d.pid, 10, s) : {strip:''};
         return `<div class="nd-section">Die Serie</div>
           ${_newsSerienBand(d.streak, true)}
-          ${form.strip ? `<div class="nd-section">Die letzten 10 Partien bis hierher</div>
+          ${form.strip ? `<div class="nd-section">Die letzten 10 Sätze bis hierher</div>
           <div class="nd-form-strip">${form.strip}</div>` : ''}`;
       }
       case 'badge_unlocked': {
@@ -694,9 +694,9 @@ function _ndMitteRoh(s){
             <div class="nd-stat-val neg">${esc(nameOf(d.nemesisOppId))} ›</div></div>` : '';
         return medaille + playersHtml + nemRow
           + (eloChg !== null ? `<div class="nd-stat-row">
-            <div class="nd-stat-label">Elo aus dieser Partie</div>
+            <div class="nd-stat-label">Elo aus diesem Satz</div>
             <div class="nd-stat-val ${eloChg>=0?'pos':'neg'}">${eloChg>=0?'+':''}${eloChg}</div></div>` : '')
-          + (matchHtml ? `<div class="nd-section">Die Partie</div>${matchHtml}` : '');
+          + (matchHtml ? `<div class="nd-section">Der Satz</div>${matchHtml}` : '');
       }
       // Die gesammelten runden Marken eines Tages. Bei EINER Marke ist das
       // dieselbe Aussage wie bei einer einzelnen Auszeichnung, also dasselbe
@@ -712,7 +712,7 @@ function _ndMitteRoh(s){
           return _newsMedaillon((b0 && b0.ic) || s.ic || 'medal',
               rarityOf(l[0].badgeId),
               l[0].name || (b0 && b0.name) || '', b0 ? b0.desc : '', l[0].badgeId, {id:l[0].badgeId, pid:l[0].pid})
-            + (d.matchId ? `<div class="nd-section">Die Partie</div>`
+            + (d.matchId ? `<div class="nd-section">Der Satz</div>`
                 + _newsMatchVsBlock(d.matchId) : '');
         }
         return `<div class="nd-section">${l.length} runde Marken</div>`
@@ -775,12 +775,12 @@ function _ndMitteRoh(s){
           <div class="nd-stat-row"><div class="nd-stat-label">Games</div>
             <div class="nd-stat-val">${tw.gf}:${tw.ga}</div></div>` : ''}
           ${letzte && letzte.id !== _ndKopfMatch
-            ? `<div class="nd-section">Die letzte gemeinsame Partie</div>${_newsMatchVsBlock(letzte.id)}` : ''}`;
+            ? `<div class="nd-section">Der letzte gemeinsame Satz</div>${_newsMatchVsBlock(letzte.id)}` : ''}`;
       }
       case 'jubilee': {
         // Karriere-Bilanz nutzen statt nur Total — bestehende Stats-Funktion.
         const stats = _ndBilanzBis(d.pid, s);
-        return `<div class="nd-section">Die ersten ${esc(String(d.total))} Partien</div>
+        return `<div class="nd-section">Die ersten ${esc(String(d.total))} Sätze</div>
           ${stats ? `<div class="nd-stat-row">
             <div class="nd-stat-label">Siege / Niederlagen</div>
             <div class="nd-stat-val">${stats.wins} / ${stats.losses}</div></div>
@@ -791,8 +791,8 @@ function _ndMitteRoh(s){
       }
       case 'quiet_week': {
         return `<div class="nd-section">Aktivität</div>
-          <div class="nd-stat-row"><div class="nd-stat-label">Letzte 7 Tage</div><div class="nd-stat-val">${d.lastWeek} ${d.lastWeek === 1 ? 'Partie' : 'Partien'}</div></div>
-          <div class="nd-stat-row"><div class="nd-stat-label">4-Wochen-Schnitt</div><div class="nd-stat-val">${d.avg} Partien</div></div>`;
+          <div class="nd-stat-row"><div class="nd-stat-label">Letzte 7 Tage</div><div class="nd-stat-val">${d.lastWeek} ${d.lastWeek === 1 ? 'Satz' : 'Sätze'}</div></div>
+          <div class="nd-stat-row"><div class="nd-stat-label">4-Wochen-Schnitt</div><div class="nd-stat-val">${d.avg} Sätze</div></div>`;
       }
       // Die Karte sagt, dass der Monat eine Tabelle hat, und ihr Blatt zeigte
       // nur die Saison-ID — eine Zeichenkette, die niemanden interessiert. Die
@@ -817,7 +817,7 @@ function _ndMitteRoh(s){
             </div>
           </div>` : '';
         const z = rcpZahlenHtml([
-          d.partien ? {v: d.partien, l: d.partien === 1 ? 'Partie' : 'Partien'} : null,
+          d.partien ? {v: d.partien, l: d.partien === 1 ? 'Satz' : 'Sätze'} : null,
           d.aktive ? {v: d.aktive, l:'Gewertete'} : null
         ].filter(Boolean));
         return (vs ? `<div class="nd-section">Oben in der Tabelle</div>${vs}` : '')
@@ -833,9 +833,9 @@ function _ndMitteRoh(s){
             <div class="nd-stat-label">${esc(nameOf(d.pid))}</div>
             <div class="nd-stat-val gold">${esc(d.milestone)}</div></div>
           ${stats ? `<div class="nd-stat-row">
-            <div class="nd-stat-label">Bilanz bis zu dieser Partie</div>
+            <div class="nd-stat-label">Bilanz bis zu diesem Satz</div>
             <div class="nd-stat-val">${stats.wins} : ${stats.losses}</div></div>` : ''}
-          ${d.matchId ? `<div class="nd-section">Die Partie zum Meilenstein</div>${_newsMatchVsBlock(d.matchId)}` : ''}`;
+          ${d.matchId ? `<div class="nd-section">Der Satz zum Meilenstein</div>${_newsMatchVsBlock(d.matchId)}` : ''}`;
       }
       case 'elo_swing': {
         // Vorher stand hier der Name — den der Kopf zwei Zeilen darueber schon
@@ -846,7 +846,7 @@ function _ndMitteRoh(s){
         try { elo = Math.round(((getGlobalSim() || {}).careerElo || {})[d.pid]); } catch(e){}
         return `<div class="nd-gwert ${d.delta >= 0 ? '' : 'rot'}">
             <b>${d.delta >= 0 ? '+' : ''}${d.delta}</b><span>Elo an diesem Tag</span></div>
-          ${form.strip ? `<div class="nd-section">Die letzten Partien</div>
+          ${form.strip ? `<div class="nd-section">Die letzten Sätze</div>
             <div class="nd-form-strip">${form.strip}</div>` : ''}
           ${elo ? `<div class="nd-stat-row"><div class="nd-stat-label">Stand jetzt</div>
             <div class="nd-stat-val">${elo} Elo</div></div>` : ''}
@@ -905,7 +905,7 @@ function _ndMitteRoh(s){
       case 'duo_jubilaeum': {
         const q = d.n ? Math.round(100 * d.s / d.n) : 0;
         return `<div class="nd-gitter">
-            <div><b class="g">${d.n}</b><span>Partien zusammen</span></div>
+            <div><b class="g">${d.n}</b><span>Sätze zusammen</span></div>
             <div><b>${d.s}</b><span>davon gewonnen</span></div>
             <div><b class="${q * 2 >= 100 ? 'g' : ''}">${q} %</b><span>Siegquote als Duo</span></div>
           </div>`;
@@ -917,7 +917,7 @@ function _ndMitteRoh(s){
       }
       case 'tagesmarathon': {
         return `<div class="nd-gitter">
-            <div><b class="g">${d.n}</b><span>Partien an diesem Tag</span></div>
+            <div><b class="g">${d.n}</b><span>Sätze an diesem Tag</span></div>
             <div><b>${d.s}</b><span>davon gewonnen</span></div>
             <div><b>${d.n - d.s}</b><span>verloren</span></div>
           </div>`;
@@ -930,7 +930,7 @@ function _ndMitteRoh(s){
         return `<div class="nd-gwert gold"><b>${esc(String(d.elo))}</b><span>Elo, so viel wie nie</span></div>
           <div class="nd-stat-row"><div class="nd-stat-label">Bisheriger Höchststand${monat ? `<small>${esc(monat)}</small>` : ''}</div>
             <div class="nd-stat-val">${esc(String(d.vorher))} Elo</div></div>
-          <div class="nd-stat-row"><div class="nd-stat-label">Partien dazwischen</div>
+          <div class="nd-stat-row"><div class="nd-stat-label">Sätze dazwischen</div>
             <div class="nd-stat-val">${esc(String(d.seit))}</div></div>`;
       }
       // Die sieben Fakten des Katalogs zeichnen im Blatt denselben Fuß wie
@@ -944,7 +944,7 @@ function _ndMitteRoh(s){
         return `<div class="nd-gwert"><b>${esc(String(d.n))}</b><span>${d.type === 'pleiten_ende'
           ? 'Niederlagen in Folge davor' : 'gemeinsame Niederlagen in Folge davor'}</span></div>`;
       case 'rueckkehr':
-        return `<div class="nd-gwert"><b>${esc(String(d.tage))}</b><span>Tage ohne Partie</span></div>`;
+        return `<div class="nd-gwert"><b>${esc(String(d.tage))}</b><span>Tage ohne Satz</span></div>`;
       case 'tabellensprung': {
         return `<div class="nd-gwert"><b>${esc(String(d.pre))} → ${esc(String(d.post))}</b><span>Platz in der Tabelle</span></div>
           <div class="nd-stat-row"><div class="nd-stat-label">Gewonnene Plätze</div>
@@ -960,9 +960,9 @@ function _ndMitteRoh(s){
       case 'dry_spell': {
         return `<div class="nd-section">Liga-Pause</div>
           <div class="nd-stat-row">
-            <div class="nd-stat-label">Tage ohne Partie</div>
+            <div class="nd-stat-label">Tage ohne Satz</div>
             <div class="nd-stat-val gold">${d.daysSince}</div></div>
-          ${d.lastMatchId ? `<div class="nd-section">Letzte Partie</div>${_newsMatchVsBlock(d.lastMatchId)}` : ''}`;
+          ${d.lastMatchId ? `<div class="nd-section">Letzter Satz</div>${_newsMatchVsBlock(d.lastMatchId)}` : ''}`;
       }
     }
   } catch(e){ /* defensiv */ }

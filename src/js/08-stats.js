@@ -21,10 +21,11 @@ function _statZaehlen(s, m, id, run){
   const pos = seiteVon(m, id);
   s.games++; s.gf += f.gamesFor; s.ga += f.gamesAgainst; s.sf += f.setsFor; s.sa += f.setsAgainst;
   s.tbW += f.tbWon; s.tbL += f.tbLost; s.bagelsFor += f.bagelsFor; s.bagelsAgainst += f.bagelsAgainst;
-  // Über mehrere Sätze: nur am letzten Satz einer Begegnung [§1.3], aus
-  // Sicht der Begegnung — ihr Sieger ist nicht immer der des letzten Satzes.
+  // Zu Null ist ein Satz 6:0 [§1.3]. Umkämpft und die Wende reichen über
+  // mehrere Sätze: nur am letzten Satz einer Begegnung, aus Sicht der
+  // Begegnung — ihr Sieger ist nicht immer der des letzten Satzes.
+  if(p.zuNull){ if(won) s.zuNullW++; else s.zuNullL++; }
   const bg = begegnungAm(m), bgW = bg.winner === team;
-  if(bg.zuNull){ if(bgW) s.zuNullW++; else s.zuNullL++; }
   if(bg.umkaempft){ s.umkG++; if(bgW) s.umkW++; }
   if(bg.wende && bgW) s.wenden++;
   if(won){ s.wins++; run = run >= 0 ? run + 1 : 1; } else { s.losses++; run = run <= 0 ? run - 1 : -1; }
@@ -187,9 +188,10 @@ function teamDetail(p1,p2){
     teamMatches.push({m,onA,won,myGf,myGa,diff,expected,t});
 
     // Fun-Facts-Tracking
-    const bg=begegnungAm(m), bgW=bg.winner===(onA?'A':'B');
-    if(bg.zuNull){ if(bgW) shutouts++; else shutoutsAgainst++; }
-    if(bg.doppelBagel && bgW) perfectWins++;
+    // Zu Null je Satz [§1.3]; der Doppel-Bagel ist ein Match mit zwei davon.
+    if(pd.zuNull){ if(won) shutouts++; else shutoutsAgainst++; }
+    const bg=begegnungAm(m);
+    if(bg.doppelBagel && bg.winner===(onA?'A':'B')) perfectWins++;
     tbW+=fd.tbWon; tbL+=fd.tbLost; sf+=fd.setsFor; sa+=fd.setsAgainst;
     const umdrehen = (pd.winner==='A') !== onA;
     satzErgebnisse(m).forEach(x => {

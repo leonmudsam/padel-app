@@ -264,8 +264,10 @@ function _badgeNaechsteMarke(rang){
 // 25 Prozentpunkte sind an den echten Partien geeicht, nicht geschätzt:
 // gemessen fällt die Karte 0,46 mal je Spieltag. Bei 20 wären es 0,63 und
 // bei 30 nur noch 0,25 — dann steht sie an drei von vier Spieltagen nicht.
-const FORM_FENSTER = 10;
-const FORM_BASIS_MIN = 8;    // so viele Partien braucht der Vergleichswert
+// Gezählt in Sätzen: zehn wären ein einziger Spieltag, und die Form-Karte
+// erzählte von einem guten Abend statt von einer Form.
+const FORM_FENSTER = 20;
+const FORM_BASIS_MIN = 20;   // so viele Sätze braucht der Vergleichswert
 const FORM_VORSPRUNG = 0.25; // Anteilspunkte über dem eigenen Schnitt
 
 // ─── §11.0a — Die eine Rangfolge ─────────────────────────────────────

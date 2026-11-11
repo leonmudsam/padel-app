@@ -432,8 +432,8 @@ function _ehrungZeitraum(d){
   if(!d || !d.ab || !d.bis) return null;
   const von = t => { const w = tag(t); return (/^\d/.test(w) ? 'vom' : 'von') + '\u00a0' + w; };
   const uhr = t => '\u00a0' + datumFmt(t, 'uhr') + '\u00a0Uhr';
-  if(d.ab === d.bis) return {vor:'Geholt in der Partie', wann:`${von(d.ab)},${uhr(d.ab)}`};
-  return {vor:'Geholt in den Partien', wann:`${von(d.ab)},${uhr(d.ab)} bis`
+  if(d.ab === d.bis) return {vor:'Geholt im Satz', wann:`${von(d.ab)},${uhr(d.ab)}`};
+  return {vor:'Geholt in den Sätzen', wann:`${von(d.ab)},${uhr(d.ab)} bis`
     + (tagKey(d.ab) === tagKey(d.bis) ? '' : '\u00a0' + tag(d.bis) + ',') + uhr(d.bis)};
 }
 

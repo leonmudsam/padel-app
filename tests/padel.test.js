@@ -14,13 +14,16 @@ const S = (a, b, art = 'n') => ({a, b, art});
 // ── Sieger, Sätze, Games ──────────────────────────────────────────────
 let p = aus([S(6,4), S(6,3)]);
 ok(p.w === 'A' && p.sa === 2 && p.sb === 0 && p.ga === 12 && p.gb === 7, '6:4 6:3 → A gewinnt 2:0, 12:7 Games');
-ok(p.zn === true && p.deutlich === false, 'Zwei Sätze ohne Satzverlust sind zu Null, 6:4 6:3 ist nicht deutlich');
+ok(p.zn === false && p.deutlich === false, 'Zu Null heißt ein Satz 6:0: 6:4 6:3 ist es nicht und auch nicht deutlich');
 p = aus([S(6,0)]);
-ok(p.w === 'A' && p.zn === false && p.bA === 1, 'Ein einzelner Satz 6:0 ist ein Bagel, aber kein Zu Null (1:0)');
+ok(p.w === 'A' && p.zn === true && p.db === false && p.bA === 1, 'Ein einzelner Satz 6:0 ist zu Null, aber kein Doppel-Bagel');
 p = aus([S(6,0), S(6,0)]);
 ok(p.db === true && p.zn === true, '6:0 6:0 ist ein Doppel-Bagel');
 p = aus([S(3,0), S(3,0), S(3,0)]);
-ok(p.w === 'A' && p.sa === 3 && p.zn === true && p.db === false, 'Kurzsätze 3:0 3:0 3:0: 3:0 in Sätzen, zu Null, kein Bagel');
+ok(p.w === 'A' && p.sa === 3 && p.zn === false && p.db === false, 'Kurzsätze 3:0 3:0 3:0: 3:0 in Sätzen, aber kein Satz zu Null');
+p = aus([S(6,4)]);
+ok(p.knapp === true && aus([S(1,0)]).knapp === false && aus([S(6,2)]).deutlich === true,
+  'Je Satz: 6:4 ist knapp, ein kurzer 1:0 nicht, 6:2 ist deutlich');
 p = aus([S(4,6), S(6,4), S(10,8,'mtb')]);
 ok(p.w === 'A' && p.ga === 11 && p.gb === 10 && p.wende && p.tb && p.knapp,
   '4:6 6:4 10:8 (Match-Tiebreak): A gewinnt, der MTB zählt als ein Game, Wende und Tiebreak-Krimi');
@@ -74,7 +77,14 @@ ok(J(`AMBIENT_RUHE_TAGE`) === 3, 'Die Ruhezeit der Fun Facts sind drei Tage');
 const zaehl = (id, sets) => J(`(()=>{const m={id:'b',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
   ...partieFelder(${JSON.stringify(sets)}),exp_a:.5,created_at:'2026-08-10T18:00:00Z'};
   return BADGES.find(b=>b.id==='${id}').count('p1',[m]);})()`);
-ok(zaehl('perfect_win', [S(6,0), S(6,0)]) === 1 && zaehl('perfect_win', [S(6,0)]) === 0, 'Absoluter Sieger heißt Doppel-Bagel, ein einzelnes 6:0 reicht nicht');
+ok(zaehl('perfect_win', [S(6,0)]) === 1 && zaehl('perfect_win', [S(6,1)]) === 0 && zaehl('perfect_loss', [S(0,6)]) === 1,
+  'Absoluter Sieger heißt ein Satz zu Null (6:0), 6:1 reicht nicht; 0:6 ist der Absolute Verlierer');
+ok(J(`BG.serien.join(',')`) === '5,10,15,20' && J(`BG.elo.join(',')`) === '75,150,300',
+  'Serien 5/10/15/20 Sätze, Saison-Elo 75/150/300 für Aufsteiger, Dominator und Dynastie');
+ok(J(`['dynasty_600','dominator_400','streak15','streak20'].every(id=>rarityOf(id)==='legendary') && rarityOf('perfect_win')==='rare'
+  && RARITY_ORDER.every(k=>BADGES.filter(b=>rarityOf(b.id)===k).length===RARITY_META[k].total)`),
+  'Die Klassen stimmen mit den Zählern überein, Dynastie und Dominator sind legendär');
+ok(J(`BADGES.every(b=>!/Partie/.test(b.desc))`), 'Keine Auszeichnung spricht noch von Partien');
 ok(zaehl('nail_biter', [S(4,6), S(6,4), S(10,8,'mtb')]) === 1, 'Ein Sieg im Match-Tiebreak ist ein Zittersieg');
 ok(zaehl('wall_badge', [S(4,6), S(6,3)]) === 1, 'Satzrückstand gedreht ist „Die Wende"');
 
@@ -115,9 +125,11 @@ ok(!/id="addPlayerBtn" style="margin-top:14px"/.test(html['Liga Saison'] + html[
 ok(J(`(()=>{period='day';players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));
   const m={id:'d',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
     ...partieFelder([{a:6,b:3,art:'n'}]),deltas:{p1:5,p2:5,p3:-5,p4:-5},exp_a:.5,created_at:new Date(Date.now()-3600000).toISOString()};
-  matches=[m,{...m,id:'e',created_at:new Date(Date.now()-1800000).toISOString()}];invalidateCache();
+  matches=[m,{...m,id:'e',created_at:new Date(Date.now()-1800000).toISOString()},{...m,id:'f',created_at:new Date(Date.now()-900000).toISOString()}];invalidateCache();
   const h=_vRankingCore();return h.includes('Player of the Day') && h.includes('nw-name');})()`),
-  'Spieler des Tages ab zwei Siegen, dieselbe Schwelle wie die Auszeichnung');
+  'Spieler des Tages ab drei gewonnenen Sätzen, dieselbe Schwelle wie die Auszeichnung');
+ok(J(`(()=>{matches=matches.slice(0,2);invalidateCache();return !_vRankingCore().includes('nw-name');})()`),
+  'Zwei gewonnene Sätze reichen nicht für den Spieler des Tages');
 
 
 // ── Jeder Satz ist eine eigene Rechnung ──────────────────────────────

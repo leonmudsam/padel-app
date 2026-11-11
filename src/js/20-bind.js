@@ -213,9 +213,9 @@ function bind(){
   const recalcBtn=document.getElementById('recalcBtn');
   if(recalcBtn) recalcBtn.onclick=async()=>{
     if(!(await bestaetigen({ic:'alert', gefahr:true, ja:'Neu berechnen',
-      titel:'Alle Partien neu berechnen?',
-      text:'Partien mit mehreren Sätzen werden in Sätze geteilt, und die Elo jeder Partie wird mit den aktuellen Reglern neu gerechnet. Vergangene Saisons und Auszeichnungen können sich ändern. Das lässt sich nicht rückgängig machen.'}))) return;
-    toast('Alle Partien werden neu berechnet …');
+      titel:'Alle Sätze neu berechnen?',
+      text:'Alte Einträge mit mehreren Sätzen werden geteilt, und die Elo jedes Satzes wird mit den aktuellen Reglern neu gerechnet. Vergangene Saisons und Auszeichnungen können sich ändern. Das lässt sich nicht rückgängig machen.'}))) return;
+    toast('Alle Sätze werden neu berechnet …');
     // Erst alte Zeilen mit mehreren Sätzen in Sätze teilen [§1.3], dann
     // rechnen: sonst stünde eine Partie weiter als „2:1" mit der Elo der
     // alten Rechnung neben den Sätzen der neuen.
@@ -295,7 +295,7 @@ function bindCombo(inp){
     // Wahl steht [§C40].
     const leer=()=>{
       const da=players.find(p=>taken.includes(p.id)&&passt(p));
-      if(q&&da) return `<div class="combo-opt empty">${esc(da.name)} steht schon in dieser Partie</div>`;
+      if(q&&da) return `<div class="combo-opt empty">${esc(da.name)} steht schon in diesem Satz</div>`;
       const weg=players.find(p=>sichtbar(p)&&!ligaAktiv(p)&&passt(p));
       if(q&&weg) return `<div class="combo-opt empty" data-ruhestand>${esc(weg.name)} hat die Karriere beendet</div>`;
       return `<div class="combo-opt empty">Kein Treffer</div>`;

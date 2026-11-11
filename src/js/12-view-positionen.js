@@ -34,7 +34,7 @@ function positionsBlockHtml(arr, pos, ohneRang){
   // und nicht, was Drive und Revés im Padel sind: das weiß, wer spielt.
   if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
     pos==='drive' ? 'Drive · rechts' : 'Revés · links',
-    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jeder Partie.`);
+    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`);
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     // Rechts steht der Wert, nach dem sortiert wird; der Game-Anteil hat
@@ -50,7 +50,7 @@ function positionsBlockHtml(arr, pos, ohneRang){
           <span class="wbar"><i style="width:${Math.round(x.wr*100)}%"></i></span>
           <span>${Math.round(x.wr*100)} %</span>
         </div>
-        <div class="rmeta rmeta-tore">${Math.round(x.anteil*100)} % der Games · ${x.g} ${x.g===1?'Partie':'Partien'}</div>
+        <div class="rmeta rmeta-tore">${Math.round(x.anteil*100)} % der Games · ${x.g} ${x.g===1?'Satz':'Sätze'}</div>
       </div>
       <div class="rval"><div class="big num">${wert}</div><div class="small">Wert</div></div>
     </div>`;}).join('')}</div>`;

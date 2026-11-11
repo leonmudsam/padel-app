@@ -103,7 +103,7 @@ function abschiedBuehneHtml(pid){
 // vierte Zelle stand allein in einer zweiten Reihe.
 function _abZahlen(d, drei){
   return rcpZahlenHtml([
-    {v:_spZahl(d.spiele), l:'Partien'}, {v:_spZahl(d.siege), l:'Siege'},
+    {v:_spZahl(d.spiele), l:'Sätze'}, {v:_spZahl(d.siege), l:'Siege'},
     {v:Math.round(d.quote * 100) + ' %', l:'Siegquote'}, drei ? null : {v:d.elo, l:'Karriere-Elo'},
     d.titel && !drei ? {v:d.titel, l:'Titel', ton:'gold'} : null]);
 }
@@ -117,7 +117,7 @@ function _abSaisonenHtml(d){
     <span class="ab-sz-m">${esc(seasonLabel(s.sid).split(' ')[0].slice(0, 3))}</span>
     <b class="num">${s.platz ? s.platz + '.' : '–'}</b>
     <span class="ab-sz-e num">${s.elo}</span>
-    <span class="ab-sz-n num">${s.n} Partien</span></div>`).join('')}</div>`;
+    <span class="ab-sz-n num">${s.n} Sätze</span></div>`).join('')}</div>`;
 }
 
 // Die besonderen Momente: die Kacheln der Rückblicke [§C31].

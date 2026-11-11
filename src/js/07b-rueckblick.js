@@ -16,7 +16,7 @@ function showPotwRecap(opts){
     const {start:weekStart, end:weekEnd}=opts.woche ? _potwWocheVon(opts.woche) : _potwLastWeekRange();
     const ms=_potwMatchesInRange(weekStart,weekEnd);
     const wkKey=_potwKeyOf(weekStart);
-    if(!ms.length){ toast('Letzte Woche keine Partien','info'); return; }
+    if(!ms.length){ toast('Letzte Woche keine Sätze','info'); return; }
 
     // Spieler-Stats für die Woche (inkl. längster Serie innerhalb der Woche).
     // Torjäger, Abwehr, Team und Überraschung rechnet der Rückblick nicht
@@ -128,7 +128,7 @@ function showPotwRecap(opts){
 
     const serieHtml = mainPotwStats.bestStreak >= 3
       ? rcpNotizHtml({ic:'flame',
-          text:`Siegesserie von <b class="num">${mainPotwStats.bestStreak}</b> Partien am Stück`,
+          text:`Siegesserie von <b class="num">${mainPotwStats.bestStreak}</b> Sätze am Stück`,
           attr:`data-potw-player="${esc(mainPotwPlayerId)}"`})
       : '';
 
@@ -136,7 +136,7 @@ function showPotwRecap(opts){
     openSheet(
       rcpKopfHtml({ic:'weekly', titel:weekLabel,
         marke: geteilt ? 'Players of the Week' : 'Player of the Week',
-        meta: rcpMeta([dateRange, ms.length+' Partien', uniquePlayers.size+' Spieler',
+        meta: rcpMeta([dateRange, ms.length+' Sätze', uniquePlayers.size+' Spieler',
                        totalGoals ? totalGoals+' Games' : ''])})
       + rcpHeldHtml({
           pid: mainPotwPlayerId,
@@ -163,8 +163,8 @@ function showPotwRecap(opts){
       + rcpKalenderHtml(ms, weekStart, 7)
       + rcpZahlenHtml([
           {v:spieltage,                        l:spieltage === 1 ? 'Spieltag' : 'Spieltage'},
-          {v:komma(totalGoals / ms.length, 1), l:'Games je Partie'},
-          {v:eng,                              l:'Enge Partien'},
+          {v:komma(totalGoals / ms.length, 1), l:'Games je Satz'},
+          {v:eng,                              l:'Enge Sätze'},
           {v:duos,                             l:'Duos'}])
       + rcpAbschnitt('Das Feld der Woche') + rcpFeldHtml(ms, mainPotwPlayerId)
       + (hlKacheln.length ? rcpAbschnitt('Awards der Woche', hlKacheln.length) + awVitrineHtml(hlKacheln, '') : '')
@@ -357,7 +357,7 @@ function showPotdRecap(opts){
   _sheetSetReopen(()=>showPotdRecap(opts.tag ? {force:true, tag:opts.tag} : undefined));
   try{
     const now=new Date();
-    if(!matches.length){ if(opts.force) toast('Noch keine Partien','info'); return; }
+    if(!matches.length){ if(opts.force) toast('Noch keine Sätze','info'); return; }
 
     // v9.15 BUGFIX: Der "gesehen"-Guard hing am HEUTIGEN Datum statt am
     // recappten Spieltag. Folge: Gab es dazwischen spielfreie Tage, bekam
@@ -484,12 +484,12 @@ function showPotdRecap(opts){
 
     const serieHtml = s.bestStreak >= 3
       ? rcpNotizHtml({ic:'flame',
-          text:`Siegesserie von <b class="num">${s.bestStreak}</b> Partien am Stück`})
+          text:`Siegesserie von <b class="num">${s.bestStreak}</b> Sätze am Stück`})
       : '';
 
     openSheet(
       rcpKopfHtml({ic:'trophyDay', marke:'Player of the Day', titel:dayStr,
-        meta: rcpMeta([dayMatches.length+' Partien', uniquePlayers.size+' Spieler'])})
+        meta: rcpMeta([dayMatches.length+' Sätze', uniquePlayers.size+' Spieler'])})
       + rcpHeldHtml({pid:potdId, band:false, px:104, marke:'Spieler des Tages', strahl:true,
           zahlen: rcpZahlenHtml([
             {v:s.wins,      l:'Siege',       ton:'gruen'},

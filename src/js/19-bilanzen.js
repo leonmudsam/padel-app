@@ -34,7 +34,7 @@ function showPlayerH2HList(playerId){
         <div class="rname" style="font-size:13px;line-height:1.15">${esc(other.name)}</div>
         <div class="num" style="font-size:11px;margin-top:3px;font-family:'Sometype Mono',monospace">${teamChip}${sep}${oppChip}</div>
       </div>
-      <div class="num" style="font-size:11px;color:var(--muted);flex-shrink:0;text-align:right;line-height:1.2">${x.total}<div style="font-size:9px">Partien</div></div>
+      <div class="num" style="font-size:11px;color:var(--muted);flex-shrink:0;text-align:right;line-height:1.2">${x.total}<div style="font-size:9px">Sätze</div></div>
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;opacity:.7"><path d="M9 18l6-6-6-6"/></svg>
     </div>`;
   }).join('');

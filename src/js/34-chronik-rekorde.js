@@ -66,21 +66,18 @@ const CHRON_KINDS = {
   koennen: {label:'Können',        pl:'Können',         kurz:'Können',   ic:'trophyStar', ord:1,
             satz:'Schnitt und Quote über die ganze Laufbahn'},
   form:    {label:'Aktuelle Form', pl:'Aktuelle Form',  kurz:'Form',     ic:'trendUp',    ord:2,
-            satz:'Gerechnet über die letzten eigenen Partien'},
+            satz:'Gerechnet über die letzten eigenen Sätze'},
   fuegung: {label:'Fügung',        pl:'Fügungen',       kurz:'Fügungen', ic:'weatherMix', ord:3,
             satz:'Was Auslosung und letzter Ball entscheiden'},
   shame:   {label:'Schattenseite', pl:'Schattenseiten', kurz:'Schatten', ic:'ghost',      ord:4,
             satz:'Die Kehrseite. Sie bringt kein Prestige'},
 };
-// Unter dieser Spielzahl bekommt niemand eine Chronik. Eine Laufbahn braucht
-// eine Laufbahn — sonst trägt ein Gast nach zwölf Spielen einen Liga-Rekord.
-const CHRON_MIN_GAMES = 15;
-// Die Fenster und Teilmengen der Laufbahn-Rekorde, an einer Stelle. Beim
-// Tischkicker waren es 40, 50, 20 und 25 Partien; ein Padel-Spieler kommt
-// im Jahr auf rund hundert Partien, und mit den alten Zahlen wäre ein
-// Fenster erst nach einem halben Jahr gefüllt. Der Katalog liest dieselben
-// Werte, damit Bedingung und Rechnung nicht auseinanderlaufen [§10.2].
-const RF = {lauf:20, rolle:25, form:10, partner:12, abschwung:12, teil:10, duo:8, glanztag:4};
+// Unter dieser Zahl eigener Sätze bekommt niemand eine Chronik. Eine
+// Laufbahn braucht eine Laufbahn — sonst trägt ein Gast nach einem Abend
+// einen Liga-Rekord. Vierzig Sätze sind etwa ein Monat.
+const CHRON_MIN_GAMES = 40;
+// Die Fenster und Teilmengen der Laufbahn-Rekorde stehen als RF im Katalog
+// (32-chronik-katalog.js): seine Texte nennen dieselben Zahlen.
 // Was „eine Pause" heisst, steht als `REKORD_PAUSE_STUNDEN` im Katalog:
 // Bedingung und Erklaerung nennen die Zahl, und sie werden vor dieser Datei
 // geladen.
@@ -393,8 +390,7 @@ function _chronicleCtx(bisMs){
       // debacle = zu Null verloren, nail/bitter = im Tiebreak gewonnen
       // bzw. verloren, close = knapp, blowW = deutlicher Sieg.
       const pz = partie(m), fz = partieFuer(m, onA ? 'A' : 'B');
-      const bg = begegnungAm(m);
-      if(bg.zuNull && bg.winner !== (onA ? 'A' : 'B')) p.debacle++;
+      if(pz.zuNull && !w) p.debacle++;
       if(w && pz.entscheidTb)  p.nail++;
       if(!w && pz.entscheidTb) p.bitter++;
       if(pz.knapp){ p.close++; if(w) p.closeW++; }
@@ -832,10 +828,10 @@ function _chronicleCtx(bisMs){
       // ── Fügungen, die einen ganzen Abend brauchen [§C35] ───────────
       const dz = dzAll[day];
       if(dz){
-        // Der schwerste Abend: die mittlere Siegchance über alle Partien
-        // dieses Tages. Ab drei Partien — aus zweien ist das kein Abend,
+        // Der schwerste Tag: die mittlere Siegchance über alle Sätze dieses
+        // Tages. Ab ST_TAG Sätzen — aus weniger ist das kein Spieltag,
         // sondern eine Laune der Aufstellung.
-        if(dc[day] >= 3){
+        if(dc[day] >= ST_TAG){
           const mw = dz.e / dc[day];
           if(p.hartTag == null || mw < p.hartTag){ p.hartTag = mw; p.hartTagLabel = dLabel(day); }
         }
@@ -852,11 +848,11 @@ function _chronicleCtx(bisMs){
         Object.keys(dz.erg).forEach(k => { if(dz.erg[k] > mx){ mx = dz.erg[k]; mk = k; } });
         if(mx > p.wiederTag){ p.wiederTag = mx; p.wiederErg = mk; p.wiederLabel = dLabel(day); }
       }
-      if(dc[day] < 3) return;
+      if(dc[day] < ST_TAG) return;
       p.bigDays++;
       if((dw[day] || 0) === dc[day]) p.perfDays++;
     });
-    // Der beste Monat seines Lebens — als Quote, ab CHRONIK_MIN_SPIELE Partien im Monat.
+    // Der beste Monat einer Laufbahn — als Quote, ab CHRONIK_MIN_SPIELE Sätzen im Monat.
     const sa = seasonAgg[id] || {};
     Object.keys(sa).forEach(sd => {
       const r = sa[sd];
@@ -871,7 +867,7 @@ function _chronicleCtx(bisMs){
     const played = [];
     Object.keys(gSim.seasonEndElos || {}).sort().forEach(sid => {
       const g = (gSim.seasonPlayed[sid] || {})[id] || 0;
-      if(g >= 10 && gSim.seasonEndElos[sid][id] !== undefined){
+      if(g >= CHRONIK_MIN_SPIELE && gSim.seasonEndElos[sid][id] !== undefined){
         played.push({sid, elo:gSim.seasonEndElos[sid][id]});
       }
     });

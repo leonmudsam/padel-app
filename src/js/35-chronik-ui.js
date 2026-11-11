@@ -108,12 +108,12 @@ function showSeasonTable(sid){
   const ch = T.champ;
   openSheet(`
     ${blattKopfHtml({ic:'scroll', ton:'gold', titel:'Die Chronik der Saison',
-      unter:T.label + ' · ' + T.matches + ' Partien an ' + T.days + ' Spieltag' + (T.days===1?'':'en') + (T.live ? ' · läuft noch' : '')})}
+      unter:T.label + ' · ' + T.matches + ' Sätze an ' + T.days + ' Spieltag' + (T.days===1?'':'en') + (T.live ? ' · läuft noch' : '')})}
     ${T.live ? `<div class="tnote">Stand von heute, bis zum Monatsende kann sich alles noch ändern.</div>` : ''}
     ${ch ? `<div class="chron-one" style="--tt:${gt.c};--ttr:${gt.rgb}" data-tplayer="${esc(ch.pid)}">
         <span class="ic">${svgI('crown')}</span>
         <span class="tx"><span class="n">${esc(pname(ch.pid))} ${T.live ? 'führt die Saison an' : 'ist Meister'}</span>
-          <span class="e num">${ch.elo} Elo · ${ch.wins} Siege aus ${ch.games} Partien</span></span>
+          <span class="e num">${ch.elo} Elo · ${ch.wins} Siege aus ${ch.games} Sätzen</span></span>
       </div><div style="height:14px"></div>` : ''}
     <div class="tplates">${offen.map(a => _titlePlateHtml(a, {sid, schatten:chronikUeberschattet(T, a)})).join('')}</div>
     ${weitere.length ? `<div class="tplates chron-rest">${weitere.map(a => _titlePlateHtml(a, {sid, schatten:chronikUeberschattet(T, a)})).join('')}</div>
@@ -121,7 +121,7 @@ function showSeasonTable(sid){
     ${emptyNames.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Ohne Eintrag</h4></div></div>
       <div class="tempty">${esc(emptyNames.join(', '))}<span>Keine Bedingung erfüllt, die Saison zählt trotzdem.</span></div>` : ''}
     ${zuWenigNames.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Nicht gewertet</h4></div></div>
-      <div class="tempty">${esc(zuWenigNames.join(', '))}<span>Eine Monatschronik gibt es ab ${CHRONIK_MIN_SPIELE} eigenen Partien im Monat.</span></div>` : ''}
+      <div class="tempty">${esc(zuWenigNames.join(', '))}<span>Eine Monatschronik gibt es ab ${CHRONIK_MIN_SPIELE} eigenen Sätzen im Monat.</span></div>` : ''}
     ${unawarded.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Nicht vergeben</h4></div><div class="m">${unawarded.length}</div></div>
       <div class="tunawarded">${unawarded.map(t => {
         // Wer der Bedingung am naechsten kommt. Vorher stand hier nur die
@@ -751,7 +751,7 @@ function _rekFeldHtml(d, h){
 const CHRONIK_VORSCHAU_JE_KLASSE = 3;
 function chronikVorschauHtml(){
   const kopf = vorschauHtml('scroll', 'Die Chronik',
-    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Partien</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt dann die Monate nebeneinander; bis dahin stehen hier alle Einträge, die es gibt.`);
+    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Sätze</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt dann die Monate nebeneinander; bis dahin stehen hier alle Einträge, die es gibt.`);
   // Drei je Klasse offen, der Rest klappt auf: alle hundert untereinander
   // waren zehn Bildschirme, und die Klassen darunter sah niemand mehr.
   const karte = t => `<div class="rek offen">

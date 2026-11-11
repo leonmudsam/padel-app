@@ -675,7 +675,7 @@ function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
     // ihrer Entstehung trug — der Stand von damals, nicht von heute.
     kopf = _newsAbschiedKopf(d);
     fuss = _newsZahlband([
-      {v: d.spiele != null ? _spZahl(d.spiele) : null, l:'Partien'},
+      {v: d.spiele != null ? _spZahl(d.spiele) : null, l:'Sätze'},
       {v: d.quote != null ? Math.round(d.quote * 100) + ' %' : null, l:'Siegquote'},
       {v: d.rekorde ? d.rekorde : (d.elo != null ? d.elo : null), l: d.rekorde ? (d.rekorde === 1 ? 'Rekord' : 'Rekorde') : 'Karriere-Elo', f: d.rekorde ? 'g' : ''}
     ]);

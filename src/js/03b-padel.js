@@ -17,11 +17,11 @@
 //   Satzstand   die beendeten Sätze, z. B. 2:1. Ein offener Satz zählt nicht.
 //   Games       alle Games; ein Match-Tiebreak zählt als ein Game für den,
 //               der ihn gewinnt (sonst wöge ein 10:8 mehr als ein ganzer Satz).
-//   Zu Null     alle Sätze gewonnen, und es waren mindestens zwei (2:0, 3:0).
-//               Ein 1:0 ist kein Zu Null: wer nur einen Satz spielt, hat
-//               dem Gegner keinen zweiten Versuch gelassen.
+//   Zu Null     ein Satz ohne abgegebenes Game, 6:0 (ein Bagel). Die Liga
+//               zählt alles je Satz; vorher hieß Zu Null „zwei Sätze ohne
+//               Satzverlust" und hing an der Begegnung.
 //   Bagel       ein beendeter normaler Satz 6:0 (oder höher zu null).
-//   Doppel-Bagel  ein Zu Null, in dem jeder Satz ein Bagel war.
+//   Doppel-Bagel  zwei oder mehr Sätze zu Null in einem Match.
 //   Wende       den ersten Satz verloren und das Match gewonnen.
 //   Umkämpft    der Verlierer hat mindestens einen Satz gewonnen.
 //   Tiebreak-Krimi  der entscheidende Satz ging in den Tiebreak oder
@@ -100,8 +100,9 @@ function saetzeAuswerten(saetze){
   const total = gamesA + gamesB;
   const tiebreaks = [];
   saetze.forEach((s, i) => { if((s.art === 'tb' || s.art === 'mtb') && sieger[i]) tiebreaks.push({art: s.art, sieger: sieger[i]}); });
-  const zuNull = !!winner && winSaetze >= 2 && verlSaetze === 0;
-  const doppelBagel = zuNull && (winner === 'A' ? bagelsA : bagelsB) === winSaetze;
+  const zuNull = !!winner && winSaetze >= 1 && verlSaetze === 0
+    && (winner === 'A' ? bagelsA : bagelsB) === winSaetze;
+  const doppelBagel = zuNull && winSaetze >= 2;
   const umkaempft = !!winner && verlSaetze > 0;
   const entscheidTb = !!letzter && (letzter.art === 'tb' || letzter.art === 'mtb')
     && sieger[letzterIdx] === winner && (umkaempft || winSaetze === 1);
@@ -115,10 +116,11 @@ function saetzeAuswerten(saetze){
     wende: !!winner && !!ersterSieger && ersterSieger !== winner,
     tiebreaks, mtb: saetze.some(s => s.art === 'mtb'),
     entscheidTb,
-    // Knapp: umkämpft, im Tiebreak entschieden oder höchstens zwei Games
-    // Abstand. Deutlich: kein Satz abgegeben und mindestens drei Viertel
-    // der Games — 6:2 ist deutlich, 6:4 6:3 nicht.
-    knapp: !!winner && (umkaempft || entscheidTb || gameDiff <= 2),
+    // Knapp: umkämpft, im Tiebreak entschieden oder ein voller Satz mit
+    // höchstens zwei Games Abstand (6:4, 7:5). Ein kurzer 1:0 oder 3:2 ist
+    // nicht knapp, er war nur kurz. Deutlich: kein Satz abgegeben und
+    // mindestens drei Viertel der Games — 6:2 ist deutlich, 6:3 nicht.
+    knapp: !!winner && (umkaempft || entscheidTb || (gameDiff <= 2 && gW >= 6)),
     deutlich: !!winner && !umkaempft && total >= 6 && gW / total >= 0.75,
     gamesSieger: gW, gamesVerlierer: gL,
   };

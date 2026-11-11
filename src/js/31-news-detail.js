@@ -275,13 +275,13 @@ function _ndBeziehung(s, anzahl){
   const t = ((s && s.dataRef) || {}).type || '';
   if(t === 'rivalry' || t === 'rivalry_milestone') return 'im direkten Duell';
   if(t === 'team_streak' || t === 'team_loss_streak') return 'als Duo';
-  if(t === 'top_clash') return 'Sieger und Verlierer dieser Partie';
-  if(t === 'streak_killer') return 'auf beiden Seiten der Partie';
+  if(t === 'top_clash') return 'Sieger und Verlierer dieses Satzes';
+  if(t === 'streak_killer') return 'auf beiden Seiten des Satzes';
   if(t === 'badge_unlocked') return 'mit derselben Auszeichnung';
   if(t === 'potd' || t === 'potw') return 'punktgleich an der Spitze';
   // Das Blatt einer Partie zeigt ihre Sieger. „in derselben Partie" stand
   // darunter — auf dem Blatt, das diese Partie IST.
-  if(t === 'spiel') return 'gewinnen diese Partie';
+  if(t === 'spiel') return 'gewinnen diesen Satz';
   // Die Sammelkarte buendelt einen MOMENT, nicht zwingend eine Partie: die
   // Gruppe entsteht ueber die Minute [§C33].
   if(t === 'sammel'){
@@ -293,10 +293,10 @@ function _ndBeziehung(s, anzahl){
     if(q === 'ergebnis') return 'an diesem Spieltag';
     // Die Karte einer Partie hat ihre Partie: „im selben Moment" stimmt,
     // sagt aber weniger als das, was alle Zeilen gemeinsam haben.
-    if(q === 'spiel' && (s.dataRef || {}).matchId) return 'in dieser Partie';
+    if(q === 'spiel' && (s.dataRef || {}).matchId) return 'in diesem Satz';
     return q === 'tafel' ? 'an der Ewigen Tafel' : 'im selben Moment';
   }
-  if(((s && s.dataRef) || {}).matchId) return 'in derselben Partie';
+  if(((s && s.dataRef) || {}).matchId) return 'in demselben Satz';
   return 'gemeinsam auf dieser Karte';
 }
 
@@ -872,7 +872,7 @@ function _ndChanceSkala(chance){
     .map(x => `<u style="left:${Math.round(x * 100)}%"></u>`).join('');
   return `<div class="nd-chance${ton}">
     <div class="nd-chance-b">${linien}<i style="width:${pct}%"></i></div>
-    <div class="nd-chance-z"><span>Siegchance vor der Partie</span>
+    <div class="nd-chance-z"><span>Siegchance vor dem Satz</span>
       <span><b>${pct} %</b> · ${esc(wort)}</span></div>
   </div>`;
 }
@@ -992,7 +992,7 @@ function _ndSerieBlatt(s){
     mitte:ab('Gegen die Bestmarken', marken)
       + ab(neg ? 'Niederlage für Niederlage' : 'Sieg für Sieg', _ndPartieListe(lauf, pid))
       + (duo ? ab('Zusammen und getrennt', _ndZusammenGetrennt(d.a, d.b, m)) : ab('Mit wem', _ndPartnerBalken(pid, lauf)))
-      + ab('Die nächste Partie', _ndWieWeiter(pid, partner, m))};
+      + ab('Der nächste Satz', _ndWieWeiter(pid, partner, m))};
 }
 
 // ── Das Blatt einer Rivalität [§C33] ────────────────────────────────
@@ -1059,7 +1059,7 @@ function _ndBadgeBlatt(s){
     ? `<div class="nd-stat-row" data-pid="${esc(d.nemesisOppId)}" style="cursor:pointer"><div class="nd-stat-label">Gegen wen</div>`
       + `<div class="nd-stat-val neg">${esc(_spName(d.nemesisOppId))} ›</div></div>` : '';
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
-  return {kopf, mitte:ab('Geholt in dieser Partie', m ? _ndPartieListe([m], pids[0]) : '') + nem
+  return {kopf, mitte:ab('Geholt in diesem Satz', m ? _ndPartieListe([m], pids[0]) : '') + nem
     + ab(traeger === 1 ? 'Nur einer trägt sie' : traeger + ' von ' + alle.length + ' tragen sie', traeger ? feld : '')};
 }
 
@@ -1143,7 +1143,7 @@ function _ndPotdBlatt(s){
       + `<span><b>${esc(_spName(g.pid))}</b> gibt an diesem Tag mehr Elo ab als jeder andere</span>`
       + `<b class="num r">${_spVz(Number(g.delta) || 0)} Elo</b></div>`
       + _ndTagesbahn([g.pid], _newsTagPartien(d.dayKey, [g.pid])) : '';
-  return {kopf, mitte:ab('Das Feld des Tages', balken) + ab(pids.length > 1 ? 'Der Tag der Tagessieger' : 'Der Tag in Partien', bahn)
+  return {kopf, mitte:ab('Das Feld des Tages', balken) + ab(pids.length > 1 ? 'Der Tag der Tagessieger' : 'Der Tag in Sätzen', bahn)
     + ab('Der härteste Tag', gegen)
     // Was der Schluss des Tages vergab, im Blatt mit jedem Posten, dem
     // wievielten Mal und dem Rest seines Werts — derselbe Kasten wie im
@@ -1506,8 +1506,8 @@ function _ndTafelMomentBlatt(s){
     + `${d.quelle === 'form' ? ' auf kurzer Strecke' : ' an der Ewigen Tafel'}</span>`
     + `</div>`
     + `<div class="nd-ta-f" aria-hidden="true" style="--h:${hoehe}">${saeulenHtml}<span class="nd-ta-a"></span>${striche}</div>`
-    + `<div class="nd-ta-u num"><span>${uhr(A)}</span><span>${partien.length === 1 ? 'eine Partie'
-      : (_BELEG_ZAHL[partien.length] || String(partien.length)) + ' Partien'}</span>${B > A ? `<span>${uhr(B)}</span>` : ''}</div>`
+    + `<div class="nd-ta-u num"><span>${uhr(A)}</span><span>${partien.length === 1 ? 'ein Satz'
+      : (_BELEG_ZAHL[partien.length] || String(partien.length)) + ' Sätze'}</span>${B > A ? `<span>${uhr(B)}</span>` : ''}</div>`
     + `<div class="nd-ta-l">${da.map(a => `<span class="ta-${a}"><i></i>${NAME[a]}</span>`).join('')}</div></div>`;
   return {kopf, mitte:null};
 }
@@ -1631,7 +1631,7 @@ function _ndEloLinie(pid, bisId, marke){
 function _ndMeilensteinBlatt(s){
   const d = s.dataRef || {}, pm = pmap(), pid = d.pid;
   if(!pid || !pm[pid]) return null;
-  const art = {jubilee:['Partien', 10, 0, true], milestone_wins:['Siege', 50, 0, true], milestone_goals:['Games', 500, 0],
+  const art = {jubilee:['Sätze', 10, 0, true], milestone_wins:['Siege', 50, 0, true], milestone_goals:['Games', 500, 0],
     milestone_elo:['Elo', (cfg.start_elo ?? 1000) + 200, 100]}[d.type];
   const wert = d.type === 'jubilee' ? Number(d.total) : d.type === 'milestone_elo' ? Number(d.mark) || parseInt(d.milestone, 10) : parseInt(d.milestone, 10);
   if(!art || !Number.isFinite(wert)) return null;
@@ -1641,7 +1641,7 @@ function _ndMeilensteinBlatt(s){
   const m = d.matchId ? (matches || []).find(x => x.id === d.matchId) : null;
   return {kopf, mitte:(d.type === 'milestone_elo' ? ab('Die Elo bis hierher', _ndEloLinie(pid, d.matchId, wert)) : '')
     + ab('Die Bilanz bis hierher', _ndBilanzBalken(st))
-    + (m ? ab('Die Partie', _newsMatchVsBlock(d.matchId)) : '')};
+    + (m ? ab('Der Satz', _newsMatchVsBlock(d.matchId)) : '')};
 }
 // Die Form gegen den eigenen Schnitt: zwei Balken, und darunter die zehn
 // Partien, aus denen die erste Zahl besteht.
@@ -1655,7 +1655,7 @@ function _ndFormBlatt(s){
     + (lauf.length ? `<span class="nd-lf nd-hz-lf">${lauf.map((y, j) => `<i class="${_spGew(y, pid) ? 'w' : 'l'}${j === lauf.length - 1 ? ' dies' : ''}"></i>`).join('')}</span>` : '');
   const kopf = _ndHeldBuehne(pid, '+' + (d.vorsprung != null ? d.vorsprung : d.qJetzt - d.qBasis), 'Prozentpunkte über dem eigenen Schnitt', false, extra);
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
-  return {kopf, mitte:ab('Die zehn Partien', lauf.length ? _ndPartieListe(lauf, pid) : '')};
+  return {kopf, mitte:ab('Die zehn Sätze', lauf.length ? _ndPartieListe(lauf, pid) : '')};
 }
 // Der härteste Tag: die Elo des Tages als Kurve unter der Zahl, darunter
 // der Tag in Partien.
@@ -1667,7 +1667,7 @@ function _ndAusschlagBlatt(s){
   const kopf = _ndHeldBuehne(pid, (d.delta > 0 ? '+' : '−') + Math.abs(d.delta), 'Elo an diesem Tag', d.delta < 0, kurve);
   const liste = _newsTagPartien(tagKey(s.when), [pid]);
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
-  return {kopf, mitte:ab('Der Tag in Partien', _ndTagesbahn(pid, liste))};
+  return {kopf, mitte:ab('Der Tag in Sätzen', _ndTagesbahn(pid, liste))};
 }
 // ── Das Spitzenspiel [§C33] ─────────────────────────────────────────
 // Platz 1 gegen Platz 2 stand als zwei Zeilen „Platz 1 · Martin ›". Die
@@ -1704,7 +1704,7 @@ function _ndMarkenBlatt(s){
     return rcpZeileHtml({ic:b.ic || 'medal', name:b.name || id, sub:b.desc || ''}); }).join('') : '';
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
   return {kopf, mitte:ab('Wofür es sie gibt', bed)
-    + (d.matchId ? ab('Die Partie', _newsMatchVsBlock(d.matchId)) : '')};
+    + (d.matchId ? ab('Der Satz', _newsMatchVsBlock(d.matchId)) : '')};
 }
 
 // ── Der Fun Fact [§C33] ─────────────────────────────────────────────
@@ -1723,10 +1723,10 @@ function _ndFaktBlatt(s){
     const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
     const b = d.bild || {};
     let mitte = '';
-    if(d.type === 'dry_spell') mitte = ab('Die letzte Partie', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
+    if(d.type === 'dry_spell') mitte = ab('Der letzte Satz', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
     else if(b.f === 'duell' && pm[b.a] && pm[b.b]) mitte = ab('Jede Begegnung', h2hBegegnungenHtml(b.a, b.b));
     else if(d.prestige && pid && pm[pid]) mitte = ab('Der Stand am Zeichen', _newsInsigniumBlock(pid));
-    else if(pid && pm[pid]) mitte = ab('Die letzten zehn Partien', _ndFaktLauf(pid, s));
+    else if(pid && pm[pid]) mitte = ab('Die letzten zehn Sätze', _ndFaktLauf(pid, s));
     return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>`, mitte};
   }
   if(d.leiter || !pid || !pm[pid] || d.vv == null || d.vv === '') return null;
@@ -1734,8 +1734,8 @@ function _ndFaktBlatt(s){
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
   if(d.prestige) return {kopf, mitte:ab('Der Stand am Zeichen', _newsInsigniumBlock(pid))};
   if(d.chronicle) return {kopf, mitte:_newsVerfolger(d.chronicle, [pid], null)
-    || ab('Die letzten zehn Partien', _ndFaktLauf(pid, s))};
-  return {kopf, mitte:ab('Die letzten zehn Partien', _ndFaktLauf(pid, s))};
+    || ab('Die letzten zehn Sätze', _ndFaktLauf(pid, s))};
+  return {kopf, mitte:ab('Die letzten zehn Sätze', _ndFaktLauf(pid, s))};
 }
 // Die zehn Partien vor der Karte als Lauf und als Bilanz.
 function _ndFaktLauf(pid, s){
@@ -1812,7 +1812,7 @@ function _ndPartieAbschnitte(s){
   try { tag = _ndTagLeiste(m); } catch(e){}
   try { vert = zeigt('sp-mo') || zeigt('sp-vt') ? '' : _ndVerteilung(m); } catch(e){}
   return ab('Wer wo stand', feld) + ab('Wie erwartbar war das', skala)
-    + ab(buehneFeld ? 'In der Tabelle' : 'Was die Partie bewegt hat', elo)
+    + ab(buehneFeld ? 'In der Tabelle' : 'Was der Satz bewegt hat', elo)
     + ab('Die direkten Duelle', duelle) + ab('Der Tag', tag) + ab('Wie oft es so ausgeht', vert);
 }
 

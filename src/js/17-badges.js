@@ -29,34 +29,39 @@
 // ─── §7.0 Die Schwellen der Auszeichnungen ───────────────────────────
 // Eine Stelle für jede Zahl, die der Katalog und der Auslöser (§7.4) beide
 // brauchen: standen sie doppelt, zählte das Profil eine andere Serie als
-// der Toast. Gesetzt sind sie für das Padel-Volumen — rund fünf Spieltage
-// im Monat mit drei bis fünf Partien, je Spieler fünf bis zwanzig Partien
-// im Monat. Beim Tischkicker galten 25/150/300 Partien und Serien bis 20.
+// der Toast. Gezählt wird in Sätzen: eine Zeile ist ein Satz, ein Sieg ist
+// ein gewonnener Satz, eine Serie sind Sätze in Folge. Ein Spieler kommt an
+// einem Spieltag auf sechs bis zehn Sätze, im Monat auf dreißig bis sechzig.
+// Die Zahlen sind rund (5, 10, 15, 20 — kein „11er Serie"), und jede Stufe
+// liegt deutlich über der davor: vorher standen 8er und 11er Serien
+// nebeneinander, und Urgestein und Dauerbrenner trennte kaum etwas.
 const BG = {
-  stammgast: 20, dauerbrenner: 100, urgestein: 200, siegermaschine: 100,
-  seite: 30, allrounder: 10,
-  serien: [5, 8, 11, 15],      // streak5, streak10, streak15, streak20
+  stammgast: 25, dauerbrenner: 100, urgestein: 250, siegermaschine: 150,
+  seite: 50, allrounder: 25,
+  serien: [5, 10, 15, 20],     // streak5, streak10, streak15, streak20
   talfahrt: 5,
-  krimi: 4, krimiNied: 3, wiederholung: 3, tbSerie: 3, bagelSaison: 3,
-  angstgegner: 4,
-  tag: 3,                       // Partien an einem Tag für die Tagesmuster
-  // Saison-Elo für Aufsteiger, Dominator, Dynastie. Gemessen an der
-  // Testliga (tools/fixture-padel.mjs): die Marken erreicht etwa jeder
-  // dritte, jeder zwölfte und jeder fünfzigste Spieler-Monat.
-  elo: [60, 110, 140],
+  krimi: 5, krimiNied: 3, wiederholung: 3, tbSerie: 3, bagelSaison: 5,
+  angstgegner: 5, serienbrecher: 5,
+  tag: 5,                       // Sätze an einem Tag für die Tagesmuster
+  // Saison-Elo für Aufsteiger, Dominator und Dynastie, von der Liga
+  // vorgegeben: 150 und 300 für die beiden legendären, die Hälfte davon
+  // für den Aufsteiger.
+  elo: [75, 150, 300],
 };
-// Die Mindestzahl an Siegen für den Spieler des Tages, der Woche und des
-// Monats [§7.3], und was der Award-Sammler davon in einer Saison braucht.
-// Beim Tischkicker 3/5/10 und 5/2 — bei drei bis fünf Partien am Tag hätte
-// ein Tag mit drei Partien nur einen makellosen Spieler des Tages gekannt.
-const PERIODE_MIN_SIEGE = {tag:2, woche:3, monat:6};
+// Die Mindestzahl an Satzsiegen für den Spieler des Tages, der Woche und
+// des Monats [§7.3], und was der Award-Sammler davon in einer Saison
+// braucht. Ein Spieltag hat je Spieler sechs bis zehn Sätze: mit zwei
+// Siegen wäre schon ein einziges gewonnenes Match genug gewesen.
+const PERIODE_MIN_SIEGE = {tag:3, woche:5, monat:10};
 const PERIODE_SAMMLER = {tag:3, woche:1};
-// Was eine Partie für einen Spieler war, an einer Stelle für Katalog und
+// Was ein Satz für einen Spieler war, an einer Stelle für Katalog und
 // Auslöser [§C27]. Die Begriffe stehen in §1.3.
-// Über mehrere Sätze [§1.3]: die Begegnung, die an diesem Satz endet, und
-// nicht der Satz. bgDoppelBagel sagt nur, DASS eine endete; wer sie gewann,
-// sagt bgBegegnungSieg — nicht der Sieger des letzten Satzes.
-function bgDoppelBagel(id, m){ return begegnungAm(m).doppelBagel; }
+// Zu Null ist ein Satz ohne abgegebenes Game (6:0). Vorher hieß es zwei
+// Sätze ohne Satzverlust und hing an der Begegnung; die Liga zählt aber
+// alles je Satz.
+function bgZuNull(m){ return partie(m).zuNull; }
+// Nur die Wende reicht über mehrere Sätze: die Begegnung, die an diesem
+// Satz endet, und wer sie gewann — nicht der Sieger des letzten Satzes.
 function bgBegegnungSieg(id, m){ return begegnungGewonnen(m, id) === true; }
 function bgZitter(m){ return partie(m).entscheidTb; }
 function bgKlar(id, m){ return won(id, m) && partie(m).deutlich; }
@@ -70,24 +75,24 @@ function bgTiebreaks(id, m){ const t = teamVon(m, id); return partie(m).tiebreak
 // ─── §7.1 Der Katalog der Auszeichnungen ─────────────────────────────
 const BADGES=[
   // ══ EINMALIGE BADGES (Karriere-Meilensteine) ══
-  {id:'first_match',ic:'egg',name:'Debütant',desc:'Erste Partie gespielt',
+  {id:'first_match',ic:'egg',name:'Debütant',desc:'Ersten Satz gespielt',
     multi:true,count:(id,ms)=>countGames(id,ms)>=1?1:0},
-  {id:'games25',ic:'racket',name:'Stammgast',desc:BG.stammgast+' Partien gespielt',
+  {id:'games25',ic:'racket',name:'Stammgast',desc:BG.stammgast+' Sätze gespielt',
     multi:true,count:(id,ms)=>countGames(id,ms)>=BG.stammgast?1:0},
   // Nicht „Legende": so heißt die oberste Stufe des Karriere-Rangs.
-  {id:'games150',ic:'dauerbrenner',name:'Dauerbrenner',desc:BG.dauerbrenner+' Partien gespielt',
+  {id:'games150',ic:'dauerbrenner',name:'Dauerbrenner',desc:BG.dauerbrenner+' Sätze gespielt',
     multi:true,count:(id,ms)=>countGames(id,ms)>=BG.dauerbrenner?1:0},
-  {id:'allrounder',ic:'bothSides',name:'Allrounder',desc:'Mindestens '+BG.allrounder+' Siege auf jeder Seite',
+  {id:'allrounder',ic:'bothSides',name:'Allrounder',desc:BG.allrounder+' Sätze auf jeder Seite gewonnen',
     multi:true,count:(id,ms)=>{const s=playerStats(id,ms);return(s.drvW>=BG.allrounder&&s.revW>=BG.allrounder)?1:0;}},
   // Die IDs stammen aus der Kicker-Liga und nennen andere Zahlen; sie stecken
   // in News-, Toast- und Popover-Zuordnungen. Maßgeblich ist BG.
-  {id:'games250',ic:'urgestein',name:'Urgestein',desc:BG.urgestein+' Partien gespielt',
+  {id:'games250',ic:'urgestein',name:'Urgestein',desc:BG.urgestein+' Sätze gespielt',
     multi:true,count:(id,ms)=>countGames(id,ms)>=BG.urgestein?1:0},
-  {id:'wins200',ic:'siegermaschine',name:'Siegermaschine',desc:BG.siegermaschine+' Siege gesammelt',
+  {id:'wins200',ic:'siegermaschine',name:'Siegermaschine',desc:BG.siegermaschine+' Sätze gewonnen',
     multi:true,count:(id,ms)=>countWins(id,ms)>=BG.siegermaschine?1:0},
-  {id:'reves50',ic:'posReves',name:'Revés-Spezialist',desc:BG.seite+' Partien auf der linken Seite (Revés)',
+  {id:'reves50',ic:'posReves',name:'Revés-Spezialist',desc:BG.seite+' Sätze auf der Revés-Seite gespielt',
     multi:true,count:(id,ms)=>{const s=playerStats(id,ms);return s.revG>=BG.seite?1:0;}},
-  {id:'drive50',ic:'posDrive',name:'Drive-Spezialist',desc:BG.seite+' Partien auf der rechten Seite (Drive)',
+  {id:'drive50',ic:'posDrive',name:'Drive-Spezialist',desc:BG.seite+' Sätze auf der Drive-Seite gespielt',
     multi:true,count:(id,ms)=>{const s=playerStats(id,ms);return s.drvG>=BG.seite?1:0;}},
   // JEDE SAISON neu erreichbar: gezählt werden die Saisons, in denen jemand
   // die Marke geknackt hat, nicht wie oft er die Grenze überquert.
@@ -99,50 +104,48 @@ const BADGES=[
     multi:true,count:(id,ms)=>countSeasonsAtElo(id,BG.elo[2],ms)},
 
   // ══ MEHRFACH-BADGES — gruppiert nach Thema ══
-  {id:'upset_king',ic:'underdog',name:'Außenseiterkönig',desc:'Als Außenseiter gewonnen (unter 35 % Siegchance)',
+  {id:'upset_king',ic:'underdog',name:'Außenseiterkönig',desc:'Satz als Außenseiter gewonnen (unter 35 % Siegchance)',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&myExp(id,m)<0.35).length},
   // Tages-Muster
-  {id:'early_bird',ic:'sunrise',name:'Frühschicht',desc:'Erste Partie des Tages gewonnen',
+  {id:'early_bird',ic:'sunrise',name:'Frühschicht',desc:'Ersten Satz des Spieltags gewonnen',
     multi:true,count:(id,ms)=>countEarlyBirdDays(id,ms)},
-  {id:'unbeatable',ic:'crownPlus',name:'Unschlagbar',desc:'Ganzer Spieltag ohne Niederlage (ab '+BG.tag+' Partien)',
+  {id:'unbeatable',ic:'crownPlus',name:'Unschlagbar',desc:'Spieltag ohne verlorenen Satz (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countUnbeatableDays(id,ms,bis)},
-  {id:'comeback_day',ic:'comeback',name:'Comeback-Tag',desc:'Spieltag mit einer Niederlage begonnen und mit einem Sieg beendet (ab '+BG.tag+' Partien)',
+  {id:'comeback_day',ic:'comeback',name:'Comeback-Tag',desc:'Spieltag mit einem verlorenen Satz begonnen und mit einem gewonnenen beendet (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countComebackDays(id,ms,bis)},
-  {id:'revanchist',ic:'rematch',name:'Revanchist',desc:'Nach einer Niederlage gegen ein Team direkt in der nächsten Partie wieder auf dasselbe Team getroffen und gewonnen',
+  {id:'revanchist',ic:'rematch',name:'Revanchist',desc:'Satz gegen ein Paar verloren und den nächsten gegen dasselbe Paar gewonnen',
     multi:true,count:(id,ms)=>countRevenge(id,ms)},
   // Ergebnis-Muster
-  {id:'clear_win',ic:'thumbsUp',name:'Klares Ding',desc:'Sieg ohne Satzverlust mit mindestens drei Vierteln der Games (etwa 6:2 oder 6:3 6:1)',
+  {id:'clear_win',ic:'thumbsUp',name:'Klares Ding',desc:'Satz mit höchstens einem Viertel der Games für den Gegner gewonnen (6:2 oder klarer)',
     multi:true,count:(id,ms)=>countClearWins(id,ms)},
-  {id:'krimi',ic:'thriller',name:'Krimi-Reihe',desc:BG.krimi+' knappe Partien in Folge, gewonnen oder verloren — knapp heißt: Tiebreak, ein Satz für jeden oder höchstens 2 Games Unterschied',
+  {id:'krimi',ic:'thriller',name:'Krimi-Reihe',desc:BG.krimi+' knappe Sätze in Folge, gewonnen oder verloren (Tiebreak, 6:4 oder 7:5)',
     multi:true,count:(id,ms)=>countKrimiStreaks(id,ms)},
-  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' Siege in Folge mit identischem Ergebnis',
+  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' Sätze in Folge mit demselben Ergebnis gewonnen',
     multi:true,count:(id,ms)=>countRepeatScoreStreaks(id,ms)},
-  {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Niederlagen in Folge',
+  {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
-  // Zu Null heißt: jeden Satz gewonnen, mindestens zwei [§1.3]. Ohne ein
-  // einziges abgegebenes Game ist das der Doppel-Bagel.
-  {id:'perfect_loss',ic:'dizzy',name:'Absoluter Verlierer',desc:'Zu-Null-Niederlage ohne ein einziges Game (etwa 0:6 0:6)',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgDoppelBagel(id,m)&&!bgBegegnungSieg(id,m)).length},
-  {id:'perfect_win',ic:'hundred',name:'Absoluter Sieger',desc:'Zu-Null-Sieg ohne ein abgegebenes Game (etwa 6:0 6:0)',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgDoppelBagel(id,m)&&bgBegegnungSieg(id,m)).length},
+  // Zu Null heißt: ein Satz ohne abgegebenes Game, 6:0 [§1.3].
+  {id:'perfect_loss',ic:'dizzy',name:'Absoluter Verlierer',desc:'Satz 0:6 verloren, ohne ein einziges Game',
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&!won(id,m)).length},
+  {id:'perfect_win',ic:'hundred',name:'Absoluter Sieger',desc:'Satz zu Null gewonnen (6:0)',
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&won(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
-  {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Sieg, entschieden im Tiebreak oder Match-Tiebreak',
+  {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Satz im Tiebreak oder Match-Tiebreak gewonnen',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&bgZitter(m)).length},
   // Serien
-  {id:'streak5',ic:'flame',name:BG.serien[0]+'er Serie',desc:BG.serien[0]+' Siege in Folge',
+  {id:'streak5',ic:'flame',name:BG.serien[0]+'er Serie',desc:BG.serien[0]+' Sätze in Folge gewonnen',
     multi:true,count:(id,ms)=>countStreakOccurrences(id,ms,BG.serien[0])},
-  {id:'streak10',ic:'flameDouble',name:BG.serien[1]+'er Serie',desc:BG.serien[1]+' Siege in Folge',
+  {id:'streak10',ic:'flameDouble',name:BG.serien[1]+'er Serie',desc:BG.serien[1]+' Sätze in Folge gewonnen',
     multi:true,count:(id,ms)=>countStreakOccurrences(id,ms,BG.serien[1])},
-  {id:'streak15',ic:'flameTriple',name:BG.serien[2]+'er Serie',desc:BG.serien[2]+' Siege in Folge',
+  {id:'streak15',ic:'flameTriple',name:BG.serien[2]+'er Serie',desc:BG.serien[2]+' Sätze in Folge gewonnen',
     multi:true,count:(id,ms)=>countStreakOccurrences(id,ms,BG.serien[2])},
-  {id:'streak20',ic:'crownFlame',name:BG.serien[3]+'er Serie',desc:BG.serien[3]+' Siege in Folge',
+  {id:'streak20',ic:'crownFlame',name:BG.serien[3]+'er Serie',desc:BG.serien[3]+' Sätze in Folge gewonnen',
     multi:true,count:(id,ms)=>countStreakOccurrences(id,ms,BG.serien[3])},
-  // Die Wende steht, wo beim Tischkicker die „Mauer" stand (wenig Gegentore
-  // links): im Padel verteidigt das Paar gemeinsam.
-  {id:'wall_badge',ic:'wende',name:'Die Wende',desc:'Den ersten Satz verloren und die Partie gewonnen',
+  // Die einzige Auszeichnung über mehrere Sätze: sie gibt es nur im Match.
+  {id:'wall_badge',ic:'wende',name:'Die Wende',desc:'Ersten Satz eines Matches verloren und das Match gewonnen',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgWende(id,m)).length},
-  {id:'carry',ic:'weight',name:'Carry',desc:'Sieg mit dem schwächsten Spieler der Partie als Partner',
+  {id:'carry',ic:'weight',name:'Carry',desc:'Satz mit dem schwächsten der vier Spieler als Partner gewonnen',
     multi:true,count:(id,ms)=>countCarries(id,ms)},
   // Würden der Saison
   {id:'champion',ic:'crown',name:'Meister der Saison',desc:'Saison auf Platz 1 beendet',
@@ -153,38 +156,38 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countTeamOfSeason(id,bis)},
   {id:'award_collector',ic:'medalTrio',name:'Award-Sammler',desc:'In einer Saison mindestens '+PERIODE_SAMMLER.tag+'-mal Player of the Day und '+PERIODE_SAMMLER.woche+'-mal Player of the Week',
     multi:true,count:(id,ms,bis)=>countAwardCollector(id,ms,bis)},
-  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Siegquote einer Kalenderwoche (ab '+PERIODE_MIN_SIEGE.woche+' Siegen)',
+  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
     multi:true,count:(id,ms,bis)=>countPeriodWins(id,ms,'week',bis)},
-  {id:'potd',ic:'dayKing',name:'Player of the Day',desc:'Die meisten Siege eines Spieltags (ab '+PERIODE_MIN_SIEGE.tag+')',
+  {id:'potd',ic:'dayKing',name:'Player of the Day',desc:'Die meisten gewonnenen Sätze eines Spieltags (ab '+PERIODE_MIN_SIEGE.tag+')',
     multi:true,count:(id,ms,bis)=>countDayWins(id,ms,bis)},
   // Gegen die Tabelle
-  {id:'kingslayer',ic:'kingFall',name:'Thronfäller',desc:'Sieg gegen den Ersten der Saison-Rangliste, gemessen vor der Partie',
+  {id:'kingslayer',ic:'kingFall',name:'Thronfäller',desc:'Satz gegen den Ersten der Saison-Rangliste gewonnen, gemessen vor dem Satz',
     multi:true,count:(id,ms)=>countKingslayer(id,ms)},
-  {id:'overtake',ic:'ueberholen',name:'Überholmanöver',desc:'Einen Gegner der Partie besiegt und dabei in der Saison-Rangliste überholt',
+  {id:'overtake',ic:'ueberholen',name:'Überholmanöver',desc:'Satz gewonnen und dabei einen der Gegner in der Saison-Rangliste überholt',
     multi:true,count:(id,ms)=>countOvertake(id,ms)},
-  {id:'duty_done',ic:'trophyCheck',name:'Pflichterfüller',desc:'Sieg gegen mindestens einen der beiden Letzten der Saison-Rangliste, gemessen vor der Partie',
+  {id:'duty_done',ic:'trophyCheck',name:'Pflichterfüller',desc:'Satz gegen einen der beiden Letzten der Saison-Rangliste gewonnen, gemessen vor dem Satz',
     multi:true,count:(id,ms)=>countBottomTwoMatchWins(id,ms)},
-  {id:'streak_breaker',ic:'flameBreak',name:'Serienbrecher',desc:'Die Siegesserie eines Gegners (ab 4 in Folge) mit einem Sieg beendet',
+  {id:'streak_breaker',ic:'flameBreak',name:'Serienbrecher',desc:'Die Serie eines Gegners (ab '+BG.serienbrecher+' gewonnenen Sätzen) mit einem Satzgewinn beendet',
     multi:true,count:(id,ms)=>countStreakBreaker(id,ms)},
-  {id:'black_day',ic:'schwarzerTag',name:'Schwarzer Tag',desc:'Spieltag mit mindestens '+BG.tag+' Partien, alle verloren',
+  {id:'black_day',ic:'schwarzerTag',name:'Schwarzer Tag',desc:'Spieltag mit mindestens '+BG.tag+' Sätzen, alle verloren',
     multi:true,count:(id,ms,bis)=>countBlackDays(id,ms,bis)},
-  {id:'krimi_loser',ic:'dramaTear',name:'Krimi-Versager',desc:BG.krimiNied+' knappe Niederlagen in Folge',
+  {id:'krimi_loser',ic:'dramaTear',name:'Krimi-Versager',desc:BG.krimiNied+' knappe Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countCloseLossStreaks(id,ms,BG.krimiNied)},
   {id:'untouchable',ic:'dreiSaisons',name:'Untouchable',desc:'3 Saisons in Folge unter den Top-3 abgeschlossen',
     multi:true,count:(id,ms,bis)=>countUntouchable(id,bis)},
-  {id:'mr_perfect',ic:'bagel',name:'Bagel-Bäcker',desc:BG.bagelSaison+' Bagels (6:0-Sätze) in einer Saison gewonnen',
+  {id:'mr_perfect',ic:'bagel',name:'Bagel-Bäcker',desc:BG.bagelSaison+' Sätze zu Null (6:0) in einer Saison gewonnen',
     multi:true,count:(id,ms)=>countMrPerfect(id,ms)},
   {id:'allwetter',ic:'weatherMix',name:'Allwetter',desc:'An 4 verschiedenen Wochentagen Player of the Day geworden',
     multi:true,count:(id,ms,bis)=>countAllwetter(id,ms,bis)},
   {id:'godly_streak',ic:'godRay',name:'Tag der Götter',desc:'An 3 eigenen Spieltagen in Folge Player of the Day geworden',
     multi:true,count:(id,ms,bis)=>countGodlyStreak(id,ms,bis)},
-  {id:'bitter_loss',ic:'pille',name:'Bittere Pille',desc:'Niederlage, entschieden im Tiebreak oder Match-Tiebreak',
+  {id:'bitter_loss',ic:'pille',name:'Bittere Pille',desc:'Satz im Tiebreak oder Match-Tiebreak verloren',
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>!won(id,m)&&bgZitter(m)).length},
-  {id:'mr_disaster',ic:'tripleCrash',name:'Mr. Disaster',desc:BG.bagelSaison+' Bagels (0:6-Sätze) in einer Saison kassiert',
+  {id:'mr_disaster',ic:'tripleCrash',name:'Mr. Disaster',desc:BG.bagelSaison+' Sätze 0:6 in einer Saison verloren',
     multi:true,count:(id,ms)=>countMrDisaster(id,ms)},
-  {id:'crash_day',ic:'crashDay',name:'Zusammenbruch',desc:'Spieltag mit einem Sieg begonnen und mit einer Niederlage beendet (ab '+BG.tag+' Partien)',
+  {id:'crash_day',ic:'crashDay',name:'Zusammenbruch',desc:'Spieltag mit einem gewonnenen Satz begonnen und mit einem verlorenen beendet (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countCrashDays(id,ms,bis)},
-  {id:'nemesis',ic:'ghost',name:'Angstgegner',desc:BG.angstgegner+'× in Folge gegen denselben Gegner verloren',
+  {id:'nemesis',ic:'ghost',name:'Angstgegner',desc:BG.angstgegner+' Sätze in Folge gegen denselben Gegner verloren',
     multi:true,count:(id,ms)=>countNemesis(id,ms)},
 ];
 // ════════════════════════════════════════════════════════════════════
@@ -228,21 +231,21 @@ const BADGE_RARITY = {
   // -- LEGENDARY (10) -- 0 bis 5 der zwoelf Spieler halten sie --
   champion:        'legendary', // Meister der Saison — einer je Monat
   team_of_season:  'legendary', // Team der Saison — ein Duo je Monat
-  dynasty_600:     'legendary', // Dynastie (600 Saison-Elo, je Saison zählbar)
-  dominator_400:   'legendary', // Dominator (400 Saison-Elo, je Saison zählbar)
-  award_collector: 'legendary', // Award-Sammler (5 POTD + 2 POTW)
-  streak15:        'legendary', // 15er Serie
-  streak20:        'legendary', // 20er Serie
+  dynasty_600:     'legendary', // Dynastie (BG.elo[2] Saison-Elo, je Saison zählbar)
+  dominator_400:   'legendary', // Dominator (BG.elo[1] Saison-Elo, je Saison zählbar)
+  award_collector: 'legendary', // Award-Sammler (PERIODE_SAMMLER)
+  streak15:        'legendary', // 15 Sätze in Folge
+  streak20:        'legendary', // 20 Sätze in Folge
   untouchable:     'legendary', // Untouchable — 3 Saisons in Folge Top-3
-  mr_perfect:      'legendary', // Bagel-Bäcker — 3 Bagels in einer Saison
-  perfect_win:     'legendary', // Absoluter Sieger — Doppel-Bagel
+  mr_perfect:      'legendary', // Bagel-Bäcker — BG.bagelSaison Sätze zu Null in einer Saison
+  godly_streak:    'legendary', // Tag der Götter — drei Spieltage in Folge Player of the Day
   // -- RARE (14) -- 0 bis 9 Halter --
-  drive50:         'rare',      // Drive-Spezialist — 30 Partien rechts
-  reves50:         'rare',      // Revés-Spezialist — 30 Partien links
-  games250:        'rare',      // Urgestein (300 Matches) — zählt Anwesenheit
-  wins200:         'rare',      // Siegermaschine (300 Siege) — zählt Anwesenheit
+  drive50:         'rare',      // Drive-Spezialist — BG.seite Sätze rechts
+  reves50:         'rare',      // Revés-Spezialist — BG.seite Sätze links
+  games250:        'rare',      // Urgestein (BG.urgestein Sätze) — zählt Anwesenheit
+  wins200:         'rare',      // Siegermaschine (BG.siegermaschine Satzsiege) — zählt Anwesenheit
   vice_champion:   'rare',      // Vize-Meister
-  godly_streak:    'rare',      // Tag der Götter — 4 Halter, für legendär zu viele
+  perfect_win:     'rare',      // Absoluter Sieger — ein Satz zu Null; fünf in einer Saison sind legendär
   repeat_score:    'rare',      // Wiederholungstäter
   streak10:        'rare',      // 10er Serie
   krimi:           'rare',      // Krimi-Reihe
@@ -254,10 +257,10 @@ const BADGE_RARITY = {
   // -- COMMON (18) -- 6 bis 12 Halter --
   first_match:     'common',    // Debütant
   games25:         'common',    // Stammgast
-  games150:        'common',    // Legende (150 Matches) — reine Wegmarke, 6 Halter
+  games150:        'common',    // Dauerbrenner (BG.dauerbrenner Sätze) — reine Wegmarke
   potd:            'common',    // Player of the Day — fast jeder Spieltag hat einen
-  wall_badge:      'common',    // Die Wende — Satzrückstand gedreht
-  climber_100:     'common',    // Aufsteiger (100 Saison-Elo, je Saison zählbar)
+  wall_badge:      'common',    // Die Wende — Satzrückstand im Match gedreht
+  climber_100:     'common',    // Aufsteiger (BG.elo[0] Saison-Elo, je Saison zählbar)
   early_bird:      'common',    // Frühschicht
   comeback_day:    'common',    // Comeback-Tag
   revanchist:      'common',    // Revanchist
@@ -265,20 +268,20 @@ const BADGE_RARITY = {
   carry:           'common',    // Carry
   kingslayer:      'common',    // Thronfäller — Sieg gegen Top-1
   overtake:        'common',    // Überholmanöver — Spieler in Rangliste überholt
-  duty_done:       'common',    // Pflichterfüller — Sieg gegen Bottom-3
-  streak_breaker:  'common',    // Serienbrecher — Streak >=4 eines Gegners gestoppt
-  upset_king:      'common',    // Außenseiterkönig — 11 Halter, 54 mal vergeben
-  clear_win:       'common',    // Klares Ding — 10 Halter, 136 mal vergeben
-  streak5:         'common',    // 5er Serie — 8 Halter, 30 mal vergeben
+  duty_done:       'common',    // Pflichterfüller — Satz gegen einen der beiden Letzten
+  streak_breaker:  'common',    // Serienbrecher — Serie eines Gegners ab BG.serienbrecher gestoppt
+  upset_king:      'common',    // Außenseiterkönig
+  clear_win:       'common',    // Klares Ding — 6:2 oder klarer
+  streak5:         'common',    // 5 Sätze in Folge
   // -- NEGATIVE (8) --
-  losing5:         'negative',  // Losing Streak
-  perfect_loss:    'negative',  // Absoluter Verlierer
-  black_day:       'negative',  // Schwarzer Tag — Tag mit 3+ Spielen, alle verloren
-  krimi_loser:     'negative',  // Krimi-Versager — 3 knappe Niederlagen in Folge
-  bitter_loss:     'negative',  // Bittere Pille — 9:10-Niederlage
-  mr_disaster:     'negative',  // Mr. Disaster — 3x 0:10 in einer Saison
-  crash_day:       'negative',  // Zusammenbruch — Tag mit Sieg gestartet, mit Niederlage beendet
-  nemesis:         'negative',  // Angstgegner — 5x in Folge gegen denselben Spieler verloren
+  losing5:         'negative',  // Die Talfahrt — BG.talfahrt Sätze in Folge verloren
+  perfect_loss:    'negative',  // Absoluter Verlierer — Satz 0:6
+  black_day:       'negative',  // Schwarzer Tag — ab BG.tag Sätzen, alle verloren
+  krimi_loser:     'negative',  // Krimi-Versager — BG.krimiNied knappe Sätze in Folge verloren
+  bitter_loss:     'negative',  // Bittere Pille — Satz im Tiebreak verloren
+  mr_disaster:     'negative',  // Mr. Disaster — BG.bagelSaison Sätze 0:6 in einer Saison
+  crash_day:       'negative',  // Zusammenbruch — Spieltag mit Satzgewinn begonnen, mit Satzverlust beendet
+  nemesis:         'negative',  // Angstgegner — BG.angstgegner Sätze in Folge gegen denselben Gegner verloren
 };
 
 
@@ -317,7 +320,7 @@ const BADGE_PROFIL_ORDER = [
   'streak20', 'streak15',
   'champion', 'team_of_season',
   'untouchable', 'award_collector',
-  'perfect_win', 'mr_perfect',
+  'godly_streak', 'mr_perfect',
 ];
 const _BADGE_PROFIL_RANG = new Map(BADGE_PROFIL_ORDER.map((id, i) => [id, i]));
 function badgeProfilRang(id){
@@ -1056,7 +1059,7 @@ function countStreakBreaker(id,ms){
     const snap = snaps[m.id]; if(!snap) continue;
     const onA = (id===m.a1||id===m.a2);
     const opps = onA ? [m.b1,m.b2] : [m.a1,m.a2];
-    if(opps.some(oId => (snap[oId]||0) >= 4)) count++;
+    if(opps.some(oId => (snap[oId]||0) >= BG.serienbrecher)) count++;
   }
   return count;
 }
@@ -1339,8 +1342,8 @@ function getBadgeEarnedCache(){
       if(pDrvG<BG.seite && s.drvG>=BG.seite)        fire('drive50');
 
       // ── Match-Ergebnis-Badges ──
-      if(bgDoppelBagel(id,m) &&  bgBegegnungSieg(id,m)) fire('perfect_win');
-      if(bgDoppelBagel(id,m) && !bgBegegnungSieg(id,m)) fire('perfect_loss');
+      if(w  && bgZuNull(m))                         fire('perfect_win');
+      if(!w && bgZuNull(m))                         fire('perfect_loss');
       if(w  && bgZitter(m))                         fire('nail_biter');
       if(!w && bgZitter(m))                         fire('bitter_loss');
       if(bgWende(id,m))                             fire('wall_badge');
@@ -1566,7 +1569,7 @@ function getBadgeEarnedCache(){
         const ss=streakSnaps[m.id];
         if(ss){
           const opps=onA?[m.b1,m.b2]:[m.a1,m.a2];
-          if(opps.some(oId=>(ss[oId]||0)>=4)) fire('streak_breaker');
+          if(opps.some(oId=>(ss[oId]||0)>=BG.serienbrecher)) fire('streak_breaker');
         }
       }
 

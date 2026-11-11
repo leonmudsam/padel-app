@@ -1,10 +1,10 @@
 // ╔═══ §5.4 ─── VIEW: TEAMS ────────────────────────────────────────────╗
 //     Team-Tab mit Team-Statistiken und Top-Teams.
 // ╚═════════════════════════════════════════════════════════════════════════╝
-// Ab wie vielen gemeinsamen Partien ein Duo in der Liste steht. Beim
-// Tischkicker waren es vier; ein Padel-Duo kommt im Monat im Mittel auf
-// zwei bis drei, und mit vier stünde die Liste die ersten Wochen leer.
-const DUO_MIN = 3;
+// Ab wie vielen gemeinsamen Sätzen ein Duo in der Liste steht. Ein Duo
+// kommt im Monat auf zehn bis zwanzig; mit weniger als fünf stünde dort
+// jedes Paar nach einem einzigen Match.
+const DUO_MIN = 5;
 function vTeams(nurErgebnis=false){
   // Ein Duo mit einem Ruheständler spielt nie wieder [§C40]: es steht nicht
   // in der Liste der aktiven Liga, sondern am Ende in einer Zeile, die
@@ -16,8 +16,8 @@ function vTeams(nurErgebnis=false){
     // „Noch nicht genug Daten" sagte nicht, wie viel genug ist und was dann
     // kommt.
     const html=vorschauHtml('handshake','Die Duos der Liga',
-      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Partien</b>, mit Bilanz, Elo und der besseren Aufstellung.`);
-    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Partien`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Partien</p></div>${html}`;
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`);
+    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Sätzen`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Sätzen</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
   
@@ -146,7 +146,7 @@ function vTeams(nurErgebnis=false){
   const ruhe=ruheF.length?`<div class="rlist">${ruheF.map((t,i)=>zeile(t,i,true)).join('')}</div>`:'';
 
 
-  const ergebnis={kopf:`${arrF.length} Duo${arrF.length===1?'':'s'}${_tq?' gefunden':` ab ${DUO_MIN} gemeinsamen Partien, über alle Saisons`}`,
+  const ergebnis={kopf:`${arrF.length} Duo${arrF.length===1?'':'s'}${_tq?' gefunden':` ab ${DUO_MIN} gemeinsamen Sätzen, über alle Saisons`}`,
     html:arrF.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Teams gefunden'),
     ruhe, ruheZahl:ruheF.length};
   // Die Suche zeichnet nur die Ergebnisse. Keine zweite Filter-/Sortierformel
@@ -154,7 +154,7 @@ function vTeams(nurErgebnis=false){
   if(nurErgebnis) return ergebnis;
   return `
     <div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p id="teamCount">${ergebnis.kopf}</p></div>
-    ${einblickHtml('netz', `ab ${DUO_MIN} Partien`)}
+    ${einblickHtml('netz', `ab ${DUO_MIN} Sätzen`)}
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>
@@ -179,8 +179,8 @@ function vTeams(nurErgebnis=false){
 //     Filterbar nach Spieler. Zeigt Badge-Chips pro Match.
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jede Partie, die neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
-    'Jede Partie steht hier mit Aufstellung und Elo. Getippt lässt sie sich bearbeiten oder löschen.')}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
+    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.')}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -222,15 +222,15 @@ function vHistory(){
     earned.forEach(e=>{const k=e.badge.id;if(!jeAbz.has(k))jeAbz.set(k,{badge:e.badge,wer:[]});jeAbz.get(k).wer.push(pname(e.playerId).split(' ')[0]);});
     const abz=[...jeAbz.values()];
     // Am letzten Satz eines Matches über mehrere Sätze [§1.3] steht dessen
-    // Stand; die Sätze davor sind Partien wie jede andere.
+    // Stand; die Sätze davor stehen wie jeder andere.
     const bg=begegnungAm(m);
-    const matchChip=bg.n>1&&bg.winner?`<span class="mrow-match">${svgI(bg.wende?'wende':'padelBall')}Match ${Math.max(bg.setsA,bg.setsB)}:${Math.min(bg.setsA,bg.setsB)}${bg.wende?' · Wende':bg.zuNull?' · zu Null':''}</span>`:'';
+    const matchChip=bg.n>1&&bg.winner?`<span class="mrow-match">${svgI(bg.wende?'wende':'padelBall')}Match ${Math.max(bg.setsA,bg.setsB)}:${Math.min(bg.setsA,bg.setsB)}${bg.wende?' · Wende':bg.doppelBagel?' · Doppel-Bagel':''}</span>`:'';
     const badgeChips=(abz.length||matchChip)?`<div class="mrow-bd">${matchChip}${abz.slice(0,3).map(x=>
       `<span title="${esc(x.badge.name)}">${badgeIc(x.badge,'12px')}<span>${esc(x.wer.join(', '))}</span></span>`
     ).join('')}${abz.length>3?`<span>+${abz.length-3}</span>`:''}</div>`:'';
     const k=tagKey(mts(m));
     const kopf=k!==tagVorher?`<div class="mtag"><b>${esc(datumFmt(mts(m),'wt'))}</b><span>${esc(datumFmt(mts(m),'tm'))}</span>`
-      +`<em class="num">${proTag[k]} ${proTag[k]===1?'Partie':'Partien'}</em></div>`:'';
+      +`<em class="num">${proTag[k]} ${proTag[k]===1?'Satz':'Sätze'}</em></div>`:'';
     tagVorher=k;
     return `${kopf}<div class="mrow" data-match="${m.id}">
       <div class="mrow-top">
@@ -257,12 +257,12 @@ function vHistory(){
   ` : '';
 
   return `
-    <div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>${list.length} Partien</p></div>
+    <div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>${list.length} Sätze</p></div>
     <div class="search" style="margin-bottom:14px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></svg>
       <select id="histSel" style="padding-left:40px">${opts}</select>
     </div>
-    ${list.length?`<div class="mlist">${rows}</div>${paginationControls}`:emptyState('search','Keine Partien für diesen Filter')}`;
+    ${list.length?`<div class="mlist">${rows}</div>${paginationControls}`:emptyState('search','Keine Sätze für diesen Filter')}`;
 }
 
 
@@ -289,7 +289,7 @@ function vMatch(){
       <button class="seiten-tausch" data-tausch="${t}" title="Seiten tauschen" aria-label="Seiten von Team ${t} tauschen">${svgI('sideSwap')}</button></div>
       <div class="court-h">${slot(t,1)}${slot(t,2)}</div></div>`;
   return `
-    <div class="view-head"><h2>Neue Partie ${hilfeKnopf('eingabe')}</h2><p>Aufstellen, Sätze eintragen, speichern</p></div>
+    <div class="view-head"><h2>Sätze eintragen ${hilfeKnopf('eingabe')}</h2><p>Aufstellen, Sätze eintragen, speichern</p></div>
     <div class="builder court">
       ${haelfte('A')}
       <div class="vs-mid court-netz"><span class="line"></span><span class="vs">NETZ</span><span class="line"></span></div>
@@ -367,17 +367,17 @@ function vSettings(){
     <div class="card" style="margin-top:14px;border:1px solid rgba(228,242,74,.18);background:linear-gradient(155deg,rgba(228,242,74,.06),var(--surface) 80%)">
       <div class="mini-label" style="color:var(--acid);display:flex;align-items:center;gap:6px">${svgI('info')}Wirkung der Regler</div>
       <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:8px">
-        Regler wirken auf <b style="color:var(--acid)">neue Partien</b>. Neu berechnen wendet sie auf alle an und
+        Regler wirken auf <b style="color:var(--acid)">neue Sätze</b>. Neu berechnen wendet sie auf alle an und
         <b style="color:var(--red)">überschreibt die gespeicherte Elo</b>.
       </p>
-      <button class="btn" id="recalcBtn" style="margin-top:14px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('neuRechnen')} Alle Partien neu berechnen</button>
+      <button class="btn" id="recalcBtn" style="margin-top:14px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('neuRechnen')} Alle Sätze neu berechnen</button>
     </div>
 
     <div class="card" style="margin-top:14px">
       <div class="mini-label">Sicherung und Export</div>
 
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
-        <button class="btn ghost" id="expXlsxBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('scroll')} Partien als Excel (.xlsx)</button>
+        <button class="btn ghost" id="expXlsxBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('scroll')} Sätze als Excel (.xlsx)</button>
         <button class="btn ghost" id="expSaveBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('sichern')} Sicherung speichern (.json)</button>
         <button class="btn ghost sm" id="expCsvBtn" style="width:100%;font-size:11px">Stattdessen als CSV</button>
       </div>
@@ -387,7 +387,7 @@ function vSettings(){
       <div style="height:1px;background:var(--line);margin:14px 0"></div>
       <button class="btn" id="impBackupBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('hochladen')} Datei einspielen</button>
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px">
-        .xlsx, .csv oder .json. Nur fehlende Partien kommen dazu, nichts wird überschrieben.
+        .xlsx, .csv oder .json. Nur fehlende Sätze kommen dazu, nichts wird überschrieben.
       </p>
     </div>
 
@@ -531,7 +531,7 @@ function updatePreview(){
   const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
   // Jeder Satz wird eine eigene Partie [§1.3]; die Zahlen davor sind die
   // Elo je Satz, rechts ihre Summe.
-  const zusatz = n > 1 ? `${n} Sätze, je eine Partie` : '';
+  const zusatz = n > 1 ? `${n} Sätze, je einen Satz` : '';
   const titel = 'Elo';
   slot.innerHTML = `<div class="preview">
     <div class="prob-cap">${titel}${zusatz?' · '+zusatz:''}</div>
@@ -561,7 +561,7 @@ function _matchChanceHtml(c){
 
 async function doSaveMatch(){
   if(doSaveMatch._busy) return;
-  if(!validM()){toast('Partie unvollständig',true);return;}
+  if(!validM()){toast('Satz unvollständig',true);return;}
   const state=M,stand=JSON.stringify(M),save=document.getElementById('saveM'),saveHtml=save?save.innerHTML:'';
   const unveraendert=()=>M===state && JSON.stringify(M)===stand;
   doSaveMatch._busy=true;
@@ -634,7 +634,7 @@ async function doSaveMatch(){
       M=matchLeer();
       if(tab==='match') render();
     }
-    toast(insertedRow?'Partie gespeichert. Anzeige fehlgeschlagen.':'Speichern fehlgeschlagen.',true);
+    toast(insertedRow?'Satz gespeichert. Anzeige fehlgeschlagen.':'Speichern fehlgeschlagen.',true);
   } finally {
     doSaveMatch._busy=false;
     if(save && save.isConnected){save.removeAttribute('aria-busy');save.innerHTML=saveHtml;}

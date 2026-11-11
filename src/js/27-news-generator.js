@@ -256,7 +256,7 @@ function _buildStories(){
           title: `${currentSeason().label} hat eine Tabelle`,
           desc: `${nameOf(rang[0].pid)} führt mit ${rang[0].elo} Elo, `
               + `${vor} vor ${nameOf(rang[1].pid)}. `
-              + `Gewertet sind ${frei.partien} Partien und `
+              + `Gewertet sind ${frei.partien} Sätze und `
               + `${frei.genug} Spieler mit mindestens vier Einsätzen.`,
           // Der Zeitpunkt ist die Partie, die die Tabelle freigegeben hat,
           // und nicht der Moment des Nachschlagens: eine Karte, die beim
@@ -433,8 +433,8 @@ function _buildStories(){
         // 75. Mal zusammen". Die Bilanz bis zu dieser Partie sagt, was die
         // Serie für dieses Duo bedeutet.
         desc: t.n > t.streak
-          ? `Zusammen ${t.s} Siege aus ${t.n} Partien.`
-          : `Jede gemeinsame Partie gewonnen.`,
+          ? `Zusammen ${t.s} Siege aus ${t.n} Sätzen.`
+          : `Jeder gemeinsame Satz gewonnen.`,
         when: t.when,
         prio: STORY_PRIO.team_streak + (t.streak >= 7 ? 4 : 0),
         dataRef: {type:'team_streak', a:t.ids[0], b:t.ids[1], streak:t.streak,
@@ -551,7 +551,7 @@ function _buildStories(){
         // Kein Possessivpronomen über einen Spieler [§6]: „über dem eigenen
         // Schnitt", nicht „über seinem Schnitt".
         title: `${nameOf(c.pid)} spielt über dem eigenen Schnitt`,
-        desc: `${Math.round(c.qJetzt * 100)} % aus den letzten ${FORM_FENSTER} Partien. `
+        desc: `${Math.round(c.qJetzt * 100)} % aus den letzten ${FORM_FENSTER} Sätzen. `
             + `Über die Laufbahn davor sind es ${Math.round(c.qBasis * 100)} %.`,
         when: c.when,
         prio: STORY_PRIO.top_form + (c.vorsprung >= 0.4 ? 4 : 2),
@@ -779,9 +779,9 @@ function _buildStories(){
         // hier ein zweites Mal, gleich darunter.
         _bdesc = `5 Pleiten in Folge gegen ${nameOf(_nemOpp)}.`;
       } else if(ev.badge.id === 'games250'){
-        _bdesc = `${nameOf(ev.playerId)} hat ${_spEigene(ev.playerId, badgeMatches.get(ev.matchId)).length} Partien auf dem Court gespielt.`;
+        _bdesc = `${nameOf(ev.playerId)} hat ${_spEigene(ev.playerId, badgeMatches.get(ev.matchId)).length} Sätze auf dem Court gespielt.`;
       } else if(ev.badge.id === 'wins200'){
-        _bdesc = `300 Siege in der Karriere. ${nameOf(ev.playerId)} hält nach dieser Partie bei ${_spEigene(ev.playerId, badgeMatches.get(ev.matchId)).filter(m => _spGew(m, ev.playerId)).length}.`;
+        _bdesc = `300 Siege in der Karriere. ${nameOf(ev.playerId)} hält nach diesem Satz bei ${_spEigene(ev.playerId, badgeMatches.get(ev.matchId)).filter(m => _spGew(m, ev.playerId)).length}.`;
       } else {
         // Die Bedingung aus dem Katalog steht sonst ohne Punkt in der Karte:
         // sie ist dort eine Zelle in einem Raster, hier ist sie ein Satz.
@@ -857,8 +857,8 @@ function _buildStories(){
           // Eine Bedingung, die nur den Stand nennt („Zittersieg": „10:9-Sieg"),
           // sagt unter dem Kopf derselben Partie nichts Neues.
           : eins ? (l.filter(ev => !/\d+:\d+/.test(bed(ev))).map(ev => `„${ev.badge.name}“: ${bed(ev)}`).join(' ')
-              || `${_zahlwortDe(l.length, true)} Auszeichnungen ${gemeinsamesMatch ? 'in dieser Partie' : 'an diesem Tag'}.`)
-          : `${l.length} Auszeichnungen ${gemeinsamesMatch ? 'in dieser Partie' : 'an diesem Tag'}. `
+              || `${_zahlwortDe(l.length, true)} Auszeichnungen ${gemeinsamesMatch ? 'in diesem Satz' : 'an diesem Tag'}.`)
+          : `${l.length} Auszeichnungen ${gemeinsamesMatch ? 'in diesem Satz' : 'an diesem Tag'}. `
             + l.map(zeile).join(', ') + '.',
         when: l[l.length - 1].when,
         prio: STORY_PRIO.badge_marken,
@@ -974,7 +974,7 @@ function _buildStories(){
         // „feiert 250. Spiel" ohne Artikel, und darunter dieselbe Zahl noch
         // einmal. Der Satz nennt jetzt, was in diesen Partien zusammengekommen
         // ist [§C33].
-        title: `${nameOf(c.pid)} feiert die ${c.total}. Partie`,
+        title: `${nameOf(c.pid)} feiert den ${c.total}. Satz`,
         // Die Siege der ersten hundert Partien, nicht die von heute: gezählt
         // wurde über die ganze Laufbahn, und unter „Aus 100 Partien" konnten
         // damit mehr als hundert Siege stehen.
@@ -983,7 +983,7 @@ function _buildStories(){
           const alle = (matchesOfPlayer(c.pid, matches) || []).filter(m => mts(m) <= t);
           const siege = alle.filter(m => won(c.pid, m)).length;
           // „Aus 10 Partien sind 1 Siege geworden" stand beim ersten Jubiläum.
-          return `${siege} ${siege === 1 ? 'Sieg' : 'Siege'} in ${c.total} Partien, `
+          return `${siege} ${siege === 1 ? 'Sieg' : 'Siege'} in ${c.total} Sätzen, `
                + `das sind ${Math.round(100 * siege / Math.max(1, c.total))} %.`;
         })(),
         when: c.when,
@@ -1068,7 +1068,7 @@ function _buildStories(){
         z.n++; if(sieg) z.s++;
         if(neu && DUO_STUFEN.has(z.n) && ids.every(zeig)) neuSt.push({id:'duojub_' + k.replace('|', '_') + '_' + z.n, cat:'team', ic:'users',
           title:`${nameOf(ids[0])} und ${nameOf(ids[1])} spielen zum ${z.n}. Mal zusammen`,
-          desc:`${z.s} von ${z.n} Partien gewonnen, Siegquote ${Math.round(100 * z.s / z.n)} %.`,
+          desc:`${z.s} von ${z.n} Sätzen gewonnen, Siegquote ${Math.round(100 * z.s / z.n)} %.`,
           when:zeit, prio:STORY_PRIO.duo_jubilaeum,
           dataRef:{type:'duo_jubilaeum', a:ids[0], b:ids[1], n:z.n, s:z.s, sieg, matchId:m.id, playerIds:ids.slice()}});
       });
@@ -1092,7 +1092,7 @@ function _buildStories(){
         const k = id + '|' + tagKey(m.created_at), z = tagN[k] || (tagN[k] = {n:0, s:0});
         z.n++; if(W.includes(id)) z.s++;
         if(neu && TAG_STUFEN.has(z.n) && zeig(id)) neuSt.push({id:'marathon_' + id + '_' + tagKey(m.created_at) + '_' + z.n, cat:'personal', ic:'hourglass',
-          title:`${nameOf(id)} bestreitet die ${z.n}. Partie des Tages`,
+          title:`${nameOf(id)} bestreitet den ${z.n}. Satz des Tages`,
           desc:`${z.s} davon gewonnen.`,
           when:zeit, prio:STORY_PRIO.tagesmarathon,
           dataRef:{type:'tagesmarathon', pid:id, n:z.n, s:z.s, matchId:m.id, playerIds:[id]}});
@@ -1114,7 +1114,7 @@ function _buildStories(){
             const anders = seasonOf(new Date(r.wann)).id !== seasonOf(m.created_at).id;
             neuSt.push({id:'hoch_' + id + '_' + m.id, cat:'personal', ic:'peak',
               title:`${nameOf(id)} erreicht ${Math.round(e)} Elo, so viel wie nie zuvor`,
-              desc:`Der bisherige Höchststand lag bei ${Math.round(r.max)} Elo, ${r.seit} Partien zuvor`
+              desc:`Der bisherige Höchststand lag bei ${Math.round(r.max)} Elo, ${r.seit} Sätze zuvor`
                 + (anders ? ` im ${seasonLabel(seasonOf(new Date(r.wann)).id)}.` : '.'),
               when:zeit, prio:STORY_PRIO.elo_hoch,
               dataRef:{type:'elo_hoch', pid:id, elo:Math.round(e), vorher:Math.round(r.max), seit:r.seit,
@@ -1166,7 +1166,7 @@ function _buildStories(){
         neuSt.push({id:'wochenspitze_' + wNach.id + '_' + m.id, cat:'personal', ic:'calendar',
           title:`${nameOf(wNach.id)} übernimmt die Woche, ${wNach.s} von ${wNach.n} gewonnen`,
           desc:wVor ? `Vorher lag ${nameOf(wVor.id)} mit ${quote(wVor.s, wVor.n)} % vorn.`
-            : `${quote(wNach.s, wNach.n)} % der Partien dieser Woche gewonnen.`,
+            : `${quote(wNach.s, wNach.n)} % der Sätze dieser Woche gewonnen.`,
           when:zeit, prio:STORY_PRIO.woche_spitze,
           dataRef:{type:'woche_spitze', pid:wNach.id, s:wNach.s, n:wNach.n, vorher:wVor ? wVor.id : null,
             matchId:m.id, playerIds:[wNach.id]}});
@@ -1186,13 +1186,13 @@ function _buildStories(){
       });
       if(tagFakt && tagFakt.art === 'plus') neuSt.push({id:'tagplus_' + tagFakt.id + '_' + m.id, cat:'personal', ic:'comeback',
         title:`${nameOf(tagFakt.id)} dreht den Tag ins Plus, nach ${vz(tagFakt.tief)} Elo`,
-        desc:`Nach ${tagFakt.n} Partien des Tages stehen ${vz(tagFakt.elo)} Elo zu Buche.`,
+        desc:`Nach ${tagFakt.n} Sätzen des Tages stehen ${vz(tagFakt.elo)} Elo zu Buche.`,
         when:zeit, prio:STORY_PRIO.tag_plus,
         dataRef:{type:'tag_plus', pid:tagFakt.id, tief:Math.round(tagFakt.tief), elo:Math.round(tagFakt.elo), n:tagFakt.n,
           matchId:m.id, playerIds:[tagFakt.id]}});
       if(tagFakt && tagFakt.art === 'hoehe') neuSt.push({id:'taghoehe_' + tagFakt.id + '_' + m.id, cat:'personal', ic:'trendUp',
         title:`${nameOf(tagFakt.id)} kommt an diesem Tag auf ${vz(tagFakt.elo)} Elo`,
-        desc:`Zum ersten Mal an diesem Tag über +75, nach ${tagFakt.n} Partien.`,
+        desc:`Zum ersten Mal an diesem Tag über +75, nach ${tagFakt.n} Sätzen.`,
         when:zeit, prio:STORY_PRIO.tag_hoehe,
         dataRef:{type:'tag_hoehe', pid:tagFakt.id, elo:Math.round(tagFakt.elo), n:tagFakt.n, matchId:m.id, playerIds:[tagFakt.id]}});
       // (10) Der Monat: der größte Gewinn eines Siegers ab der achten Partie
@@ -1224,8 +1224,8 @@ function _buildStories(){
         dataRef:{type:'monat_gewinn', pid:monatFakt.id, elo:monatFakt.elo, vorher:monatFakt.vorher, n:monatFakt.n,
           matchId:m.id, playerIds:[monatFakt.id]}});
       if(monatFakt && monatFakt.art === 'halb') neuSt.push({id:'monathalb_' + monatFakt.id + '_' + m.id, cat:'personal', ic:'scaleBalance',
-        title:`${nameOf(monatFakt.id)} gewinnt im ${monatName} jetzt jede zweite Partie`,
-        desc:`${monatFakt.s} von ${monatFakt.n} Partien gewonnen, vor dieser waren es ${monatFakt.s - 1} von ${monatFakt.n - 1}.`,
+        title:`${nameOf(monatFakt.id)} gewinnt im ${monatName} jetzt jeden zweiten Satz`,
+        desc:`${monatFakt.s} von ${monatFakt.n} Sätzen gewonnen, vor dieser waren es ${monatFakt.s - 1} von ${monatFakt.n - 1}.`,
         when:zeit, prio:STORY_PRIO.monat_halb,
         dataRef:{type:'monat_halb', pid:monatFakt.id, s:monatFakt.s, n:monatFakt.n, matchId:m.id, playerIds:[monatFakt.id]}});
       // (11) Der beste Partner: mit diesem Partner die beste Quote unter
@@ -1245,8 +1245,8 @@ function _buildStories(){
         neuSt.push({id:'partner_' + id + '_' + mit + '_' + m.id, cat:'team', ic:'handshake',
           // Der Vergleich gehört in den Satz: „…, mit allen 44 %" machte
           // die Schlagzeile drei Zeilen lang und hieß nicht, mit wem.
-          title:`${nameOf(id)} gewinnt mit ${nameOf(mit)} ${quote(z.s, z.n)} % der Partien`,
-          desc:`${z.s} von ${z.n} gemeinsamen Partien gewonnen. Mit allen Partnern sind es ${quote(g.s, g.n)} %.`,
+          title:`${nameOf(id)} gewinnt mit ${nameOf(mit)} ${quote(z.s, z.n)} % der Sätze`,
+          desc:`${z.s} von ${z.n} gemeinsamen Sätzen gewonnen. Mit allen Partnern sind es ${quote(g.s, g.n)} %.`,
           when:zeit, prio:STORY_PRIO.partner_best,
           dataRef:{type:'partner_best', pid:id, mit, s:z.s, n:z.n, allg:quote(g.s, g.n), matchId:m.id, playerIds:[id, mit]}});
         break;
@@ -1262,7 +1262,7 @@ function _buildStories(){
         if(neu && n >= 5 && zeig(id)) neuSt.push({id:'pleitenende_' + id + '_' + m.id, cat:'comeback', ic:'comeback',
           title:`${nameOf(id)} beendet eine Serie von ${n} Niederlagen`,
           desc:letzterSieg[id] ? `Der letzte Sieg davor war am ${tagImSatz(letzterSieg[id])}`
-            : `Es ist der erste Sieg, nach ${n} Partien.`,
+            : `Es ist der erste Sieg, nach ${n} Sätzen.`,
           when:zeit, prio:STORY_PRIO.pleiten_ende,
           dataRef:{type:'pleiten_ende', pid:id, n, matchId:m.id, playerIds:[id]}});
       });
@@ -1273,7 +1273,7 @@ function _buildStories(){
       if(neu && dn >= 4 && W.every(zeig)) neuSt.push({id:'duopleitenende_' + dkW.replace('|', '_') + '_' + m.id, cat:'team', ic:'comeback',
         title:`${nameOf(W[0])} und ${nameOf(W[1])} gewinnen wieder zusammen, nach ${dn} Niederlagen`,
         desc:duoSieg[dkW] ? `Zuletzt gewannen beide zusammen am ${tagImSatz(duoSieg[dkW])}`
-          : `Es ist der erste gemeinsame Sieg, nach ${dn} gemeinsamen Partien.`,
+          : `Es ist der erste gemeinsame Sieg, nach ${dn} gemeinsamen Sätzen.`,
         when:zeit, prio:STORY_PRIO.duo_pleiten_ende,
         dataRef:{type:'duo_pleiten_ende', a:W[0], b:W[1], n:dn, matchId:m.id, playerIds:W.slice()}});
       // (14) Die Rückkehr: die erste Partie nach mindestens vierzehn Tagen.
@@ -1285,7 +1285,7 @@ function _buildStories(){
           const tage = Math.floor((t - vor) / _dayMs), sieg = W.includes(id);
           neuSt.push({id:'rueckkehr_' + id + '_' + m.id, cat:'personal', ic:'doorReturn',
             title:sieg ? `${nameOf(id)} gewinnt nach ${tage} Tagen Pause` : `${nameOf(id)} spielt nach ${tage} Tagen wieder`,
-            desc:`Die letzte Partie davor war am ${tagImSatz(vor)}`,
+            desc:`Der letzte Satz davor war am ${tagImSatz(vor)}`,
             when:zeit, prio:STORY_PRIO.rueckkehr,
             dataRef:{type:'rueckkehr', pid:id, tage, sieg, vorher:vor, matchId:m.id, playerIds:[id]}});
         }
@@ -1319,7 +1319,7 @@ function _buildStories(){
         cat: 'fun',
         ic: 'clock',
         title: 'Ruhige Woche',
-        desc: `Nur ${lastWeek} ${lastWeek === 1 ? 'Partie' : 'Partien'} in den letzten 7 Tagen. Normal wären ${Math.round(avg)}.`,
+        desc: `Nur ${lastWeek} ${lastWeek === 1 ? 'Satz' : 'Sätze'} in den letzten 7 Tagen. Normal wären ${Math.round(avg)}.`,
         when: now,
         prio: STORY_PRIO.quiet_week,
         dataRef: {type:'quiet_week', lastWeek, avg: Math.round(avg)}
@@ -1424,7 +1424,7 @@ function _buildStories(){
         title: `${champ} ist Meister im ${monat}`,
         // Der Satz nennt, was weder Schlagzeile noch Podest zeigen: Meister,
         // Monat und Elo standen vorher in allen dreien und im Satz darunter.
-        desc: `${_fakten.spiele} Partien und ${_fakten.tore} Games prägten den Monat, ${_fakten.engeSpiele === 1 ? 'eine Partie endete' : _fakten.engeSpiele + ' Partien endeten'} knapp.`,
+        desc: `${_fakten.spiele} Sätze und ${_fakten.tore} Games prägten den Monat, ${_fakten.engeSpiele === 1 ? 'ein Satz endete' : _fakten.engeSpiele + ' Sätze endeten'} knapp.`,
         // ── Der Abschluss steht über dem Abend, der ihn beschließt ──
         // Am 1. um 00:00: beim ersten Öffnen nach dem Monatswechsel ist er die
         // jüngste Karte, über dem Spieler des letzten Tages (23:59:00) und
@@ -1457,7 +1457,7 @@ function _buildStories(){
         id: 'karriereende_' + p.id + '_' + tagKey(t),
         cat: 'season', ic: 'hourglass',
         title: `${p.name} beendet die Karriere`,
-        desc: `${_spZahl(d.spiele)} Partien, ${_spZahl(d.siege)} Siege und ${Math.round(d.quote * 100)} % Siegquote. `
+        desc: `${_spZahl(d.spiele)} Sätze, ${_spZahl(d.siege)} Siege und ${Math.round(d.quote * 100)} % Siegquote. `
             + (rek ? `Beim Abschied ${rek === 1 ? 'steht ein Rekord' : 'stehen ' + rek + ' Rekorde'} in der Ewigen Tafel.` : `Die Karriere-Elo steht bei ${d.elo}.`),
         when: new Date(t),
         prio: STORY_PRIO.karriereende,
@@ -1498,7 +1498,7 @@ function _buildStories(){
             const t = mts(last);
             const ges = (matchesOfPlayer(p.id, matches) || []).filter(m => mts(m) <= t).length;
             return ges
-              ? `${mark} Siege aus ${ges} Partien, das sind ${Math.round(100 * mark / ges)} %.`
+              ? `${mark} Siege aus ${ges} Sätzen, das sind ${Math.round(100 * mark / ges)} %.`
               : `${mark} Siege stehen jetzt in der Bilanz.`;
           })(),
           when: new Date(last.created_at),
@@ -1780,7 +1780,7 @@ function _buildStories(){
           // lauter [§C33]. Die Schlagzeile nennt jetzt beide Seiten, der Satz
           // die Siegchance und das Ergebnis.
           title: `${wNames} stürzen ${lNames}`,
-          desc: `Nur ${pct} % Siegchance vor der Partie, und am Ende steht ein `
+          desc: `Nur ${pct} % Siegchance vor dem Satz, und am Ende steht ein `
               + `${tore}. Gerechnet war mit einem klaren Sieg für ${lNames}.`,
           when: new Date(gs.m.created_at), prio: STORY_PRIO.giant_slayer,
           dataRef: {type:'giant_slayer', matchId: gs.m.id, winners: gs.winners, losers: gs.losers, chance: gs.chance}
@@ -1834,27 +1834,27 @@ function _buildStories(){
       const _best = winners.map(id => ({id, d: Math.round(dl[id] || 0)}))
         .filter(x => x.d > 0).sort((x, y) => y.d - x.d)[0] || null;
       const plus = _best ? _best.d : 0;
-      // Die Anlässe einer Padel-Partie [§1.3]: Doppel-Bagel, Außenseiter-
-      // sieg, im Tiebreak entschieden, Satzrückstand gedreht, deutlich,
+      // Die Anlässe eines Satzes [§1.3]: zu Null, Außenseitersieg, im
+      // Tiebreak entschieden, Satzrückstand im Match gedreht, deutlich,
       // umkämpft. Die Schlüssel (`zu_null`, `krimi`, `kanter`, `eng`) stammen
       // aus der Kicker-Liga und stehen in gespeicherten Karten.
-      // Eine Karte ist ein Satz. Was nur über mehrere Sätze gilt — der
-      // Doppel-Bagel, die Wende, drei umkämpfte Sätze, der Stand 2:1 —
+      // Eine Karte ist ein Satz, und zu Null ist ein Satz 6:0. Was nur über
+      // mehrere Sätze gilt — die Wende, drei umkämpfte Sätze, der Stand 2:1 —
       // erzählt der letzte Satz der Begegnung (`begegnungAm`), und nur,
       // wenn sein Sieger auch die Begegnung gewann; sonst erzählte die Karte
-      // eines verlorenen dritten Satzes, wer die Partie gewann.
+      // eines verlorenen dritten Satzes, wer das Match gewann.
       const pz = partie(m), stand = standFuer(m);
       const bg = begegnungAm(m), bgHier = bg.n > 1 && bg.winner === m.winner;
       const bgStand = bgHier ? `${Math.max(bg.setsA, bg.setsB)}:${Math.min(bg.setsA, bg.setsB)}` : '';
       let art = 'normal', rang = 0, title = '', desc = '', ic = 'padelBall';
-      if(bgHier && bg.doppelBagel){
+      if(pz.zuNull){
         art = 'zu_null'; rang = 10; ic = 'hundred';
         title = `${wn} lassen kein Game zu`;
-        desc = `${bgStand} in Sätzen gegen ${ln}, jeder Satz 6:0. Ein Doppel-Bagel.`;
+        desc = `${stand} gegen ${ln}. Ein Satz zu Null.`;
       } else if(chance >= CHANCE_SENSATION && chance < CHANCE_UPSET){
         art = 'upset'; rang = 8; ic = 'giantSlayer';
         title = `${wn} stürzen die Favoriten`;
-        desc = `Nur ${pct} % Siegchance vor der Partie. Trotzdem geht sie mit ${stand} an die Außenseiter.`;
+        desc = `Nur ${pct} % Siegchance vor dem Satz. Trotzdem geht er mit ${stand} an die Außenseiter.`;
       } else if(pz.entscheidTb){
         art = 'krimi'; rang = 6; ic = 'thriller';
         title = `${wn} gewinnen im ${pz.mtb ? 'Match-Tiebreak' : 'Tiebreak'}`;
@@ -1871,17 +1871,17 @@ function _buildStories(){
         art = 'eng'; rang = 2; ic = 'thriller';
         title = `${wn} gewinnen das Match ${bgStand}`;
         desc = `${ln} holen einen Satz und halten das Match offen, der letzte Satz endet ${stand}.`;
-      } else if(bgHier && bg.zuNull){
+      } else if(bgHier && bg.setsA + bg.setsB >= 2){
         art = 'kanter'; rang = 3; ic = 'zuNull';
-        title = `${wn} gewinnen das Match ${bgStand} zu Null`;
-        desc = `Kein Satz für ${ln}, der letzte endet ${stand}.`;
+        title = `${wn} gewinnen das Match ${bgStand}`;
+        desc = `Ohne Satzverlust gegen ${ln}, der letzte Satz endet ${stand}.`;
       } else {
-        // Eine Partie ohne Muster hat trotzdem zwei Zahlen, die jede hat.
+        // Ein Satz ohne Muster hat trotzdem zwei Zahlen, die jeder hat.
         // Das Ergebnis selbst steht im Band darüber und gehört nicht in
         // den Satz [§C33].
         title = `${wn} setzen sich gegen ${ln} durch`;
-        desc = `Vor der Partie lag die Siegchance bei ${pct} %.`
-             + (plus ? ` Für ${nameOf(_best.id)} bringt der Sieg +${plus} Elo.` : '');
+        desc = `Vor dem Satz lag die Siegchance bei ${pct} %.`
+             + (plus ? ` Für ${nameOf(_best.id)} bringt der Satz +${plus} Elo.` : '');
       }
       // ── Die gewöhnliche Partie erzählt ihre Form [§C33] ────────────
       // Sie hieß an jedem Spieltag „X setzen sich gegen Y durch", mit
@@ -1973,7 +1973,7 @@ function _buildStories(){
         cat: 'highlight',
         ic: 'crossedSwords',
         title: `${breakerNames} brechen ${nameOf(kill.victimPid)}s ${kill.streak}er-Serie`,
-        desc: `${nameOf(kill.victimPid)} hatte ${kill.streak} Partien in Folge gewonnen. Jetzt ist Schluss.`,
+        desc: `${nameOf(kill.victimPid)} hatte ${kill.streak} Sätze in Folge gewonnen. Jetzt ist Schluss.`,
         when: new Date(kill.t),
         prio: STORY_PRIO.streak_killer + (kill.streak >= 10 ? 4 : 0),
         dataRef: {type:'streak_killer', matchId: m.id, streak: kill.streak, victimPid: kill.victimPid, breakerIds}
@@ -2003,7 +2003,7 @@ function _buildStories(){
       _wochenTeile.push({
         art: 'thriller', ic: 'thriller', label: 'Krimi der Woche',
         pids: _tg, wert: standFuer(m), matchId: m.id,
-        satz: `${_tg.map(nameOf).join(' und ')} entscheiden die Partie im ${partie(m).mtb ? 'Match-Tiebreak' : 'Tiebreak'}. ${thriller.totalScore} Games wurden gespielt, mehr als in jeder anderen solchen Partie dieser Woche.`
+        satz: `${_tg.map(nameOf).join(' und ')} entscheiden den Satz im ${partie(m).mtb ? 'Match-Tiebreak' : 'Tiebreak'}. ${thriller.totalScore} Games wurden gespielt, mehr als in jedem anderen solchen Satz dieser Woche.`
       });
     }
   } catch(e){}
@@ -2207,7 +2207,7 @@ function _buildStories(){
           const siege = alle.filter(m => won(c.pid, m)).length;
           // Die Länge steht in der Schlagzeile („zündet die 3er-Serie");
           // „Drei Siege in Folge." darunter sagte sie ein zweites Mal.
-          return `In der Laufbahn stehen damit ${siege} Siege aus ${alle.length} Partien.`;
+          return `In der Laufbahn stehen damit ${siege} Siege aus ${alle.length} Sätzen.`;
         })(),
         when: c.when,
         prio: STORY_PRIO.win_streak + (c.streak >= 10 ? 6 : c.streak >= 7 ? 3 : 0),
@@ -2244,7 +2244,7 @@ function _buildStories(){
           id: 'dry_spell_'+matches[matches.length-1].id,
           cat: 'fun',
           ic: 'clock',
-          title: `${sinceLastDays} Tage ohne Partie`,
+          title: `${sinceLastDays} Tage ohne Satz`,
           desc: isRecord
             ? `So lange blieb der Court noch nie leer.`
             : `Die längste Pause der Liga waren ${maxGapDays} Tage.`,
@@ -2274,7 +2274,7 @@ function _buildStories(){
           art: 'potw', ic: 'weekKing', label: 'Spieler der Woche', held: true,
           pids: res.winners.map(w => w.id), wert: Math.round(main.wr*100) + ' %',
           satz: `${_namenListe(names)} ${names.length > 1 ? 'gewinnen' : 'gewinnt'} `
-              + `${main.wins} von ${main.wins + main.losses} Partien und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Quote.`,
+              + `${main.wins} von ${main.wins + main.losses} Sätzen und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Quote.`,
           potw: {weekKey: _potwKeyOf(range.start), playerId: main.id,
                  playerIds: res.winners.map(w => w.id), wins: main.wins, wr: main.wr}
         });
@@ -2309,7 +2309,7 @@ function _buildStories(){
         // Tagessiege vergeben (siehe `_newsPeriodWinner`). Die Quote bleibt als
         // Kontext, damit die Zahl einordbar ist. „Am 16.07. hat niemand mehr
         // geholt" — geholt WAS? Der Satz nennt, worum es geht: mehr Siege.
-        desc: `${main.wins} von ${main.wins + main.losses} Partien gewonnen, `
+        desc: `${main.wins} von ${main.wins + main.losses} Sätzen gewonnen, `
             + `das sind ${Math.round(main.wr*100)} %. Mehr Siege hat am `
             + `${dLabel} niemand geholt.`,
         when: rep,
@@ -2374,10 +2374,10 @@ function _buildStories(){
           _wochenTeile.push({
             art: 'team', ic: 'duo', label: 'Team der Woche', duo: true,
             pids: best.ids, wert: q + ' %',
-            satz: `${nameOf(best.ids[0])} und ${nameOf(best.ids[1])} gewinnen ${best.w} der ${best.g} gemeinsamen Partien, bei ${best.gf}:${best.ga} Games.`
+            satz: `${nameOf(best.ids[0])} und ${nameOf(best.ids[1])} gewinnen ${best.w} der ${best.g} gemeinsamen Sätze, bei ${best.gf}:${best.ga} Games.`
                 + (duos[1]
                     ? ` Dahinter ${nameOf(duos[1].ids[0])} und ${nameOf(duos[1].ids[1])} mit ${Math.round(duos[1].w/duos[1].g*100)} %.`
-                    : ' Kein zweites Duo kam auf vier gemeinsame Partien.'),
+                    : ' Kein zweites Duo kam auf vier gemeinsame Sätze.'),
             team: {playerIds:best.ids, wins:best.w, games:best.g, gf:best.gf, ga:best.ga}
           });
         }
@@ -2410,7 +2410,7 @@ function _buildStories(){
         cat: 'season',
         ic: 'weekKing',
         title: _wHeld.art === 'potw' ? `Die Woche gehört ${_wName}` : `Die Woche der Liga`,
-        desc: `${_wSpiele.length} ${_wSpiele.length === 1 ? 'Partie' : 'Partien'} an ${_wTage} ${_wTage === 1 ? 'Tag' : 'Tagen'}. `
+        desc: `${_wSpiele.length} ${_wSpiele.length === 1 ? 'Satz' : 'Sätze'} an ${_wTage} ${_wTage === 1 ? 'Tag' : 'Tagen'}. `
             + _wHeld.satz,
         when: _wSchluss,
         prio: STORY_PRIO.woche,

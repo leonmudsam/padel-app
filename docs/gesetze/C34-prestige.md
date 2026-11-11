@@ -49,7 +49,7 @@ Startwert** in `PRESTIGE_AUSZEICHNUNG_SPEZIAL`, dazu die Wochen- und
 Tageswertung: Meister der Saison **150** (−5 %), 20er Serie und Dynastie
 **120**, 15er Serie und Team der Saison **75**, Dominator, Award-Sammler
 und Untouchable **70**, Player of the Week **50** (−12 %), Mr. Perfect
-**50**, Absoluter Sieger **40** (−15 %), Player of the Day **10** (−25 %),
+**50**, Absoluter Sieger **20** (−25 %), Player of the Day **10** (−25 %),
 die übrigen mit −10 %. Der Meister ist die höchste Auszeichnung einer
 Saison und lag mit 100 unter der 20er Serie und der Dynastie. **Die
 Siegesserien sind eine Treppe**: 5er **15**, 10er **40**, 15er **75**,
@@ -65,7 +65,7 @@ stehen; an den echten Partien stiegen damit die drei an der Spitze vom
 Zierkranz zum Lorbeerreif, erarbeitet und nicht vom Katalog geschoben.
 Die Karten der Klassen im Regelblatt nennen seitdem die Spanne ihrer
 Startwerte, sonst stand „Rare 25 P" über einer Siegermaschine mit 150. Ein Wert für die ganze Klasse stellte die 20er Serie
-neben den 10:0-Sieg und die Dynastie (600 Elo) neben den Dominator (400);
+neben einen einzelnen Satz zu Null und die Dynastie (300 Elo) neben den Dominator (150);
 das sind verschiedene Höhen. Der Standard der Klasse (70) greift nur für
 eine neue legendäre Auszeichnung ohne eigenen Eintrag. Die Tabelle steht
 nach Gewicht geordnet, und **das Regelblatt liest sie von dort**

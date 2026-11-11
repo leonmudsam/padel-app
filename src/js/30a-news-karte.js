@@ -344,7 +344,7 @@ function _newsSpielSatz(desc, zeigt){
     if(z){
       if(chance && (elo || !z[2])) return '';
       if(chance) return `Für ${z[2]} bringt der Sieg ${z[3]} Elo.`;
-      if(elo && z[2]) return `Die Siegchance lag vor der Partie bei ${z[1]} %.`;
+      if(elo && z[2]) return `Die Siegchance lag vor dem Satz bei ${z[1]} %.`;
       return x;
     }
     if(chance && /^Vor der Partie lag die Siegchance bei \d+ %\.$/.test(x)) return '';
@@ -1182,9 +1182,9 @@ function _renderNewsFeed(){
     // wird; Stories entstehen erst aus Partien [§C33].
     listHtml = stories.length ? '<div class="nf-empty">Keine Stories in dieser Auswahl.</div>'
       : vorschauHtml('newspaper', 'Die Liga-News',
-        'Aus jeder Partie entstehen Stories, die erste mit der ersten eingetragenen Partie.',
+        'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
         [
-          ['spielfeld', 'Spieltag', 'Jede Partie als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
+          ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
           ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
           ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
           ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
