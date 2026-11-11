@@ -6754,7 +6754,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.2e487167';
+const BUILD_VERSION='2026.11.11.840bac38';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -7494,11 +7494,26 @@ function satzErgebnisse(m){
     .map(s => umdrehen ? s.b + ':' + s.a : s.a + ':' + s.b);
 }
 
-const GEWICHT_VOLL_GAMES = 6;
+const GEWICHT_STUETZEN = [[1, 0.5], [3, 0.75], [6, 1]];
+const GEWICHT_JE_GAME_UEBER_6 = 0.1;
+const GEWICHT_MAX = 1.5;
+const GEWICHT_MTB_GAMES = 2;
+function satzGewichtNachGames(g){
+  if(g >= 6) return Math.min(GEWICHT_MAX, 1 + GEWICHT_JE_GAME_UEBER_6 * (g - 6));
+  if(g <= GEWICHT_STUETZEN[0][0]) return GEWICHT_STUETZEN[0][1];
+  for(let i = 1; i < GEWICHT_STUETZEN.length; i++){
+    const [g1, w1] = GEWICHT_STUETZEN[i - 1], [g2, w2] = GEWICHT_STUETZEN[i];
+    if(g <= g2) return w1 + (w2 - w1) * (g - g1) / (g2 - g1);
+  }
+  return 1;
+}
 function partieGewicht(m){
   const p = partie(m);
-  const g = p.gamesSieger + (p.mtb ? 1 : 0);
-  return Math.max(0.35, Math.min(1.3, Math.sqrt(Math.max(g, 1) / GEWICHT_VOLL_GAMES)));
+  return satzGewichtNachGames(p.mtb ? GEWICHT_MTB_GAMES : p.gamesSieger);
+}
+function satzUeberSechs(m){
+  const p = partie(m);
+  return p.gamesSieger > 6 || p.mtb || p.tiebreaks.length > 0;
 }
 
 function partieTeile(m){
@@ -12083,6 +12098,7 @@ function _eloErgebnis(st){
           posTracker,peakElo,curSeason};
 }
 
+const TIEBREAK_AUSGLEICH = 0.4;
 const NEULING_BIS = 8;
 const EINGEWOEHNT_BIS = 20;
 function simulateEloWithSliders(matchSubset, opts={}){
@@ -12156,7 +12172,11 @@ function simulateEloWithSliders(matchSubset, opts={}){
         bd.lowEloDamp=lowEloDamp; bd.lowEloShare=lowEloShare;
         bd.lowEloEffect=won?0:rawBase*mov*boost*expProtect*underdogMult*lowEloDamp - rawBase*mov*boost*expProtect*underdogMult;
 
-        const afterMods=rawBase*mov*boost*expProtect*underdogMult*lowEloDamp;
+        const vorTb=rawBase*mov*boost*expProtect*underdogMult*lowEloDamp;
+        const tbDamp=(!won&&satzUeberSechs(t))?1-TIEBREAK_AUSGLEICH:1;
+        bd.tbDamp=tbDamp; bd.tbEffect=vorTb*tbDamp-vorTb;
+
+        const afterMods=vorTb*tbDamp;
         bd.afterMods=afterMods;
 
         const share=slot.id===high.id?w.strong:w.weak;
@@ -14548,7 +14568,8 @@ function vSettings(){
       <div class="mini-label">So wirken die Regler</div>
       <div style="font-size:12px;color:var(--ink2);line-height:1.8">
         <b style="color:var(--acid)">Je Satz</b> — Jeder Satz ist eine eigene Rechnung, nacheinander, jeder mit dem Stand nach dem vorigen. Drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene, und wer einen Satz gewinnt, bekommt dafür Elo, auch wenn er die Partie verliert.<br>
-        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach dem Weg bis zum Sieg: ein Satz bis sechs (6:0 oder 6:4) zählt voll, ein 7:6 etwas mehr, ein Kurzsatz bis drei gut zwei Drittel, ein Match-Tiebreak gut die Hälfte. Wie knapp es war, zählt dabei nicht.<br>
+        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach den Games des Siegers: ein Satz bis sechs zählt voll, gleich ob 6:0 oder 6:4. Bis drei zählt er 75 %, bis eins 50 %, dazwischen gestaffelt. Jedes Game über sechs bringt 10 % mehr, ein 7:5 oder 7:6 also 110 %, ein 8:6 120 %, höchstens 150 %. Ein Match-Tiebreak zählt wie ein Satz bis zwei.<br>
+        <b style="color:var(--acid)">Ausgleich im Tiebreak</b> — Geht ein Satz über sechs oder in einen Tiebreak, verliert der Verlierer ${Math.round(TIEBREAK_AUSGLEICH*100)} % weniger: er hat den Satz lange offen gehalten.<br>
         <b style="color:var(--acid)">Start-Elo</b> — Mit diesem Wert beginnt jeder Spieler eine Saison.<br>
         <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Sätzen einer Saison wirkt das Tempo zu ${c.npMult} %, bis zum ${EINGEWOEHNT_BIS}. Satz noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
         <b style="color:var(--acid)">Last des schwächeren Partners</b> — Bei ${c.risk} % verliert weniger Elo, wer mit einem deutlich schwächeren Partner spielt.<br>
@@ -19277,13 +19298,15 @@ function showMatchDetail(mid){
       const faktorZeilen=b=>{
       const factors=[];
       factors.push({label:'Basis (Erwartung)',val:b.rawBase,desc:(b.won?'Sieg'+(b.expected<0.5?' gegen stärkeres Team':''):'Niederlage'+(b.expected>0.5?' gegen schwächeres Team':''))
-        +(b.gewicht&&Math.abs(b.gewicht-1)>=0.02?' · '+(b.gewicht<1?'kurzer':'langer')+' Satz ×'+komma(b.gewicht,2):'')});
+        +(b.gewicht&&Math.abs(b.gewicht-1)>=0.02?' · '+(b.gewicht<1?'kurzer':'langer')+' Satz '+komma(b.gewicht*100,0)+' %':'')});
       if(zeigt(b.movEffect)) factors.push({label:'Deutlichkeit',val:b.movEffect,desc:b.won?'Deutlicher Sieg':'Deutliche Niederlage'+(b.movMult<1.2?' (gedämpft)':'')});
       if(zeigt(b.winBoostEffect)) factors.push({label:'Mehr für Siege',val:b.winBoostEffect,desc:'+'+komma(((b.winBoost-1)*100),1)+'\u00A0% für Siege'});
       if(b.expProtect<1) factors.push({label:'Schutz für Erfahrene',val:b.expProtectEffect,desc:komma(((1-b.expProtect)*100),1)+'\u00A0% Schutz'});
       if(b.lowEloDamp!==undefined && zeigt(b.lowEloEffect||0)){
         factors.push({label:'Schutz für Schwächere',val:b.lowEloEffect,desc:komma(((1-b.lowEloDamp)*100),1)+'\u00A0% weniger Verlust'});
       }
+      if(zeigt(b.tbEffect||0)) factors.push({label:'Ausgleich im Tiebreak',val:b.tbEffect,
+        desc:komma((1-b.tbDamp)*100,0)+' % weniger Verlust, Satz über sechs'});
       if(zeigt(b.rawBase*b.movMult*b.winBoost*b.expProtect*(b.underdogMult-1))){
         const eloPart   = b.underdogEloDiff>0   ? b.underdogEloDiff+' Elo schwächer'   : null;
         const gamesPart = b.underdogGamesDiff>0 ? b.underdogGamesDiff+' Sätze weniger' : null;

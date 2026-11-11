@@ -142,5 +142,19 @@ ok(J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:
   return c.saetze.p1.length===3 && c.saetze.p1.reduce((x,y)=>x+y,0)===c.res.p1;})()`),
   'Die Vorschau beim Eintragen nennt die Elo je Satz, und sie ergibt die Summe');
 
+// ── Die Staffel der Liga und der Ausgleich im Tiebreak ───────────────
+const st = sets => Math.round(gw(sets) * 1000) / 10;
+ok(st([[1,0]]) === 50 && st([[2,0]]) === 62.5 && st([[3,1]]) === 75 && st([[6,0]]) === 100 && st([[6,4]]) === 100,
+  `Staffel: 1:0 50 %, bis 2 62,5 %, 3:x 75 %, 6:x 100 % (${st([[1,0]])}, ${st([[2,0]])}, ${st([[3,1]])}, ${st([[6,4]])})`);
+ok(st([[7,5]]) === 110 && st([[7,6]]) === 110 && st([[8,6]]) === 120 && st([[12,10]]) === 150,
+  `Über sechs: 7:5 und 7:6 110 %, 8:6 120 %, höchstens 150 % (${st([[7,5]])}, ${st([[8,6]])}, ${st([[12,10]])})`);
+const satzDelta = (a, b) => J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const m={id:'t',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a:${a},b:${b},art:satzArt([${a},${b}])}]),created_at:'2026-08-10T18:00:00Z'};
+  matches=[m];invalidateCache();const d=simulateEloWithSliders([m]).history[0].deltas;return [d.p1,d.p3];})()`);
+const [w64, l64] = satzDelta(6, 4), [w76, l76] = satzDelta(7, 6);
+ok(w76 > w64, `Der Sieger eines 7:6 bekommt mehr als der eines 6:4 (${w76} gegen ${w64})`);
+ok(l76 > l64, `Der Verlierer eines 7:6 verliert weniger als der eines 6:4, der Ausgleich im Tiebreak (${l76} gegen ${l64})`);
+
 console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
 process.exit(fails ? 1 : 0);

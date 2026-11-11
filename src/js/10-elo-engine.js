@@ -157,6 +157,10 @@ function _eloErgebnis(st){
 // ─── §3.6 Slider-basierte Berechnung (für Match-Eingabe + Recalc) ────
 // Gezählt in Sätzen der Saison, weil je Satz gerechnet wird: acht Sätze
 // sind rund vier Partien, zwanzig rund zehn.
+// Wie viel vom Verlust eines Satzes über sechs oder im Tiebreak der
+// Verlierer zurückbekommt. Ein fester Wert und kein Regler: ein Regler
+// bräuchte eine eigene Spalte in der Datenbank.
+const TIEBREAK_AUSGLEICH = 0.4;
 const NEULING_BIS = 8;
 const EINGEWOEHNT_BIS = 20;
 function simulateEloWithSliders(matchSubset, opts={}){
@@ -265,7 +269,17 @@ function simulateEloWithSliders(matchSubset, opts={}){
         bd.lowEloDamp=lowEloDamp; bd.lowEloShare=lowEloShare;
         bd.lowEloEffect=won?0:rawBase*mov*boost*expProtect*underdogMult*lowEloDamp - rawBase*mov*boost*expProtect*underdogMult;
 
-        const afterMods=rawBase*mov*boost*expProtect*underdogMult*lowEloDamp;
+        // ── Ausgleich im Tiebreak ──
+        // Ging der Satz über sechs oder in einen Tiebreak (satzUeberSechs),
+        // wiegt er mehr (partieGewicht) — für den Sieger gewollt, für den
+        // Verlierer hiesse es: wer den Satz lange offen hält, verliert mehr
+        // als bei einem 0:6. Deshalb nimmt ihm der Ausgleich einen festen
+        // Teil des Verlusts ab, wie der Schutz für Schwächere.
+        const vorTb=rawBase*mov*boost*expProtect*underdogMult*lowEloDamp;
+        const tbDamp=(!won&&satzUeberSechs(t))?1-TIEBREAK_AUSGLEICH:1;
+        bd.tbDamp=tbDamp; bd.tbEffect=vorTb*tbDamp-vorTb;
+
+        const afterMods=vorTb*tbDamp;
         bd.afterMods=afterMods;
 
         // Risiko-Split

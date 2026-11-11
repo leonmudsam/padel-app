@@ -366,7 +366,8 @@ function vSettings(){
       <div class="mini-label">So wirken die Regler</div>
       <div style="font-size:12px;color:var(--ink2);line-height:1.8">
         <b style="color:var(--acid)">Je Satz</b> — Jeder Satz ist eine eigene Rechnung, nacheinander, jeder mit dem Stand nach dem vorigen. Drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene, und wer einen Satz gewinnt, bekommt dafür Elo, auch wenn er die Partie verliert.<br>
-        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach dem Weg bis zum Sieg: ein Satz bis sechs (6:0 oder 6:4) zählt voll, ein 7:6 etwas mehr, ein Kurzsatz bis drei gut zwei Drittel, ein Match-Tiebreak gut die Hälfte. Wie knapp es war, zählt dabei nicht.<br>
+        <b style="color:var(--acid)">Tempo</b> — Wie stark ein Satz die Elo verändert. Gewogen nach den Games des Siegers: ein Satz bis sechs zählt voll, gleich ob 6:0 oder 6:4. Bis drei zählt er 75 %, bis eins 50 %, dazwischen gestaffelt. Jedes Game über sechs bringt 10 % mehr, ein 7:5 oder 7:6 also 110 %, ein 8:6 120 %, höchstens 150 %. Ein Match-Tiebreak zählt wie ein Satz bis zwei.<br>
+        <b style="color:var(--acid)">Ausgleich im Tiebreak</b> — Geht ein Satz über sechs oder in einen Tiebreak, verliert der Verlierer ${Math.round(TIEBREAK_AUSGLEICH*100)} % weniger: er hat den Satz lange offen gehalten.<br>
         <b style="color:var(--acid)">Start-Elo</b> — Mit diesem Wert beginnt jeder Spieler eine Saison.<br>
         <b style="color:var(--acid)">Neulinge</b> — In den ersten ${NEULING_BIS} Sätzen einer Saison wirkt das Tempo zu ${c.npMult} %, bis zum ${EINGEWOEHNT_BIS}. Satz noch etwas erhöht. So findet die Elo schnell ihren Platz.<br>
         <b style="color:var(--acid)">Last des schwächeren Partners</b> — Bei ${c.risk} % verliert weniger Elo, wer mit einem deutlich schwächeren Partner spielt.<br>

@@ -179,20 +179,45 @@ function satzErgebnisse(m){
 }
 
 // Was ein Satz an Elo bewegen darf, nach seiner Länge — und Länge heißt
-// hier der Weg bis zum Sieg, nicht wie knapp es war: gezählt werden die
-// Games, die der Sieger gewinnen musste. Ein 6:0 und ein 6:4 wiegen gleich
-// (sechs Games bis zum Sieg, das volle Gewicht) und mehr als ein Kurzsatz
-// 3:0 oder 2:0; ein 7:6 etwas mehr. Ein Match-Tiebreak zählt wie zwei
-// Games. Wie knapp es war, sagt die MoV (`movMult`).
+// hier der Weg bis zum Sieg, nicht wie knapp es war: gezählt werden nur die
+// Games, die der Sieger gewinnen musste. Zählten die des Gegners mit, brächte
+// ein 6:4 mehr als ein 6:0, und ein knapper Satz würde belohnt.
+// Die Staffel hat die Liga vorgegeben: ein Satz bis 6 ist das volle Gewicht,
+// gleich wie er ausging; bis 1 die Hälfte, bis 3 drei Viertel, dazwischen
+// gerade Linien (bis 2 also 62,5 %, bis 4 rund 83 %, bis 5 rund 92 %). Geht
+// ein Satz über 6 hinaus (7:5, 7:6, 8:6), wird er länger, und jedes Game
+// darüber bringt zehn Prozent mehr; bei 150 % ist Schluss, damit ein
+// vertipptes 16:14 nicht das Dreifache eines Satzes bewegt. Ein
+// Match-Tiebreak zählt wie ein Satz bis 2. Wie deutlich es war, sagt die
+// MoV (`movMult`).
 // Gerechnet wird je Satz (`partieTeile`): die Gruppe trägt mal jeden Satz
 // einzeln ein, mal drei Sätze als eine Partie, und beides soll dieselbe Elo
 // geben. Vorher wog die ganze Partie nach ihren Games zusammen, und ein
 // 2:1 brachte dem Sieger alles und dem Verlierer nichts für seinen Satz.
-const GEWICHT_VOLL_GAMES = 6;
+const GEWICHT_STUETZEN = [[1, 0.5], [3, 0.75], [6, 1]];
+const GEWICHT_JE_GAME_UEBER_6 = 0.1;
+const GEWICHT_MAX = 1.5;
+const GEWICHT_MTB_GAMES = 2;
+function satzGewichtNachGames(g){
+  if(g >= 6) return Math.min(GEWICHT_MAX, 1 + GEWICHT_JE_GAME_UEBER_6 * (g - 6));
+  if(g <= GEWICHT_STUETZEN[0][0]) return GEWICHT_STUETZEN[0][1];
+  for(let i = 1; i < GEWICHT_STUETZEN.length; i++){
+    const [g1, w1] = GEWICHT_STUETZEN[i - 1], [g2, w2] = GEWICHT_STUETZEN[i];
+    if(g <= g2) return w1 + (w2 - w1) * (g - g1) / (g2 - g1);
+  }
+  return 1;
+}
 function partieGewicht(m){
   const p = partie(m);
-  const g = p.gamesSieger + (p.mtb ? 1 : 0);
-  return Math.max(0.35, Math.min(1.3, Math.sqrt(Math.max(g, 1) / GEWICHT_VOLL_GAMES)));
+  return satzGewichtNachGames(p.mtb ? GEWICHT_MTB_GAMES : p.gamesSieger);
+}
+// Ging der Satz über sechs hinaus oder in einen Tiebreak? Dann hat der
+// Verlierer ihn lange offen gehalten, und die Elo gleicht ihm einen Teil
+// des Verlusts aus (TIEBREAK_AUSGLEICH in der Engine): ein 7:6 wiegt für
+// den Sieger mehr als ein 6:4 und kostete den Verlierer sonst ebenso mehr.
+function satzUeberSechs(m){
+  const p = partie(m);
+  return p.gamesSieger > 6 || p.mtb || p.tiebreaks.length > 0;
 }
 
 // Die Sätze einer Partie, jeder als eigene Partie mit denselben Spielern

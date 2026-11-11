@@ -487,13 +487,15 @@ function showMatchDetail(mid){
       const faktorZeilen=b=>{
       const factors=[];
       factors.push({label:'Basis (Erwartung)',val:b.rawBase,desc:(b.won?'Sieg'+(b.expected<0.5?' gegen stärkeres Team':''):'Niederlage'+(b.expected>0.5?' gegen schwächeres Team':''))
-        +(b.gewicht&&Math.abs(b.gewicht-1)>=0.02?' · '+(b.gewicht<1?'kurzer':'langer')+' Satz ×'+komma(b.gewicht,2):'')});
+        +(b.gewicht&&Math.abs(b.gewicht-1)>=0.02?' · '+(b.gewicht<1?'kurzer':'langer')+' Satz '+komma(b.gewicht*100,0)+' %':'')});
       if(zeigt(b.movEffect)) factors.push({label:'Deutlichkeit',val:b.movEffect,desc:b.won?'Deutlicher Sieg':'Deutliche Niederlage'+(b.movMult<1.2?' (gedämpft)':'')});
       if(zeigt(b.winBoostEffect)) factors.push({label:'Mehr für Siege',val:b.winBoostEffect,desc:'+'+komma(((b.winBoost-1)*100),1)+'\u00A0% für Siege'});
       if(b.expProtect<1) factors.push({label:'Schutz für Erfahrene',val:b.expProtectEffect,desc:komma(((1-b.expProtect)*100),1)+'\u00A0% Schutz'});
       if(b.lowEloDamp!==undefined && zeigt(b.lowEloEffect||0)){
         factors.push({label:'Schutz für Schwächere',val:b.lowEloEffect,desc:komma(((1-b.lowEloDamp)*100),1)+'\u00A0% weniger Verlust'});
       }
+      if(zeigt(b.tbEffect||0)) factors.push({label:'Ausgleich im Tiebreak',val:b.tbEffect,
+        desc:komma((1-b.tbDamp)*100,0)+' % weniger Verlust, Satz über sechs'});
       if(zeigt(b.rawBase*b.movMult*b.winBoost*b.expProtect*(b.underdogMult-1))){
         // Underdog-Boost setzt sich aus zwei unabhängig clampten Komponenten zusammen
         // (Elo-Gap + Spiele-Gap). Wir zeigen nur die wirksamen (positiven) Anteile,

@@ -24,8 +24,9 @@ Tiebreak entschieden. Jeder Spieler steht auf einer Seite: `drive`
 (rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
 [§C44]. Die Elo rechnet jeden Satz einzeln und nacheinander (`partieTeile`):
 drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene.
-Ein Satz wiegt nach dem Weg bis zum Sieg (Games des Siegers,
-`partieGewicht`) und nach der Deutlichkeit (`movMult`). Die Liga
+Ein Satz wiegt nach den Games des Siegers (bis 1 50 %, bis 3 75 %, bis 6 voll,
+je Game darüber +10 %, `partieGewicht`) und nach der Deutlichkeit
+(`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
 spielt etwa fünf Tage im Monat mit drei bis fünf Partien — alle Schwellen
 (Mindestspiele, Serien, Fenster) sind darauf gesetzt und stehen je System
 an einer Stelle: `BG` (Auszeichnungen), `CHRONIK_MIN_SPIELE`/`ST_TEIL`
@@ -155,7 +156,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1625**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1631**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---
