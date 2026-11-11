@@ -12,8 +12,16 @@
   /* Die Vorschau einer leeren Ansicht (vorschauHtml): was hier erscheinen
      wird und wie. Eine ruhige Fläche wie jede Karte, kein Leuchten — sie ist
      eine Erklärung und kein Ereignis. */
-  .vorschau{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
-    background:var(--surface)}
+  .vorschau{position:relative;margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
+    background:var(--surface);transition:opacity .2s ease,transform .2s ease}
+  .vorschau.weg{opacity:0;transform:scale(.97)}
+  /* Das Kreuz: groß genug für den Daumen, der Titel läuft nicht darunter. */
+  .vs-zu{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;
+    border:1px solid var(--line);background:transparent;color:var(--muted);display:grid;place-items:center;
+    cursor:pointer;padding:0}
+  .vs-zu svg{width:14px;height:14px}
+  .vs-zu:active{transform:scale(.94)}
+  .vorschau .vs-kopf{padding-right:40px}
   .vs-kopf{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}
   .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
     background:rgba(228,242,74,.1);color:var(--acid)}

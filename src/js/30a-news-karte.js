@@ -1189,7 +1189,7 @@ function _renderNewsFeed(){
           ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
           ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
           ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
-        ]);
+        ], '', '<div class="nf-empty">Noch keine Stories. Die erste entsteht mit dem ersten Satz.</div>');
   } else {
     // Über alle Karten des Feeds, nicht nur die des Filters: der Faden
     // gehört der Geschichte und nicht der Auswahl.

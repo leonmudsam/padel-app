@@ -1092,8 +1092,15 @@
   .blatt-text{font-size:12.5px;color:var(--ink2);line-height:1.55;padding:0 2px}
   .leerstand{text-align:center;color:var(--muted);padding:48px 20px;font-size:13px}
   .leerstand .ee{font-size:34px;margin-bottom:12px;opacity:.5}
-  .vorschau{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
-    background:var(--surface)}
+  .vorschau{position:relative;margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
+    background:var(--surface);transition:opacity .2s ease,transform .2s ease}
+  .vorschau.weg{opacity:0;transform:scale(.97)}
+  .vs-zu{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;
+    border:1px solid var(--line);background:transparent;color:var(--muted);display:grid;place-items:center;
+    cursor:pointer;padding:0}
+  .vs-zu svg{width:14px;height:14px}
+  .vs-zu:active{transform:scale(.94)}
+  .vorschau .vs-kopf{padding-right:40px}
   .vs-kopf{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}
   .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
     background:rgba(228,242,74,.1);color:var(--acid)}
@@ -6767,7 +6774,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.7689f703';
+const BUILD_VERSION='2026.11.11.5b647d1a';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -12868,7 +12875,8 @@ function positionsListe(pos, spieler){
 function positionsBlockHtml(arr, pos, ohneRang){
   if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
     pos==='drive' ? 'Drive · rechts' : 'Revés · links',
-    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`);
+    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`,
+    null, '', emptyState(pos==='drive'?'posDrive':'posReves', 'Noch niemand auf dieser Seite gewertet.'));
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     const wert = Math.round(x.score*100);
@@ -14322,7 +14330,8 @@ function vTeams(nurErgebnis=false){
   const ruheT=T0.filter(t=>t.ids.every(id=>sichtbar(id))&&t.ids.some(id=>imRuhestand(id)));
   if(!T.length&&!ruheT.length){
     const html=vorschauHtml('handshake','Die Duos der Liga',
-      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`);
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`,
+      null, '', emptyState('handshake', `Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.`));
     return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Sätzen`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Sätzen</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
@@ -14456,7 +14465,8 @@ function vTeams(nurErgebnis=false){
 
 function vHistory(){
   if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
-    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.')}`;
+    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.',
+    null, '', emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -14644,6 +14654,14 @@ function vSettings(){
         Fehlt etwas Neues, hält das Telefon noch den alten Stand. Der Knopf lädt ihn neu; sonst meldet sich ein neuer Stand von selbst.
       </p>
     </div>
+    ${hinweiseWeg().size?`
+    <div class="card" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div><div class="mini-label">Hinweise</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">${hinweiseWeg().size} auf diesem Gerät geschlossen</div></div>
+        <button class="btn ghost sm" id="hinweiseZurueckBtn" style="width:auto;padding:7px 12px;font-size:11px;flex-shrink:0">Wieder zeigen</button>
+      </div>
+    </div>`:''}
     ${players.filter(p=>p.hidden).length?`
     <div class="card" style="margin-top:14px">
       <div class="mini-label">Ausgeblendete Spieler</div>
@@ -18502,6 +18520,8 @@ function showAddPlayer(){
 
 function bind(){
   const main=document.getElementById('main');if(!main) return;
+  const hz=main.querySelector('#hinweiseZurueckBtn');
+  if(hz) hz.onclick=()=>{ hinweiseWeg().clear(); _hinweiseSpeichern(); toast('Hinweise werden wieder gezeigt','ok'); render(); };
   main.querySelectorAll('[data-hilfe]').forEach(b => b.onclick = () => zeigeHilfe(b.dataset.hilfe));
   einblickBinden(document.getElementById('main'));
   main.querySelectorAll('.einblick.auf .einblick-i').forEach(bindDetailLinks);
@@ -19698,16 +19718,52 @@ function emptyState(e,t){
   const inner = icPfad(e) ? `<div class="ee svg-ic">${svgI(e)}</div>` : `<div class="ee">${e}</div>`;
   return `<div class="leerstand">${inner}${t}</div>`;
 }
-function vorschauHtml(ic, titel, satz, punkte, fuss){
+const HINWEISE_WEG_LS = 'padel_hinweise_weg_v1';
+let _hinweiseWeg = null;
+function hinweiseWeg(){
+  if(!_hinweiseWeg){
+    try{
+      const a = JSON.parse(localStorage.getItem(HINWEISE_WEG_LS) || '[]');
+      _hinweiseWeg = new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []);
+    }catch(e){ _hinweiseWeg = new Set(); }
+  }
+  return _hinweiseWeg;
+}
+function _hinweiseSpeichern(){
+  try{
+    if(_hinweiseWeg.size) localStorage.setItem(HINWEISE_WEG_LS, JSON.stringify([..._hinweiseWeg]));
+    else localStorage.removeItem(HINWEISE_WEG_LS);
+  }catch(e){}
+}
+function vorschauHtml(ic, titel, satz, punkte, fuss, ersatz){
+  if(hinweiseWeg().has(titel)) return ersatz || '';
   const liste = punkte && punkte.length
     ? `<ol class="vs-punkte">${punkte.map(([pi, n, t]) =>
         `<li><span class="vs-pi">${svgI(pi)}</span><span><b>${esc(n)}</b>${t}</span></li>`).join('')}</ol>`
     : '';
-  return `<div class="vorschau">
+  return `<div class="vorschau" data-hinweis="${esc(titel)}">
+    <button type="button" class="vs-zu" data-hinweis-zu aria-label="Hinweis schließen">${svgI('x')}</button>
     <div class="vs-kopf"><span class="vs-ic">${svgI(ic)}</span><b>${esc(titel)}</b></div>
-    ${satz ? `<p class="vs-satz">${satz}</p>` : ''}${liste}${fuss || ''}
+    ${satz ? `<p class="vs-satz">${satz}</p>` : ''}${liste}${fuss || ''}${ersatz ? `<template>${ersatz}</template>` : ''}
   </div>`;
 }
+document.addEventListener('click', e => {
+  const zu = e.target.closest && e.target.closest('[data-hinweis-zu]');
+  if(!zu) return;
+  e.preventDefault(); e.stopPropagation();
+  const karte = zu.closest('.vorschau');
+  if(!karte) return;
+  hinweiseWeg().add(karte.dataset.hinweis);
+  _hinweiseSpeichern();
+  document.querySelectorAll('.vorschau[data-hinweis]').forEach(k => {
+    if(k.dataset.hinweis !== karte.dataset.hinweis) return;
+    const ers = k.querySelector(':scope > template');
+    const ende = () => { if(!k.isConnected) return; if(ers) k.replaceWith(ers.content.cloneNode(true)); else k.remove(); };
+    if(k !== karte || matchMedia('(prefers-reduced-motion: reduce)').matches){ ende(); return; }
+    k.classList.add('weg');
+    setTimeout(ende, 200);
+  });
+});
 let tt;
 const TOAST_ROLLE = {ok:['check','gruen'], err:['x','rot'], info:['info',''], lauf:['hourglass','']};
 function toast(msg, kind, o){
@@ -26282,7 +26338,7 @@ function _renderNewsFeed(){
           ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
           ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
           ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
-        ]);
+        ], '', '<div class="nf-empty">Noch keine Stories. Die erste entsteht mit dem ersten Satz.</div>');
   } else {
     const faeden = _newsFaeden(stories);
     const jeTag = new Map();
@@ -31342,7 +31398,7 @@ const CHRONIK_KLASSE_NAME = {legendaer:'legendär', selten:'selten', besonders:'
 const CHRONIK_ART_NAME = {koennen:'Können', konstanz:'Konstanz',
                           fuegung:'Fügung', schatten:'Schattenseite'};
 
-const REKORD_GRUNDWERT = {koennen:100, fuegung:75, schatten:0};
+const REKORD_GRUNDWERT = {koennen:60, fuegung:40, schatten:0};
 
 function titleTone(tone){ return TITLE_TONES[tone] || TITLE_TONES.acid; }
 
@@ -37203,7 +37259,7 @@ function _chronikMonat(titleId){
   return (d && d.monat) || null;
 }
 
-const CHRONIK_GRUNDWERT = 100;
+const CHRONIK_GRUNDWERT = 75;
 const CHRONIK_BONUS_JE_HALBIERUNG = 10;
 function _erfc(x){
   const z = Math.abs(x), t = 1 / (1 + 0.5 * z);

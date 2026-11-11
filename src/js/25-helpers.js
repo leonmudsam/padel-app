@@ -76,16 +76,66 @@ function emptyState(e,t){
 //   fuss   ein Knopf oder eine Zeile darunter, wahlweise
 // Die Texte sind feste Sätze aus dem Code, keine Eingaben; nur der Titel
 // und die Namen werden maskiert, weil sie auch aus Katalogen kommen.
-function vorschauHtml(ic, titel, satz, punkte, fuss){
+// Jede Erklärkarte lässt sich mit dem Kreuz oben rechts schließen und
+// bleibt auf diesem Gerät geschlossen. Gemerkt wird ihr Titel, nicht ihr
+// Text: ein umformulierter Satz holt eine geschlossene Karte nicht zurück.
+// Der Speicher des Geräts kann fehlen (privates Fenster, gesperrt) — dann
+// erscheint die Karte wieder, mehr nicht. Gelesen wird er einmal je Start
+// und nicht bei jedem Zeichnen.
+// `ersatz` steht, wo die Karte der einzige Inhalt einer Ansicht war: eine
+// leere Seite liest sich als Fehler [§6 „Ein leeres Feld liest sich als Fehler"].
+const HINWEISE_WEG_LS = 'padel_hinweise_weg_v1';
+let _hinweiseWeg = null;
+function hinweiseWeg(){
+  if(!_hinweiseWeg){
+    try{
+      const a = JSON.parse(localStorage.getItem(HINWEISE_WEG_LS) || '[]');
+      _hinweiseWeg = new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []);
+    }catch(e){ _hinweiseWeg = new Set(); }
+  }
+  return _hinweiseWeg;
+}
+function _hinweiseSpeichern(){
+  try{
+    if(_hinweiseWeg.size) localStorage.setItem(HINWEISE_WEG_LS, JSON.stringify([..._hinweiseWeg]));
+    else localStorage.removeItem(HINWEISE_WEG_LS);
+  }catch(e){}
+}
+function vorschauHtml(ic, titel, satz, punkte, fuss, ersatz){
+  if(hinweiseWeg().has(titel)) return ersatz || '';
   const liste = punkte && punkte.length
     ? `<ol class="vs-punkte">${punkte.map(([pi, n, t]) =>
         `<li><span class="vs-pi">${svgI(pi)}</span><span><b>${esc(n)}</b>${t}</span></li>`).join('')}</ol>`
     : '';
-  return `<div class="vorschau">
+  return `<div class="vorschau" data-hinweis="${esc(titel)}">
+    <button type="button" class="vs-zu" data-hinweis-zu aria-label="Hinweis schließen">${svgI('x')}</button>
     <div class="vs-kopf"><span class="vs-ic">${svgI(ic)}</span><b>${esc(titel)}</b></div>
-    ${satz ? `<p class="vs-satz">${satz}</p>` : ''}${liste}${fuss || ''}
+    ${satz ? `<p class="vs-satz">${satz}</p>` : ''}${liste}${fuss || ''}${ersatz ? `<template>${ersatz}</template>` : ''}
   </div>`;
 }
+// Ein Zuhörer für alle Karten, in jeder Ansicht und jedem Blatt: die Karten
+// stehen in Reitern, Unterreitern und im News-Blatt, und ein Binden je
+// Zeichnen hätte jede Ansicht einzeln kennen müssen. Geschlossen wird an Ort
+// und Stelle, ohne die Ansicht neu zu zeichnen; das nächste Zeichnen lässt
+// die Karte von selbst weg.
+document.addEventListener('click', e => {
+  const zu = e.target.closest && e.target.closest('[data-hinweis-zu]');
+  if(!zu) return;
+  e.preventDefault(); e.stopPropagation();
+  const karte = zu.closest('.vorschau');
+  if(!karte) return;
+  hinweiseWeg().add(karte.dataset.hinweis);
+  _hinweiseSpeichern();
+  // Dieselbe Karte steht unter Saison, Tag und Gesamt: alle gleichen gehen mit.
+  document.querySelectorAll('.vorschau[data-hinweis]').forEach(k => {
+    if(k.dataset.hinweis !== karte.dataset.hinweis) return;
+    const ers = k.querySelector(':scope > template');
+    const ende = () => { if(!k.isConnected) return; if(ers) k.replaceWith(ers.content.cloneNode(true)); else k.remove(); };
+    if(k !== karte || matchMedia('(prefers-reduced-motion: reduce)').matches){ ende(); return; }
+    k.classList.add('weg');
+    setTimeout(ende, 200);
+  });
+});
 // ── Der Hinweis [§C27] ───────────────────────────────────────────────
 // Ein Balken in voller Farbe mit einem Satz: grün hieß „gespeichert", rot
 // „Fehler", und alles andere stand weiß da — auch „Berechne neu…", das

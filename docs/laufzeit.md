@@ -19,6 +19,8 @@ Kammern (`koennen`, `form`, `mark`, `fuegung`, `shame`). Sie wird beim
 Tabwechsel UND beim Reiterwechsel geleert: wer den Tab verlässt, will beim
 Zurückkommen die ganze Tafel sehen und nicht den Ausschnitt von vorhin.
 
+Eine Ausnahme ist `_hinweiseWeg` in `25-helpers.js`: die Titel der Erklärkarten (`vorschauHtml`), die auf diesem Gerät geschlossen wurden. Er gehört dem Gerät und nicht der Ansicht, wird nie zurückgesetzt, einmal je Start aus dem Speicher des Geräts gelesen (`padel_hinweise_weg_v1`) und nur über „Hinweise · Wieder zeigen" in den Einstellungen geleert. Fehlt der Speicher (privates Fenster), erscheinen die Karten wieder.
+
 `ligaSeasonId` gilt **nur** für den Liga-Tab — Awards, News und Ambient
 rechnen weiter mit `currentSeason()`. Sie wird beim Tabwechsel UND beim
 Zeitraumwechsel geleert: die gewählte Saison gehört zur Ansicht „Saison",

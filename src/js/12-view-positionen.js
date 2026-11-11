@@ -34,7 +34,8 @@ function positionsBlockHtml(arr, pos, ohneRang){
   // und nicht, was Drive und Revés im Padel sind: das weiß, wer spielt.
   if(!arr.length) return ohneRang ? '' : vorschauHtml(pos==='drive'?'posDrive':'posReves',
     pos==='drive' ? 'Drive · rechts' : 'Revés · links',
-    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`);
+    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`,
+    null, '', emptyState(pos==='drive'?'posDrive':'posReves', 'Noch niemand auf dieser Seite gewertet.'));
   return `<div class="rlist">${arr.map((x,i)=>{
     const perfChip = x.pAvg>0.08?'<span class="perf-up">▲</span>':x.pAvg<-0.08?'<span class="perf-dn">▼</span>':'';
     // Rechts steht der Wert, nach dem sortiert wird; der Game-Anteil hat

@@ -16,7 +16,8 @@ function vTeams(nurErgebnis=false){
     // „Noch nicht genug Daten" sagte nicht, wie viel genug ist und was dann
     // kommt.
     const html=vorschauHtml('handshake','Die Duos der Liga',
-      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`);
+      `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`,
+      null, '', emptyState('handshake', `Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.`));
     return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Sätzen`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Sätzen</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
@@ -180,7 +181,8 @@ function vTeams(nurErgebnis=false){
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function vHistory(){
   if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${vorschauHtml('verlauf','Der Verlauf',
-    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.')}`;
+    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.',
+    null, '', emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -401,6 +403,14 @@ function vSettings(){
         Fehlt etwas Neues, hält das Telefon noch den alten Stand. Der Knopf lädt ihn neu; sonst meldet sich ein neuer Stand von selbst.
       </p>
     </div>
+    ${hinweiseWeg().size?`
+    <div class="card" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div><div class="mini-label">Hinweise</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">${hinweiseWeg().size} auf diesem Gerät geschlossen</div></div>
+        <button class="btn ghost sm" id="hinweiseZurueckBtn" style="width:auto;padding:7px 12px;font-size:11px;flex-shrink:0">Wieder zeigen</button>
+      </div>
+    </div>`:''}
     ${players.filter(p=>p.hidden).length?`
     <div class="card" style="margin-top:14px">
       <div class="mini-label">Ausgeblendete Spieler</div>

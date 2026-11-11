@@ -268,6 +268,15 @@ ok(_schwelle.alt.length === 0, 'Kein Chronik-Text spricht noch von Partien oder 
 ok(J('[CHRONIK_MIN_SPIELE, ST_TEIL, ST_TAG, CHRON_MIN_GAMES, RF.lauf]').join(',') === '8,5,5,40,50',
   'Chronik in Sätzen: 8 im Monat, Teilmengen ab 5, ein Spieltag ab 5, Rekorde ab 40, der Lauf über 50');
 
+// ── Erklärkarten lassen sich schließen ─────────────────────────────
+ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
+  hinweiseWeg().add('Probe');const b=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
+  const c=vorschauHtml('info','Probe','Satz');hinweiseWeg().delete('Probe');
+  return /data-hinweis-zu/.test(a)&&/data-hinweis="Probe"/.test(a)&&b==='<i>Ersatz</i>'&&c==='';})()`),
+  'Jede Erklärkarte trägt ein Kreuz; geschlossen steht nur noch ihr Ersatz oder nichts');
+ok(J('[REKORD_GRUNDWERT.koennen, REKORD_GRUNDWERT.fuegung, CHRONIK_GRUNDWERT]').join(',') === '60,40,75',
+  'Rekorde beginnen bei 60 (Können) und 40 (Fügung), Chroniken bei 75');
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 ANSCHLUSS.catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
