@@ -24,6 +24,9 @@ Tiebreak entschieden. Jeder Spieler steht auf einer Seite: `drive`
 (rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
 [§C44]. Die Elo rechnet jeden Satz einzeln und nacheinander (`partieTeile`):
 drei Sätze als eine Partie geben dieselbe Elo wie drei einzeln eingetragene.
+Einzeln eingetragene Sätze derselben zwei Paare, direkt hintereinander am
+selben Tag, hängt die Eingabe an die Partie davor (`partieFortsetzung`,
+`partieAnhaengen`): Sieger, Wende, Zu Null und Serien sehen eine Partie.
 Ein Satz wiegt nach den Games des Siegers (bis 1 50 %, bis 3 75 %, bis 6 voll,
 je Game darüber +10 %, `partieGewicht`) und nach der Deutlichkeit
 (`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
@@ -130,9 +133,12 @@ README.md             Einstieg: was die App ist, wie man sie baut
 CLAUDE.md             diese Arbeitsanweisung
 docs/                 Herleitung, Laufzeit, Gesetze, Leistung, Erweitern —
                       Inhaltsverzeichnis in docs/README.md (erzeugt)
-icon.png              Symbol der App; build.mjs kopiert es nach dist/
-src/logo.svg          das Logo als Quelle; 01-shell.css trägt es als Data-URI
-.github/workflows/    pages.yml — Prüf-Job, Veröffentlichung schaltbar
+icon.png              Symbol der App (512 px); build.mjs kopiert es nach dist/
+src/icon-quelle.png   das Symbol der Liga in voller Größe, die Quelle für
+                      icon.png und das Logo in 01-shell.css
+tools/symbol.cjs      verkleinert src/icon-quelle.png zu icon.png und setzt
+                      das Logo als WebP-Data-URI in 01-shell.css
+.github/workflows/    pages.yml — Prüf-Job, jeder Push auf main veröffentlicht
 ```
 
 > **Pflegepflicht.** Kommt eine Datei in `src/` dazu, fällt eine weg oder
@@ -156,7 +162,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1631**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1635**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---

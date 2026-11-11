@@ -298,6 +298,7 @@ function vMatch(){
       <button class="btn ghost" id="addPlayerBtn" style="width:auto;flex-shrink:0;padding:8px 14px;font-size:11px;border-radius:10px">+ Spieler anlegen</button>
       <button class="btn ghost" id="shuffleBtn" style="width:auto;flex-shrink:0;padding:8px 14px;font-size:11px;border-radius:10px">Teams mischen</button>
     </div>
+    <div id="mAnschluss"></div>
     <div id="previewSlot"></div>
     <div class="btn-row" style="margin-top:4px">
       <button class="btn ghost sm" id="clearM" style="flex:0 0 38%">Leeren</button>
@@ -485,6 +486,18 @@ function requestMatchPreview(){
   // höchstens einmal im nächsten Bild, immer für den letzten Eingabestand.
   save.disabled=!!doSaveMatch._busy || !validM();
   const fehlt=document.getElementById('mFehlt'); if(fehlt) fehlt.textContent=_matchFehlt();
+  // Ob der Eintrag an die Partie davor anschließt [§5.6b], steht sofort
+  // da, und der Knopf darin schaltet es um. Nur neu geschrieben, wenn sich
+  // etwas ändert: sonst verlöre der Knopf beim Tippen den Druck.
+  const an=document.getElementById('mAnschluss');
+  if(an){
+    const html=validM()?anschlussHtml(M):'';
+    if(an._html!==html){
+      an.innerHTML=html; an._html=html;
+      const k=an.querySelector('[data-anschluss]');
+      if(k) k.onclick=()=>{ M.neu=k.dataset.anschluss==='aus'; requestMatchPreview(); };
+    }
+  }
   if(_matchPreviewPlan && _matchPreviewPlan.slot===slot) return;
   if(_matchPreviewPlan) cancelAnimationFrame(_matchPreviewPlan.frame);
   const plan={slot,frame:0};_matchPreviewPlan=plan;
@@ -544,9 +557,11 @@ function updatePreview(){
     </div>`;
   };
   const n = ((c.saetze && c.saetze[teamA[0].id]) || []).length;
-  const zusatz = [n > 1 ? 'je Satz gerechnet' : '', p.zuNull ? 'zu Null' : ''].filter(Boolean).join(' · ');
+  const angehaengt = !M.neu && !!partieFortsetzung(M, satzListe(M));
+  const zusatz = [n > 1 ? 'je Satz gerechnet' : '', !angehaengt && p.zuNull ? 'zu Null' : ''].filter(Boolean).join(' · ');
+  const titel = angehaengt ? (n > 1 ? 'Elo für diese Sätze' : 'Elo für diesen Satz') : 'Elo nach dieser Partie';
   slot.innerHTML = `<div class="preview">
-    <div class="prob-cap">Elo nach dieser Partie${zusatz?' · '+zusatz:''}</div>
+    <div class="prob-cap">${titel}${zusatz?' · '+zusatz:''}</div>
     <div class="delta-list">
       ${line(teamA[0])}${line(teamA[1])}
       <div class="delta-div"></div>
@@ -580,6 +595,30 @@ async function doSaveMatch(){
   if(save){save.disabled=true;save.setAttribute('aria-busy','true');save.textContent='Speichere…';}
   let insertedRow=null;
   try {
+  // Setzt der Eintrag die Partie davor fort, wird er an sie angehängt
+  // [§5.6b], und die Partie ist danach eine — mit Sieger, Wende und Serie.
+  const fort = M.neu ? null : partieFortsetzung(M, satzListe(M));
+  if(fort){
+    const erg = await partieAnhaengen(fort);
+    if(!erg) return;
+    insertedRow = erg.neu;
+    if(unveraendert()){
+      M={...matchLeer(),A1:M.A1,A2:M.A2,B1:M.B1,B2:M.B2,fixA:M.fixA,fixB:M.fixB};
+      if(tab==='match') tab='ranking';
+    }
+    neuZeichnen();
+    loadAll();
+    nachDemBild().then(() => {
+      const toastWorthy = badgesEarnedInMatch(erg.neu.id).filter(e => rarityOf(e.badge.id) !== 'common');
+      if(toastWorthy.length) toastWorthy.forEach(e => showAchievementToast(pname(e.playerId), e.badge));
+      const p = partie(erg.neu);
+      const sieger = p.winner === 'A' ? [erg.neu.a1, erg.neu.a2] : [erg.neu.b1, erg.neu.b2];
+      toast('Satz angehängt', 'ok', {
+        sub: sieger.map(pname).join(' & ') + (p.setsA === p.setsB ? ' vorn nach Games, ' : ' vorn, ') + standFuer(erg.neu),
+        aktion: {label:'Rückgängig', fn: () => partieAnhangZurueck(erg)}});
+    });
+    return;
+  }
   const felder = partieFelder(satzListe(M));
   const winner = felder.winner;
   const c = _matchInputResult();

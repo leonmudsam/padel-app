@@ -38,7 +38,7 @@
 //
 //     Alles entsteht in EINEM Durchlauf über alle Matches (_chronicleCtx).
 //     Elo aus getGlobalSim — keine zweite Rechenquelle.
-// Vier Kammern, nicht drei. „Der hoechste Gipfel" und „Der Sonntagsschuss"
+// Vier Kammern, nicht drei. „Der hoechste Gipfel" und „Der Glücksgriff"
 // standen bisher in derselben Schublade, weil beide `art:'ereignis'` tragen —
 // der eine ist der beste Elo-Stand der Ligageschichte, der andere ein Sieg
 // mit 17 % Siegchance. Die Fuegungen [§C35] bekommen deshalb eine eigene

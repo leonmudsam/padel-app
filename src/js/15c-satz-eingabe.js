@@ -131,3 +131,56 @@ function seitenTauschen(st, team){
   const l = st[team + '1']; st[team + '1'] = st[team + '2']; st[team + '2'] = l;
   st['fix' + team] = true;
 }
+
+// ── Ein Satz gehört zur Partie davor [§5.6b] ─────────────────────────
+// Die Gruppe trägt mal jeden Satz einzeln ein, mal alle zusammen. Einzeln
+// eingetragen waren drei Sätze vorher drei Partien: B gewann die erste 1:0,
+// A die zweite und dritte, und niemand sah, dass A die Partie nach
+// Satzrückstand gedreht hatte — keine Wende, kein 2:1, drei Siege und eine
+// Niederlage statt eines Siegs. Jetzt schließt ein Eintrag an die Partie
+// davor an, wenn er sie fortsetzt:
+//   - sie ist die letzte Partie der Liga, nichts liegt dazwischen,
+//   - dieselben zwei Paare stehen sich gegenüber, gleich auf welcher Seite
+//     des Netzes sie eingetragen sind,
+//   - am selben Tag, höchstens BEGEGNUNG_STUNDEN nach ihrem Beginn,
+//   - und zusammen sind es nicht mehr als SATZ_MAX Sätze.
+// Die Eingabe sagt vor dem Speichern, dass angehängt wird, und lässt es
+// abwählen (`M.neu`). Die Seiten bleiben die der Partie: ein Paar tauscht
+// zwischen zwei Sätzen selten, und eine Zeile hat je Spieler eine Seite.
+const BEGEGNUNG_STUNDEN = 4;
+function partieFortsetzung(st, saetze, jetzt){
+  const ids = [st.A1, st.A2, st.B1, st.B2];
+  if(!ids.every(Boolean) || new Set(ids).size !== 4 || !saetze || !saetze.length) return null;
+  let L = null;
+  for(const m of matches) if(!L || mts(m) > mts(L)) L = m;
+  if(!L) return null;
+  const paar = (p, q) => [p, q].sort().join('|');
+  const la = paar(L.a1, L.a2), lb = paar(L.b1, L.b2), na = paar(st.A1, st.A2), nb = paar(st.B1, st.B2);
+  let gedreht;
+  if(la === na && lb === nb) gedreht = false;
+  else if(la === nb && lb === na) gedreht = true;
+  else return null;
+  const t = jetzt == null ? Date.now() : jetzt;
+  if(tagKey(t) !== tagKey(L.created_at) || t < mts(L) || t - mts(L) > BEGEGNUNG_STUNDEN * 3600000) return null;
+  const alt = partieSaetze(L);
+  if(alt.length + saetze.length > SATZ_MAX) return null;
+  const dazu = saetze.map(s => gedreht ? {a:s.b, b:s.a, art:s.art} : s);
+  return {partie:L, gedreht, saetze:alt.concat(dazu), satzNr:alt.length + 1};
+}
+// Die Zeile über der Elo-Vorschau: woran angehängt wird und wie es danach
+// steht, aus Sicht der Eingabe. Wer abgewählt hat, sieht, dass es eine neue
+// Partie wird, und kann zurück.
+function anschlussHtml(st){
+  const f = partieFortsetzung(st, satzListe(st));
+  if(!f) return '';
+  const uhr = datumFmt(f.partie.created_at, 'uhr');
+  if(st.neu) return `<div class="m-anschluss aus"><span>Wird eine neue Partie.</span>
+    <button type="button" class="m-anschluss-k" data-anschluss="an">An die Partie von ${uhr} anhängen</button></div>`;
+  const p = saetzeAuswerten(f.saetze);
+  const a = f.gedreht ? p.setsB : p.setsA, b = f.gedreht ? p.setsA : p.setsB;
+  const namen = (x, y) => esc(pname(x)) + ' & ' + esc(pname(y));
+  const stand = a === b ? `${a}:${b}` : a > b ? `${a}:${b} für ${namen(st.A1, st.A2)}` : `${b}:${a} für ${namen(st.B1, st.B2)}`;
+  const n = f.saetze.length - f.satzNr + 1;
+  return `<div class="m-anschluss"><span>${n === 1 ? `Satz ${f.satzNr}` : `Satz ${f.satzNr} bis ${f.saetze.length}`} der Partie von ${uhr}, danach steht es <b>${stand}</b>.</span>
+    <button type="button" class="m-anschluss-k" data-anschluss="aus">Neue Partie</button></div>`;
+}

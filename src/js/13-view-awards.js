@@ -1011,7 +1011,7 @@ function _vAwardsCore(){
     kacheln(['wins','onFire','perfect','streaks','showmaster','weekKing','dayKing'], true));
   sect('handshake','blue','Teams',
     kacheln(['mvt','bestDuo','unstoppable','concreteWall','luckyCharm','giantSlayer','favoritenschreck','rivalry']));
-  sect('shield','purple','Angriff & Verteidigung',
+  sect('shield','purple','Sätze & Games',
     kacheln(['scorer','wall','ice','plusMinus']));
   // Spezial trägt Metall: es ist die Gruppe für alles, was in keine der
   // anderen passt — eine eigene Buntfarbe würde ihr eine Bedeutung geben,
@@ -1081,7 +1081,7 @@ const AW_IC = {
   showmaster:'wende',    mvt:'handshake',      bestDuo:'duo',           scorer:'tiebreak',
   wall:'bagel',          ice:'zuNull',      endgegner:'skull',       clutch:'target',
   carryKing:'weight',    solo:'lonewolf',      upset:'surprise',        biggest:'explosion',
-  grinder:'gamepad',     worstWr:'bilanzTief',      coldStreak:'dropTriple',    lossStreaks:'trendCrash',
+  grinder:'racket',      worstWr:'bilanzTief',      coldStreak:'dropTriple',    lossStreaks:'trendCrash',
   formtief:'meltDown',   worstAtk:'tiebreakPech',worstDef:'bagelOpfer',        worstTeam:'brokenHeart',
   zirkus:'circus',       baustelle:'cone',
   weekKing:'weekKing',   dayKing:'dayKing',

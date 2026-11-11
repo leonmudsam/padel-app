@@ -231,7 +231,7 @@ Kaltblut" neben „Der Eiskalte", „Die weichen Knie" neben „Der Pechvogel",
 Abwehrmauer" neben „Der Dauerstürmer" und „Der Rollencoup" neben dem
 kompletten Verteidiger. „Der Pendler" und „Der Wanderpass"
 stehen neben „Der Seitenwechsler", „Der Spurwechsel" neben „Das
-Wechselbad", „Der Serienstopp" neben „Der Sonntagsschuss" und „Der
+Wechselbad", „Der Serienstopp" neben „Der Glücksgriff" und „Der
 Stammkunde" neben „Der Angstgegner". Wer eine
 Monatschronik um ihre Laufbahn-Achse ergänzt, verschiebt ihren Eintrag
 dorthin; die Monatstafel bleibt davon unberührt, weil `SEASON_TITLES` nach

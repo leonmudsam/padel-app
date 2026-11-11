@@ -428,7 +428,7 @@ Tagesabschluss), ohne Minus im Monat (0,85 mit dem Traummonat), das
 Drehbuch der Favoriten (−0,83 mit „Favorit wie Außenseiter") und das Pendel
 aus Sieg und Niederlage (−0,85 mit der stummen Antwort); was an der
 Spielzahl hing: die Blamage als Favorit (0,48), die längste Serie ohne
-Rechnung (0,41) und der Sonntagsschuss im Monat (0,45 in den
+Rechnung (0,41) und der Glücksgriff im Monat (0,45 in den
 Fixture-Monaten); und was keine Besonderheit ist: das Zugpferd neben
 schwächeren Partnern und der Blitzstart in den Monat erreichten als
 Bestes eines Monats nur 14 bis 30 % Wahrscheinlichkeit.

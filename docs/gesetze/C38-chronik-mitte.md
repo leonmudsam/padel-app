@@ -26,7 +26,7 @@ deshalb nicht das Niveau, sondern den **Abstand zum eigenen** — so wie „Das
 Übersoll" im Monat, das jeder erreichen kann. „Auf Augenhöhe" vergleicht die Quote in
 den Partien, die die Elo-Rechnung offen sah, mit der eigenen Gesamtquote;
 „Die Steigerung" die zweite Hälfte der Spieltage mit der ersten; „Der
-Sonntagsschuss" war eine einzige Partie, in der die Rechnung dagegen stand —
+Glücksgriff" war eine einzige Partie, in der die Rechnung dagegen stand —
 er trägt heute nur die Laufbahn, im Monat hing er mit 0,45 an der
 Spielzahl [§C39].
 Gemessen stehen ihre Halter im Mittel jenseits des ersten Drittels, und der

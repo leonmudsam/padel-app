@@ -2013,7 +2013,14 @@ function _mergeStorySnapshots(bestand, neu, jetzt){
     if(!s || !s.id) return;
     if(!byId.has(s.id) || _storyIstTafelUpdate(s, jetzt)) byId.set(s.id, s);
   });
-  return [...byId.values()].filter(s => new Date(s.when).getTime() >= ab)
+  // Eine Story über eine Partie, die es nicht mehr gibt, fällt heraus: eine
+  // gelöschte Partie oder eine, an die ein Satz angehängt wurde und die
+  // dabei eine neue ID bekam [§5.6b]. Gespeicherte Stories ändern sich nie,
+  // und vorher stand „gewinnt 1:0" neben der Karte derselben Partie, die
+  // 1:2 ausging. Ohne geladene Partien wird nichts gefiltert.
+  const da = matches.length ? new Set(matches.map(m => m.id)) : null;
+  return [...byId.values()].filter(s => new Date(s.when).getTime() >= ab
+      && (!da || !(s.dataRef && s.dataRef.matchId) || da.has(s.dataRef.matchId)))
     .sort(_storyFolge);
 }
 

@@ -881,7 +881,7 @@ function rcpLaufbahnHtml(daten){
 // man aus den Namen darunter zusammenzählen. Ein geteilter Rekord steht bei
 // jedem seiner Halter. Die Zeichen sind Metall: Gold trägt hier der Sieger
 // [§C31]. Ein langes Wort im Namen wird kleiner, nicht gebrochen
-// (`_awLblLang`, wie in der Award-Kachel [§C27]): „Der Sonntagsschuss"
+// (`_awLblLang`, wie in der Award-Kachel [§C27]): „Der Glücksgriff"
 // endete bei 360 px als „Sonntagsschus" und „s" darunter.
 const RCP_REKORD_ART = {neu:'erstmals', geholt:'übernommen', gesteigert:'verbessert'};
 function rcpRekordWandHtml(liste){

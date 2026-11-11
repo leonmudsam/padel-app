@@ -136,3 +136,14 @@
     border:1px dashed var(--acid2);padding:9px 13px;border-radius:10px;cursor:pointer;flex-shrink:0}
   /* Was dem Speichern noch fehlt, als Satz unter dem Knopf. */
   .m-fehlt{font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px;min-height:15px}
+  /* Der Anschluss an die Partie davor [§5.6b]: eine Zeile mit Court-Blau,
+     weil sie etwas über die Partie sagt und nicht über einen Fehler; der
+     Knopf rechts so breit wie sein Wort. */
+  .m-anschluss{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;
+    border:1px solid rgba(47,111,214,.35);border-radius:var(--r-sm);background:rgba(47,111,214,.08);
+    font-size:12px;line-height:1.45;color:var(--ink2)}
+  .m-anschluss > span{flex:1;min-width:0}
+  .m-anschluss b{color:var(--ink)}
+  .m-anschluss.aus{border-style:dashed;background:none}
+  .m-anschluss-k{flex:none;font:inherit;font-size:11px;font-weight:700;color:var(--ink);background:var(--surface2);
+    border:1px solid var(--line);border-radius:999px;padding:6px 10px;cursor:pointer}

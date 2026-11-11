@@ -1049,7 +1049,7 @@ const DISZIPLINEN = [
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte auf der schwächeren Seite · ${_ppZeichen(p.drvPerf/p.drvG)} rechts, ${_ppZeichen(p.revPerf/p.revG)} links`
     }},
 
-  {id:'sturmfuehrer', name:'Der Rechtsaußen', short:'Rechts', ic:'sturmfuehrer', tone:'orange', art:'leistung',
+  {id:'sturmfuehrer', name:'Der Drive-Virtuose', short:'Drive', ic:'sturmfuehrer', tone:'orange', art:'leistung',
     allzeit:{
       kammer:'koennen', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ganze Laufbahn, alle Partien rechts',
@@ -1067,7 +1067,7 @@ const DISZIPLINEN = [
   // Strecke beantwortet hat. Alle anderen Bedingungen gelten unveraendert:
   // der Wert bleibt ein ANTEIL oder ein Schnitt und keine Ansammlung, sonst
   // waere es wieder ein Rekord fuer den, der am meisten spielt.
-  {id:'defchief', name:'Der Linksaußen', short:'Links', ic:'shieldRank', tone:'blue', art:'leistung',
+  {id:'defchief', name:'Der Revés-Virtuose', short:'Revés', ic:'shieldRank', tone:'blue', art:'leistung',
     allzeit:{
       kammer:'koennen', basis:REKORD_GRUNDWERT.koennen, offen:true,
       zeitraum:'Ganze Laufbahn, alle Partien links',
@@ -1286,7 +1286,7 @@ const DISZIPLINEN = [
       ev:(p,v) => `${Math.round(v*100)} % aller ${p.games} Partien links · ${p.revG} Partien`
     }},
 
-  {id:'sturmtreue', name:'Der Rechtstreue', short:'Rechtstreu', ic:'strikeBoot', tone:'orange', art:'ereignis',
+  {id:'sturmtreue', name:'Der Rechtsverankerte', short:'Rechtstreu', ic:'posReinDrive', tone:'orange', art:'ereignis',
     allzeit:{
       kammer:'mark', basis:REKORD_GRUNDWERT.fuegung, offen:true,
       zeitraum:'Ganze Laufbahn',
@@ -1564,7 +1564,7 @@ const DISZIPLINEN = [
       zeit:p => p.beidesLabel || ''
     }},
 
-  {id:'fluke', name:'Der Sonntagsschuss', short:'Coup', ic:'surprise', tone:'orange', art:'ereignis', zufall:'quote',
+  {id:'fluke', name:'Der Glücksgriff', short:'Coup', ic:'surprise', tone:'orange', art:'ereignis', zufall:'quote',
     // Auch als Monatswertung: eine einzige Partie genuegt, und die Rechnung
     // stand dagegen. Gemessen ueber die bisherigen Monate ging sie an Platz
     // sieben und Platz zehn der Siegquote — an Leute, die von den Eintraegen,

@@ -594,6 +594,46 @@ function showMatchDetail(mid){
 // [§3.1c]. Vorher stand „Lösche & berechne neu…" sechs Sekunden da, und ein
 // Fehler beim Löschen fiel nicht auf: die Liga wurde trotzdem ohne die
 // Partie neu gerechnet, die in der Datenbank noch stand.
+// ── Einen Satz an die Partie davor hängen [§5.6b] ────────────────────
+// Die Zeile bekommt ihre neuen Sätze UND eine neue ID, in einer Anfrage.
+// Stories sind eingefügt und werden nie geändert [§C33]: unter der alten
+// ID stünde im Feed weiter „gewinnt 1:0", nachdem die Partie 1:2 ausging.
+// Mit neuer ID entstehen ihre Stories neu, und die der alten verschwinden,
+// weil der Feed keine Story einer Partie zeigt, die es nicht mehr gibt
+// (`_storyPartieDa`). Die Elo rechnet danach die Liga neu wie beim
+// Bearbeiten; die Partie ist die letzte, also ändert sich nur sie.
+function _neueId(){
+  const c = typeof crypto !== 'undefined' ? crypto : null;
+  if(c && c.randomUUID) return c.randomUUID();
+  const roh = c && c.getRandomValues ? [...c.getRandomValues(new Uint8Array(16))]
+    : Array.from({length:16}, () => Math.floor(Math.random() * 256));
+  const h = roh.map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0,8)}-${h.slice(8,12)}-4${h.slice(13,16)}-a${h.slice(17,20)}-${h.slice(20,32)}`;
+}
+async function partieAnhaengen(f){
+  const alt = f.partie;
+  const zeile = {id:_neueId(), ...partieFelder(f.saetze)};
+  const {error} = await sb.from('matches').update(zeile).eq('id', alt.id);
+  if(error){ toast('Nicht angehängt', true, {sub:error.message}); return null; }
+  const neu = {...alt, ...zeile};
+  const r = ligaNeuRechnen(matches.map(x => x.id === alt.id ? neu : x));
+  imHintergrund(() => rechnungSchreiben(r), true);
+  return {neu:matches.find(x => x.id === neu.id) || neu, alt};
+}
+// Zurück: dieselbe Zeile wieder mit ihrer alten ID, ihren alten Sätzen und
+// Deltas. Ihre alten Stories zeigt der Feed dann wieder.
+async function partieAnhangZurueck(erg){
+  const a = erg.alt;
+  const zeile = {id:a.id, sets:a.sets, set_kind:a.set_kind, sets_a:a.sets_a, sets_b:a.sets_b,
+    games_a:a.games_a, games_b:a.games_b, winner:a.winner, deltas:a.deltas, exp_a:a.exp_a};
+  const {error} = await sb.from('matches').update(zeile).eq('id', erg.neu.id);
+  if(error){ toast('Nicht zurückgenommen', true, {sub:error.message}); return; }
+  const r = ligaNeuRechnen(matches.map(x => x.id === erg.neu.id ? {...x, ...zeile} : x));
+  neuZeichnen();
+  toast('Satz zurückgenommen', 'ok');
+  imHintergrund(() => rechnungSchreiben(r), true);
+  loadAll();
+}
 async function partieLoeschen(mid){
   toast('Lösche…');
   const {error} = await sb.from('matches').delete().eq('id', mid);
