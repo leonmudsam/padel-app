@@ -58,13 +58,16 @@ function positionsBlockHtml(arr, pos, ohneRang){
 
 // Die Ruheständler auf der gewählten Seite, am Ende des Reiters [§C40].
 function positionenRuheHtml(){
-  const pos = rankMetric==='reves'?'reves':'drive';
+  const pos = rankMetric==='drive'?'drive':'reves';
   const arr = positionsListe(pos, ruhestandSpieler());
   return arr.length ? positionsBlockHtml(arr, pos, true) : '';
 }
 
 function vPositions(){
-  const which = rankMetric==='reves'?'reves':'drive';
+  // Revés steht links im Umschalter und ist deshalb auch die Vorwahl: wer
+  // den Reiter öffnet, sieht zuerst die linke Seite, wie auf dem Platz.
+  // `rankMetric` teilt sich der Reiter mit der Liga; nur 'drive' wählt rechts.
+  const which = rankMetric==='drive'?'drive':'reves';
   const arr = positionsListe(which);
   const ruhe = positionsListe(which, ruhestandSpieler()).length;
   return `

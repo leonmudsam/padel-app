@@ -8,7 +8,7 @@
 function _statLeer(){
   return {games:0,wins:0,losses:0,gf:0,ga:0,sf:0,sa:0,
     drvG:0,drvW:0,revG:0,revW:0,drvGf:0,drvGa:0,revGf:0,revGa:0,
-    tbW:0,tbL:0,bagelsFor:0,bagelsAgainst:0,zuNullW:0,zuNullL:0,
+    tbW:0,tbL:0,bagelsFor:0,bagelsAgainst:0,zuNullW:0,zuNullL:0,matchW:0,matchL:0,
     umkG:0,umkW:0,wenden:0,
     mates:{},opps:{},best:-1e9,worst:1e9,curStreak:0};
 }
@@ -26,6 +26,9 @@ function _statZaehlen(s, m, id, run){
   // Begegnung — ihr Sieger ist nicht immer der des letzten Satzes.
   if(p.zuNull){ if(won) s.zuNullW++; else s.zuNullL++; }
   const bg = begegnungAm(m), bgW = bg.winner === team;
+  // Die Matches: jede Begegnung einmal, an ihrem letzten Satz — auch ein
+  // einzeln gespielter Satz ist ein Match (1:0).
+  if(bg.winner){ if(bgW) s.matchW++; else s.matchL++; }
   if(bg.umkaempft){ s.umkG++; if(bgW) s.umkW++; }
   if(bg.wende && bgW) s.wenden++;
   if(won){ s.wins++; run = run >= 0 ? run + 1 : 1; } else { s.losses++; run = run <= 0 ? run - 1 : -1; }

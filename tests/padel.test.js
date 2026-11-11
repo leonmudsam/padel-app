@@ -85,6 +85,14 @@ ok(J(`['dynasty_600','dominator_400','streak15','streak20'].every(id=>rarityOf(i
   && RARITY_ORDER.every(k=>BADGES.filter(b=>rarityOf(b.id)===k).length===RARITY_META[k].total)`),
   'Die Klassen stimmen mit den Zählern überein, Dynastie und Dominator sind legendär');
 ok(J(`BADGES.every(b=>!/Partie/.test(b.desc))`), 'Keine Auszeichnung spricht noch von Partien');
+ok(J(`(()=>{rankMetric='elo';return /data-postoggle="reves" class="on"/.test(vPositions());})()`),
+  'Der Seiten-Reiter öffnet auf Revés, der linken Seite');
+ok(J(`(()=>{const m={id:'mx',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+  ...partieFelder([{a:6,b:4,art:'n'}]),exp_a:.5,created_at:'2026-08-10T18:00:00Z'};
+  matches=[m,{...m,id:'my',...partieFelder([{a:3,b:6,art:'n'}]),created_at:'2026-08-10T18:30:00Z'},
+    {...m,id:'mz',...partieFelder([{a:6,b:2,art:'n'}]),created_at:'2026-08-10T19:00:00Z'}];invalidateCache();
+  const s=playerStats('p1',matches);return s.matchW===1&&s.matchL===0&&s.wins===2&&s.losses===1;})()`),
+  'Drei Sätze derselben Paare sind ein Match: 2:1 in Sätzen, 1:0 in Matches');
 ok(zaehl('nail_biter', [S(4,6), S(6,4), S(10,8,'mtb')]) === 1, 'Ein Sieg im Match-Tiebreak ist ein Zittersieg');
 ok(zaehl('wall_badge', [S(4,6), S(6,3)]) === 1, 'Satzrückstand gedreht ist „Die Wende"');
 

@@ -115,7 +115,10 @@
 
   /* Die Satz-Eingabe [§5.6b]: je Satz zwei Zahlenfelder, darunter der Stand.
      Große Felder, damit sie mit dem Daumen zu treffen sind. */
-  .score-board.saetze{display:block;padding:12px 12px 10px}
+  /* Abstand zum Court darüber: ohne ihn klebte die Kopfzeile der Sätze
+     an der Karte von Team B und las sich wie ein Teil davon. */
+  .score-board.saetze{display:block;padding:12px 12px 10px;margin-top:18px}
+  .se-kopf .cl.t{grid-column:1;text-align:left;color:var(--muted)}
   .se-kopf{display:grid;grid-template-columns:56px 1fr 18px 1fr 34px;margin-bottom:6px}
   .se-kopf .cl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;text-align:center}
   .se-kopf .cl.A{grid-column:2;color:var(--acid)} .se-kopf .cl.B{grid-column:4;color:var(--orange)}

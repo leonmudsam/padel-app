@@ -552,7 +552,8 @@
   .m-ch-r{display:flex;align-items:center;gap:8px;margin-bottom:6px}
   .m-ch-w{flex:1;text-align:center;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
 
-  .score-board.saetze{display:block;padding:12px 12px 10px}
+  .score-board.saetze{display:block;padding:12px 12px 10px;margin-top:18px}
+  .se-kopf .cl.t{grid-column:1;text-align:left;color:var(--muted)}
   .se-kopf{display:grid;grid-template-columns:56px 1fr 18px 1fr 34px;margin-bottom:6px}
   .se-kopf .cl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;text-align:center}
   .se-kopf .cl.A{grid-column:2;color:var(--acid)} .se-kopf .cl.B{grid-column:4;color:var(--orange)}
@@ -6766,7 +6767,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.11.bcc05c88';
+const BUILD_VERSION='2026.11.11.134320a8';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -10512,7 +10513,7 @@ function showPotdRecap(opts){
 function _statLeer(){
   return {games:0,wins:0,losses:0,gf:0,ga:0,sf:0,sa:0,
     drvG:0,drvW:0,revG:0,revW:0,drvGf:0,drvGa:0,revGf:0,revGa:0,
-    tbW:0,tbL:0,bagelsFor:0,bagelsAgainst:0,zuNullW:0,zuNullL:0,
+    tbW:0,tbL:0,bagelsFor:0,bagelsAgainst:0,zuNullW:0,zuNullL:0,matchW:0,matchL:0,
     umkG:0,umkW:0,wenden:0,
     mates:{},opps:{},best:-1e9,worst:1e9,curStreak:0};
 }
@@ -10524,6 +10525,7 @@ function _statZaehlen(s, m, id, run){
   s.tbW += f.tbWon; s.tbL += f.tbLost; s.bagelsFor += f.bagelsFor; s.bagelsAgainst += f.bagelsAgainst;
   if(p.zuNull){ if(won) s.zuNullW++; else s.zuNullL++; }
   const bg = begegnungAm(m), bgW = bg.winner === team;
+  if(bg.winner){ if(bgW) s.matchW++; else s.matchL++; }
   if(bg.umkaempft){ s.umkG++; if(bgW) s.umkW++; }
   if(bg.wende && bgW) s.wenden++;
   if(won){ s.wins++; run = run >= 0 ? run + 1 : 1; } else { s.losses++; run = run <= 0 ? run - 1 : -1; }
@@ -12887,13 +12889,13 @@ function positionsBlockHtml(arr, pos, ohneRang){
 }
 
 function positionenRuheHtml(){
-  const pos = rankMetric==='reves'?'reves':'drive';
+  const pos = rankMetric==='drive'?'drive':'reves';
   const arr = positionsListe(pos, ruhestandSpieler());
   return arr.length ? positionsBlockHtml(arr, pos, true) : '';
 }
 
 function vPositions(){
-  const which = rankMetric==='reves'?'reves':'drive';
+  const which = rankMetric==='drive'?'drive':'reves';
   const arr = positionsListe(which);
   const ruhe = positionsListe(which, ruhestandSpieler()).length;
   return `
@@ -14991,7 +14993,7 @@ function satzEditorHtml(st){
     </div>`;
   const stand = _satzStandHtml(st);
   return `<div class="se">
-    <div class="se-kopf"><span class="cl A">Team A</span><span class="cl B">Team B</span></div>
+    <div class="se-kopf"><span class="cl t">Games</span><span class="cl A">Team A</span><span class="cl B">Team B</span></div>
     ${st.saetze.map(zeile).join('')}
     <div class="se-fuss">
       <div class="se-stand${stand.ok ? ' ok' : ''}" data-se-stand>${stand.html}</div>
@@ -17232,14 +17234,12 @@ const rankProgHtml = rInfo ? `
         <div class="m">${s.games} ${s.games === 1 ? 'Satz' : 'Sätze'}</div>
       </div>
       <div class="pp-kpi">
-        <div class="pp-k"><div class="v">${s.wins}</div><div class="l">Siege</div></div>
-        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Siegquote</div></div>
+        <div class="pp-k"><div class="v">${s.wins}:${s.losses}</div><div class="l">Sätze</div></div>
+        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Satzquote</div></div>
         <div class="pp-k ${s.gd>=0?'pos':'neg'}"><div class="v">${s.gd>=0?'+':''}${s.gd}</div><div class="l">Game-Bilanz</div></div>
-      </div>
-      <div class="pp-kpi pp-kpi-padel">
-        <div class="pp-k"><div class="v">${s.sf}:${s.sa}</div><div class="l">Sätze</div></div>
-        <div class="pp-k"><div class="v">${s.tbW}:${s.tbL}</div><div class="l">Tiebreaks</div></div>
-        <div class="pp-k"><div class="v">${s.bagelsFor}</div><div class="l">Bagels</div></div>
+        <div class="pp-k"><div class="v">${s.matchW}:${s.matchL}</div><div class="l">Matches</div></div>
+        <div class="pp-k"><div class="v">${s.matchW + s.matchL ? Math.round(100 * s.matchW / (s.matchW + s.matchL)) : 0}&nbsp;%</div><div class="l">Matchquote</div></div>
+        <div class="pp-k"><div class="v">${s.zuNullW}</div><div class="l">Zu Null</div></div>
       </div>
     </div>
 

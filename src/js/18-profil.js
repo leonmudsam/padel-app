@@ -608,14 +608,12 @@ const rankProgHtml = rInfo ? `
         <div class="m">${s.games} ${s.games === 1 ? 'Satz' : 'Sätze'}</div>
       </div>
       <div class="pp-kpi">
-        <div class="pp-k"><div class="v">${s.wins}</div><div class="l">Siege</div></div>
-        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Siegquote</div></div>
+        <div class="pp-k"><div class="v">${s.wins}:${s.losses}</div><div class="l">Sätze</div></div>
+        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Satzquote</div></div>
         <div class="pp-k ${s.gd>=0?'pos':'neg'}"><div class="v">${s.gd>=0?'+':''}${s.gd}</div><div class="l">Game-Bilanz</div></div>
-      </div>
-      <div class="pp-kpi pp-kpi-padel">
-        <div class="pp-k"><div class="v">${s.sf}:${s.sa}</div><div class="l">Sätze</div></div>
-        <div class="pp-k"><div class="v">${s.tbW}:${s.tbL}</div><div class="l">Tiebreaks</div></div>
-        <div class="pp-k"><div class="v">${s.bagelsFor}</div><div class="l">Bagels</div></div>
+        <div class="pp-k"><div class="v">${s.matchW}:${s.matchL}</div><div class="l">Matches</div></div>
+        <div class="pp-k"><div class="v">${s.matchW + s.matchL ? Math.round(100 * s.matchW / (s.matchW + s.matchL)) : 0}&nbsp;%</div><div class="l">Matchquote</div></div>
+        <div class="pp-k"><div class="v">${s.zuNullW}</div><div class="l">Zu Null</div></div>
       </div>
     </div>
 

@@ -63,7 +63,7 @@ function satzEditorHtml(st){
     </div>`;
   const stand = _satzStandHtml(st);
   return `<div class="se">
-    <div class="se-kopf"><span class="cl A">Team A</span><span class="cl B">Team B</span></div>
+    <div class="se-kopf"><span class="cl t">Games</span><span class="cl A">Team A</span><span class="cl B">Team B</span></div>
     ${st.saetze.map(zeile).join('')}
     <div class="se-fuss">
       <div class="se-stand${stand.ok ? ' ok' : ''}" data-se-stand>${stand.html}</div>
