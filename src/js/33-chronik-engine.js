@@ -134,7 +134,7 @@ function _thronDerLiga(P, ms, offen){
 // Kalenderwochen, Partner, Gegner. Einmal gebaut, von jeder Wertung gelesen.
 // Der Montag ist der Wochenanfang, damit „Woche" heisst, was im Kalender
 // steht — dieselbe Rechnung wie in `isoWeek`, nur als Datum statt als Zahl.
-function _rohGruppen(pid, p, wochenSieger, offen){
+function _rohGruppen(pid, p, wochenSieger, offen, gewertet){
   const grp = (feld) => {
     const o = {};
     p.partien.forEach(s => { const k = feld(s); if(k) (o[k] = o[k] || []).push(s); });
@@ -160,9 +160,12 @@ function _rohGruppen(pid, p, wochenSieger, offen){
   p.expQ = p.games ? p.expSum / p.games : 0;
   // Player of the Week: gewertet werden die eigenen Wochen mit mindestens
   // fünf Partien, damit ein Kurzbesuch keine Woche ist. Bei drei zählte
-  // eine Woche mit drei Partien so viel wie eine mit dreißig.
+  // eine Woche mit drei Partien so viel wie eine mit dreißig. Und nur
+  // Wochen, in denen es einen Player of the Week geben kann (`gewertet`,
+  // zwei Spieltage der Liga): eine Woche mit einem Spieltag kann niemand
+  // gewinnen und stand sonst als verlorene Woche in der Quote.
   Object.keys(p.wochGrp).forEach(k => {
-    if(p.wochGrp[k].length < 5) return;
+    if(p.wochGrp[k].length < 5 || !gewertet.has(k)) return;
     p.potwG++;
     if(wochenSieger[k] === pid) p.potw++;
   });
@@ -494,6 +497,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
   // laufen. Sie rechnet ueber ALLE Partien, nicht nur die des Monats — eine
   // Woche kann ueber den Monatswechsel gehen.
   const wochenSieger = _periodWinnerMap(matches || [], 'week');
+  const gewerteteWochen = _gewerteteWochen(matches || []);
   const prevId = _prevSeasonId(sid);
   const prevElos = prevId ? (gSim.seasonEndElos[prevId] || {}) : {};
   const prevPlayed = prevId ? (gSim.seasonPlayed[prevId] || {}) : {};
@@ -510,7 +514,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
     }
     roh.push({id, elo:p.elo, games:p.games, wins:p.wins, losses:p.losses});
     if(p.games < TITLE_MIN_GAMES){ delete P[id]; return; }
-    _rohGruppen(id, p, wochenSieger, offen);
+    _rohGruppen(id, p, wochenSieger, offen, gewerteteWochen);
   });
   _bannLaufDerLiga(P, ms);
   _thronDerLiga(P, ms, offen);

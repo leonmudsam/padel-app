@@ -6781,7 +6781,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.12.f03b9711';
+const BUILD_VERSION='2026.11.12.ee11f36e';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -9531,7 +9531,7 @@ function _potwMatchesInRange(start,end){
 }
 function potwHasData(){
   const {start,end}=_potwLastWeekRange();
-  return _potwMatchesInRange(start,end).length>0;
+  return _periodeRangliste(_potwMatchesInRange(start,end), 'woche', true).length>0;
 }
 
 function setConn(t,c){document.getElementById('connText').textContent=t;document.getElementById('connDot').className='dot '+c;
@@ -10151,7 +10151,11 @@ function showPotwRecap(opts){
       potwWinners = candidates.filter(c => Math.abs(c[2] - topWr) < 0.001);
     }
     
-    if (!potwWinners.length) { toast('Die Vorwoche hat keinen Player of the Week', 'info'); return; }
+    if (!potwWinners.length) {
+      toast(_wocheHatSpieltage(ms) ? 'Die Vorwoche hat keinen Player of the Week'
+        : `Einen Player of the Week gibt es erst ab ${WOCHE_MIN_SPIELTAGE} Spieltagen in der Woche`, 'info');
+      return;
+    }
 
     const mainPotwPlayerId = potwWinners[0][0];
     const mainPotwStats = potwWinners[0][1];
@@ -15520,6 +15524,10 @@ const BG = {
 };
 const PERIODE_MIN_SIEGE = {tag:3, woche:5, monat:10};
 const PERIODE_SAMMLER = {tag:3, woche:1};
+const WOCHE_MIN_SPIELTAGE = 2;
+function _wocheHatSpieltage(ms){
+  return new Set(ms.map(m => tagKey(mts(m)))).size >= WOCHE_MIN_SPIELTAGE;
+}
 function bgZuNull(m){ return partie(m).zuNull; }
 function bgBegegnungSieg(id, m){ return begegnungGewonnen(m, id) === true; }
 function bgZitter(m){ return partie(m).entscheidTb; }
@@ -15599,7 +15607,7 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countTeamOfSeason(id,bis)},
   {id:'award_collector',ic:'medalTrio',name:'Award-Sammler',desc:'In einer Saison mindestens '+PERIODE_SAMMLER.tag+'-mal Player of the Day und '+PERIODE_SAMMLER.woche+'-mal Player of the Week',
     multi:true,count:(id,ms,bis)=>countAwardCollector(id,ms,bis)},
-  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
+  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche mit mindestens '+WOCHE_MIN_SPIELTAGE+' Spieltagen (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
     multi:true,count:(id,ms,bis)=>countPeriodWins(id,ms,'week',bis)},
   {id:'potd',ic:'dayKing',name:'Player of the Day',desc:'Die meisten gewonnenen Sätze eines Spieltags (ab '+PERIODE_MIN_SIEGE.tag+')',
     multi:true,count:(id,ms,bis)=>countDayWins(id,ms,bis)},
@@ -15891,6 +15899,7 @@ function countWins(id,ms){return matchesOfPlayer(id,ms).filter(m=>won(id,m)).len
 
 const _winnerCountsMemo = new WeakMap();
 function _periodeRangliste(ms, regel, nurSichtbar){
+  if(regel==='woche' && !_wocheHatSpieltage(ms)) return [];
   const ps={};
   ms.forEach(m=>[m.a1,m.a2,m.b1,m.b2].forEach(pid=>{
     const s=ps[pid]||(ps[pid]={id:pid,wins:0,losses:0,eloDelta:0,wr:0});
@@ -15947,6 +15956,29 @@ function _periodWinnerMap(allMs, kind, bisMs){
   });
   slot[slotKey]=winners;
   return winners;
+}
+function _wochenSpieltage(allMs){
+  let slot=_winnerCountsMemo.get(allMs);
+  if(!slot){ slot={}; _winnerCountsMemo.set(allMs, slot); }
+  if(slot.wochenTage) return slot.wochenTage;
+  const tage={};
+  allMs.forEach(m=>{ const k=_wochenKey(m.created_at); (tage[k]||(tage[k]=new Set())).add(tagKey(mts(m))); });
+  Object.keys(tage).forEach(k=>{ tage[k]=[...tage[k]].sort(); });
+  slot.wochenTage=tage;
+  return tage;
+}
+function _gewerteteWochen(allMs){
+  let slot=_winnerCountsMemo.get(allMs);
+  if(!slot){ slot={}; _winnerCountsMemo.set(allMs, slot); }
+  if(!slot.gewertet){
+    const tage=_wochenSpieltage(allMs);
+    slot.gewertet=new Set(Object.keys(tage).filter(k=>tage[k].length>=WOCHE_MIN_SPIELTAGE));
+  }
+  return slot.gewertet;
+}
+function _spieltagDerWoche(m){
+  const l=_wochenSpieltage(matches || [])[_wochenKey(m.created_at)] || [];
+  return l.indexOf(tagKey(mts(m))) + 1;
 }
 function _winnerCountsOf(allMs, kind, bisMs){
   const winners=_periodWinnerMap(allMs, kind, bisMs);
@@ -21183,7 +21215,8 @@ function _buildStories(){
       const wVor = wochenErster(wo);
       W.concat(L).forEach(id => { const z = wo[id] || (wo[id] = {s:0, n:0}); z.n++; if(W.includes(id)) z.s++; });
       const wNach = wochenErster(wo);
-      if(neu && wNach && W.includes(wNach.id) && (!wVor || wVor.id !== wNach.id))
+      if(neu && wNach && W.includes(wNach.id) && (!wVor || wVor.id !== wNach.id)
+         && _spieltagDerWoche(m) >= WOCHE_MIN_SPIELTAGE)
         neuSt.push({id:'wochenspitze_' + wNach.id + '_' + m.id, cat:'personal', ic:'calendar',
           title:`${nameOf(wNach.id)} übernimmt die Woche, ${wNach.s} von ${wNach.n} gewonnen`,
           desc:wVor ? `Vorher lag ${nameOf(wVor.id)} mit ${quote(wVor.s, wVor.n)} % vorn.`
@@ -23681,6 +23714,10 @@ const STORY_ABGEMELDET = [
 ];
 function _storyWiderrufen(s){
   const d = (s && s.dataRef) || {};
+  if(d.type === 'woche_spitze'){
+    const m = d.matchId ? _spMatch(d.matchId) : null;
+    return !!m && _spieltagDerWoche(m) < WOCHE_MIN_SPIELTAGE;
+  }
   if(d.type !== 'karriereende') return false;
   const p = pmap()[d.pid];
   return !p || !p.retired_at || ruhestandMs(p) !== Date.parse(d.retiredAt);
@@ -32864,7 +32901,7 @@ const DISZIPLINEN = [
       beiname:'Der Dauerregent',
       art:'koennen',
       klasse:'legendaer', aus:3.02, streu:0.172, mitte:0.145, n0:5, echt:0,
-      wie:`Player of the Week ist, wer in einer Kalenderwoche die beste Bilanz hat. Gezählt wird der Anteil an den eigenen Wochen mit mindestens ${ST_TEIL} Sätzen, nicht die Zahl der Wochen.`,
+      wie:`Player of the Week ist, wer in einer Kalenderwoche die beste Bilanz hat; es gibt ihn nur in Wochen, in denen die Liga an mindestens ${WOCHE_MIN_SPIELTAGE} Tagen gespielt hat, und nur diese zählen. Gezählt wird der Anteil an den eigenen Wochen mit mindestens ${ST_TEIL} Sätzen, nicht die Zahl der Wochen.`,
       stichprobe:p => p.potwG,
       cond:`In mindestens zwei Dritteln der eigenen Spielwochen Player of the Week, ab 3 Wochen mit je ${ST_TEIL} Sätzen`,
       ...(_stWertung(
@@ -34144,7 +34181,7 @@ function _thronDerLiga(P, ms, offen){
   auswerten();
 }
 
-function _rohGruppen(pid, p, wochenSieger, offen){
+function _rohGruppen(pid, p, wochenSieger, offen, gewertet){
   const grp = (feld) => {
     const o = {};
     p.partien.forEach(s => { const k = feld(s); if(k) (o[k] = o[k] || []).push(s); });
@@ -34164,7 +34201,7 @@ function _rohGruppen(pid, p, wochenSieger, offen){
   p.q    = p.games ? p.wins / p.games : 0;
   p.expQ = p.games ? p.expSum / p.games : 0;
   Object.keys(p.wochGrp).forEach(k => {
-    if(p.wochGrp[k].length < 5) return;
+    if(p.wochGrp[k].length < 5 || !gewertet.has(k)) return;
     p.potwG++;
     if(wochenSieger[k] === pid) p.potw++;
   });
@@ -34393,6 +34430,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
   });
 
   const wochenSieger = _periodWinnerMap(matches || [], 'week');
+  const gewerteteWochen = _gewerteteWochen(matches || []);
   const prevId = _prevSeasonId(sid);
   const prevElos = prevId ? (gSim.seasonEndElos[prevId] || {}) : {};
   const prevPlayed = prevId ? (gSim.seasonPlayed[prevId] || {}) : {};
@@ -34407,7 +34445,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
     }
     roh.push({id, elo:p.elo, games:p.games, wins:p.wins, losses:p.losses});
     if(p.games < TITLE_MIN_GAMES){ delete P[id]; return; }
-    _rohGruppen(id, p, wochenSieger, offen);
+    _rohGruppen(id, p, wochenSieger, offen, gewerteteWochen);
   });
   _bannLaufDerLiga(P, ms);
   _thronDerLiga(P, ms, offen);

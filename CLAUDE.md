@@ -36,7 +36,7 @@ spielt etwa fünf Tage im Monat, ein Spieler kommt an einem Tag auf sechs
 bis zehn Sätze — alle Schwellen (Mindestzahlen, Serien, Fenster) sind
 darauf gesetzt, runde Zahlen, und stehen je System an einer Stelle: `BG`
 (Auszeichnungen), `AW_MIN` (Awards), `CHRONIK_MIN_SPIELE`/`ST_TEIL`/`ST_TAG`
-(Monatschronik), `CHRON_MIN_GAMES`/`RF` (Rekorde), `PERIODE_MIN_SIEGE`.
+(Monatschronik), `CHRON_MIN_GAMES`/`RF` (Rekorde), `PERIODE_MIN_SIEGE`/`WOCHE_MIN_SPIELTAGE`.
 
 > **Diese Datei ist Teil des Codes, nicht Begleitmaterial.**
 > Wer die Struktur, den Ablauf oder eine Regel ändert, ändert sie hier im
@@ -165,7 +165,7 @@ Daraus folgen drei harte Regeln:
    `12-insignium.css` stehen, sonst kippt das Wappen in der Ranglistenzeile.
 3. **Ein Bezeichner darf nur einmal auf oberster Ebene stehen.** Getrennte
    Dateien sehen unabhängig aus, teilen sich nach dem Zusammensetzen aber
-   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1667**) — und schlägt auch an, wenn einer
+   einen Gültigkeitsbereich. Wächter 4 zählt sie (aktuell **1672**) — und schlägt auch an, wenn einer
    davon nirgends mehr gerufen wird.
 
 ---

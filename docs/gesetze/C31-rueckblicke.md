@@ -9,6 +9,7 @@
 - Die Wirkung auf die Laufbahn ist der Unterschied zweier Prestige-Stände, vor dem Zeitraum und an seinem Ende (`rcpLaufbahnDaten`), je Spieler nach den drei Quellen [§C34]; die neuen Zeichen sind, wer dabei Stufe oder Grad wechselte (`rcpZeichenZuege`), die Säulen der Auszeichnungen genau ihr Teil aus Auszeichnungen (`rcpEhrungHtml`). Die Rekorde eines Zeitraums kommen aus `saisonRekorde` oder `rekordeImZeitraum`; „verbessert" heißt, dass der Wert gestiegen ist. Dieser Teil kommt nach, wenn das Blatt eingefahren ist (`rcpSpaetLaden`).
 - „Awards" sind die Wertungen eines Zeitraums aus dem Awards-Reiter (`rcpAwardKacheln`, `awardRankings` mit `awSeasonId` oder `awWeekStart`), nie aus einer eigenen Rechnung; „Auszeichnungen" sind, was im Profil gesammelt wird.
 - Die Wirkung einer Woche zählt ab einer Millisekunde nach ihrem Montag 00:00, wo die Woche davor schließt, bis zu ihrem eigenen Schluss am Montag darauf, mit Spieler der Woche und Award-Sammler, und ohne die Titel eines Monats, der in ihr endet (`rcpWocheLaufbahn`): Meister, Vize, Team der Saison und Untouchable kommen mit dem Monat und stehen in seinem Rückblick und seiner Ehrung, nicht in denen der Woche, auch wenn die Woche über das Monatsende hinausreicht. Ein Schnitt nach der letzten Partie ist „jetzt" nur, wenn kein Monatswechsel dazwischen liegt (`_schnitt`), sonst zeigte der Morgen nach dem Monatsende andere Zahlen als der Abend. Die Wirkung eines Monats zählt ab einer Millisekunde nach Mitternacht des Ersten bis zu seiner letzten Millisekunde; endet er an einem Sonntag, bis zum Schluss dieser Woche, mit ihrem Spieler der Woche (`rcpMonatGrenzen`). Rückblick und Ehrung des Monats lesen dieselben Grenzen.
+- Einen Spieler der Woche gibt es nur in einer Woche, in der die Liga an mindestens zwei Tagen gespielt hat (`WOCHE_MIN_SPIELTAGE`), gleich wie viele Spieler dabei waren. Die Regel steht in `_periodeRangliste`, und Auszeichnung, Wochenrückblick, Feed, Ehrung, Ring und „Die Wochenkrone" (`_gewerteteWochen`) lesen sie dort; die Spitze der Woche im Feed kommt erst ab dem zweiten Spieltag (`_spieltagDerWoche`) [§C33]; ohne ihn öffnet sich der Wochenrückblick nicht von selbst (`potwHasData`), und von Hand geöffnet sagt er, warum es keinen gibt.
 - Von selbst öffnet sich höchstens ein Rückblick am Tag (`_autoRueckblickHeute`, gemerkt, sobald er geplant ist): der Saison-Rückblick in den ersten drei Tagen des Monats (`autoShowSeasonRecap`) geht vor, die Woche kommt am Montag oder Dienstag, und am Mittwoch, wenn der Monat an einem dieser Tage wechselt. Gesehen ist ein Rückblick, sobald er offen ist; Wegwischen zählt. Der Monatsabschluss im Feed öffnet den Saison-Rückblick.
 - Was sich von selbst öffnet — Monat, Woche, Abschied —, deckt nichts zu, das offen ist (`_etwasOffen`): kein Blatt, keine Story, kein Popover, keinen Dialog, kein Formular, in das jemand schreibt. Ist beim Öffnen des Monats etwas offen, nimmt er seine Merker zurück und kommt beim nächsten Abruf; vorher ging er 600 ms nach einem Datenabruf über das Bearbeiten einer Partie auf.
 - Ein Rückblick zeigt den Stand von damals (`insigniumSvg` mit `opt.titel`, `opt.pos`); der Reif bleibt der heutige.
@@ -17,13 +18,30 @@
 
 ## Stellen
 
-`05b-recap-teile.js` (Bauteile und Grafiken), `07b-rueckblick.js` (`rcpWocheLaufbahn`, `autoShowPotwRecap`), `06-db.js` (`showSeasonRecap`, `autoShowSeasonRecap`), `09-ui-infra.js` (`_etwasOffen`), `18b-abschied.js` (`autoZeigeAbschied`), `03-saison.js` (`_schnitt`), `34-chronik-rekorde.js` (`saisonRekorde`, `rekordeImZeitraum`), `src/css/09-recap.css`.
+`05b-recap-teile.js` (Bauteile und Grafiken), `07b-rueckblick.js` (`rcpWocheLaufbahn`, `autoShowPotwRecap`, `showPotwRecap`), `06-db.js` (`showSeasonRecap`, `autoShowSeasonRecap`, `potwHasData`), `17-badges.js` (`_periodeRangliste`, `WOCHE_MIN_SPIELTAGE`, `_gewerteteWochen`, `_spieltagDerWoche`), `27-news-generator.js` (die Spitze der Woche), `29-news-cache.js` (`_storyWiderrufen`), `09-ui-infra.js` (`_etwasOffen`), `18b-abschied.js` (`autoZeigeAbschied`), `03-saison.js` (`_schnitt`), `34-chronik-rekorde.js` (`saisonRekorde`, `rekordeImZeitraum`), `src/css/09-recap.css`.
 
 ## Prüfung
 
-`tests/umbau/bedienung` öffnet den Monat, während ein Blatt aufgeht und während ein Formular offen ist, und erst danach; `tests/umbau/tafel` rechnet Tage an der Spitze, das Titelrennen, den Kalender, die Tabelle mit ihren Bewegungen, die Wirkung auf die Laufbahn (die Woche zum Monatsende morgens wie abends und ohne die Titel des Monats), welcher Rückblick sich an welchem Tag von selbst öffnet, die Säulen der Auszeichnungen, die neuen Zeichen und die Arten der Rekorde aus ihren Quellen nach und misst die Inline-Styles; `tests/umbau/blatt` hält die Awards der Woche gegen den Awards-Reiter, zählt die Zahlen und den Kalender der Woche nach, misst die Heldenkarte bei 360 px, rechnet den Vergleich der Saison mit dem Vormonat nach und misst beide Rückblicke bei 360 px: nichts ragt heraus, die Laufbahn kommt nach, die neuen Zeichen stehen zu dritt, kein Rekordname bricht im Wort, und ohne Ende bewegt sich nur der Sieger; die Folge der Vorstellung misst es Bild für Bild (§C43). `tests/umbau/ambient` zählt den Spieler der Woche je Woche und je Monat genau einmal: jede Woche der echten Partien nennt den, den ihr Schluss vergab, der Mai trägt den seiner letzten Woche, der Juni nicht.
+`tests/padel` (eine Woche mit einem Spieltag ohne Spieler der Woche, aber mit Spieler des Tages und nicht für die Wochenkrone gewertet; mit einem zweiten Spieltag mit ihm; die Spitze der Woche im Feed erst ab dem zweiten Spieltag, eine gespeicherte vom ersten gilt nicht); `tests/umbau/bedienung` öffnet den Monat, während ein Blatt aufgeht und während ein Formular offen ist, und erst danach; `tests/umbau/tafel` rechnet Tage an der Spitze, das Titelrennen, den Kalender, die Tabelle mit ihren Bewegungen, die Wirkung auf die Laufbahn (die Woche zum Monatsende morgens wie abends und ohne die Titel des Monats), welcher Rückblick sich an welchem Tag von selbst öffnet, die Säulen der Auszeichnungen, die neuen Zeichen und die Arten der Rekorde aus ihren Quellen nach und misst die Inline-Styles; `tests/umbau/blatt` hält die Awards der Woche gegen den Awards-Reiter, zählt die Zahlen und den Kalender der Woche nach, misst die Heldenkarte bei 360 px, rechnet den Vergleich der Saison mit dem Vormonat nach und misst beide Rückblicke bei 360 px: nichts ragt heraus, die Laufbahn kommt nach, die neuen Zeichen stehen zu dritt, kein Rekordname bricht im Wort, und ohne Ende bewegt sich nur der Sieger; die Folge der Vorstellung misst es Bild für Bild (§C43). `tests/umbau/ambient` zählt den Spieler der Woche je Woche und je Monat genau einmal: jede Woche der echten Partien nennt den, den ihr Schluss vergab, der Mai trägt den seiner letzten Woche, der Juni nicht.
 
 ## Herleitung
+
+**Ein Spieler der Woche braucht eine Woche.** Die Liga spielt etwa fünf
+Tage im Monat, und viele Wochen haben nur einen Spieltag. Dann war der
+Spieler der Woche fast immer der Spieler des Tages: dieselben Sätze,
+dieselbe Bilanz, zwei Auszeichnungen, zwei Karten im Feed und zwei
+Rückblicke für einen Nachmittag. Jetzt gibt es ihn erst ab dem zweiten
+Spieltag der Liga in der Woche; wie viele Spieler dabei waren, spielt
+keine Rolle. Gefragt wird an einer Stelle (`_periodeRangliste`), weil die
+Regel sonst an sechs Stellen hätte stehen müssen. Die Wochenkrone zählt
+nur Wochen, die jemand gewinnen konnte, sonst stand jede Woche mit einem
+Spieltag als verlorene Woche in ihrer Quote. Dasselbe galt im Feed: am 11.11., dem ersten
+Spieltag der Liga, standen neun Karten „übernimmt die Woche" neben dem
+Spieler des Tages. Die Spitze der Woche kommt deshalb erst ab dem zweiten
+Spieltag, und was schon gespeichert war, gilt nicht mehr. Und der Rückblick öffnet
+sich nur, wenn es einen Sieger gibt: vorher genügte ein Satz in der
+Vorwoche, und am Montag erschien von selbst nur der Hinweis „keinen Player
+of the Week“.
 
 Wie es dazu kam und was vorher falsch war — der Grund jeder Regel oben.
 

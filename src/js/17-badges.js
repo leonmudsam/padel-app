@@ -54,6 +54,16 @@ const BG = {
 // Siegen wäre schon ein einziges gewonnenes Match genug gewesen.
 const PERIODE_MIN_SIEGE = {tag:3, woche:5, monat:10};
 const PERIODE_SAMMLER = {tag:3, woche:1};
+// Einen Player of the Week gibt es nur in einer Woche, in der die LIGA an
+// mindestens zwei Tagen gespielt hat, gleich wie viele Spieler dabei waren.
+// Mit einem einzigen Spieltag war er fast immer der Player of the Day dieses
+// Tages: dieselben Sätze, dieselbe Bilanz, zwei Auszeichnungen und zwei
+// Karten für einen Nachmittag. Gezählt werden Kalendertage (`tagKey`) über
+// alle Sätze der Woche, nicht die eines Spielers.
+const WOCHE_MIN_SPIELTAGE = 2;
+function _wocheHatSpieltage(ms){
+  return new Set(ms.map(m => tagKey(mts(m)))).size >= WOCHE_MIN_SPIELTAGE;
+}
 // Was ein Satz für einen Spieler war, an einer Stelle für Katalog und
 // Auslöser [§C27]. Die Begriffe stehen in §1.3.
 // Zu Null ist ein Satz ohne abgegebenes Game (6:0). Vorher hieß es zwei
@@ -156,7 +166,7 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countTeamOfSeason(id,bis)},
   {id:'award_collector',ic:'medalTrio',name:'Award-Sammler',desc:'In einer Saison mindestens '+PERIODE_SAMMLER.tag+'-mal Player of the Day und '+PERIODE_SAMMLER.woche+'-mal Player of the Week',
     multi:true,count:(id,ms,bis)=>countAwardCollector(id,ms,bis)},
-  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
+  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche mit mindestens '+WOCHE_MIN_SPIELTAGE+' Spieltagen (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
     multi:true,count:(id,ms,bis)=>countPeriodWins(id,ms,'week',bis)},
   {id:'potd',ic:'dayKing',name:'Player of the Day',desc:'Die meisten gewonnenen Sätze eines Spieltags (ab '+PERIODE_MIN_SIEGE.tag+')',
     multi:true,count:(id,ms,bis)=>countDayWins(id,ms,bis)},
@@ -580,7 +590,11 @@ const _winnerCountsMemo = new WeakMap(); // msArray → { '<kind>_<curKey>': {pi
 // {id, wins, losses, eloDelta, wr}. Bei Gleichstand in allem bleibt die
 // Reihenfolge der ersten Partie, in der jemand auftaucht. `nurSichtbar`
 // lässt ausgeblendete Spieler weg; der Zähler der Auszeichnung fragt ohne.
+// Eine Woche mit weniger als WOCHE_MIN_SPIELTAGE Spieltagen hat niemanden:
+// hier und nicht bei jedem Aufrufer, damit Auszeichnung, Rückblick, Feed
+// und Ring dieselbe Woche ohne Sieger sehen.
 function _periodeRangliste(ms, regel, nurSichtbar){
+  if(regel==='woche' && !_wocheHatSpieltage(ms)) return [];
   const ps={};
   ms.forEach(m=>[m.a1,m.a2,m.b1,m.b2].forEach(pid=>{
     const s=ps[pid]||(ps[pid]={id:pid,wins:0,losses:0,eloDelta:0,wr:0});
@@ -649,6 +663,40 @@ function _periodWinnerMap(allMs, kind, bisMs){
   });
   slot[slotKey]=winners;
   return winners;
+}
+// Die Spieltage jeder Woche, aufsteigend: {Wochenschlüssel → [Tag, …]}.
+// Einmal je Datenstand, an der Identität des Arrays wie die Sieger.
+function _wochenSpieltage(allMs){
+  let slot=_winnerCountsMemo.get(allMs);
+  if(!slot){ slot={}; _winnerCountsMemo.set(allMs, slot); }
+  if(slot.wochenTage) return slot.wochenTage;
+  const tage={};
+  allMs.forEach(m=>{ const k=_wochenKey(m.created_at); (tage[k]||(tage[k]=new Set())).add(tagKey(mts(m))); });
+  Object.keys(tage).forEach(k=>{ tage[k]=[...tage[k]].sort(); });
+  slot.wochenTage=tage;
+  return tage;
+}
+// Die Wochen, in denen es einen Player of the Week geben kann: die Liga hat
+// an WOCHE_MIN_SPIELTAGE Tagen gespielt. „Die Wochenkrone" zählt nur sie
+// [§C39] — eine Woche mit einem Spieltag stand sonst als verlorene Woche in
+// ihrer Quote, obwohl sie niemand gewinnen konnte.
+function _gewerteteWochen(allMs){
+  let slot=_winnerCountsMemo.get(allMs);
+  if(!slot){ slot={}; _winnerCountsMemo.set(allMs, slot); }
+  if(!slot.gewertet){
+    const tage=_wochenSpieltage(allMs);
+    slot.gewertet=new Set(Object.keys(tage).filter(k=>tage[k].length>=WOCHE_MIN_SPIELTAGE));
+  }
+  return slot.gewertet;
+}
+// Der wievielte Spieltag seiner Woche der Tag dieser Partie ist, ab 1. Die
+// Wochenspitze im Feed fragt danach [§C33]: am ersten Spieltag einer Woche
+// gibt es noch kein Rennen um den Player of the Week, und „übernimmt die
+// Woche" stand am 11.11. neunmal neben dem Spieler des Tages. Gezählt wird,
+// was bis zu diesem Tag gespielt war; spätere Tage ändern die Zahl nicht.
+function _spieltagDerWoche(m){
+  const l=_wochenSpieltage(matches || [])[_wochenKey(m.created_at)] || [];
+  return l.indexOf(tagKey(mts(m))) + 1;
 }
 // Zählt, wie oft jeder Spieler eine Periode gewonnen hat.
 function _winnerCountsOf(allMs, kind, bisMs){

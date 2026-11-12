@@ -147,8 +147,19 @@ const STORY_ABGEMELDET = [
 // und gleich zurückgeholt wurde, stünde sonst für immer als Breaking im
 // Feed. Ein zweites Karriereende trägt einen anderen Zeitpunkt und eine
 // eigene Karte.
+// ── Eine Wochenspitze vom ersten Spieltag ihrer Woche [§C31] ─────────
+// Einen Player of the Week gibt es erst ab zwei Spieltagen in der Woche,
+// und der Generator meldet das Rennen um ihn erst dann. Was vorher
+// veröffentlicht war, bleibt in der Datenbank, gilt aber nicht: am 11.11.
+// standen neun Karten „übernimmt die Woche" neben dem Spieler des Tages,
+// alle vom ersten Spieltag der Woche. Ob sie gilt, hängt nur an Tagen bis zu
+// ihrer Partie und kippt durch spätere Spieltage nicht.
 function _storyWiderrufen(s){
   const d = (s && s.dataRef) || {};
+  if(d.type === 'woche_spitze'){
+    const m = d.matchId ? _spMatch(d.matchId) : null;
+    return !!m && _spieltagDerWoche(m) < WOCHE_MIN_SPIELTAGE;
+  }
   if(d.type !== 'karriereende') return false;
   const p = pmap()[d.pid];
   return !p || !p.retired_at || ruhestandMs(p) !== Date.parse(d.retiredAt);

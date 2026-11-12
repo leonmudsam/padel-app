@@ -56,7 +56,14 @@ function showPotwRecap(opts){
       potwWinners = candidates.filter(c => Math.abs(c[2] - topWr) < 0.001);
     }
     
-    if (!potwWinners.length) { toast('Die Vorwoche hat keinen Player of the Week', 'info'); return; }
+    // Warum es keinen gibt, sagt der Hinweis: bei einem einzigen Spieltag
+    // war es sonst dieselbe Meldung wie bei einer Woche, in der niemand auf
+    // fünf Siege kam, und die Regel stand nirgends.
+    if (!potwWinners.length) {
+      toast(_wocheHatSpieltage(ms) ? 'Die Vorwoche hat keinen Player of the Week'
+        : `Einen Player of the Week gibt es erst ab ${WOCHE_MIN_SPIELTAGE} Spieltagen in der Woche`, 'info');
+      return;
+    }
 
     const mainPotwPlayerId = potwWinners[0][0];
     const mainPotwStats = potwWinners[0][1];

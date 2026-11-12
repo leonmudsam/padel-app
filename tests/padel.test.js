@@ -319,6 +319,51 @@ ok(_tor.nach.tor.offen && _tor.nach.rated === 5 && _tor.nach.halter && !_tor.nac
   'Mit dem 40. Satz der Liga sind die Rekorde vergeben, die Zeile zum Tor fällt weg');
 ok(_tor.nach.p5, 'Das Tor gilt für die Liga: wer erst zwei Sätze hat, steht trotzdem im Rennen');
 
+// ── Player of the Week erst ab zwei Spieltagen ──────────────────────
+// Mit einem einzigen Spieltag in der Woche war der Player of the Week fast
+// immer der Player of the Day desselben Tages. Eine Woche (3. bis 9. August)
+// mit sechs Sätzen am Dienstag, die p1 alle gewinnt, und einmal dieselbe
+// Woche mit einem Satz am Donnerstag dazu.
+const _potw = J(`(()=>{const _m=matches,_p=players,_s=seasons;
+  players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=(id,tag,std)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a:6,b:3,art:'n'}]),deltas:{p1:5,p2:5,p3:-5,p4:-5},exp_a:.5,created_at:new Date(2026,7,tag,std).toISOString()});
+  const dienstag=Array.from({length:6},(_,i)=>mk('w'+i,4,17+i%4));
+  const lauf=ms=>{matches=ms;invalidateCache();const wk=_wochenKey(ms[0].created_at);
+    return {woche:_periodWinnerMap(matches,'week')[wk]||null,zahl:countPeriodWins('p1',matches,'week'),tag:countDayWins('p1',matches),
+      news:!!_newsPeriodWinner(matches,'woche'),gewertet:_gewerteteWochen(matches).has(wk)};};
+  const ein=lauf(dienstag), zwei=lauf(dienstag.concat([mk('w9',6,18)]));
+  matches=_m;players=_p;seasons=_s;invalidateCache();
+  return {ein,zwei};})()`);
+ok(_potw.ein.woche === null && _potw.ein.zahl === 0 && !_potw.ein.news && !_potw.ein.gewertet && _potw.ein.tag === 1,
+  'Eine Woche mit einem einzigen Spieltag hat keinen Player of the Week, nur den Player of the Day, und zählt nicht für die Wochenkrone');
+ok(_potw.zwei.woche === 'p1' && _potw.zwei.zahl === 1 && _potw.zwei.news && _potw.zwei.gewertet,
+  'Mit einem zweiten Spieltag in der Woche gibt es ihn, egal wie viele dort spielen');
+// Das Rennen um die Woche im Feed („übernimmt die Woche") auch erst ab dem
+// zweiten Spieltag: am 11.11. standen neun solche Karten neben dem Spieler
+// des Tages. Dienstag gewinnt A fünf von sechs Sätzen (p1 führt), Donnerstag
+// gewinnt B sechs (p3 zieht vorbei).
+setNow(new Date(2026, 7, 6, 23, 30).getTime());
+const _spitze = J(`(()=>{const _m=matches,_p=players,_s=seasons;
+  players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=(id,tag,i,a)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([a?{a:6,b:3,art:'n'}:{a:3,b:6,art:'n'}]),exp_a:.5,created_at:new Date(2026,7,tag,17,i*10).toISOString()});
+  matches=Array.from({length:6},(_,i)=>mk('d'+i,4,i,i<5)).concat(Array.from({length:6},(_,i)=>mk('t'+i,6,i,false)));
+  invalidateCache();_cache._stories=[];
+  const st=_buildStories().filter(s=>String(s.id).startsWith('wochenspitze_'));
+  const tag=s=>String(s.dataRef.matchId).charAt(0);
+  const r={dienstag:st.filter(s=>tag(s)==='d').length, donnerstag:st.filter(s=>tag(s)==='t').length,
+    widerrufen:_storyWiderrufen({id:'wochenspitze_p1_d4',dataRef:{type:'woche_spitze',matchId:'d4'}}),
+    gilt:!_storyWiderrufen({id:'wochenspitze_p3_t4',dataRef:{type:'woche_spitze',matchId:'t4'}}),
+    tagNr:[_spieltagDerWoche(matches[0]),_spieltagDerWoche(matches[11])].join(',')};
+  matches=_m;players=_p;seasons=_s;invalidateCache();_cache._stories=[];
+  return r;})()`);
+setNow(new Date(2026, 7, 26, 18, 40).getTime());
+ok(_spitze.dienstag === 0 && _spitze.donnerstag >= 1 && _spitze.tagNr === '1,2',
+  `Die Wochenspitze im Feed erst ab dem zweiten Spieltag der Woche (${_spitze.dienstag} am ersten, ${_spitze.donnerstag} am zweiten)`);
+ok(_spitze.widerrufen && _spitze.gilt,
+  'Eine schon gespeicherte Wochenspitze vom ersten Spieltag gilt nicht mehr, eine vom zweiten bleibt');
+
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
   hinweiseWeg().add('Probe');const b=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');

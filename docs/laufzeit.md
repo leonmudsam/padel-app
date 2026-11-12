@@ -266,7 +266,7 @@ Abschlüsse haben ihre eigene Karte [§C33]. Für den jüngsten Spieltag ist das
 Ende „jetzt", solange danach nichts zuging (`_schnitt`), und alle vier
 zentralen Funktionen treffen ihren heißen Cache. Wo eine Rechnung an der
 Identität eines Arrays hängt statt an einer Version (`_winnerCountsOf`,
-`matchesOfPlayer`, `matchesByDay`), reicht eine `WeakMap` — `matches` wird
+`_wochenSpieltage`, `_gewerteteWochen`, `matchesOfPlayer`, `matchesByDay`), reicht eine `WeakMap` — `matches` wird
 immer **ersetzt**, nie an Ort und Stelle verändert, und ein frisches Array
 verwirft den Memo von selbst. Die Sieger der Zeiträume tragen im Schlüssel
 dazu den Zeitraum, der beim Schnitt noch offen ist (`_periodeOffen`), nicht

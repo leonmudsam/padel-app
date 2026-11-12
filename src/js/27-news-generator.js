@@ -1167,11 +1167,15 @@ function _buildStories(){
         when:zeit, prio:STORY_PRIO.duell_kippt,
         dataRef:{type:'duell_kippt', pid:kippt.w, gegen:kippt.l, s:kippt.s, n:kippt.n, matchId:m.id, playerIds:[kippt.w, kippt.l]}});
       // (8) Die Woche: ein Sieger übernimmt die beste Siegquote der Woche.
+      // Erst ab dem zweiten Spieltag der Liga in dieser Woche: vorher gibt es
+      // keinen Player of the Week [§C31], und am ersten Spieltag sagte jede
+      // Karte nur, wer gerade den Tag anführt — neben dem Spieler des Tages.
       const wk = _wochenKey(m.created_at), wo = woche[wk] || (woche[wk] = {});
       const wVor = wochenErster(wo);
       W.concat(L).forEach(id => { const z = wo[id] || (wo[id] = {s:0, n:0}); z.n++; if(W.includes(id)) z.s++; });
       const wNach = wochenErster(wo);
-      if(neu && wNach && W.includes(wNach.id) && (!wVor || wVor.id !== wNach.id))
+      if(neu && wNach && W.includes(wNach.id) && (!wVor || wVor.id !== wNach.id)
+         && _spieltagDerWoche(m) >= WOCHE_MIN_SPIELTAGE)
         neuSt.push({id:'wochenspitze_' + wNach.id + '_' + m.id, cat:'personal', ic:'calendar',
           title:`${nameOf(wNach.id)} übernimmt die Woche, ${wNach.s} von ${wNach.n} gewonnen`,
           desc:wVor ? `Vorher lag ${nameOf(wVor.id)} mit ${quote(wVor.s, wVor.n)} % vorn.`

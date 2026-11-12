@@ -798,10 +798,15 @@ function _potwKeyOf(monday){
 function _potwMatchesInRange(start,end){
   return matches.filter(m=>{const d=new Date(m.created_at); return d>=start && d<=end;});
 }
-// True wenn die Vorwoche mindestens 1 Match hatte (für Button-Sichtbarkeit)
+// Ob die Vorwoche einen Player of the Week hat — nach derselben Regel wie
+// Auszeichnung und Rückblick (`_periodeRangliste`). Vorher genügte ein Satz:
+// dann öffnete sich am Montag von selbst nur der Hinweis „keinen Player of
+// the Week", und der Tagesrückblick wartete auf einen Wochenrückblick, den es
+// nicht gab. Mit zwei Spieltagen als Bedingung (`WOCHE_MIN_SPIELTAGE`) wäre
+// das jede Woche mit einem einzigen Spieltag gewesen.
 function potwHasData(){
   const {start,end}=_potwLastWeekRange();
-  return _potwMatchesInRange(start,end).length>0;
+  return _periodeRangliste(_potwMatchesInRange(start,end), 'woche', true).length>0;
 }
 
 // Der Verbindungspunkt oben rechts: Text und Farbe des Ladezustands.

@@ -2127,7 +2127,7 @@ const DISZIPLINEN = [
       // Ausschlag auf vier gedeckelt: den hoechsten, den es im Katalog
       // wirklich gibt [§C39].
       klasse:'legendaer', aus:3.02, streu:0.172, mitte:0.145, n0:5, echt:0,
-      wie:`Player of the Week ist, wer in einer Kalenderwoche die beste Bilanz hat. Gezählt wird der Anteil an den eigenen Wochen mit mindestens ${ST_TEIL} Sätzen, nicht die Zahl der Wochen.`,
+      wie:`Player of the Week ist, wer in einer Kalenderwoche die beste Bilanz hat; es gibt ihn nur in Wochen, in denen die Liga an mindestens ${WOCHE_MIN_SPIELTAGE} Tagen gespielt hat, und nur diese zählen. Gezählt wird der Anteil an den eigenen Wochen mit mindestens ${ST_TEIL} Sätzen, nicht die Zahl der Wochen.`,
       stichprobe:p => p.potwG,
       cond:`In mindestens zwei Dritteln der eigenen Spielwochen Player of the Week, ab 3 Wochen mit je ${ST_TEIL} Sätzen`,
       ...(_stWertung(
