@@ -1308,8 +1308,8 @@ const SP_FORM = {
     daten:F => _spKopfDaten(F),
     text:F => _spKontext(F)},
 
-  // Der Elo-Strom: was von den Verlierern zu den Siegern floss, je Spieler
-  // so breit wie seine Punkte.
+  // Der Elo-Pegel (`_spStromBild`): was der Satz jedem brachte, als Säule an
+  // einer Nulllinie. Der Schlüssel heißt nach dem Strom, den er ersetzt.
   strom:{rang:10, ic:'bolt', v2:true,
     wann:() => ({}),
     daten:F => _spKopfDaten(F),
@@ -1869,41 +1869,42 @@ function _spPucksBild(d){
     + (!w && n === 10 ? `<u style="--von:${k}"></u>` : '') + `</span><b class="num">${_spZahl(k)}</b></div>`;
   return `<div class="sp-fk sp-pu">${z(d.W, d.hoch, true)}${z(d.L, d.tief, false)}</div>` + _spNz(d.W, d.L);
 }
-// ── Der Elo-Strom: was die Verlierer abgaben, fließt zu den Siegern ────
-// Von jedem Verlierer ein Band zur Mitte, so breit wie seine Punkte, dort
-// der Stand, und von der Mitte zu jedem Sieger sein Band. Team A steht
-// links. Vorher liefen vier Bänder von jedem Verlierer zu jedem Sieger und
-// kreuzten sich in einem X: welche Punkte wohin gingen, war nicht zu lesen,
-// und die Bänder sagten dasselbe viermal.
+// ── Der Elo-Pegel: was der Satz jedem brachte ─────────────────────────
+// Unter jedem Gesicht eine Säule an einer gemeinsamen Nulllinie, so hoch wie
+// die Elo, die dieser Satz ihm brachte: nach oben grün, nach unten rot
+// [§C25], alle vier im selben Maßstab, der Stand in der Mitte auf der Linie.
+// Team A links, je Paar der Revés zuerst, die Partner nebeneinander.
+//
+// Vorher war es der Elo-Strom: von jedem Verlierer ein Band zur Mitte und
+// von dort zu jedem Sieger, so breit wie seine Punkte. Er behauptete einen
+// Fluss, den es nicht gibt — die Rechnung ist kein Nullsummenspiel, gemessen
+// bekamen die Sieger fast immer mehr, als die Verlierer abgaben (+23 und +21
+// gegen −17 und −17), und die Bänder wurden in der Mitte breiter, als
+// entstünden dort Punkte. Die Breite eines Bandes war außerdem kaum zu
+// lesen, und die Partner standen übereinander, wo jeder Kopf sie
+// nebeneinander zeigt [§C33]. Die Richtung einer Säule folgt dem Vorzeichen
+// und nicht dem Ausgang: wer einen Satz verliert und trotzdem Elo bekommt,
+// steht oben. Der Schlüssel bleibt `strom`, weil gespeicherte Karten ihn tragen.
+const SP_PEGEL_MAX = 24;
 function _spStromBild(d){
-  const W = 240, H = 78, cx = W / 2, aw = d.aw !== false, dl = d.delta || {};
+  const aw = d.aw !== false, dl = d.delta || {};
   const A = aw ? d.W : d.L, B = aw ? d.L : d.W;
-  const breit = id => Math.max(3, Math.min(13, Math.abs(dl[id] || 0) / 2.2));
-  const id = 'sps' + _spVisualHash(d.W.concat(d.L).join() + d.hoch + ':' + d.tief);
-  const yEnde = [18, 60];
-  // Die Bänder einer Seite laufen in der Mitte übereinander zusammen.
-  const seite = (ids, links, sieg) => {
-    const summe = ids.reduce((n, x) => n + breit(x), 0);
-    let off = H / 2 - summe / 2;
-    return ids.map((x, i) => {
-      const b = breit(x), ym = off + b / 2; off += b;
-      const xa = links ? 34 : W - 34, xm = links ? cx - 30 : cx + 30, xk = (xa + xm) / 2;
-      // Der Fluss läuft vom Verlierer zur Mitte und von der Mitte zum Sieger.
-      const pfad = sieg ? `M${xm} ${ym.toFixed(1)}C${xk} ${ym.toFixed(1)},${xk} ${yEnde[i]},${xa} ${yEnde[i]}`
-        : `M${xa} ${yEnde[i]}C${xk} ${yEnde[i]},${xk} ${ym.toFixed(1)},${xm} ${ym.toFixed(1)}`;
-      return `<path class="sp-sm-p${sieg ? ' w' : ''}" d="${pfad}" stroke="url(#${id})" stroke-width="${b.toFixed(1)}"/>`;
-    }).join('');
+  const max = Math.max(1, ...A.concat(B).map(x => Math.abs(dl[x] || 0)));
+  const spalte = (x, sp) => {
+    const v = Math.round(dl[x] || 0), hoch = Math.max(2, Math.abs(v) / max * SP_PEGEL_MAX);
+    // Ein langer Wert wird kleiner, nicht breiter [§C27]: „+1.234" lief
+    // sonst in die Zahl des Partners daneben.
+    const z = _spVz(v), lang = z.length > 6 ? ' z3' : z.length > 4 ? ' z2' : '';
+    return `<span class="sp-sm-c" style="grid-column:${sp}">${_spChip(x)}</span>`
+      + `<span class="sp-sm-s ${v >= 0 ? 'auf' : 'ab'}" style="grid-column:${sp};--h:${hoch.toFixed(1)}px">`
+      + `<b class="num${lang}">${z}</b><i></i></span>`;
   };
-  const ende = (x, i, links, sieg) => `<span class="sp-sm-a${sieg ? ' w' : ''}" style="top:${yEnde[i] - 12}px;${links ? 'left' : 'right'}:2px">`
-    + `${_spChip(x)}<b class="num">${_spVz(dl[x] || 0)}</b></span>`;
-  // Rot bei den Verlierern, Gold in der Mitte, Grün bei den Siegern [§C25].
-  const [x1, x2] = aw ? [W, 0] : [0, W];
-  return `<div class="sp-fk sp-sm"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs>`
-    + `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${x1}" x2="${x2}" y1="0" y2="0"><stop offset=".08" stop-color="#f0566a"/>`
-    + `<stop offset=".5" stop-color="#f7cf4a"/><stop offset=".92" stop-color="#E4F24A"/></linearGradient></defs>`
-    + seite(A, true, aw) + seite(B, false, !aw) + `</svg>`
-    + A.map((x, i) => ende(x, i, true, aw)).join('') + B.map((x, i) => ende(x, i, false, !aw)).join('')
-    + `<span class="sp-sm-m">${_spSt(d)}</span></div>` + _spNz(d.W, d.L);
+  // Die Höhe der Zeilen liest das CSS aus derselben Zahl (`--pegel`): eine
+  // zweite Zahl im Stil liefe beim nächsten Ändern auseinander, und die
+  // längste Säule stieße an ihr Gesicht.
+  return `<div class="sp-fk sp-sm"><div class="sp-sm-g" style="--pegel:${SP_PEGEL_MAX}px"><span class="sp-sm-null"></span>`
+    + A.map((x, i) => spalte(x, i + 1)).join('') + `<span class="sp-sm-m">${_spSt(d)}</span>`
+    + B.map((x, i) => spalte(x, i + 4)).join('') + `</div></div>` + _spNz(d.W, d.L);
 }
 function _spHerzBild(d){
   // Der Herzschlag der Sieger steigt bis zum letzten Tor, der der Verlierer
@@ -2012,7 +2013,7 @@ function _spScoreSpezial(m){
   return null;
 }
 // Die Grundansichten des Katalogs in seiner Reihenfolge: drei für jede
-// Partie (Anzeigetafel, Elo-Strom, Torpucks), das Spielfeld, und sechs, die
+// Partie (Anzeigetafel, Elo-Pegel, Games-Balken), das Spielfeld, und sechs, die
 // eine Bedingung haben. Ob eine zutrifft, sagt ihre Form (`wann`); das
 // Mosaik nur mit einem benannten Befund (`_spMosaikBefund`).
 const SP_KOPF_GRUND = ['tafel', 'strom', 'balken', 'feld', 'tauziehen', 'tacho', 'muenze', 'gefaelle', 'mosaik', 'streu'];

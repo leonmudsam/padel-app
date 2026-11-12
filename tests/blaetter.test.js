@@ -83,6 +83,58 @@ const ATTR = /(?:style|d|width|height|x|y|cx|cy|r|points|transform|viewBox)="[^"
     const sids = JSON.parse(await K(`JSON.stringify((_cache._stories||[]).map(s=>s.id))`));
     await gruppe('Feed und jede Story', [['Feed', 'openNewsFeed()'], ...sids.map(s => [s.slice(0, 30), `openNewsDetail(${JSON.stringify(s)})`])]);
 
+    // ── Der Elo-Pegel, gemessen ───────────────────────────────────────
+    // Der Kopf, der den Elo-Strom ersetzt: je Spieler eine Säule an einer
+    // Nulllinie. Gezeichnet so breit wie auf dem schmalsten Telefon (320 px,
+    // Kopf 223 px), mit Grenzwerten: ±999 und 12:10, ±12.345 und 13:11 —
+    // ein langer Wert wird dort kleiner, nicht breiter [§C27]. Der
+    // Strom stellte die Partner übereinander und ließ Bänder in der Mitte
+    // breiter werden, als die Verlierer abgaben.
+    const pegel = await K(`(async()=>{
+      const p=activePlayers().map(x=>x.id), [a,b,c,e]=p;
+      const st=document.createElement('style');st.textContent='.pegel-test *{animation:none!important;transition:none!important}';document.head.appendChild(st);
+      const faelle=[
+        {n:'6:4, A gewinnt, 320 px',w:243,d:{W:[a,b],L:[c,e],hoch:6,tief:4,aw:true,delta:{[a]:23,[b]:21,[c]:-17,[e]:-17}}},
+        {n:'2:6, B gewinnt, ein Verlierer im Plus, 320 px',w:243,d:{W:[c,e],L:[a,b],hoch:6,tief:2,aw:false,delta:{[a]:-19,[b]:3,[c]:27,[e]:17}}},
+        {n:'12:10 mit ±999, 320 px',w:243,d:{W:[a,b],L:[c,e],hoch:12,tief:10,aw:true,delta:{[a]:999,[b]:998,[c]:-999,[e]:-997}}},
+        {n:'13:11 mit ±12.345, 320 px',w:243,d:{W:[a,b],L:[c,e],hoch:13,tief:11,aw:false,delta:{[a]:12345,[b]:12344,[c]:-12345,[e]:-12343}}}];
+      const fehler=[];
+      for(const f of faelle){
+        const box=document.createElement('div');box.className='pegel-test';box.style.width=f.w+'px';
+        box.innerHTML=_spStromBild(f.d);document.body.appendChild(box);
+        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+        const fk=box.querySelector('.sp-fk').getBoundingClientRect(), R=el=>el.getBoundingClientRect();
+        const chips=[...box.querySelectorAll('.sp-sm-c')], saeulen=[...box.querySelectorAll('.sp-sm-s')];
+        const m=R(box.querySelector('.sp-sm-m')), nl=R(box.querySelector('.sp-sm-null')).top;
+        const teile=[['Stand',m]].concat(chips.map((x,i)=>['Gesicht '+i,R(x)]),
+          saeulen.map((x,i)=>['Zahl '+i,R(x.querySelector('b'))]),saeulen.map((x,i)=>['Säule '+i,R(x.querySelector('i'))]));
+        for(let i=0;i<teile.length;i++)for(let j=i+1;j<teile.length;j++){const [n1,r1]=teile[i],[n2,r2]=teile[j];
+          if(Math.min(r1.right,r2.right)-Math.max(r1.left,r2.left)>.5&&Math.min(r1.bottom,r2.bottom)-Math.max(r1.top,r2.top)>.5)fehler.push(f.n+': '+n1+' über '+n2);}
+        teile.forEach(([n,r])=>{if(r.left<fk.left-.5||r.right>fk.right+.5)fehler.push(f.n+': '+n+' ragt aus dem Kopf');});
+        const cr=chips.map(R);
+        if(Math.abs(cr[0].top-cr[1].top)>.5||Math.abs(cr[2].top-cr[3].top)>.5)fehler.push(f.n+': ein Paar steht nicht nebeneinander');
+        if(!(cr[1].right<=m.left&&cr[2].left>=m.right))fehler.push(f.n+': die Teams stehen nicht links und rechts vom Stand');
+        const ids=f.d.aw?f.d.W.concat(f.d.L):f.d.L.concat(f.d.W);
+        const hoechste=Math.max(...saeulen.map(x=>R(x.querySelector('i')).height));
+        saeulen.forEach((x,i)=>{const r=R(x.querySelector('i')),v=f.d.delta[ids[i]];
+          if(v>=0?Math.abs(r.bottom-nl)>1.5:Math.abs(r.top-nl)>1.5)fehler.push(f.n+': Säule '+i+' beginnt nicht an der Nulllinie');
+          if((v>=0)!==(r.bottom<=nl+1.5))fehler.push(f.n+': Säule '+i+' zeigt in die falsche Richtung');});
+        if(Math.abs(hoechste-SP_PEGEL_MAX)>1)fehler.push(f.n+': die längste Säule ist '+hoechste+' px hoch');
+        box.remove();
+      }
+      st.remove();
+      return fehler;})()`);
+    ok(pegel.length === 0, `Der Elo-Pegel: Paare nebeneinander, Team A links, jede Säule an der Nulllinie in ihrer Richtung, nichts übereinander, auch mit ±12.345${pegel.length ? ' — ' + pegel.slice(0, 4).join(' · ') : ''}`);
+
+    // Die Teamzeile trägt ihre Kante als Rand. Als `box-shadow:inset` zog
+    // Safari auf dem Telefon Haarlinien über und unter die Namen; Chromium
+    // zeichnet sie nicht, gemessen wird deshalb, woraus die Kante besteht.
+    const kante = await K(`(()=>{const h=document.createElement('div');h.innerHTML=_spTeamZeile(matches[matches.length-1]);document.body.appendChild(h);
+      const [l,,r]=h.querySelectorAll('.sp-nz > span'), sl=getComputedStyle(l), sr=getComputedStyle(r);
+      const x={schatten:sl.boxShadow+' / '+sr.boxShadow, links:sl.borderLeftWidth, rechts:sr.borderRightWidth};h.remove();return x;})()`);
+    ok(kante.schatten === 'none / none' && kante.links === '2px' && kante.rechts === '2px',
+      `Die Kanten der Teamzeile sind Ränder, kein Schatten (${kante.schatten}, ${kante.links}, ${kante.rechts})`);
+
     // ── Die Erklärkarten in einer laufenden Liga ──────────────────────
     // Wer neu dazukommt, findet die Liga voller Sätze vor: die Karten
     // standen nur in leeren Ansichten und erklärten dann niemandem etwas.
