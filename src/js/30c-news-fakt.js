@@ -249,6 +249,25 @@ function _ffTafel(b){
     + (tr.length ? `<div class="ff-tf-t">${tr.map(x => `<span>${_ffChip(x[0])}${_ffNm(x[0])}<b class="num">${x[1]}</b></span>`).join('')}</div>` : '');
 }
 
+// ── Die Halbzeit: die beiden Seiten des Monats nebeneinander ──────────
+// Je Seite die drei mit der besten Siegquote im Monat, dieselbe Zeile wie
+// das Rennen [§C27]: Gesicht, Name, Balken der Quote, die Quote. Revés
+// links, Drive rechts wie auf dem Court [§C44]; der Erste jeder Seite in
+// der Farbe der Karte.
+function _ffHalbzeit(b){
+  const seite = (l, ic, wort) => {
+    const z = (l || []).filter(x => pmap()[x[0]]);
+    if(!z.length) return '';
+    return `<div class="ff-hz-s"><div class="ff-hz-k">${svgI(ic)}<b>${wort}</b></div>`
+      + z.map((x, k) => { const q = x[2] ? Math.round(x[1] / x[2] * 100) : 0;
+        return `<div class="ff-r${k === 0 ? ' eins' : ''}" style="--k:${k}">${_ffChip(x[0])}`
+          + `<span class="ff-r-m">${_ffNm(x[0])}<span class="ff-bar"><i style="width:${q}%"></i></span></span>`
+          + `<b class="num">${q}\u00a0%</b></div>`; }).join('') + `</div>`;
+  };
+  const r = seite(b.reves, 'posReves', 'Revés'), d = seite(b.drive, 'posDrive', 'Drive');
+  return r && d ? `<div class="ff-hz">${r}${d}</div>` : '';
+}
+
 // ── Das Zählwerk: die runde Partie, wer sie gewonnen hat ───────────────
 function _ffZaehler(b){
   const ziffern = String(b.n | 0).split('').map((z, i) => `<i class="num" style="--k:${i}">${z}</i>`).join('');
@@ -267,5 +286,5 @@ function _ffLauf(b){
 const _FF_FORM = {
   rennen:_ffRennen, podest:_ffPodest, sammlung:_ffSammlung, sterne:_ffSterne, zahl:_ffZahl, duell:_ffDuell, duo:_ffDuo, vitrine:_ffVitrine, medaille:_ffMedaille,
   stufe:_ffStufe, ziel:_ffZiel, rolle:_ffRolle, verteilung:_ffVerteilung, saeulen:_ffSaeulen,
-  platz:_ffPlatz, tafel:_ffTafel, zaehler:_ffZaehler, lauf:_ffLauf
+  platz:_ffPlatz, tafel:_ffTafel, zaehler:_ffZaehler, lauf:_ffLauf, halbzeit:_ffHalbzeit
 };

@@ -478,23 +478,34 @@ function _storyFolge(a, b){
   return (new Date(b.when) - new Date(a.when)) || ((b.prio || 0) - (a.prio || 0));
 }
 
-// Ambiente Fun-Fact-Stories (v8.5, v9.5) — Fun Facts / persönliche Nuggets,
-// damit der Feed auch ohne neue Matches lebt.
-//   RHYTHMUS (v9.7): TÄGLICH zwei Fun Facts — um 10:00 (Vormittag) und um
-//                    19:00 (Feierabend). Früher (v9.6) nur abends einer.
-//                    _isAmbientDay ist immer true → jeder Tag hat die Slots.
-//   AMBIENT_SLOTS  = die eine Slot-Stunde; je Tag erscheint hoechstens eine Story,
-//                    jeweils erst ab dieser Uhrzeit.
+// Ambiente Fun-Fact-Stories — Fun Facts / persönliche Nuggets, damit der Feed
+// an einem Tag ohne Satz lebt.
+//   RHYTHMUS:      höchstens einer am Tag, um 15:00, wenn bis dahin an diesem
+//                  Tag kein Satz und kein Saisonabschluss lag und der letzte
+//                  Satz weniger als AMBIENT_RUHE_TAGE zurückliegt.
+//   AMBIENT_SLOTS  = die eine Slot-Stunde; die Story erscheint erst ab ihr.
 //   Anti-Spam:     IDs sind tages+stunden-deterministisch (`ambient_<datum>_<stunde>`)
 //                  → ON CONFLICT DO NOTHING → keine Doppel über Geräte/Syncs.
-//                  Die beiden Slots eines Tages zeigen nie denselben Typ.
 //   Auswahl:       tages-seeded gezogen (Pseudo-Zufall, überall identisch) plus
 //                  COOLDOWN: zuletzt (letzte AMBIENT_COOLDOWN_DAYS Tage)
 //                  verwendete Fun-Fact-Typen werden gesperrt → Rotation statt
 //                  vorhersehbarer Reihenfolge, keine schnellen Wiederholungen.
 const AMBIENT_SLOTS = [15];
-// Nach wie vielen Tagen ohne Partie die Fun Facts schweigen [§11.0].
+// Ein Fun Fact gehört zu einer Liga, die gerade spielt [§11.0]. Liegt der
+// letzte Satz vor dem Slot drei Tage (72 Stunden) oder länger zurück, bleibt
+// er leer, bis wieder gespielt wird. Genau 72 Stunden zählen schon als Pause:
+// die Grenze stand auf „mehr als", und ein Satz am Donnerstag um 15:00 gab
+// dem Sonntag noch einen Fun Fact, während die Kicker-Liga, aus der die
+// Regel stammt, ihn dort schon weglässt. Gezählt wird ab dem letzten Satz
+// VOR dem Slot, sodass jedes Gerät denselben Slot sieht; ein Satz nach 15 Uhr
+// öffnet erst den Slot des nächsten Tages. Jeder Satz zählt, auch der eines
+// späteren Ruheständlers [§C40]: gefragt ist, ob die Liga spielt.
 const AMBIENT_RUHE_TAGE = 3;
+// Die Halbzeit nennt je Seite die besten drei des Monats nach Siegquote. Ab
+// fünf Sätzen auf der Seite, so viele wie jede Teilmenge eines Monats in der
+// Chronik (`ST_TEIL`): mit zwei Sätzen stand ein 2:0 über einem 12:3, und
+// eine Quote aus zwei Sätzen ist keine Form.
+const HALBZEIT_MIN_SAETZE = 5;
 // Der einzelne 15-Uhr-Slot mischt Stand und Geschichte. Die Rotation darunter
 // sorgt fuer den Themenwechsel zwischen Form, Laufbahn, Rekorden und Liga.
 //

@@ -7,16 +7,17 @@
 //     nirgends — die Ewige Tafel zählt Rekorde und Chroniken, nicht
 //     Auszeichnungen.
 //
-//     Der Tag hat eine Ehrung, und sie ist Teil der Karte seines Spielers
-//     des Tages um 23:59 (`_ehrungDesTages`): alles, was an diesem Tag geholt
-//     wurde, aus den Partien und mit dem Schluss des Tages. Ohne Spieler des
-//     Tages steht sie als eine Karte des Tages (`tagesehrung_<Tag>`). Es gab
-//     eine eigene Ehrung je Runde, zwei Stunden nach ihrer letzten Partie:
-//     an einem Spieltag standen so bis zu drei Ehrungen und der Spieler des
-//     Tages untereinander, jede mit einem Teil des Tages. Woche und Monat
-//     haben ihre eigene Ehrung (`_newsZeitraumEhrungen`), direkt unter ihrer
-//     Karte. Enden zwei davon zugleich, steht nur die größere
-//     (`_ehrungGroessere`).
+//     Tag, Woche und Monat haben je eine Ehrung, eine knappe Karte direkt
+//     unter der Karte ihres Zeitraums: der Tag um 23:59 unter seinem Spieler
+//     des Tages (`_ehrungDesTages`, `tagesehrung_<Tag>`), die Woche unter
+//     der Wochenkarte, der Monat unter seinem Rückblick
+//     (`_newsZeitraumEhrungen`). Der Tag stand als Teil der Karte seines
+//     Spielers des Tages, mit einer Zeile je Geehrtem, und machte sie höher
+//     als einen Bildschirm. Es gab auch eine eigene Ehrung je Runde, zwei
+//     Stunden nach ihrer letzten Partie: an einem Spieltag standen so bis zu
+//     drei Ehrungen und der Spieler des Tages untereinander, jede mit einem
+//     Teil des Tages. Enden zwei Zeiträume zugleich, steht nur die größere
+//     Ehrung (`_ehrungGroessere`).
 //
 //     Der Wert je Auszeichnung ist ihr Teilwert beim wievielten Mal
 //     (`auszeichnungsTeilwert`): das erste und zweite Mal voll, danach eine
@@ -98,8 +99,6 @@ const EHRUNG_SCHLUSS = {
 // sie hat sonst keine eigene; diese nicht, sonst stünde jeder Monat zweimal
 // oben.
 const EHRUNG_KOPF = new Set(['potd', 'potw', 'champion', 'vice_champion', 'team_of_season']);
-const _ehrungBrichtVor = sp => (sp || []).some(x => ((x && x.posten) || [])
-  .some(q => q && q.klasse === 'legendary' && !EHRUNG_KOPF.has(q.id)));
 
 // ── Warum die Karte eines Schlusses Breaking ist ────────────────────
 // Was der Schluss eines Tages (`art` 'tag', `ms` 23:59) oder einer Woche
@@ -470,9 +469,9 @@ function _newsEhrungHtml(s, isRead, fadenHtml){
 // Mit den Säulen und Namen aller Geehrten war die Ehrung der Woche höher
 // als ein Bildschirm (61 Auszeichnungen für sieben Spieler: zwei Reihen
 // Wappen, darunter zwei Zeilen Klassen) und überschattete die Wochenkarte
-// darüber. Woche und Monat in Gold wie ihre Karte; der Tag ohne Spieler des
-// Tages in der Farbe der Ehrung, mit dem härtesten Tag darunter wie auf der
-// Karte des Spielers des Tages [§C27].
+// darüber. Tag, Woche und Monat in Gold wie die Karte über ihnen; der Tag
+// ohne Spieler des Tages mit dem härtesten Tag darunter wie auf der Karte
+// des Spielers des Tages [§C27].
 const EH_KOMPAKT = 5;
 function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
   const pm = pmap(), klassen = _ehrungKlassen(sp);
@@ -480,8 +479,8 @@ function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
   // Nie „+1": wer als Einziger übrig bliebe, steht mit Gesicht da [§C33].
   const vorn = da.length > EH_KOMPAKT ? da.slice(0, EH_KOMPAKT - 1) : da, rest = da.length - vorn.length;
   const art = {monat:['crown', 'EHRUNG DES MONATS', 'Ehrung des Monats'], woche:['weekKing', 'EHRUNG DER WOCHE', 'Ehrung der Woche'],
-    tag:['medal', 'EHRUNG DES TAGES', 'Ehrung des Tages']}[d.periode] || ['medal', 'DIE EHRUNG', 'Ehrung'];
-  const gold = d.periode === 'woche' || d.periode === 'monat';
+    tag:['dayKing', 'EHRUNG DES TAGES', 'Ehrung des Tages']}[d.periode] || ['medal', 'DIE EHRUNG', 'Ehrung'];
+  const gold = d.periode === 'tag' || d.periode === 'woche' || d.periode === 'monat';
   const kopf = x => `<span class="eh-kp-s ${_ehrungTon((x.posten[0] || {}).klasse)}">${_spChip(x.pid)}`
     + `<b class="num">+${_ehZahl(x.summe)}</b><small>${esc(_spName(x.pid))}</small></span>`;
   const g = d.gegenstueck;
@@ -503,6 +502,7 @@ function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
     <div class="eh-kp">${vorn.map(kopf).join('')}${rest ? `<span class="eh-kp-s eh-kp-rest"><i class="num">+${rest}</i><small>weitere</small></span>` : ''}</div>
     ${klassen.length ? `<div class="eh-kp-k"><div class="eh-kp-l">${klassen.map(z => `<span class="eh-k ${z.id}"><i></i><b class="num">${z.n}</b> ${esc(z.wort)}</span>`).join('')}</div>`
       + `<div class="eh-kp-b">${klassen.map(z => `<i class="${z.id}" style="flex-grow:${z.p}"></i>`).join('')}</div></div>` : ''}
+    ${_ehrungSchlussHtml(d.tagesschluss, {max:3, kopf:true})}
     ${g && pm[g.pid] ? _spGegenHtml(g) : ''}
     ${grund ? `<div class="nf-brk-sub">${esc(grund)}</div>` : ''}${fadenHtml || ''}</div>` + (brk ? '</div>' : '');
 }
@@ -513,38 +513,35 @@ function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
 const _spGegenHtml = g => `<div class="nf-gegen">${_spChip(g.pid)}<span><b>${esc(_spName(g.pid))}</b> gibt am meisten ab</span>`
   + `<b class="num r">${_spVz(Number(g.delta) || 0)} Elo</b></div>`;
 
-// ── Unter dem Spieler des Tages: alles, was der Tag vergab ─────────────
-// Je Geehrtem eine Zeile: Gesicht, Name, darunter die seltenen und
-// legendären Auszeichnungen mit Namen und die gewöhnlichen als Zahl, rechts
-// ihre Zeichenkacheln in der Farbe ihrer Klasse (die gewöhnlichen als eine
-// mit ihrer Zahl) und das Prestige daraus [§C25]. Mit allen Auszeichnungen
-// des Tages stand je gewöhnlicher ein Name und eine Kachel da, und eine
-// Zeile reichte über die Karte. Mehr als fünf Geehrte: die vorderen vier,
-// der Rest als Zahl, nie „+1" [§C33]. Kein zweites Säulenbild: die Karte
-// zeigt den Tag schon als Bahn. Das Blatt zeigt statt dieser Zeilen die
-// Kästen der Ehrung (`_ehrungBloeckeHtml`).
-function _ehrungTagHtml(sp){
-  const pm = pmap();
-  const l = (Array.isArray(sp) ? sp : []).filter(x => x && pm[x.pid] && x.summe > 0);
-  if(!l.length) return '';
-  const summe = l.reduce((n, x) => n + x.summe, 0);
-  const vorn = l.length > EH_KOMPAKT ? l.slice(0, EH_KOMPAKT - 1) : l, rest = l.length - vorn.length;
-  const zeile = x => {
-    const gross = x.posten.filter(q => q.klasse !== 'common'), klein = x.posten.filter(q => q.klasse === 'common');
-    const nKlein = klein.reduce((n, q) => n + q.mal, 0);
-    const text = gross.map(q => q.name + (q.mal > 1 ? ' ×' + q.mal : ''))
-      .concat(nKlein ? [nKlein === 1 ? klein[0].name : nKlein + ' gewöhnliche'] : []).join(' · ');
-    return `<div class="nf-eht-z">${_spChip(x.pid)}`
-      + `<span class="nf-eht-t"><b>${esc(_spName(x.pid))}</b><small>${esc(text)}</small></span>`
-      + `<span class="nf-eht-a">${gross.map(q => zkHtml(q.ic, 'k', _ehrungTon(q.klasse))).join('')}`
-      + (nKlein ? `<span class="nf-eht-g">${zkHtml(klein[0].ic, 'k', 'gruen')}${nKlein > 1 ? `<i class="num">${nKlein}</i>` : ''}</span>` : '')
-      + `</span><b class="num">+${_ehZahl(x.summe)}</b></div>`;
-  };
-  return `<div class="nf-eht"><div class="nf-eht-k"><i>${svgI('medal')}</i>`
-    + `<span>Ehrung des Tages</span><b class="num">+${_ehZahl(summe)}</b></div>`
-    + vorn.map(zeile).join('')
-    + (rest ? `<div class="nf-eht-r">und ${rest} weitere</div>` : '')
-    + `</div>`;
+// ── Mit dem Schluss des Tages ───────────────────────────────────────
+// Was der Schluss um 23:59 an Liga-Rekorden, Chroniken und Zeichen änderte
+// (`tagesschluss`, `_tagesschlussTafel`). Die Tafel-Karte des Tages steht
+// nach seiner letzten Partie fest; vorher schrieb der Schluss sie neu, und
+// die gelesene Karte stand am Morgen wieder als ungelesen da. Dieselben
+// Zeilen wie in der Tafel-Karte, im Ton ihrer Kammer [§C27]. Ohne Marke
+// „In der Chronik": die sagt in der Tafel, welcher Eintrag eines Spielers
+// in der Chronik steht, und hier ist das nicht gerechnet [§C41]. `max`
+// begrenzt die Karte, das Blatt zeigt jede Zeile; `kopf` setzt die
+// Überschrift in die Karte, das Blatt hat seine eigene.
+function _ehrungSchlussHtml(l, o){
+  o = o || {};
+  // Die Wechsel vor dem Zeichen, ein Ausbau zuletzt. Auf der Karte steht wie
+  // auf der Tafel-Karte kein Ausbau, solange es einen Wechsel gibt: in der
+  // Kicker-Liga standen mit vier Zeilen dort zwei Ausbauten, und ein
+  // Gleichziehen bei „Der Wiedergänger" war eine Zahl dahinter [§C33].
+  const rang = x => x.fall === 'gesteigert' ? 2 : x.art === 'insignium' ? 1 : 0;
+  const z = (Array.isArray(l) ? l : []).filter(x => x && x.text).sort((a, b) => rang(a) - rang(b));
+  if(!z.length) return '';
+  const wechsel = z.filter(x => x.fall !== 'gesteigert');
+  const vorn = o.max ? (wechsel.length ? wechsel : z).slice(0, o.max) : z, rest = z.length - vorn.length;
+  const ton = x => x.art === 'chronik' ? 'chronik' : x.art === 'insignium' ? 'insignium'
+    : x.kammer === 'mark' ? 'marke' : x.kammer === 'fuegung' ? 'fuegung' : 'rekord';
+  const satz = x => x.namen && String(x.text).indexOf(x.namen) === 0
+    ? `<b>${esc(x.namen)}</b>${esc(String(x.text).slice(x.namen.length))}` : esc(x.text);
+  return `<div class="nf-sam eh-ts">${o.kopf ? '<div class="eh-ts-k">Mit dem Schluss des Tages</div>' : ''}`
+    + vorn.map(x => `<div class="nf-sam-z nf-sam-${ton(x)}"><i class="nf-sam-i">${svgI(x.ic || 'award')}</i>`
+      + `<span>${satz(x)}</span></div>`).join('')
+    + (rest ? `<div class="nf-sam-m">und ${rest} weitere</div>` : '') + '</div>';
 }
 
 // ── Das Blatt ───────────────────────────────────────────────────────
@@ -576,7 +573,9 @@ function _ndEhrungBlatt(s){
   const g = d.gegenstueck;
   const gegen = g && pm[g.pid] ? `<div class="nd-section">Der härteste Tag</div>${_spGegenHtml(g)}` : '';
   return {kopf, mitte: anteil + (zeit ? `<div class="nw-hinweis eh-zeit">${esc(zeit.vor + ' ' + zeit.wann)}${/\.$/.test(zeit.wann) ? '' : '.'}</div>` : '')
-    + `<div class="nd-section">Wer was geholt hat</div>${_ehrungBloeckeHtml(sp)}` + gegen
+    + `<div class="nd-section">Wer was geholt hat</div>${_ehrungBloeckeHtml(sp)}`
+    + (d.tagesschluss ? (h => h ? `<div class="nd-section">Mit dem Schluss des Tages</div>${h}` : '')(_ehrungSchlussHtml(d.tagesschluss)) : '')
+    + gegen
     + `<div class="nw-hinweis">Der Strich unter jeder Auszeichnung zeigt, wie viel ihres vollen Werts sie diesmal brachte. `
     + `Ab dem dritten Mal bringt sie etwas weniger.</div>`};
 }

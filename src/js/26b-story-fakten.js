@@ -12,12 +12,13 @@
 //     je Stand. Zwei sichtbare Sätze aus zwei verschiedenen Zeitschnitten
 //     sind der Fehler, den die ganze Datei verhindert.
 //
-//     Sechs Dinge stehen hier:
+//     Sieben Dinge stehen hier:
 //       _storyStand(bisMs)      ein Stand der Liga zu EINEM Zeitpunkt
 //       _storyTagGrenzen(ms)    der Spieltag als Paar aus Vorher und Nachher
 //       _prestigeWirkung(…)     was eine Änderung wirklich gebracht hat
 //       _abschlussAuszeichnungen(…)  was ein Schluss vergibt, als Grund eines Zeichens
 //       _insZuegeZwischen(…)    die Bewegungen auf der Leiter dazwischen
+//       _tagesschlussTafel(ms)  was der Schluss des Tages an Tafel und Leiter ändert
 //       _storyRangFrei(sid)     ist die Rangliste dieser Saison belastbar
 // ╚═════════════════════════════════════════════════════════════════════════╝
 
@@ -69,14 +70,18 @@ function _storyStand(bisMs){
 // Nachricht mehr. Welche Partie die endgültige Änderung ausgelöst hat, steht
 // trotzdem im Detail.
 //
-// `nachMs` ist das Ende des Tages — nicht seine letzte Partie: zu deren
-// Zeit war der Tag noch offen, und was ihn als Ganzes beschreibt (`_tagZu`),
-// fiele zwischen ihn und den nächsten und stünde in keiner Karte. Auch für
-// den jüngsten Tag: dort stand 0, also „jetzt", und nach dem Wechsel der
-// Woche oder des Monats trug die Karte des letzten Spieltags den Spieler der
-// Woche und die Titel des Monats mit, die ihre eigenen Karten haben. Solange
-// danach nichts zugegangen ist, wirft `_schnitt` das Ende ohnehin weg, und
-// alle zentralen Funktionen treffen ihren heißen Cache.
+// `nachMs` ist das Ende des Tages, `letzte` seine letzte Partie. Die Ewige
+// Tafel und die Insignium-Karte rechnen bis `letzte` und stehen damit fest,
+// sobald die letzte Partie gespielt ist: mit `nachMs` schrieb der Schluss um
+// 23:59 sie neu — mit dem Prestige des Spielers des Tages, das die Ehrung
+// schon zeigt, und mit Bestmarken, die erst der geschlossene Tag vergibt —,
+// und in der Kicker-Liga, aus der die Regel stammt, stand die Karte von
+// 16:31 am Morgen wieder als ungelesen da. Was der
+// Schluss ändert, steht in der Ehrung des Tages (`_tagesschlussTafel`). Ein
+// Schnitt bei `letzte` sieht den Tag offen, vor und nach 23:59 (`_schnitt`).
+// Die Ehrung des Tages rechnet bis `nachMs`: nach dem Wechsel der Woche oder
+// des Monats trug die Karte des letzten Spieltags sonst den Spieler der
+// Woche und die Titel des Monats mit, die ihre eigenen Karten haben.
 //
 // Beide Grenzen lassen die Abschlüsse draußen, die nicht dem Tag gehören.
 // Der Monat schließt in der letzten Millisekunde (`seasonEnd`), deshalb endet
@@ -282,6 +287,83 @@ function _insZuegeZwischen(vor, nach, best, wann){
     // Die Leiter der Liga danach: wie viele je Stufe stehen.
     leiter:INSIGNIEN.map((_, i) => aktiv.filter(q => { const x = nach.prestige(q.id);
       return x && x.stufe === i; }).length)};
+}
+
+// ─── Was der Schluss des Tages an der Tafel ändert ───────────────────
+// Die Tafel eines Tages steht nach seiner letzten Partie fest (`letzte`,
+// `_storyTagGrenzen`). Um 23:59 schließt der Tag, und was ihn als Ganzes
+// beschreibt, zählt erst dann (`_tagZu`): „Der Wiedergänger", „Der letzte
+// Ball", „Der Endspurt", dazu das Prestige der Auszeichnungen des Schlusses,
+// das eine Stufe oder einen Grad bewegen kann. Diese Wechsel stehen in der
+// Ehrung des Tages, die um 23:59 ohnehin erscheint — als Zeilen unter dem
+// Spieler des Tages und in seinem Blatt. Gemessen in der Kicker-Liga, aus
+// der die Regel stammt, am 12.11.: drei solche Wechsel kamen erst um 23:59,
+// und die Tafel-Karte von 16:31 stand am Morgen neu da.
+//
+// Dieselben Regeln wie in der Tafel [§C33]: keine Schattenseite, kein
+// „ausgebaut" auf einem gleitenden Fenster, beim Dazukommen nur die Neuen,
+// und genannt wird nur, wer an diesem Tag gespielt hat. Der Tag ist ein
+// Zeitraum [§C40]: wer an ihm spielte, steht darin; die Leiter vergleicht
+// mit der Liga von heute (`_insZuegeZwischen`, `ligaAktiv`).
+//
+// Vor 23:59 leer. Je Datenstand und Tag gemerkt: der Generator fragt jeden
+// Tag des Fensters bei jedem Lauf, und zwei Stände je Tag kosten gemessen
+// rund 120 ms.
+const _tagesschlussMemo = new WeakMap();
+function _tagesschlussTafel(tagMs){
+  const g = _storyTagGrenzen(tagMs);
+  if(!g || !_tagZu(g.tag)) return [];
+  let m = _tagesschlussMemo.get(matches);
+  if(!m || m.pl !== players){ m = {pl:players, je:new Map()}; _tagesschlussMemo.set(matches, m); }
+  if(m.je.has(g.tag)) return m.je.get(g.tag);
+  const A = _storyStand(g.letzte), B = _storyStand(g.nachMs);
+  const amTag = new Set();
+  (matches || []).forEach(x => { const t = mts(x);
+    if(t >= g.vonMs && t <= g.letzte) [x.a1, x.a2, x.b1, x.b2].forEach(p => { if(p) amTag.add(p); }); });
+  const nm = pid => pname(pid);
+  const satz = (fall, wer, name) => {
+    const n = _namenKurz(wer.map(nm)), mz = wer.length > 1;
+    return fall === 'gesteigert' ? `${n} ${mz ? 'bauen' : 'baut'} „${name}“ aus`
+      : fall === 'dazu' ? `${n} ${mz ? 'ziehen' : 'zieht'} bei „${name}“ gleich`
+      : fall === 'allein' ? `${n} ${mz ? 'halten' : 'hält'} „${name}“ jetzt allein`
+      : fall === 'uebernommen' ? `${n} ${mz ? 'übernehmen' : 'übernimmt'} „${name}“`
+      : `${n} ${mz ? 'holen' : 'holt'} „${name}“`;
+  };
+  const zeilen = [];
+  const zeile = (art, def, a, n, fall) => {
+    const alt = (a && a.pids) || [];
+    const wer = (fall === 'dazu' || fall === 'uebernommen' ? n.pids.filter(id => alt.indexOf(id) < 0) : n.pids)
+      .filter(pid => sichtbar(pid));
+    if(!wer.length || !wer.some(p => amTag.has(p))) return;
+    zeilen.push({art, id:def.id, name:def.name, ic:def.ic || '', kammer:def.kind || '', fall, wer:wer.slice(0, 4),
+      namen:_namenKurz(wer.map(nm)), text:satz(fall, wer, def.name)});
+  };
+  try {
+    const ra = A.rekorde(), rb = B.rekorde();
+    CHRONICLES.forEach(def => {
+      if(def.kind === 'shame') return;
+      const a = ra[def.id], n = rb[def.id], art = _rekordArt(a, n);
+      if(!art || (art === 'gesteigert' && def.fenster)) return;
+      zeile('rekord', def, a, n, art === 'geholt' ? _halterFall((a && a.pids) || [], n.pids) : art);
+    });
+  } catch(e){}
+  try {
+    const sid = seasonOf(g.vonMs).id, ca = A.chronik(sid) || {}, cb = B.chronik(sid) || {};
+    SEASON_TITLES.forEach(t => {
+      if(t.kunst === 'schatten') return;
+      const a = ca[t.id], n = cb[t.id];
+      if(!n || (a && a.pids.slice().sort().join(',') === n.pids.slice().sort().join(','))) return;
+      zeile('chronik', t, a, n, _halterFall((a && a.pids) || [], n.pids));
+    });
+  } catch(e){}
+  try {
+    const schluss = new Date(g.vonMs); schluss.setHours(23, 59, 0, 0);
+    const L = _insZuegeZwischen(A, B, _insBestVor(g.vonMs, _cache._stories), () => ({ms:schluss.getTime()}));
+    L.zuege.forEach(z => zeilen.push({art:'insignium', id:'ins_' + z.pid, name:'', ic:'award', kammer:'', fall:z.art,
+      wer:[z.pid], namen:nm(z.pid), text:_insTagTexte([z]).title}));
+  } catch(e){}
+  m.je.set(g.tag, zeilen);
+  return zeilen;
 }
 
 // ─── Ist die Rangliste belastbar? ────────────────────────────────────

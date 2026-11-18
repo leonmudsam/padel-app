@@ -317,6 +317,12 @@ Auszeichnungen vergab. `_isBreaking` fragt es bei jedem Zeichnen des Feeds
 für jeden Spieler des Tages und jede Ehrung, und jede Frage zählte sonst
 sechs Auszeichnungen für alle Spieler zweimal.
 
+**Was der Schluss eines Tages an der Tafel ändert** (`_tagesschlussMemo`,
+eine `WeakMap` an `matches`, je Tag, neu, sobald `players` ein anderes Array
+ist): zwei Stände je Tag, nach seiner letzten Partie und an seinem Ende. Der
+Generator fragt jeden geschlossenen Tag des Fensters, dessen Karte noch nicht
+gespeichert ist; vor 23:59 ist die Antwort leer und wird nicht gemerkt.
+
 Die V2-Scorewahl indiziert außerdem die wirklich publizierten `visual.score`
 je Match und Storybestand. Dieser Index und die chronologische Variationsspur
 werden bei neuer Rohstory-Referenz oder `_cache.version` neu aufgebaut;

@@ -1735,6 +1735,20 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-tf-t>span{display:flex;align-items:center;gap:5px}
   .ff-tf-t b{font-family:'Sometype Mono',monospace;font-size:11px;color:var(--muted)}
 
+  /* Die Halbzeit: Revés und Drive nebeneinander, je drei Zeilen des
+     Rennens. */
+  /* Zwei Spalten, solange ein Name ganz hineinpasst: im Blatt bei 360 px
+     brach in der Kicker-Liga „Johannes" als „Johanne / s" um. Darunter
+     stehen die beiden Seiten untereinander. */
+  .ff-hz{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:10px 14px}
+  .ff-hz .ff-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+  .ff-hz-s{min-width:0}
+  .ff-hz-k{display:flex;align-items:center;gap:5px;margin-bottom:3px;font-family:'Sometype Mono',monospace;
+    font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .ff-hz-k svg{width:12px;height:12px;fill:none;stroke:currentColor}
+  .ff-hz .ff-r{gap:6px}
+  .ff-hz .ff-r>b{font-size:11px}
+
   .ff-zw{display:flex;gap:14px;align-items:center}
   .ff-zw-z{display:flex;gap:3px;flex-shrink:0}
   .ff-zw-z i{font-style:normal;font-family:'Archivo Black',sans-serif;font-size:22px;width:25px;height:36px;
@@ -1916,9 +1930,9 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 /* ── Die Ehrung eines Tages, einer Woche, eines Monats: knapp [§11.6f] ── */
 /* Sie gehört zur Karte über ihr und nimmt ihr nicht den Platz: unter der
    Schlagzeile eine Reihe Gesichter mit ihrem Prestige, darunter ein Balken
-   der Klassen. Woche und Monat in Gold, der Familie ihrer Karten [§C25];
-   der Tag ohne Spieler des Tages im Violett der Ehrung. Die Säulen mit
-   Namen machten die Karte der Woche höher als einen Bildschirm. */
+   der Klassen. Tag, Woche und Monat in Gold, der Familie der Karten über
+   ihnen [§C25]. Die Säulen mit Namen machten die Karte der Woche höher als
+   einen Bildschirm, die Zeilen je Geehrtem die des Spielers des Tages. */
 .nf-card.nf-ehrung-zr{--story:var(--gold);--story-rgb:247,207,74;--tint:rgba(247,207,74,.06);
   --kante:3px;--rahmen:rgba(247,207,74,.25)}
 .nf-card.nf-ehrung-zr.zr-monat{--tint:rgba(247,207,74,.085)}
@@ -1954,34 +1968,6 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nf-ehrung-kp .nf-brk-n{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nf-ehrung-kp .nf-brk-zeit{white-space:nowrap}
 
-/* ── Die Ehrung des Tages, unter dem Spieler des Tages [§11.6f] ──────── */
-/* Ein Kopf mit Zeichen und Summe, darunter je Geehrtem eine Zeile:
-   Gesicht, Name, darunter die seltenen und legendären Auszeichnungen und
-   die Zahl der gewöhnlichen, rechts ihre Zeichenkacheln — die gewöhnlichen
-   als eine mit ihrer Zahl — und das Prestige. Die Kacheln brechen nie. */
-.nf-eht{margin:8px 13px 11px;padding:8px 10px 6px;border-radius:12px;
-  background:linear-gradient(180deg,rgba(167,139,250,.07),rgba(167,139,250,.025));
-  border:1px solid rgba(167,139,250,.2)}
-.nf-eht-k{display:flex;align-items:center;gap:7px;margin-bottom:4px;font-family:'Sometype Mono',monospace;
-  font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
-.nf-eht-k i{display:flex;width:14px;height:14px}
-.nf-eht-k i svg{width:14px;height:14px}
-.nf-eht-k span{flex:1 1 auto}
-.nf-eht-k b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:var(--gold)}
-.nf-eht-z{display:flex;align-items:center;gap:8px;padding:5px 0;min-width:0}
-.nf-eht-z + .nf-eht-z{border-top:1px solid var(--line)}
-/* Das Gesicht so groß wie im Gegenstück darüber, auf derselben Karte
-   [§C27]. Ohne Größe stand es als Oval von 20 × 16 px da. */
-.nf-eht-z .av{--av:20px;width:20px;height:20px;font-size:8px;flex:0 0 auto}
-.nf-eht-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
-.nf-eht-t b{font-size:12px;font-weight:700;color:var(--ink)}
-.nf-eht-t small{font-size:10.5px;line-height:1.3;color:var(--muted)}
-.nf-eht-a{flex:0 0 auto;display:flex;gap:3px}
-.nf-eht-z > b{flex:0 0 auto;font-family:'Sometype Mono',monospace;font-size:11.5px;font-weight:700;color:var(--gold)}
-.nf-eht-g{position:relative;display:flex}
-.nf-eht-g > i{position:absolute;right:-4px;bottom:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;
-  font-style:normal;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:var(--bg);background:var(--acid)}
-.nf-eht-r{padding:4px 0 2px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted)}
 /* Das Lauflicht über einer legendären Auszeichnung, wie im Profil [§C27];
    bei Bewegungsruhe nimmt 06-misc.css es weg. */
 .eh-s-z .zk.gold > .glanz-bahn::after,.eh-g-o > .zk.gold > .glanz-bahn::after{

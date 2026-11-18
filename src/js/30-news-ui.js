@@ -64,7 +64,11 @@ function _newsGelesen(s, seen, stand){
   const key = _newsSeenKey(s);
   if(seen && seen.has(key)) return true;
   if(!_newsIstRollendeTafel(s) && seen && seen.has(s.id)) return true;
-  return !!stand && new Date(s.when).getTime() <= stand;
+  // Streng davor: was zur Zeit der neuesten gelesenen Karte steht und sie
+  // nicht selbst ist, kam danach dazu. Die Ehrung der Woche steht zur Zeit
+  // der Wochenkarte (Sonntag, 23:59:05) und entsteht erst am Montag um 00:00;
+  // wer dazwischen las, bekam sie nie als neu zu sehen.
+  return !!stand && new Date(s.when).getTime() < stand;
 }
 function _newsMarkAllSeen(){
   const stories = getStoriesCache();
@@ -369,22 +373,21 @@ function _isBreaking(s){
     // Karte des Schlusses selbst trägt (`EHRUNG_KOPF`), zählt nicht. Die
     // Ehrung einer Runde bleibt still, ihre legendären Auszeichnungen haben
     // ihre eigene Karte, und der Monat ist es mit seinem Rückblick schon.
-    // Gefragt wird nur, was der Schluss vergab (`ehrungBrk`, `breaking`,
+    // Gefragt wird nur, was der Schluss vergab (`breaking`,
     // `_ehrungBrkGrund`), nicht jede legendäre der Partien: die Ehrung trägt
     // den ganzen Tag, die ganze Woche, und eine legendäre aus einer Partie
-    // ist an ihrer Partie-Karte schon Breaking. Ein gespeicherter Spieler des
-    // Tages von vorher trägt die Antwort nicht; seine Ehrung bekommt beim
-    // Anzeigen die Ehrungen des Tages dazu (`_consolidateStories`), und an
-    // ihr gemessen war der 28.10. ein zweites Mal Breaking, für „Absoluter
-    // Sieger" aus der Partie um 16:11. Er fragt deshalb den Schluss selbst.
-    case 'potd': {
-      if(typeof d.ehrungBrk === 'boolean') return d.ehrungBrk;
-      const sch = _ehrungSchlussVon(s);
-      return !!sch && !_ehrungGroessere(sch.ms) && _ehrungBrkGrund('tag', sch.ms).length > 0;
-    }
-    case 'ehrung':
+    // ist an ihrer Partie-Karte schon Breaking. Der Spieler des Tages ist es
+    // nie: seine Ehrung ist eine eigene Karte darunter, und ein gespeicherter
+    // gibt ihr seine Antwort (`ehrungBrk`) beim Anzeigen mit
+    // (`_consolidateStories`). Eine Ehrung des Tages ohne Antwort fragt den
+    // Schluss selbst: an jeder legendären des Tages gemessen war ein Tag der
+    // Kicker-Liga ein zweites Mal Breaking, für eine legendäre Auszeichnung,
+    // die schon an ihrer Partie-Karte stand.
+    case 'ehrung': {
       if(typeof d.breaking === 'boolean') return d.breaking;
-      return d.periode === 'tag' && _ehrungBrichtVor(d.spieler);
+      const sch = _ehrungSchlussVon(s);
+      return d.periode === 'tag' && !!sch && !_ehrungGroessere(sch.ms) && _ehrungBrkGrund('tag', sch.ms).length > 0;
+    }
     // ── Nur der ERSTE Aufstieg in die oberen zwei Stufen ────────────
     // Prestige aus Liga-Rekorden wird geteilt und fällt mit einem verlorenen
     // Bestwert wieder [§C34]: dieselbe Stufe kann mehrmals erreicht werden,
@@ -690,9 +693,10 @@ function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
     // Zeile unter der Bahn, statt einer eigenen Karte darunter.
     const g = d.type === 'potd' && d.gegenstueck;
     if(g && pmap()[g.pid]) fuss += _spGegenHtml(g);
-    // Und was der Tag an Auszeichnungen brachte: die Ehrung des Tages als
-    // Teil seiner Karte [§11.6f].
-    if(d.type === 'potd') fuss += _ehrungTagHtml(d.ehrung);
+    // Die Ehrung des Tages ist eine eigene Karte darunter [§11.6f]. Trägt
+    // eine größere Ehrung den Tag, stehen hier, was sein Schluss an der Tafel
+    // änderte.
+    if(d.type === 'potd') fuss += _ehrungSchlussHtml(d.tagesschluss, {max:3, kopf:true});
     if(!fuss) fuss = _newsZahlband([
       {v: d.wr != null ? Math.round(d.wr * 100) + ' %' : null, l:'Siegquote', f:'g'},
       {v: (d.wins != null && d.games != null) ? d.wins + ' : ' + (d.games - d.wins) : null,

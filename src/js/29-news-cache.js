@@ -32,6 +32,17 @@ function _newsTexteAuffrischen(list){
   if(_cache._ambientZeitFrom === list) return _cache._ambientZeitList;
   let geaendert = false;
   const aus = list.map(st => {
+    // Die Wochenkarte steht am Sonntag um 23:59:05, direkt nach dem Spieler
+    // des Tages und vor dem Rückblick des Monats [§C33]. Ältere Fassungen
+    // der App speicherten sie um 23:00: in der Kicker-Liga stand eine
+    // Wochenkarte eine Stunde unter ihrer eigenen Ehrung. Der Tag bleibt, die
+    // Uhrzeit gehört fest auf den Schluss.
+    if(st && (st.dataRef || {}).type === 'woche' && /^woche_/.test(String(st.id || ''))){
+      const w = new Date(st.when), soll = new Date(w.getFullYear(), w.getMonth(), w.getDate(), 23, 59, 5, 0);
+      if(!Number.isFinite(w.getTime()) || w.getDay() !== 0 || w.getTime() === soll.getTime()) return st;
+      geaendert = true;
+      return Object.assign({}, st, {when:soll});
+    }
     const m = /^ambient_(\d{4})-(\d{2})-(\d{2})_15$/.exec(String(st && st.id || ''));
     if(!m) return st;
     // Aeltere Generatorfassungen verwendeten trotz korrekter Slot-ID den
@@ -274,12 +285,15 @@ function _consolidateStories(list){
   // Der Spieler des Tages; an einem Tag ohne ihn die Ehrung des Tages
   // (`tagesehrung_<Tag>`, `voll`). Was den Tag sonst noch zusammenfasst,
   // steht auf ihr und reist mit (`memberIds`), verloren geht nichts [§C33].
-  const tagKarte = () => {
+  // `ehrungZuerst`: für Ehrungen ist die Ehrung des Tages die Karte des
+  // Tages, für das Gegenstück der Spieler des Tages.
+  const tagKarte = ehrungZuerst => {
     const je = new Map();
-    aus.forEach(s => { const d = s.dataRef || {};
-      if(d.type === 'potd') je.set(d.dayKey || tagKey(s.when), s); });
-    aus.forEach(s => { const d = s.dataRef || {};
+    const potd = () => aus.forEach(s => { const d = s.dataRef || {};
+      if(d.type === 'potd' && !je.has(d.dayKey || tagKey(s.when))) je.set(d.dayKey || tagKey(s.when), s); });
+    const ehrung = () => aus.forEach(s => { const d = s.dataRef || {};
       if(d.type === 'ehrung' && d.periode === 'tag' && d.voll && d.tag && !je.has(d.tag)) je.set(d.tag, s); });
+    if(ehrungZuerst){ ehrung(); potd(); } else { potd(); ehrung(); }
     return je;
   };
   const aufKarte = (dazu, weg) => {
@@ -328,7 +342,7 @@ function _consolidateStories(list){
   // Tag (`_ehrungGroessere`) und steht sie da, zeigt auch ein gespeicherter
   // Spieler des Tages keine.
   {
-    const ziel = tagKarte();
+    const ziel = tagKarte(true);
     const zeitraum = new Set(aus.filter(s => (s.dataRef || {}).type === 'ehrung' && /^ehrung_de[rs]_/.test(String(s.id)))
       .map(s => s.dataRef.periode + '|' + tagKey(new Date(s.when).getTime() - 3600000)));
     const quellen = new Map();
@@ -357,6 +371,50 @@ function _consolidateStories(list){
       dazu.set(p.id, {ids:l.map(s => s.id), felder});
     });
     aufKarte(dazu, weg);
+  }
+
+  // ── Die Ehrung des Tages ist eine eigene Karte ────────────────────
+  // Gespeicherte Spieler des Tages tragen sie noch in sich (`ehrung`), mit
+  // einer Zeile je Geehrtem, und die Karte des Tages war höher als ein
+  // Bildschirm. Sie steht jetzt wie die Ehrung der Woche als knappe Karte
+  // direkt darunter (`tagesehrung_<Tag>`, zur selben Zeit, weniger
+  // wichtig) [§11.6f]. Eine gespeicherte Zeile ändert sich nicht [§C33]:
+  // die Karte entsteht hier aus ihr, mit der ID, die der Generator dem Tag
+  // gibt, und weicht der gespeicherten, sobald es sie gibt. Was der Schluss
+  // an der Tafel änderte (`tagesschluss`), reist mit in die Ehrung.
+  {
+    const ehrungen = new Map();
+    aus.forEach(s => { const d = s.dataRef || {};
+      if(d.type === 'ehrung' && d.periode === 'tag' && d.tag) ehrungen.set(d.tag, s); });
+    const neu = [], felder = new Map();
+    aus = aus.map(s => {
+      const d = s.dataRef || {};
+      if(d.type !== 'potd' || !(Array.isArray(d.ehrung) || Array.isArray(d.tagesschluss))) return s;
+      const tag = d.dayKey || tagKey(s.when), e = ehrungen.get(tag);
+      const rest = Object.assign({}, d);
+      delete rest.ehrung; delete rest.ehrungVoll; delete rest.ehrungBrk;
+      const ts = Array.isArray(d.tagesschluss) && d.tagesschluss.length ? d.tagesschluss : null;
+      if(e){
+        const ed = e.dataRef || {};
+        if(ts && !Array.isArray(ed.tagesschluss)) felder.set(e.id, {tagesschluss:ts});
+        if(ts) delete rest.tagesschluss;
+      } else if(Array.isArray(d.ehrung) && d.ehrung.length && !d.ehrungIn){
+        // Was beim Verdichten in seine Ehrung aufging (Ehrungen einer
+        // Runde), reist mit ihr; das Gegenstück bleibt beim Spieler.
+        const mit = (d.memberIds || []).filter(id => id !== s.id && id !== ((d.gegenstueck || {}).id));
+        const k = _ehrungKarte(d.ehrung, 'tagesehrung_' + tag, new Date(s.when).getTime(),
+          Object.assign({periode:'tag', tag, voll:true}, typeof d.ehrungBrk === 'boolean' ? {breaking:d.ehrungBrk} : {},
+            ts ? {tagesschluss:ts} : {}, mit.length ? {memberIds:['tagesehrung_' + tag].concat(mit)} : {}));
+        if(k){
+          neu.push(k); if(ts) delete rest.tagesschluss;
+          if(mit.length) rest.memberIds = (d.memberIds || []).filter(id => mit.indexOf(id) < 0);
+        }
+      }
+      return Object.assign({}, s, {dataRef:rest});
+    });
+    if(felder.size) aus = aus.map(s => felder.has(s.id)
+      ? Object.assign({}, s, {dataRef:Object.assign({}, s.dataRef, felder.get(s.id))}) : s);
+    if(neu.length) aus = aus.concat(neu);
   }
 
   // Der sichtbare Tages-Tafel-Eintrag sitzt immer beim neuesten enthaltenen
@@ -1970,10 +2028,13 @@ function _storyIstTafelUpdate(s, jetzt){
   return tagKey(w) === tagKey(jetzt || new Date());
 }
 // Der Stand, aus dem eine Fassung der Tafel gerechnet ist: die letzte
-// Partie ihres Tages und, ob der Tag zu ist (`_tagZu`) — um 23:59 ändert
-// sich die Tafel auch ohne Partie [§C35]. Als Zeichenkette sortierbar.
+// Partie ihres Tages. Als Zeichenkette sortierbar. Sie trug dahinter ein
+// „z", wenn der Tag zu war: um 23:59 entstand eine neue Fassung ohne
+// Partie, und die gelesene Karte des Tages stand wieder als ungelesen da.
+// Die Tafel steht jetzt nach der letzten Partie fest (`_storyTagGrenzen`);
+// gespeicherte Fassungen mit „z" verlieren gegen die ohne (`_tafelFassungen`).
 function _tafelFassung(tag, letzteMs){
-  return String(letzteMs) + (_tagZu(tag) ? 'z' : '');
+  return String(letzteMs);
 }
 // Von jeder wachsenden Tageskarte gilt eine Fassung, die jüngste [§C33].
 // Eine Fassung ist der ganze Stand des Tages: was in einer älteren stand und

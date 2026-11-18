@@ -1065,16 +1065,18 @@
   .nf-sam-i svg{width:12px;height:12px;fill:none;stroke:currentColor;}
   /* Gemischte Tafel-Momente bleiben eine Karte, aber nicht eine graue Liste:
      jede Zeile trägt den dezenten Farbton ihres Inhalts. */
-  .nf-s-tafel .nf-sam-z{--zeile-rgb:135,168,178;border-left:2px solid
+  /* Dieselben Zeilen unter der Ehrung des Tages (`.eh-ts`): was der Schluss
+     um 23:59 an der Tafel änderte [§C27]. */
+  .nf-s-tafel .nf-sam-z,.eh-ts .nf-sam-z{--zeile-rgb:135,168,178;border-left:2px solid
     rgba(var(--zeile-rgb),.24);padding-left:11px;
     background:linear-gradient(90deg,rgba(var(--zeile-rgb),.045),transparent 58%)}
-  .nf-s-tafel .nf-sam-rekord{--zeile-rgb:105,169,196}
-  .nf-s-tafel .nf-sam-marke{--zeile-rgb:167,184,117}
-  .nf-s-tafel .nf-sam-chronik{--zeile-rgb:154,134,189}
-  .nf-s-tafel .nf-sam-fuegung{--zeile-rgb:195,154,110}
+  .nf-s-tafel .nf-sam-rekord,.eh-ts .nf-sam-rekord{--zeile-rgb:105,169,196}
+  .nf-s-tafel .nf-sam-marke,.eh-ts .nf-sam-marke{--zeile-rgb:167,184,117}
+  .nf-s-tafel .nf-sam-chronik,.eh-ts .nf-sam-chronik{--zeile-rgb:154,134,189}
+  .nf-s-tafel .nf-sam-fuegung,.eh-ts .nf-sam-fuegung{--zeile-rgb:195,154,110}
   .nf-s-tafel .nf-sam-schatten{--zeile-rgb:184,129,136}
-  .nf-s-tafel .nf-sam-insignium{--zeile-rgb:164,138,196}
-  .nf-s-tafel .nf-sam-z .nf-sam-i{color:rgb(var(--zeile-rgb));
+  .nf-s-tafel .nf-sam-insignium,.eh-ts .nf-sam-insignium{--zeile-rgb:164,138,196}
+  .nf-s-tafel .nf-sam-z .nf-sam-i,.eh-ts .nf-sam-z .nf-sam-i{color:rgb(var(--zeile-rgb));
     border-color:rgba(var(--zeile-rgb),.22);background:rgba(var(--zeile-rgb),.075);
     box-shadow:0 0 12px -8px rgba(var(--zeile-rgb),.72)}
   /* Die Zahl der uebrigen Zeilen ist der Weg ins Blatt, also muss man sie
@@ -1083,6 +1085,10 @@
      weitere" sah aus wie ein Darstellungsfehler. */
   .nf-sam-m{padding:8px 13px 12px;font-size:10.5px;color:var(--muted);
     border-top:1px solid var(--line);letter-spacing:.02em}
+  /* Die Überschrift dieser Zeilen auf der Karte des Tages: leise wie die
+     Aufschrift einer Ehrung, in Metall — sie ordnet ein [§C25]. */
+  .eh-ts-k{padding:8px 13px 4px;font-family:'Sometype Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 
   /* Sorte 6 Duo: zwei Wappen nebeneinander, kein Rang [§C27]. */
   .nf-duo{gap:0}

@@ -2347,20 +2347,22 @@
     display:grid;place-items:center;background:var(--surface2);
     border:1px solid var(--line);color:var(--muted)}
   .nf-sam-i svg{width:12px;height:12px;fill:none;stroke:currentColor;}
-  .nf-s-tafel .nf-sam-z{--zeile-rgb:135,168,178;border-left:2px solid
+  .nf-s-tafel .nf-sam-z,.eh-ts .nf-sam-z{--zeile-rgb:135,168,178;border-left:2px solid
     rgba(var(--zeile-rgb),.24);padding-left:11px;
     background:linear-gradient(90deg,rgba(var(--zeile-rgb),.045),transparent 58%)}
-  .nf-s-tafel .nf-sam-rekord{--zeile-rgb:105,169,196}
-  .nf-s-tafel .nf-sam-marke{--zeile-rgb:167,184,117}
-  .nf-s-tafel .nf-sam-chronik{--zeile-rgb:154,134,189}
-  .nf-s-tafel .nf-sam-fuegung{--zeile-rgb:195,154,110}
+  .nf-s-tafel .nf-sam-rekord,.eh-ts .nf-sam-rekord{--zeile-rgb:105,169,196}
+  .nf-s-tafel .nf-sam-marke,.eh-ts .nf-sam-marke{--zeile-rgb:167,184,117}
+  .nf-s-tafel .nf-sam-chronik,.eh-ts .nf-sam-chronik{--zeile-rgb:154,134,189}
+  .nf-s-tafel .nf-sam-fuegung,.eh-ts .nf-sam-fuegung{--zeile-rgb:195,154,110}
   .nf-s-tafel .nf-sam-schatten{--zeile-rgb:184,129,136}
-  .nf-s-tafel .nf-sam-insignium{--zeile-rgb:164,138,196}
-  .nf-s-tafel .nf-sam-z .nf-sam-i{color:rgb(var(--zeile-rgb));
+  .nf-s-tafel .nf-sam-insignium,.eh-ts .nf-sam-insignium{--zeile-rgb:164,138,196}
+  .nf-s-tafel .nf-sam-z .nf-sam-i,.eh-ts .nf-sam-z .nf-sam-i{color:rgb(var(--zeile-rgb));
     border-color:rgba(var(--zeile-rgb),.22);background:rgba(var(--zeile-rgb),.075);
     box-shadow:0 0 12px -8px rgba(var(--zeile-rgb),.72)}
   .nf-sam-m{padding:8px 13px 12px;font-size:10.5px;color:var(--muted);
     border-top:1px solid var(--line);letter-spacing:.02em}
+  .eh-ts-k{padding:8px 13px 4px;font-family:'Sometype Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 
   .nf-duo{gap:0}
   .nf-duo > *:nth-child(2){margin-left:-10px}
@@ -6302,6 +6304,15 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-tf-t>span{display:flex;align-items:center;gap:5px}
   .ff-tf-t b{font-family:'Sometype Mono',monospace;font-size:11px;color:var(--muted)}
 
+  .ff-hz{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:10px 14px}
+  .ff-hz .ff-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+  .ff-hz-s{min-width:0}
+  .ff-hz-k{display:flex;align-items:center;gap:5px;margin-bottom:3px;font-family:'Sometype Mono',monospace;
+    font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .ff-hz-k svg{width:12px;height:12px;fill:none;stroke:currentColor}
+  .ff-hz .ff-r{gap:6px}
+  .ff-hz .ff-r>b{font-size:11px}
+
   .ff-zw{display:flex;gap:14px;align-items:center}
   .ff-zw-z{display:flex;gap:3px;flex-shrink:0}
   .ff-zw-z i{font-style:normal;font-family:'Archivo Black',sans-serif;font-size:22px;width:25px;height:36px;
@@ -6456,27 +6467,6 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nf-ehrung-kp .nf-brk-n{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nf-ehrung-kp .nf-brk-zeit{white-space:nowrap}
 
-.nf-eht{margin:8px 13px 11px;padding:8px 10px 6px;border-radius:12px;
-  background:linear-gradient(180deg,rgba(167,139,250,.07),rgba(167,139,250,.025));
-  border:1px solid rgba(167,139,250,.2)}
-.nf-eht-k{display:flex;align-items:center;gap:7px;margin-bottom:4px;font-family:'Sometype Mono',monospace;
-  font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
-.nf-eht-k i{display:flex;width:14px;height:14px}
-.nf-eht-k i svg{width:14px;height:14px}
-.nf-eht-k span{flex:1 1 auto}
-.nf-eht-k b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:var(--gold)}
-.nf-eht-z{display:flex;align-items:center;gap:8px;padding:5px 0;min-width:0}
-.nf-eht-z + .nf-eht-z{border-top:1px solid var(--line)}
-.nf-eht-z .av{--av:20px;width:20px;height:20px;font-size:8px;flex:0 0 auto}
-.nf-eht-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
-.nf-eht-t b{font-size:12px;font-weight:700;color:var(--ink)}
-.nf-eht-t small{font-size:10.5px;line-height:1.3;color:var(--muted)}
-.nf-eht-a{flex:0 0 auto;display:flex;gap:3px}
-.nf-eht-z > b{flex:0 0 auto;font-family:'Sometype Mono',monospace;font-size:11.5px;font-weight:700;color:var(--gold)}
-.nf-eht-g{position:relative;display:flex}
-.nf-eht-g > i{position:absolute;right:-4px;bottom:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;
-  font-style:normal;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:var(--bg);background:var(--acid)}
-.nf-eht-r{padding:4px 0 2px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted)}
 .eh-s-z .zk.gold > .glanz-bahn::after,.eh-g-o > .zk.gold > .glanz-bahn::after{
   content:"";position:absolute;top:0;bottom:0;left:0;width:250%;pointer-events:none;
   background:linear-gradient(105deg,transparent 38%,rgba(255,236,170,.55) 50%,transparent 62%);
@@ -6781,7 +6771,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.12.ee11f36e';
+const BUILD_VERSION='2026.11.18.7f6581b7';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -20073,6 +20063,7 @@ function _storyFolge(a, b){
 
 const AMBIENT_SLOTS = [15];
 const AMBIENT_RUHE_TAGE = 3;
+const HALBZEIT_MIN_SAETZE = 5;
 const AMBIENT_SLOT_ROLLE = {
   form_best_wr:'stand', form_striker:'stand', form_defender:'stand',
   form_clutch:'stand', form_close_wins:'stand', form_most_active:'stand',
@@ -20252,6 +20243,63 @@ function _insZuegeZwischen(vor, nach, best, wann){
         rek:w.rekordDelta, mon:w.monatDelta}; return o; }, {}),
     leiter:INSIGNIEN.map((_, i) => aktiv.filter(q => { const x = nach.prestige(q.id);
       return x && x.stufe === i; }).length)};
+}
+
+const _tagesschlussMemo = new WeakMap();
+function _tagesschlussTafel(tagMs){
+  const g = _storyTagGrenzen(tagMs);
+  if(!g || !_tagZu(g.tag)) return [];
+  let m = _tagesschlussMemo.get(matches);
+  if(!m || m.pl !== players){ m = {pl:players, je:new Map()}; _tagesschlussMemo.set(matches, m); }
+  if(m.je.has(g.tag)) return m.je.get(g.tag);
+  const A = _storyStand(g.letzte), B = _storyStand(g.nachMs);
+  const amTag = new Set();
+  (matches || []).forEach(x => { const t = mts(x);
+    if(t >= g.vonMs && t <= g.letzte) [x.a1, x.a2, x.b1, x.b2].forEach(p => { if(p) amTag.add(p); }); });
+  const nm = pid => pname(pid);
+  const satz = (fall, wer, name) => {
+    const n = _namenKurz(wer.map(nm)), mz = wer.length > 1;
+    return fall === 'gesteigert' ? `${n} ${mz ? 'bauen' : 'baut'} „${name}“ aus`
+      : fall === 'dazu' ? `${n} ${mz ? 'ziehen' : 'zieht'} bei „${name}“ gleich`
+      : fall === 'allein' ? `${n} ${mz ? 'halten' : 'hält'} „${name}“ jetzt allein`
+      : fall === 'uebernommen' ? `${n} ${mz ? 'übernehmen' : 'übernimmt'} „${name}“`
+      : `${n} ${mz ? 'holen' : 'holt'} „${name}“`;
+  };
+  const zeilen = [];
+  const zeile = (art, def, a, n, fall) => {
+    const alt = (a && a.pids) || [];
+    const wer = (fall === 'dazu' || fall === 'uebernommen' ? n.pids.filter(id => alt.indexOf(id) < 0) : n.pids)
+      .filter(pid => sichtbar(pid));
+    if(!wer.length || !wer.some(p => amTag.has(p))) return;
+    zeilen.push({art, id:def.id, name:def.name, ic:def.ic || '', kammer:def.kind || '', fall, wer:wer.slice(0, 4),
+      namen:_namenKurz(wer.map(nm)), text:satz(fall, wer, def.name)});
+  };
+  try {
+    const ra = A.rekorde(), rb = B.rekorde();
+    CHRONICLES.forEach(def => {
+      if(def.kind === 'shame') return;
+      const a = ra[def.id], n = rb[def.id], art = _rekordArt(a, n);
+      if(!art || (art === 'gesteigert' && def.fenster)) return;
+      zeile('rekord', def, a, n, art === 'geholt' ? _halterFall((a && a.pids) || [], n.pids) : art);
+    });
+  } catch(e){}
+  try {
+    const sid = seasonOf(g.vonMs).id, ca = A.chronik(sid) || {}, cb = B.chronik(sid) || {};
+    SEASON_TITLES.forEach(t => {
+      if(t.kunst === 'schatten') return;
+      const a = ca[t.id], n = cb[t.id];
+      if(!n || (a && a.pids.slice().sort().join(',') === n.pids.slice().sort().join(','))) return;
+      zeile('chronik', t, a, n, _halterFall((a && a.pids) || [], n.pids));
+    });
+  } catch(e){}
+  try {
+    const schluss = new Date(g.vonMs); schluss.setHours(23, 59, 0, 0);
+    const L = _insZuegeZwischen(A, B, _insBestVor(g.vonMs, _cache._stories), () => ({ms:schluss.getTime()}));
+    L.zuege.forEach(z => zeilen.push({art:'insignium', id:'ins_' + z.pid, name:'', ic:'award', kammer:'', fall:z.art,
+      wer:[z.pid], namen:nm(z.pid), text:_insTagTexte([z]).title}));
+  } catch(e){}
+  m.je.set(g.tag, zeilen);
+  return zeilen;
 }
 
 const STORY_RANG_MIN_PARTIEN = 20;
@@ -20853,7 +20901,7 @@ function _buildStories(){
 
   const _potdTage = new Map(), _ehrungTage = new Map(), _tagGetragen = new Set();
   try {
-    const seit = now.getTime() - NEWS_FENSTER_TAGE * 86400000;
+    const seit = (t => { t.setHours(0, 0, 0, 0); return t.getTime(); })(new Date(now.getTime() - NEWS_FENSTER_TAGE * 86400000));
     const tage = new Map();
     matches.forEach(m => {
       const ts = mts(m);
@@ -20875,8 +20923,13 @@ function _buildStories(){
       } catch(e){ ehrung = []; }
       ehrung.forEach(x => x.posten.forEach(q => _tagGetragen.add(dayKey + '|' + x.pid + '|' + q.id)));
       if(groesser) ehrung = [];
-      if(res) _potdTage.set(dayKey, {rep, res, ehrung, brk, groesser});
-      else if(ehrung.length) _ehrungTage.set(dayKey, {rep, ehrung, brk});
+      const _bestand = Array.isArray(_cache._stories) ? _cache._stories : [];
+      const _ziel = (ehrung.length ? 'tagesehrung_' : 'potd_') + dayKey;
+      let tagesschluss = [];
+      if(!_bestand.some(x => x && x.id === _ziel))
+        try { tagesschluss = _tagesschlussTafel(rep.getTime()); } catch(e){ tagesschluss = []; }
+      if(res) _potdTage.set(dayKey, {rep, res, groesser, tagesschluss:ehrung.length ? [] : tagesschluss});
+      if(ehrung.length) _ehrungTage.set(dayKey, {rep, ehrung, brk, tagesschluss});
     });
   } catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] potd tage', e); }
 
@@ -22033,7 +22086,7 @@ function _buildStories(){
   } catch(e){}
 
   try {
-    _potdTage.forEach(({rep, res, ehrung, brk, groesser}, dayKey) => {
+    _potdTage.forEach(({rep, res, groesser, tagesschluss}, dayKey) => {
       const main = res.main;
       const names = res.winners.map(w => nameOf(w.id));
       const titleNames = _namenKurz(names);
@@ -22052,14 +22105,16 @@ function _buildStories(){
         dataRef: {type:'potd', dayKey, playerId: main.id,
                   playerIds: res.winners.map(w => w.id),
                   wins: main.wins, games: main.wins + main.losses, wr: main.wr,
-                  ehrung, ehrungVoll:true, ehrungBrk:brk, ...(groesser ? {ehrungIn:groesser} : {})}
+                  ...(groesser ? {ehrungIn:groesser} : {}),
+                  ...(tagesschluss && tagesschluss.length ? {tagesschluss} : {})}
       });
     });
   } catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] potd', e); }
 
   try {
-    _ehrungTage.forEach(({rep, ehrung, brk}, dayKey) => {
-      const st = _ehrungKarte(ehrung, 'tagesehrung_' + dayKey, rep.getTime(), {periode:'tag', tag:dayKey, voll:true, breaking:brk});
+    _ehrungTage.forEach(({rep, ehrung, brk, tagesschluss}, dayKey) => {
+      const st = _ehrungKarte(ehrung, 'tagesehrung_' + dayKey, rep.getTime(), Object.assign({periode:'tag', tag:dayKey, voll:true, breaking:brk},
+        tagesschluss && tagesschluss.length ? {tagesschluss} : {}));
       if(st) stories.push(st);
     });
   } catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] tagesehrung', e); }
@@ -22128,7 +22183,7 @@ function _buildStories(){
 
   const _tafelTag = _storyTagGrenzen(matches.length ? mts(matches[matches.length - 1]) : 0);
   const _tafelVor = _tafelTag ? _storyStand(_tafelTag.vorMs) : null;
-  const _tafelNach = _tafelTag ? _storyStand(_tafelTag.nachMs) : null;
+  const _tafelNach = _tafelTag ? _storyStand(_tafelTag.letzte) : null;
   const _tafelWirkung = pid => _prestigeWirkung(pid, _tafelVor, _tafelNach);
   const _mitVorgaengern = (wer, vorher) => {
     const o = (wer || []).slice(0, 3);
@@ -22574,7 +22629,7 @@ function _buildAmbientStories(now, pm, nameOf, tagesStories){
   const zeiten = (matches || []).map(mts).filter(Number.isFinite).sort((a, b) => a - b);
   const lebt = t => { let lo = 0, hi = zeiten.length - 1, z = null;
     while(lo <= hi){ const mid = (lo + hi) >> 1; if(zeiten[mid] <= t){ z = zeiten[mid]; lo = mid + 1; } else hi = mid - 1; }
-    return z != null && t - z <= AMBIENT_RUHE_TAGE * _dayMs; };
+    return z != null && t - z < AMBIENT_RUHE_TAGE * _dayMs; };
   const generation = Array.isArray(tagesStories) ? tagesStories : [];
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - NEWS_FENSTER_TAGE + 1);
   for(let tag = new Date(start); tag <= now; tag.setDate(tag.getDate() + 1)){
@@ -22841,7 +22896,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const pid = elig[0], st = stats[pid];
     return { cat:'personal', ic:'crown', prio:4,
       title:`${nameOf(pid)} gewinnt einfach`,
-      desc:`Beste Siegquote der Liga (ab 5 Sätzen): ${Math.round(st.wr*100)} % aus ${st.games} Sätzen.`,
+      desc:`${Math.round(st.wr*100)} % aus ${st.games} Sätzen, die beste Siegquote der Liga ab 5 Sätzen.`,
       vv: Math.round(st.wr*100)+' %', vl:'Siegquote',
       dataRef:{ ambientPid: pid, bild:_bReihe(elig, p2 => stats[p2].wr, v => Math.round(v * 100) + ' %', false, 'podest') } };
   }});
@@ -22852,7 +22907,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(stats[pid].games < 10) return null;
     return { cat:'personal', ic:'medalTrio', prio:3,
       title:`${nameOf(pid)} ist Dauergast`,
-      desc:`Niemand spielt mehr: ${stats[pid].games} Sätze auf dem Konto.`,
+      desc:`${stats[pid].games} Sätze auf dem Konto, so viele hat niemand sonst gespielt.`,
       vv: stats[pid].games, vl:'Sätze',
       dataRef:{ ambientPid: pid, bild:_bZahl(withStats, p2 => stats[p2].games) } };
   }});
@@ -22882,8 +22937,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     }
     if(!best) return null;
     return { cat:'rivalry', ic:'crossedSwords', prio:4,
-      title:`Duell der Liga: ${nameOf(best.pa)} vs ${nameOf(best.pb)}`,
-      desc:`${best.total} direkte Duelle. Siege: ${nameOf(best.pa)} ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
+      title:`${nameOf(best.pa)} und ${nameOf(best.pb)} sind das Duell der Liga`,
+      desc:`${best.total} direkte Duelle, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
       vv: best.total, vl:'Duelle',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
   }});
@@ -22902,8 +22957,9 @@ function _ambientTemplatePool(now, pm, nameOf){
     }
     if(!best) return null;
     return { cat:'rivalry', ic:'crossedSwords', prio:4,
-      title:`Kopf-an-Kopf: ${nameOf(best.pa)} und ${nameOf(best.pb)}`,
-      desc:`${best.total} direkte Duelle, ${best.diff === 0 ? 'absolut ausgeglichen' : 'nur ' + best.diff + ' Sieg' + (best.diff === 1 ? '' : 'e') + ' Unterschied'}. ${best.diff === 0 ? `Es steht ${best.wa}:${best.wb}.` : `Es steht ${Math.max(best.wa, best.wb)}:${Math.min(best.wa, best.wb)} für ${nameOf(best.wa > best.wb ? best.pa : best.pb)}.`}`,
+      title:`${nameOf(best.pa)} und ${nameOf(best.pb)} liegen Kopf an Kopf`,
+      desc:best.diff === 0 ? `${best.total} direkte Duelle, und jeder hat ${best.wa} gewonnen.`
+        : `${best.total} direkte Duelle, nur ${best.diff} ${best.diff === 1 ? 'Sieg' : 'Siege'} Unterschied. Es steht ${Math.max(best.wa, best.wb)}:${Math.min(best.wa, best.wb)} für ${nameOf(best.wa > best.wb ? best.pa : best.pb)}.`,
       vv: best.wa+':'+best.wb, vl:'Bilanz',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
   }});
@@ -22969,13 +23025,21 @@ function _ambientTemplatePool(now, pm, nameOf){
       if(!best || diff > best.diff) best = {diff, hi, lo, m};
     }
     if(!best || best.diff < 6) return null;
-    const dt = new Date(best.m.created_at);
+    const erg = m => Math.max(m.games_a||0, m.games_b||0) + ':' + Math.min(m.games_a||0, m.games_b||0);
+    const k = best.hi + ':' + best.lo;
+    const gleich = matches.filter(m => erg(m) === k && mts(m) <= now.getTime());
+    const zuletzt = gleich.reduce((a, m) => !a || mts(m) > mts(a) ? m : a, null) || best.m;
+    const sieger = (zuletzt.winner === 'A' ? [zuletzt.a1, zuletzt.a2] : [zuletzt.b1, zuletzt.b2]).filter(id => pm[id]);
+    const am = datumFmt(zuletzt.created_at, 'tmx');
+    const wer = sieger.length ? ` für ${_namenListe(sieger.map(nameOf))}` : '';
     return { cat:'fun', ic:'thriller', prio:3,
-      title:'Klarste Klatsche der Liga',
-      desc:`Höchster Sieg aller Zeiten: ${best.hi}:${best.lo} am ${String(dt.getDate()).padStart(2,'0')}.${String(dt.getMonth()+1).padStart(2,'0')}.`,
-      vv: best.hi+':'+best.lo, vl:'Rekord',
-      dataRef:{ bild:{f:'verteilung', je:[0,1,2,3,4,5,6,7,8,9].map(i => matches.filter(m =>
-        Math.max(m.games_a||0, m.games_b||0) === 10 && Math.min(m.games_a||0, m.games_b||0) === i).length), hl:[best.lo]} } };
+      title:'Der klarste Sieg der Liga',
+      desc: gleich.length > 1
+        ? `${gleich.length}-mal endete ein Satz so, zuletzt am ${am}${wer}.`
+        : `So endete nur ein Satz, am ${am}${wer}.`,
+      vv:k, vl:'Rekord',
+      dataRef:{ ambientPids:sieger.slice(0, 2), bild:{f:'verteilung', je:FF_SAETZE.map(x => matches.filter(m => erg(m) === x).length),
+        hl:[FF_SAETZE.indexOf(k)].filter(i => i >= 0)} } };
   }});
 
   T.push({ key:'fun_busiest_day', make: () => {
@@ -22990,8 +23054,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(bn < 5) return null;
     const p = bk.split('-');
     return { cat:'fun', ic:'calendar', prio:2,
-      title:'Rekord-Spieltag',
-      desc:`Die meisten Sätze an einem Tag: ${bn} am ${p[2]}.${p[1]}.${p[0]}.`,
+      title:'Der Spieltag mit den meisten Sätzen',
+      desc:`Am ${p[2]}.${p[1]}.${p[0]} wurden ${bn} Sätze gespielt, so viele wie an keinem anderen Tag.`,
       vv: bn, vl:'Sätze',
       dataRef:{ bild:(() => { const ks = Object.keys(byDay).sort().slice(-24);
         if(!ks.includes(bk)){ ks.shift(); ks.push(bk); ks.sort(); }
@@ -23032,8 +23096,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     const r = l[Math.floor(rng() * l.length)], pids = r.pids.filter(aktiv);
     const namen = pids.slice(0, 3).map(nameOf);
     return {cat:'history', ic:r.ic || 'trophy', prio:5,
-      title:`Rekord im Fokus: ${r.name}`,
-      desc:`${_namenListe(namen)} ${pids.length === 1 ? 'hält' : 'halten'} diese Bestmarke. ${String(r.ev || r.cond || 'Der Beleg steht in der Ewigen Tafel.').replace(/\s*[·•]\s*/g, '. ')}`,
+      title:`${_namenListe(namen)} ${pids.length === 1 ? 'hält' : 'halten'} „${r.name}“`,
+      desc:`${String(r.ev || r.cond || 'Der Beleg steht in der Ewigen Tafel').replace(/\s*[·•]\s*/g, '. ').replace(/\.?\s*$/, '.')}`,
       vv:_chronKurz(r.ev) || String(r.val), vl:'Bestwert', dataRef:{ambientPids:pids.slice(0, 3), rekordId:r.id,
         bild:_bRennen(_rekRang(r.id).map(x => ({p:x.pid, v:x.wert, t:_chronKurz(x.ev) || komma(x.wert)})), false, 'podest')}};
   }});
@@ -23045,10 +23109,10 @@ function _ambientTemplatePool(now, pm, nameOf){
     const elig = withStats.filter(pid => stats[pid].games >= 5);
     if(elig.length < 2) return null;
     const cats = [
-      { noun:'Meiste Siege',         ic:'trophy',  pool:withStats, val: pid => stats[pid].wins,               fmt: v => v+' Siege' },
-      { noun:'Beste Game-Bilanz',    ic:'plusMinus', pool:withStats, val: pid => stats[pid].gf - stats[pid].ga, fmt: v => (v>0?'+':'')+v+' Games' },
-      { noun:'Meiste Games',         ic:'padelBall', pool:withStats, val: pid => stats[pid].gf,               fmt: v => v+' Games' },
-      { noun:'Höchste Karriere-Elo', ic:'crown',   pool:elig,      val: pid => Math.round(career[pid]||0),    fmt: v => v+' Elo', qual:' (ab 5 Sätzen)' },
+      { noun:'Meiste Siege',         bei:'den Siegen',       ic:'trophy',  pool:withStats, val: pid => stats[pid].wins,               fmt: v => v+' Siege', dat: v => v+' Siegen' },
+      { noun:'Beste Game-Bilanz',    bei:'der Game-Bilanz',  ic:'plusMinus', pool:withStats, val: pid => stats[pid].gf - stats[pid].ga, fmt: v => (v>0?'+':'')+v+' Games' },
+      { noun:'Meiste Games',         bei:'den Games',        ic:'padelBall', pool:withStats, val: pid => stats[pid].gf,               fmt: v => v+' Games' },
+      { noun:'Höchste Karriere-Elo', bei:'der Karriere-Elo', ic:'crown',   pool:elig,      val: pid => Math.round(career[pid]||0),    fmt: v => v+' Elo', qual:' (ab 5 Sätzen)' },
     ];
     const c = cats[Math.floor(rng()*cats.length)];
     let best = null, second = null;
@@ -23060,9 +23124,9 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!best) return null;
     if(second && second.v === best.v) return null;
     return { cat:'personal', ic:c.ic, prio:5,
-      title:`${c.noun}: ${nameOf(best.pid)} führt`,
+      title:`${nameOf(best.pid)} führt bei ${c.bei}`,
       desc: second
-        ? `${c.fmt(best.v)}. Liga-Bestwert${c.qual||''}, vor ${nameOf(second.pid)} mit ${c.fmt(second.v)}.`
+        ? `${c.fmt(best.v)}. Liga-Bestwert${c.qual||''}, vor ${nameOf(second.pid)} mit ${(c.dat || c.fmt)(second.v)}.`
         : `${nameOf(best.pid)} hält den Liga-Bestwert${c.qual||''}. ${c.fmt(best.v)}.`,
       vv: best.v, vl: c.noun.replace(/^(Meiste|Bestes|Beste|Höchste)\s+/, ''),
       dataRef:{ ambientPid: best.pid, bild:_bReihe(c.pool, c.val, v => (c.fmt(v).match(/^[+-]?\d+/) || [String(v)])[0]) } };
@@ -23089,13 +23153,12 @@ function _ambientTemplatePool(now, pm, nameOf){
       if(!platz) return;
       if(!bestes || platz < bestes.platz) bestes = {f, platz, wert:f.v(pid), von:reihe.length};
     });
-    if(!bestes) return null;
+    if(!bestes || bestes.platz > 3) return null;
     return { cat:'personal', ic:'chartBar', prio:4,
       title: bestes.platz === 1
         ? `${nameOf(pid)} führt die Liga bei ${bestes.f.n} an`
         : `${nameOf(pid)} ist Nummer ${bestes.platz} bei ${bestes.f.n}`,
-      desc:`${bestes.f.fmt(bestes.wert)}, unter ${bestes.von} Spielern. `
-         + (bestes.platz === 1 ? `` : `In keiner anderen Kennzahl steht ${nameOf(pid)} weiter vorn.`),
+      desc:`${bestes.f.fmt(bestes.wert)}, unter ${bestes.von} Spielern.`,
       vv: 'Platz ' + bestes.platz, vl:'von ' + (bestes.von || ''),
       dataRef:{ ambientPid: pid, bild:{f:'platz', p:pid, platz:bestes.platz, von:bestes.von, t:bestes.f.fmt(bestes.wert)} } };
   }});
@@ -23124,7 +23187,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const isRecord = t.best === topBest;
     const nm = `${nameOf(t.ids[0])} und ${nameOf(t.ids[1])}`;
     return { cat:'team', ic:'unstoppable', prio:isRecord ? 5 : 4,
-      title: isRecord ? `Rekord-Duo: ${nm}` : `Eingespielt: ${nm}`,
+      title: isRecord ? `${nm} sind das Rekord-Duo` : `${nm} sind eingespielt`,
       desc: isRecord
         ? `${t.best} gemeinsame Siege in Serie. Kein Duo der Liga war je länger unschlagbar.`
         : `${t.best} gemeinsame Siege in Serie. Das ist Platz ${rank} von ${ranked.length} Duos, `
@@ -23143,7 +23206,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'trendUp', prio:5,
       title:`${nameOf(best.pid)} ist in Topform`,
-      desc:`Beste Siegquote der letzten 14 Tage: ${Math.round(best.v*100)} % aus ${a.g} Sätzen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.g} Sätzen, die beste Siegquote der letzten 14 Tage.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'14 Tage',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].w / agg[id].g, v => Math.round(v * 100) + ' %') } };
   }});
@@ -23157,7 +23220,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'posDrive', prio:5,
       title:`${nameOf(best.pid)} glänzt rechts`,
-      desc:`Beste Quote auf der Drive-Seite in den letzten 14 Tagen: ${Math.round(best.v*100)} % aus ${a.aG} Sätzen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.aG} Sätzen auf der Drive-Seite, die beste Quote dort in den letzten 14 Tagen.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'rechts',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].aW / agg[id].aG, v => Math.round(v * 100) + ' %') } };
   }});
@@ -23171,7 +23234,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'posReves', prio:5,
       title:`${nameOf(best.pid)} glänzt links`,
-      desc:`Beste Quote auf der Revés-Seite in den letzten 14 Tagen: ${Math.round(best.v*100)} % aus ${a.dG} Sätzen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.dG} Sätzen auf der Revés-Seite, die beste Quote dort in den letzten 14 Tagen.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'links',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].dW / agg[id].dG, v => Math.round(v * 100) + ' %') } };
   }});
@@ -23213,7 +23276,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!best || best.v < 4) return null;
     return { cat:'personal', ic:'medalTrio', prio:3,
       title:`${nameOf(best.pid)} gibt Vollgas`,
-      desc:`Aktivster Spieler der letzten 14 Tage: ${best.v} Sätze in zwei Wochen.`,
+      desc:`${best.v} Sätze in zwei Wochen, mehr hat in den letzten 14 Tagen niemand gespielt.`,
       vv: best.v, vl:'Sätze',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(Object.keys(agg), id => agg[id].g, v => String(v)) } };
   }});
@@ -23370,7 +23433,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const her = days < 2 ? null : days < 14 ? {n:days, e:'Tagen', nom:'Tage'} : _spSeit(now.getTime() - latest.t);
     return { cat:'badge', ic: latest.badge.ic || 'trophyStar', prio:5,
       title:`${nameOf(latest.pid)} holte zuletzt Gold`,
-      desc:`Die Auszeichnung „${latest.badge.name}“ ${days === 0 ? 'heute' : days === 1 ? 'gestern' : 'vor ' + her.n + ' ' + her.e}. ${latest.badge.desc}.`,
+      desc:`${days === 0 ? 'Heute' : days === 1 ? 'Gestern' : 'Vor ' + her.n + ' ' + her.e} kam „${latest.badge.name}“ dazu, eine der legendären Auszeichnungen.`,
       vv:String(days === 0 ? 'heute' : days === 1 ? 'gestern' : her.n),
       vl:her ? her.nom + ' her' : 'geholt',
       dataRef:{ ambientPid: latest.pid, bild:{f:'medaille', p:latest.pid, b:latest.badge.id,
@@ -23430,8 +23493,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!cands.length) return null;
     const c = cands[Math.floor(rng()*cands.length)];
     return { cat:'team', ic:'duo', prio:4,
-      title:`Beste Freunde: ${nameOf(c.pid)} und ${nameOf(c.mate)}`,
-      desc:`Zusammen ${c.w} von ${c.g} Sätzen gewonnen, ${Math.round(c.wr*100)} %.`,
+      title:`${nameOf(c.pid)} und ${nameOf(c.mate)} gewinnen zusammen`,
+      desc:`${c.w} von ${c.g} gemeinsamen Sätzen, das sind ${Math.round(c.wr*100)} %.`,
       vv: Math.round(c.wr*100) + '\u00A0%', vl:'als Duo',
       dataRef:{ ambientPids:[c.pid, c.mate], pairKind:'team', bild:{f:'duo', a:c.pid, b:c.mate, w:c.w, g:c.g} } };
   }});
@@ -23627,17 +23690,34 @@ function _ambientTemplatePool(now, pm, nameOf){
       if(!T2) return null;
       const offen = SEASON_TITLES.length - T2.awarded.length;
       const fuehrend = T2.champ && pm[T2.champ.pid] ? T2.champ : null;
-      const ohne = (T2.empty || []).filter(id => pm[id]).length;
+      const je = {reves:{}, drive:{}};
+      (matchesInSeason(sid) || []).filter(m => mts(m) <= now.getTime()).forEach(m => {
+        const a = m.winner === 'A';
+        [[m.a1, m.a1_side, a], [m.a2, m.a2_side, a], [m.b1, m.b1_side, !a], [m.b2, m.b2_side, !a]].forEach(([pid, seite, w]) => {
+          if(!pid || !pm[pid] || !sichtbar(pid)) return;
+          const o = je[seite === 'reves' ? 'reves' : 'drive'], x = o[pid] || (o[pid] = {g:0, w:0});
+          x.g++; if(w) x.w++;
+        });
+      });
+      const drei = o => Object.keys(o).filter(pid => o[pid].g >= HALBZEIT_MIN_SAETZE)
+        .sort((x, y) => (o[y].w / o[y].g) - (o[x].w / o[x].g) || o[y].g - o[x].g || nameOf(x).localeCompare(nameOf(y), 'de'))
+        .slice(0, 3).map(pid => [pid, o[pid].w, o[pid].g]);
+      const reves = drei(je.reves), drive = drei(je.drive);
+      const q = x => Math.round(x[1] / x[2] * 100);
+      let tab = [];
+      try { tab = saisonRang(sid).filter(e => pm[e.id]).slice(0, 5).map(e => [e.id, Math.round(e.elo), e.wins + e.losses]); } catch(e){ tab = []; }
       return { cat:'season', ic:'stopwatch', prio:6,
         title:`Der ${seasonLabel(sid)} ist zur Hälfte gespielt`,
         desc: `${T2.matches} Sätze an ${T2.days} Spieltagen. `
-          + (fuehrend ? `${nameOf(fuehrend.pid)} führt mit ${fuehrend.elo} Elo aus ${fuehrend.games} Sätzen. ` : '')
-          + `${T2.awarded.length} von ${SEASON_TITLES.length} Monatschroniken sind vergeben, ${offen} noch offen`
-          + (ohne ? `, ${ohne} Spieler ${ohne === 1 ? 'trägt' : 'tragen'} noch keine.` : '.')
-          + ` Die zweite Monatshälfte entscheidet.`,
+          + (fuehrend ? `${nameOf(fuehrend.pid)} führt mit ${fuehrend.elo} Elo. ` : '')
+          + (reves.length && drive.length
+            ? `Auf der Revés-Seite gewinnt ${nameOf(reves[0][0])} ${q(reves[0])} %, auf der Drive-Seite ${nameOf(drive[0][0])} ${q(drive[0])} %.`
+            : `${T2.awarded.length} von ${SEASON_TITLES.length} Monatschroniken sind vergeben.`),
         vv:String(offen), vl:'noch offen',
-        dataRef:{ ambientPid: fuehrend ? fuehrend.pid : null, seasonTable:sid, bild:{f:'tafel', voll:T2.awarded.length,
-          alle:SEASON_TITLES.length, traeger:_tafelTraeger(T2.awarded)} } };
+        dataRef:{ ambientPid: fuehrend ? fuehrend.pid : null, seasonTable:sid,
+          bild:reves.length && drive.length
+            ? {f:'halbzeit', reves, drive, tab, tafel:{voll:T2.awarded.length, alle:SEASON_TITLES.length, traeger:_tafelTraeger(T2.awarded)}}
+            : {f:'tafel', voll:T2.awarded.length, alle:SEASON_TITLES.length, traeger:_tafelTraeger(T2.awarded)} } };
     }});
 
   T.push({ key:'rueckblick_jahr',
@@ -23681,6 +23761,12 @@ function _newsTexteAuffrischen(list){
   if(_cache._ambientZeitFrom === list) return _cache._ambientZeitList;
   let geaendert = false;
   const aus = list.map(st => {
+    if(st && (st.dataRef || {}).type === 'woche' && /^woche_/.test(String(st.id || ''))){
+      const w = new Date(st.when), soll = new Date(w.getFullYear(), w.getMonth(), w.getDate(), 23, 59, 5, 0);
+      if(!Number.isFinite(w.getTime()) || w.getDay() !== 0 || w.getTime() === soll.getTime()) return st;
+      geaendert = true;
+      return Object.assign({}, st, {when:soll});
+    }
     const m = /^ambient_(\d{4})-(\d{2})-(\d{2})_15$/.exec(String(st && st.id || ''));
     if(!m) return st;
     const slot = new Date(+m[1], +m[2] - 1, +m[3], 15, 0, 0, 0);
@@ -23797,12 +23883,13 @@ function _consolidateStories(list){
   });
   let aus = _consolidateStoriesLegacy(vorbereitet);
 
-  const tagKarte = () => {
+  const tagKarte = ehrungZuerst => {
     const je = new Map();
-    aus.forEach(s => { const d = s.dataRef || {};
-      if(d.type === 'potd') je.set(d.dayKey || tagKey(s.when), s); });
-    aus.forEach(s => { const d = s.dataRef || {};
+    const potd = () => aus.forEach(s => { const d = s.dataRef || {};
+      if(d.type === 'potd' && !je.has(d.dayKey || tagKey(s.when))) je.set(d.dayKey || tagKey(s.when), s); });
+    const ehrung = () => aus.forEach(s => { const d = s.dataRef || {};
       if(d.type === 'ehrung' && d.periode === 'tag' && d.voll && d.tag && !je.has(d.tag)) je.set(d.tag, s); });
+    if(ehrungZuerst){ ehrung(); potd(); } else { potd(); ehrung(); }
     return je;
   };
   const aufKarte = (dazu, weg) => {
@@ -23832,7 +23919,7 @@ function _consolidateStories(list){
   }
 
   {
-    const ziel = tagKarte();
+    const ziel = tagKarte(true);
     const zeitraum = new Set(aus.filter(s => (s.dataRef || {}).type === 'ehrung' && /^ehrung_de[rs]_/.test(String(s.id)))
       .map(s => s.dataRef.periode + '|' + tagKey(new Date(s.when).getTime() - 3600000)));
     const quellen = new Map();
@@ -23861,6 +23948,39 @@ function _consolidateStories(list){
       dazu.set(p.id, {ids:l.map(s => s.id), felder});
     });
     aufKarte(dazu, weg);
+  }
+
+  {
+    const ehrungen = new Map();
+    aus.forEach(s => { const d = s.dataRef || {};
+      if(d.type === 'ehrung' && d.periode === 'tag' && d.tag) ehrungen.set(d.tag, s); });
+    const neu = [], felder = new Map();
+    aus = aus.map(s => {
+      const d = s.dataRef || {};
+      if(d.type !== 'potd' || !(Array.isArray(d.ehrung) || Array.isArray(d.tagesschluss))) return s;
+      const tag = d.dayKey || tagKey(s.when), e = ehrungen.get(tag);
+      const rest = Object.assign({}, d);
+      delete rest.ehrung; delete rest.ehrungVoll; delete rest.ehrungBrk;
+      const ts = Array.isArray(d.tagesschluss) && d.tagesschluss.length ? d.tagesschluss : null;
+      if(e){
+        const ed = e.dataRef || {};
+        if(ts && !Array.isArray(ed.tagesschluss)) felder.set(e.id, {tagesschluss:ts});
+        if(ts) delete rest.tagesschluss;
+      } else if(Array.isArray(d.ehrung) && d.ehrung.length && !d.ehrungIn){
+        const mit = (d.memberIds || []).filter(id => id !== s.id && id !== ((d.gegenstueck || {}).id));
+        const k = _ehrungKarte(d.ehrung, 'tagesehrung_' + tag, new Date(s.when).getTime(),
+          Object.assign({periode:'tag', tag, voll:true}, typeof d.ehrungBrk === 'boolean' ? {breaking:d.ehrungBrk} : {},
+            ts ? {tagesschluss:ts} : {}, mit.length ? {memberIds:['tagesehrung_' + tag].concat(mit)} : {}));
+        if(k){
+          neu.push(k); if(ts) delete rest.tagesschluss;
+          if(mit.length) rest.memberIds = (d.memberIds || []).filter(id => mit.indexOf(id) < 0);
+        }
+      }
+      return Object.assign({}, s, {dataRef:rest});
+    });
+    if(felder.size) aus = aus.map(s => felder.has(s.id)
+      ? Object.assign({}, s, {dataRef:Object.assign({}, s.dataRef, felder.get(s.id))}) : s);
+    if(neu.length) aus = aus.concat(neu);
   }
 
   aus = aus.map(s => {
@@ -24728,7 +24848,7 @@ function _storyIstTafelUpdate(s, jetzt){
   return tagKey(w) === tagKey(jetzt || new Date());
 }
 function _tafelFassung(tag, letzteMs){
-  return String(letzteMs) + (_tagZu(tag) ? 'z' : '');
+  return String(letzteMs);
 }
 function _tafelFassungen(list){
   if(!Array.isArray(list)) return list;
@@ -25171,7 +25291,7 @@ function _newsGelesen(s, seen, stand){
   const key = _newsSeenKey(s);
   if(seen && seen.has(key)) return true;
   if(!_newsIstRollendeTafel(s) && seen && seen.has(s.id)) return true;
-  return !!stand && new Date(s.when).getTime() <= stand;
+  return !!stand && new Date(s.when).getTime() < stand;
 }
 function _newsMarkAllSeen(){
   const stories = getStoriesCache();
@@ -25366,14 +25486,11 @@ function _isBreaking(s){
       return true;
     case 'badge_unlocked':
       return d.rarity === 'legendary';
-    case 'potd': {
-      if(typeof d.ehrungBrk === 'boolean') return d.ehrungBrk;
-      const sch = _ehrungSchlussVon(s);
-      return !!sch && !_ehrungGroessere(sch.ms) && _ehrungBrkGrund('tag', sch.ms).length > 0;
-    }
-    case 'ehrung':
+    case 'ehrung': {
       if(typeof d.breaking === 'boolean') return d.breaking;
-      return d.periode === 'tag' && _ehrungBrichtVor(d.spieler);
+      const sch = _ehrungSchlussVon(s);
+      return d.periode === 'tag' && !!sch && !_ehrungGroessere(sch.ms) && _ehrungBrkGrund('tag', sch.ms).length > 0;
+    }
     case 'insignium_stufe':
       return !!d.oben && !d.wieder;
     case 'insignium_tag':
@@ -25538,7 +25655,7 @@ function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
     if(d.type === 'potd') fuss = _spTagBild(_spTagDaten(s));
     const g = d.type === 'potd' && d.gegenstueck;
     if(g && pmap()[g.pid]) fuss += _spGegenHtml(g);
-    if(d.type === 'potd') fuss += _ehrungTagHtml(d.ehrung);
+    if(d.type === 'potd') fuss += _ehrungSchlussHtml(d.tagesschluss, {max:3, kopf:true});
     if(!fuss) fuss = _newsZahlband([
       {v: d.wr != null ? Math.round(d.wr * 100) + ' %' : null, l:'Siegquote', f:'g'},
       {v: (d.wins != null && d.games != null) ? d.wins + ' : ' + (d.games - d.wins) : null,
@@ -28652,6 +28769,20 @@ function _ffTafel(b){
     + (tr.length ? `<div class="ff-tf-t">${tr.map(x => `<span>${_ffChip(x[0])}${_ffNm(x[0])}<b class="num">${x[1]}</b></span>`).join('')}</div>` : '');
 }
 
+function _ffHalbzeit(b){
+  const seite = (l, ic, wort) => {
+    const z = (l || []).filter(x => pmap()[x[0]]);
+    if(!z.length) return '';
+    return `<div class="ff-hz-s"><div class="ff-hz-k">${svgI(ic)}<b>${wort}</b></div>`
+      + z.map((x, k) => { const q = x[2] ? Math.round(x[1] / x[2] * 100) : 0;
+        return `<div class="ff-r${k === 0 ? ' eins' : ''}" style="--k:${k}">${_ffChip(x[0])}`
+          + `<span class="ff-r-m">${_ffNm(x[0])}<span class="ff-bar"><i style="width:${q}%"></i></span></span>`
+          + `<b class="num">${q}\u00a0%</b></div>`; }).join('') + `</div>`;
+  };
+  const r = seite(b.reves, 'posReves', 'Revés'), d = seite(b.drive, 'posDrive', 'Drive');
+  return r && d ? `<div class="ff-hz">${r}${d}</div>` : '';
+}
+
 function _ffZaehler(b){
   const ziffern = String(b.n | 0).split('').map((z, i) => `<i class="num" style="--k:${i}">${z}</i>`).join('');
   const s = (b.sieger || []).filter(id => pmap()[id]);
@@ -28668,7 +28799,7 @@ function _ffLauf(b){
 const _FF_FORM = {
   rennen:_ffRennen, podest:_ffPodest, sammlung:_ffSammlung, sterne:_ffSterne, zahl:_ffZahl, duell:_ffDuell, duo:_ffDuo, vitrine:_ffVitrine, medaille:_ffMedaille,
   stufe:_ffStufe, ziel:_ffZiel, rolle:_ffRolle, verteilung:_ffVerteilung, saeulen:_ffSaeulen,
-  platz:_ffPlatz, tafel:_ffTafel, zaehler:_ffZaehler, lauf:_ffLauf
+  platz:_ffPlatz, tafel:_ffTafel, zaehler:_ffZaehler, lauf:_ffLauf, halbzeit:_ffHalbzeit
 };
 
 const INS_ORDNUNG = ['erste', 'zweite', 'dritte', 'vierte', 'fünfte', 'sechste', 'siebte'];
@@ -28923,8 +29054,6 @@ const EHRUNG_SCHLUSS = {
   monat:['champion', 'vice_champion', 'team_of_season', 'untouchable']
 };
 const EHRUNG_KOPF = new Set(['potd', 'potw', 'champion', 'vice_champion', 'team_of_season']);
-const _ehrungBrichtVor = sp => (sp || []).some(x => ((x && x.posten) || [])
-  .some(q => q && q.klasse === 'legendary' && !EHRUNG_KOPF.has(q.id)));
 
 const _ehrungGrundMemo = new WeakMap();
 function _ehrungBrkGrund(art, ms){
@@ -29146,8 +29275,8 @@ function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
   const da = sp.filter(x => x && pm[x.pid] && x.summe > 0);
   const vorn = da.length > EH_KOMPAKT ? da.slice(0, EH_KOMPAKT - 1) : da, rest = da.length - vorn.length;
   const art = {monat:['crown', 'EHRUNG DES MONATS', 'Ehrung des Monats'], woche:['weekKing', 'EHRUNG DER WOCHE', 'Ehrung der Woche'],
-    tag:['medal', 'EHRUNG DES TAGES', 'Ehrung des Tages']}[d.periode] || ['medal', 'DIE EHRUNG', 'Ehrung'];
-  const gold = d.periode === 'woche' || d.periode === 'monat';
+    tag:['dayKing', 'EHRUNG DES TAGES', 'Ehrung des Tages']}[d.periode] || ['medal', 'DIE EHRUNG', 'Ehrung'];
+  const gold = d.periode === 'tag' || d.periode === 'woche' || d.periode === 'monat';
   const kopf = x => `<span class="eh-kp-s ${_ehrungTon((x.posten[0] || {}).klasse)}">${_spChip(x.pid)}`
     + `<b class="num">+${_ehZahl(x.summe)}</b><small>${esc(_spName(x.pid))}</small></span>`;
   const g = d.gegenstueck;
@@ -29163,6 +29292,7 @@ function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
     <div class="eh-kp">${vorn.map(kopf).join('')}${rest ? `<span class="eh-kp-s eh-kp-rest"><i class="num">+${rest}</i><small>weitere</small></span>` : ''}</div>
     ${klassen.length ? `<div class="eh-kp-k"><div class="eh-kp-l">${klassen.map(z => `<span class="eh-k ${z.id}"><i></i><b class="num">${z.n}</b> ${esc(z.wort)}</span>`).join('')}</div>`
       + `<div class="eh-kp-b">${klassen.map(z => `<i class="${z.id}" style="flex-grow:${z.p}"></i>`).join('')}</div></div>` : ''}
+    ${_ehrungSchlussHtml(d.tagesschluss, {max:3, kopf:true})}
     ${g && pm[g.pid] ? _spGegenHtml(g) : ''}
     ${grund ? `<div class="nf-brk-sub">${esc(grund)}</div>` : ''}${fadenHtml || ''}</div>` + (brk ? '</div>' : '');
 }
@@ -29170,28 +29300,21 @@ function _newsEhrungKompaktHtml(s, d, sp, zr, isRead, fadenHtml){
 const _spGegenHtml = g => `<div class="nf-gegen">${_spChip(g.pid)}<span><b>${esc(_spName(g.pid))}</b> gibt am meisten ab</span>`
   + `<b class="num r">${_spVz(Number(g.delta) || 0)} Elo</b></div>`;
 
-function _ehrungTagHtml(sp){
-  const pm = pmap();
-  const l = (Array.isArray(sp) ? sp : []).filter(x => x && pm[x.pid] && x.summe > 0);
-  if(!l.length) return '';
-  const summe = l.reduce((n, x) => n + x.summe, 0);
-  const vorn = l.length > EH_KOMPAKT ? l.slice(0, EH_KOMPAKT - 1) : l, rest = l.length - vorn.length;
-  const zeile = x => {
-    const gross = x.posten.filter(q => q.klasse !== 'common'), klein = x.posten.filter(q => q.klasse === 'common');
-    const nKlein = klein.reduce((n, q) => n + q.mal, 0);
-    const text = gross.map(q => q.name + (q.mal > 1 ? ' ×' + q.mal : ''))
-      .concat(nKlein ? [nKlein === 1 ? klein[0].name : nKlein + ' gewöhnliche'] : []).join(' · ');
-    return `<div class="nf-eht-z">${_spChip(x.pid)}`
-      + `<span class="nf-eht-t"><b>${esc(_spName(x.pid))}</b><small>${esc(text)}</small></span>`
-      + `<span class="nf-eht-a">${gross.map(q => zkHtml(q.ic, 'k', _ehrungTon(q.klasse))).join('')}`
-      + (nKlein ? `<span class="nf-eht-g">${zkHtml(klein[0].ic, 'k', 'gruen')}${nKlein > 1 ? `<i class="num">${nKlein}</i>` : ''}</span>` : '')
-      + `</span><b class="num">+${_ehZahl(x.summe)}</b></div>`;
-  };
-  return `<div class="nf-eht"><div class="nf-eht-k"><i>${svgI('medal')}</i>`
-    + `<span>Ehrung des Tages</span><b class="num">+${_ehZahl(summe)}</b></div>`
-    + vorn.map(zeile).join('')
-    + (rest ? `<div class="nf-eht-r">und ${rest} weitere</div>` : '')
-    + `</div>`;
+function _ehrungSchlussHtml(l, o){
+  o = o || {};
+  const rang = x => x.fall === 'gesteigert' ? 2 : x.art === 'insignium' ? 1 : 0;
+  const z = (Array.isArray(l) ? l : []).filter(x => x && x.text).sort((a, b) => rang(a) - rang(b));
+  if(!z.length) return '';
+  const wechsel = z.filter(x => x.fall !== 'gesteigert');
+  const vorn = o.max ? (wechsel.length ? wechsel : z).slice(0, o.max) : z, rest = z.length - vorn.length;
+  const ton = x => x.art === 'chronik' ? 'chronik' : x.art === 'insignium' ? 'insignium'
+    : x.kammer === 'mark' ? 'marke' : x.kammer === 'fuegung' ? 'fuegung' : 'rekord';
+  const satz = x => x.namen && String(x.text).indexOf(x.namen) === 0
+    ? `<b>${esc(x.namen)}</b>${esc(String(x.text).slice(x.namen.length))}` : esc(x.text);
+  return `<div class="nf-sam eh-ts">${o.kopf ? '<div class="eh-ts-k">Mit dem Schluss des Tages</div>' : ''}`
+    + vorn.map(x => `<div class="nf-sam-z nf-sam-${ton(x)}"><i class="nf-sam-i">${svgI(x.ic || 'award')}</i>`
+      + `<span>${satz(x)}</span></div>`).join('')
+    + (rest ? `<div class="nf-sam-m">und ${rest} weitere</div>` : '') + '</div>';
 }
 
 function _ndEhrungBlatt(s){
@@ -29210,7 +29333,9 @@ function _ndEhrungBlatt(s){
   const g = d.gegenstueck;
   const gegen = g && pm[g.pid] ? `<div class="nd-section">Der härteste Tag</div>${_spGegenHtml(g)}` : '';
   return {kopf, mitte: anteil + (zeit ? `<div class="nw-hinweis eh-zeit">${esc(zeit.vor + ' ' + zeit.wann)}${/\.$/.test(zeit.wann) ? '' : '.'}</div>` : '')
-    + `<div class="nd-section">Wer was geholt hat</div>${_ehrungBloeckeHtml(sp)}` + gegen
+    + `<div class="nd-section">Wer was geholt hat</div>${_ehrungBloeckeHtml(sp)}`
+    + (d.tagesschluss ? (h => h ? `<div class="nd-section">Mit dem Schluss des Tages</div>${h}` : '')(_ehrungSchlussHtml(d.tagesschluss)) : '')
+    + gegen
     + `<div class="nw-hinweis">Der Strich unter jeder Auszeichnung zeigt, wie viel ihres vollen Werts sie diesmal brachte. `
     + `Ab dem dritten Mal bringt sie etwas weniger.</div>`};
 }
@@ -30040,7 +30165,7 @@ function _ndPotdBlatt(s){
       + _ndTagesbahn([g.pid], _newsTagPartien(d.dayKey, [g.pid])) : '';
   return {kopf, mitte:ab('Das Feld des Tages', balken) + ab(pids.length > 1 ? 'Der Tag der Tagessieger' : 'Der Tag in Sätzen', bahn)
     + ab('Der härteste Tag', gegen)
-    + ab('Die Ehrung des Tages', _ehrungBloeckeHtml(d.ehrung))};
+    + ab('Mit dem Schluss des Tages', _ehrungSchlussHtml(d.tagesschluss))};
 }
 
 function _ndEndspurtBlatt(s){
@@ -30469,8 +30594,12 @@ function _ndFaktBlatt(s){
     let mitte = '';
     if(d.type === 'dry_spell') mitte = ab('Der letzte Satz', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
     else if(b.f === 'duell' && pm[b.a] && pm[b.b]) mitte = ab('Jede Begegnung', h2hBegegnungenHtml(b.a, b.b));
+    else if(b.f === 'halbzeit') mitte = ab('Die Spitze des Monats', (b.tab || []).some(x => pm[x[0]])
+        ? `<div class="ff ff-rennen gross">${_ffRennen({r:(b.tab || []).filter(x => pm[x[0]]).map(x => ({p:x[0],
+          w:Math.max(0, x[1]) / Math.max(1, ...(b.tab || []).map(y => y[1])), t:x[1] + ' Elo'}))})}</div>` : '')
+      + ab('Die Monatschroniken', b.tafel ? `<div class="ff ff-tafel gross">${_ffTafel(b.tafel)}</div>` : '');
     else if(d.prestige && pid && pm[pid]) mitte = ab('Der Stand am Zeichen', _newsInsigniumBlock(pid));
-    else if(pid && pm[pid]) mitte = ab('Die letzten zehn Sätze', _ndFaktLauf(pid, s));
+    else if(pid && pm[pid]) mitte = ab('Die letzten zehn Sätze von ' + pm[pid].name, _ndFaktLauf(pid, s));
     return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>`, mitte};
   }
   if(d.leiter || !pid || !pm[pid] || d.vv == null || d.vv === '') return null;
@@ -30478,8 +30607,8 @@ function _ndFaktBlatt(s){
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
   if(d.prestige) return {kopf, mitte:ab('Der Stand am Zeichen', _newsInsigniumBlock(pid))};
   if(d.chronicle) return {kopf, mitte:_newsVerfolger(d.chronicle, [pid], null)
-    || ab('Die letzten zehn Sätze', _ndFaktLauf(pid, s))};
-  return {kopf, mitte:ab('Die letzten zehn Sätze', _ndFaktLauf(pid, s))};
+    || ab('Die letzten zehn Sätze von ' + pm[pid].name, _ndFaktLauf(pid, s))};
+  return {kopf, mitte:ab('Die letzten zehn Sätze von ' + pm[pid].name, _ndFaktLauf(pid, s))};
 }
 function _ndFaktLauf(pid, s){
   const t = new Date(s.when).getTime();
