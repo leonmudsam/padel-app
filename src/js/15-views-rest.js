@@ -358,7 +358,7 @@ function vSettings(){
     ${gruppe('Länge des Satzes',
       sl('cfgGewEins','Satz bis 1 Game',c.eins,5,100,' %','','Gewicht eines Satzes, den der Sieger mit einem Game gewinnt.')
       + sl('cfgGewDrei','Satz bis 3 Games',c.drei,20,100,' %','','Satz bis 6 zählt voll, dazwischen nach der Länge.')
-      + sl('cfgGewUeber6','Je Game über 6',c.ueber6,0,30,' %','','7:5 und 7:6 bringen so viel mehr, höchstens 150 %.')
+      + sl('cfgGewUeber6','Je Game über 6',c.ueber6,0,50,' %','','7:5 und 7:6 dauern länger und bringen so viel mehr, höchstens 150 %.')
       + sl('cfgTbAusgleich','Ausgleich im Tiebreak',c.tb,0,100,' %','','So viel weniger verliert, wer einen Satz über 6 verliert.'))}
     ${gruppe('Ergebnis',
       sl('cfgWinBoost','Mehr für Siege',c.winBoost,100,140,' %','','Ein gewonnener Satz bringt mehr, als ein verlorener kostet.')

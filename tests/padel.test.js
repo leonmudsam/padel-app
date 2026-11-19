@@ -173,10 +173,40 @@ ok(J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:
 
 // ── Die Staffel der Liga und der Ausgleich im Tiebreak ───────────────
 const st = sets => Math.round(gw(sets) * 1000) / 10;
-ok(st([[1,0]]) === 17 && st([[2,0]]) === 33.5 && st([[3,1]]) === 50 && st([[6,0]]) === 100 && st([[6,4]]) === 100,
-  `Staffel nach der Länge: 1:0 17 %, bis 2 33,5 %, 3:x 50 %, 6:x 100 % (${st([[1,0]])}, ${st([[2,0]])}, ${st([[3,1]])}, ${st([[6,4]])})`);
-ok(st([[7,5]]) === 110 && st([[7,6]]) === 110 && st([[8,6]]) === 120 && st([[12,10]]) === 150,
-  `Über sechs: 7:5 und 7:6 110 %, 8:6 120 %, höchstens 150 % (${st([[7,5]])}, ${st([[8,6]])}, ${st([[12,10]])})`);
+ok(st([[1,0]]) === 10 && st([[2,0]]) === 25 && st([[3,1]]) === 40 && st([[5,4]]) === 80 && st([[6,0]]) === 100 && st([[6,4]]) === 100,
+  `Staffel nach der Spielzeit: 1:0 10 %, bis 2 25 %, 3:x 40 %, 5:x 80 %, 6:x 100 % (${st([[1,0]])}, ${st([[2,0]])}, ${st([[3,1]])}, ${st([[5,4]])}, ${st([[6,4]])})`);
+ok(st([[7,5]]) === 130 && st([[7,6]]) === 130 && st([[8,6]]) === 150 && st([[12,10]]) === 150,
+  `Über sechs: 7:5 und 7:6 130 %, ab 8:6 höchstens 150 % (${st([[7,5]])}, ${st([[8,6]])}, ${st([[12,10]])})`);
+// Eine Stunde mit langen Sätzen bringt so viel wie eine mit kurzen. Die
+// zwei Spieltage der Liga mit ihren Reglern, nur die Staffel aus dem Code:
+// am 11.11. zwanzig Sätze bis 2 in zwei Stunden, am 19.11. 7:6, 7:5 und
+// 6:1 in anderthalb. Mit der alten Staffel bekam der Sieger auf dem Platz
+// am zweiten 1,35 Elo je Minute, am ersten 2,27.
+const _stunde = J(`(()=>{const _m=matches,_p=players,_s=seasons,_c=cfg;
+  cfg={k_factor:40,start_elo:0,risk_split:0,pos_swing:0.1,win_boost:1.08,mov_max_boost:0.5,mov_loss_damp:0.5,match_bonus:0,
+    low_elo_loss_damp:0,exp_protect_max:0.1,underdog_elo_max:0.5,underdog_games_max:0.3,new_player_mult:1.5,
+    new_player_mid_mult:1.2,veteran_damp:0.5,tb_ausgleich:0.5};
+  players=['P1','P2','P3','P4','P5','P6','P7'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const A=(a1,a2,b1,b2,s,t,art)=>({a1,a2,b1,b2,s,t,art:art||'n'});
+  const l=[A('P6','P2','P7','P5',[1,2],'11T15:42'),A('P6','P2','P7','P5',[1,2],'11T15:58'),A('P6','P2','P7','P5',[2,0],'11T15:59'),
+    A('P6','P2','P7','P5',[1,2],'11T16:00'),A('P6','P2','P7','P5',[0,2],'11T16:01'),A('P6','P2','P1','P4',[0,2],'11T16:18'),
+    A('P6','P2','P1','P4',[0,2],'11T16:19'),A('P6','P2','P1','P4',[2,1],'11T16:20'),A('P7','P5','P1','P4',[0,2],'11T16:21'),
+    A('P7','P5','P1','P4',[2,1],'11T16:22'),A('P7','P5','P1','P4',[0,2],'11T16:23'),A('P7','P5','P1','P4',[2,1],'11T16:24'),
+    A('P7','P5','P1','P4',[1,2],'11T16:25'),A('P6','P2','P1','P4',[2,1],'11T16:37'),A('P6','P2','P7','P5',[2,1],'11T16:53'),
+    A('P6','P2','P1','P4',[0,2],'11T16:54'),A('P6','P2','P1','P4',[2,1],'11T16:55'),A('P6','P2','P1','P4',[2,1],'11T16:56'),
+    A('P5','P7','P1','P4',[0,2],'11T16:58'),A('P6','P2','P1','P4',[4,5],'11T17:27'),
+    A('P7','P5','P3','P4',[7,6],'19T18:46','tb'),A('P7','P5','P3','P4',[5,7],'19T18:47'),A('P7','P5','P3','P4',[1,6],'19T18:48')];
+  matches=l.map((x,i)=>Object.assign({id:'h'+i,a1:x.a1,a2:x.a2,b1:x.b1,b2:x.b2,a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    created_at:'2026-11-'+x.t+':00Z'},partieFelder([{a:x.s[0],b:x.s[1],art:x.art}])));
+  invalidateCache();
+  const h=simulateEloWithSliders(matches).history;
+  const sieger=(von,bis)=>{const v=h.slice(von,bis).flatMap(x=>Object.values(x.deltas).filter(d=>d>0));return v.reduce((a,b)=>a+b,0)/v.length;};
+  const r={kurz:sieger(0,20)/(120/20), lang:sieger(20,23)/(90/3)};
+  matches=_m;players=_p;seasons=_s;cfg=_c;invalidateCache();
+  return r;})()`);
+const _quote = _stunde.lang / _stunde.kurz;
+ok(_quote >= 0.8 && _quote <= 1.25,
+  `Eine Minute auf dem Platz bringt dem Sieger in langen Sätzen so viel wie in kurzen (${_stunde.lang.toFixed(2)} gegen ${_stunde.kurz.toFixed(2)} Elo je Minute, ${Math.round(_quote * 100)} %)`);
 const satzDelta = (a, b) => J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
   const m={id:'t',a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
     ...partieFelder([{a:${a},b:${b},art:satzArt([${a},${b}])}]),created_at:'2026-08-10T18:00:00Z'};
@@ -236,13 +266,13 @@ const ANSCHLUSS = (async () => {
 ok(J(`(()=>{const _m=matches,_p=players,_s=seasons;players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
   const mk=(i,a,b)=>({id:'k'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
     ...partieFelder([{a,b,art:'n'}]),created_at:new Date(Date.UTC(2026,7,10,16,i)).toISOString()});
-  matches=Array.from({length:6},(_,i)=>mk(i,2,1));invalidateCache();
+  matches=Array.from({length:8},(_,i)=>mk(i,2,1));invalidateCache();
   const kurz=simulateEloWithSliders(matches).saetzeSeason.p1;
   matches=Array.from({length:2},(_,i)=>mk(i,6,4));invalidateCache();
   const lang=simulateEloWithSliders(matches).saetzeSeason.p1;
   matches=_m;players=_p;seasons=_s;invalidateCache();
-  return Math.abs(kurz-2.01)<0.02 && lang===2;})()`),
-  'Sechs Sätze bis 2 zählen für die Neulingsphase wie zwei volle Sätze');
+  return Math.abs(kurz-2)<0.01 && lang===2;})()`),
+  'Acht Sätze bis 2 zählen für die Neulingsphase wie zwei volle Sätze, ein Viertel je Satz');
 ok(J(`(()=>{const mk=(i,a,b)=>({id:'w'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
     ...partieFelder([{a,b,art:'n'}]),exp_a:.5,created_at:new Date(Date.UTC(2026,7,10,16,i)).toISOString()});
   const z=ms=>BADGES.find(b=>b.id==='repeat_score').count('p1',ms);

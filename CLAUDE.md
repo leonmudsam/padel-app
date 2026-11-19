@@ -29,8 +29,10 @@ direkt hintereinander am selben Tag (`begegnungVon`), gewertet nur an
 ihrem letzten Satz (`begegnungAm`). Alles, was ein Ergebnis liest, fragt
 `03b-padel.js` [§1.3]. Jeder Spieler steht auf einer Seite: `drive`
 (rechts) oder `reves` (links); das Seitenprofil ersetzt Sturm/Abwehr
-[§C44]. Ein Satz wiegt nach den Games des Siegers (unter 6 nach der Länge, Games durch sechs: bis 2 ein Drittel, bis 3 die Hälfte; bis 6 voll,
-je Game darüber +10 %, `partieGewicht`) und nach der Deutlichkeit
+[§C44]. Ein Satz wiegt nach den Games des Siegers, gestaffelt nach der
+Spielzeit, damit eine Stunde mit langen Sätzen so viel bewegt wie eine mit
+kurzen (bis 1 ein Zehntel, bis 2 ein Viertel, bis 3 40 %; bis 6 voll,
+je Game darüber +30 %, höchstens 150 %, `partieGewicht`) und nach der Deutlichkeit
 (`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
 spielt etwa fünf Tage im Monat, ein Spieler kommt an einem Tag auf sechs
 bis zehn Sätze — alle Schwellen (Mindestzahlen, Serien, Fenster) sind

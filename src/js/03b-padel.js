@@ -184,26 +184,33 @@ function satzErgebnisse(m){
 // hier der Weg bis zum Sieg, nicht wie knapp es war: gezählt werden nur die
 // Games, die der Sieger gewinnen musste. Zählten die des Gegners mit, brächte
 // ein 6:4 mehr als ein 6:0, und ein knapper Satz würde belohnt.
-// Die Staffel hat die Liga vorgegeben: ein Satz bis 6 ist das volle Gewicht,
-// gleich wie er ausging; darunter wiegt er nach seiner Länge, Games des
-// Siegers durch sechs (bis 1 rund 17 %, bis 2 ein Drittel, bis 3 die
-// Hälfte). Zwei Stunden mit kurzen Sätzen sollen so viel bewegen wie zwei
-// Stunden mit langen: am ersten Spieltag (Sätze bis 2) wog jeder kurze Satz
-// 62,5 %, und ein Spieler kam an einem Nachmittag auf rund acht volle Sätze
-// Elo statt drei, vier. Geht
-// ein Satz über 6 hinaus (7:5, 7:6, 8:6), wird er länger, und jedes Game
-// darüber bringt zehn Prozent mehr; bei 150 % ist Schluss, damit ein
-// vertipptes 16:14 nicht das Dreifache eines Satzes bewegt. Ein
-// Match-Tiebreak zählt wie ein Satz bis 2. Wie deutlich es war, sagt die
-// MoV (`movMult`).
+// Ein Satz bis 6 ist das volle Gewicht, gleich wie er ausging. Die Staffel
+// folgt der Spielzeit: eine Stunde mit langen Sätzen soll so viel bewegen
+// wie eine mit kurzen. Ein Satz bis 2 dauert rund ein Viertel eines Satzes
+// bis 6, einer bis 3 rund zwei Fünftel (bis 1 ein Zehntel, bis 2 ein
+// Viertel, bis 3 40 %, dazwischen nach der Länge). Geht ein Satz über 6
+// hinaus (7:5, 7:6, 8:6), sind die Games eng, oft mit Einstand und
+// Tiebreak, und er dauert rund ein Drittel länger: jedes Game darüber
+// bringt dreißig Prozent mehr; bei 150 % ist Schluss, damit ein vertipptes
+// 16:14 nicht das Dreifache eines Satzes bewegt.
+// Vorher wog ein Satz die Games des Siegers durch sechs (bis 2 ein Drittel,
+// bis 3 die Hälfte) und jedes Game über 6 zehn Prozent. Nachgerechnet an
+// den Spieltagen der Liga: am 11.11. zwanzig Sätze bis 2 in zwei Stunden,
+// am 19.11. drei Sätze (7:6, 7:5, 6:1) in anderthalb — der Sieger bekam auf
+// dem Platz am zweiten 1,35 Elo je Minute statt 2,27, und jeder Spieler
+// bewegte 64 statt 85 Elo je Stunde. Mit dieser Staffel und einem höheren
+// Tempo bringen kurze Sätze fast dasselbe wie vorher und lange gleich viel
+// je Minute (`tests/padel`). Ein Match-Tiebreak zählt wie ein Satz bis 2.
+// Wie deutlich es war, sagt die MoV (`movMult`).
 // Gerechnet wird je Satz (`partieTeile`): die Gruppe trägt mal jeden Satz
 // einzeln ein, mal drei Sätze als eine Partie, und beides soll dieselbe Elo
 // geben. Vorher wog die ganze Partie nach ihren Games zusammen, und ein
 // 2:1 brachte dem Sieger alles und dem Verlierer nichts für seinen Satz.
 // Die drei Stufen stehen als Regler in den Einstellungen (`gewicht_eins`,
-// `gewicht_drei`, `gewicht_ueber6`); hier die Werte, die die Liga vorgab.
-const GEWICHT_STUETZEN_STANDARD = {eins:0.17, drei:0.5};
-const GEWICHT_JE_GAME_UEBER_6 = 0.1;
+// `gewicht_drei`, `gewicht_ueber6`) und gelten, sobald die Liga sie
+// gespeichert hat; hier die Werte für eine Liga, die noch keine hat.
+const GEWICHT_STUETZEN_STANDARD = {eins:0.10, drei:0.40};
+const GEWICHT_JE_GAME_UEBER_6 = 0.3;
 const GEWICHT_MAX = 1.5;
 const GEWICHT_MTB_GAMES = 2;
 function satzGewichtNachGames(g){
