@@ -6747,7 +6747,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.19.13120cdc';
+const BUILD_VERSION='2026.11.19.9840a28e';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -10886,7 +10886,22 @@ const AVATAR_OPTIONS = [
   {id:'mosquito',      em:'🦟'}, {id:'beer',      em:'🍺'}, {id:'sloth',   em:'🦥'},
   {id:'hedgehog', em:'🦔'}, {id:'swan',      em:'🦢'}, {id:'butterfly',em:'🦋'},
   {id:'scorpion', em:'🦂'}, {id:'burner',    em:'👨🏼‍🏭'}, {id:'snake',   em:'🐍'},
-  {id:'lizard',   em:'🦎'}, {id:'gorilla',   em:'🦍'}, 
+  {id:'lizard',   em:'🦎'}, {id:'gorilla',   em:'🦍'},
+  {id:'tennisball', em:'🎾'}, {id:'flex',     em:'💪'}, {id:'robotarm', em:'🦾'},
+  {id:'sunglasses', em:'😎'}, {id:'cowboy',   em:'🤠'}, {id:'disguise', em:'🥸'},
+  {id:'nerd',       em:'🤓'}, {id:'mindblown',em:'🤯'}, {id:'hot',      em:'🥵'},
+  {id:'sleep',      em:'😴'}, {id:'ghost',    em:'👻'}, {id:'skull',    em:'💀'},
+  {id:'robot',      em:'🤖'}, {id:'vampire',  em:'🧛'}, {id:'mermaid',  em:'🧜‍♀️'},
+  {id:'superhero',  em:'🦸'}, {id:'astronaut',em:'👨‍🚀'}, {id:'pirate',   em:'🏴‍☠️'},
+  {id:'genie',      em:'🧞'}, {id:'fox',      em:'🦊'}, {id:'bear',     em:'🐻'},
+  {id:'koala',      em:'🐨'}, {id:'tiger',    em:'🐯'}, {id:'octopus',  em:'🐙'},
+  {id:'trex',       em:'🦖'}, {id:'penguin',  em:'🐧'}, {id:'flamingo', em:'🦩'},
+  {id:'bee',        em:'🐝'}, {id:'seal',     em:'🦭'}, {id:'crocodile',em:'🐊'},
+  {id:'turtle',     em:'🐢'}, {id:'parrot',   em:'🦜'}, {id:'whale',    em:'🐳'},
+  {id:'taco',       em:'🌮'}, {id:'pizza',    em:'🍕'}, {id:'pretzel',  em:'🥨'},
+  {id:'chili',      em:'🌶️'}, {id:'avocado',  em:'🥑'}, {id:'rocket',   em:'🚀'},
+  {id:'diamond',    em:'💎'}, {id:'discoball',em:'🪩'}, {id:'guitar',   em:'🎸'},
+  {id:'ufo',        em:'🛸'}, {id:'cactus',   em:'🌵'}, {id:'volcano',  em:'🌋'},
 ];
 
 function avatarEmoji(avId){const a=AVATAR_OPTIONS.find(x=>x.id===avId);return a?a.em:null;}

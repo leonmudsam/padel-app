@@ -542,6 +542,15 @@ ok(/^Ohne gemeinsamen Sieg seit \d\d:\d\d Uhr\.$/.test(_feed.pleite) && _feed.ki
 ok(_feed.alt === 'true,true,true,false',
   'Gespeicherte Runden fester Teams und Wochenkarten mit einem Spieltag treten zurück, eine Runde mit wechselnden Partnern bleibt');
 
+// ── Die Profilbilder ─────────────────────────────────────────────────
+// 99 Bilder und die Initialen füllen die Auswahl in zwanzig Reihen zu fünf.
+// Die ID steht in der Liga; was ein Spieler trägt, darf nie wegfallen.
+const _bilder = J(`({n:AVATAR_OPTIONS.length, ids:new Set(AVATAR_OPTIONS.map(x=>x.id)).size, em:new Set(AVATAR_OPTIONS.map(x=>x.em)).size,
+  liga:['eye','alien','butterfly','eggplant','twoface','beer','frog','hedgehog'].every(id=>avatarEmoji(id)),
+  ohne:AVATAR_OPTIONS.filter(x=>/🔥|⭐|👑/.test(x.em)).length})`);
+ok(_bilder.n === 99 && _bilder.ids === 99 && _bilder.em === 99 && _bilder.liga && _bilder.ohne === 0,
+  `99 Profilbilder, jedes mit eigener ID und eigenem Zeichen, jedes Bild der Liga bleibt, keins mit Feuer, Stern oder Krone (${_bilder.n})`);
+
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
   hinweiseWeg().add('Probe');const b=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');

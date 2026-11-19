@@ -4,7 +4,11 @@
 const AV_COLORS=['#E4F24A','#ff7849','#56b4e8','#f7cf4a','#a78bfa','#4ade80','#f0566a','#22d3ee','#fb923c','#e879f9'];
 function avColor(id){let h=0;for(let i=0;i<id.length;i++)h=id.charCodeAt(i)+((h<<5)-h);return AV_COLORS[Math.abs(h)%AV_COLORS.length];}
 
-// 54 Avatar-Optionen (29 Originale + 25 Neue)
+// Die Profilbilder, die ein Spieler wählen kann. Die ID steht in der Liga
+// (`players.avatar_id`), deshalb fällt keine weg und keine ändert ihre
+// Bedeutung; neue kommen hinten dazu. 99 Bilder und die Initialen füllen die
+// Auswahl in zwanzig Reihen zu fünf. Feuer, Stern und Krone fehlen mit
+// Absicht: am Avatar heißen sie Serie und Titel [§C26].
 const AVATAR_OPTIONS = [
   // Originale 29
   {id:'wolf',     em:'🐺'}, {id:'smiletear', em:'🥲'}, {id:'cloud',   em:'😶‍🌫️'},
@@ -17,7 +21,7 @@ const AVATAR_OPTIONS = [
   {id:'unicorn',  em:'🦄'}, {id:'shark',     em:'🦈'}, {id:'eagle',   em:'🦅'},
   {id:'tropicaldrink',    em:'🍹'}, {id:'xray',      em:'🩻'}, {id:'cigarette',em:'🚬'},
   {id:'moai',     em:'🗿'}, {id:'owl',       em:'🦉'},
-  // 29 Neue Avatar-Optionen
+  // Die zweite Reihe
   {id:'twoface',   em:'🎭'}, {id:'bat',     em:'🦇'}, {id:'champagne',   em:'🍾'},
   {id:'juggle',   em:'🤹🏼‍♂️'}, {id:'biohazard',     em:'☣️'}, {id:'devil',   em:'😈'},
   {id:'ogre',     em:'👹'}, {id:'goblin',    em:'👺'}, {id:'dragon',  em:'🐉'},
@@ -26,7 +30,23 @@ const AVATAR_OPTIONS = [
   {id:'mosquito',      em:'🦟'}, {id:'beer',      em:'🍺'}, {id:'sloth',   em:'🦥'},
   {id:'hedgehog', em:'🦔'}, {id:'swan',      em:'🦢'}, {id:'butterfly',em:'🦋'},
   {id:'scorpion', em:'🦂'}, {id:'burner',    em:'👨🏼‍🏭'}, {id:'snake',   em:'🐍'},
-  {id:'lizard',   em:'🦎'}, {id:'gorilla',   em:'🦍'}, 
+  {id:'lizard',   em:'🦎'}, {id:'gorilla',   em:'🦍'},
+  // Die dritte Reihe: Padel, Gesichter, Gestalten, Tiere, Essen, Dinge
+  {id:'tennisball', em:'🎾'}, {id:'flex',     em:'💪'}, {id:'robotarm', em:'🦾'},
+  {id:'sunglasses', em:'😎'}, {id:'cowboy',   em:'🤠'}, {id:'disguise', em:'🥸'},
+  {id:'nerd',       em:'🤓'}, {id:'mindblown',em:'🤯'}, {id:'hot',      em:'🥵'},
+  {id:'sleep',      em:'😴'}, {id:'ghost',    em:'👻'}, {id:'skull',    em:'💀'},
+  {id:'robot',      em:'🤖'}, {id:'vampire',  em:'🧛'}, {id:'mermaid',  em:'🧜‍♀️'},
+  {id:'superhero',  em:'🦸'}, {id:'astronaut',em:'👨‍🚀'}, {id:'pirate',   em:'🏴‍☠️'},
+  {id:'genie',      em:'🧞'}, {id:'fox',      em:'🦊'}, {id:'bear',     em:'🐻'},
+  {id:'koala',      em:'🐨'}, {id:'tiger',    em:'🐯'}, {id:'octopus',  em:'🐙'},
+  {id:'trex',       em:'🦖'}, {id:'penguin',  em:'🐧'}, {id:'flamingo', em:'🦩'},
+  {id:'bee',        em:'🐝'}, {id:'seal',     em:'🦭'}, {id:'crocodile',em:'🐊'},
+  {id:'turtle',     em:'🐢'}, {id:'parrot',   em:'🦜'}, {id:'whale',    em:'🐳'},
+  {id:'taco',       em:'🌮'}, {id:'pizza',    em:'🍕'}, {id:'pretzel',  em:'🥨'},
+  {id:'chili',      em:'🌶️'}, {id:'avocado',  em:'🥑'}, {id:'rocket',   em:'🚀'},
+  {id:'diamond',    em:'💎'}, {id:'discoball',em:'🪩'}, {id:'guitar',   em:'🎸'},
+  {id:'ufo',        em:'🛸'}, {id:'cactus',   em:'🌵'}, {id:'volcano',  em:'🌋'},
 ];
 
 function avatarEmoji(avId){const a=AVATAR_OPTIONS.find(x=>x.id===avId);return a?a.em:null;}
