@@ -110,21 +110,27 @@ const RUNDE_PAUSE_MS = 30 * 60 * 1000;
 // beim Bauen der Story —, und eine Grenze, die zweimal blank dasteht, ändert
 // man einmal und hat dann zwei.
 const RUNDE_MIN = 3;
+// Die Verteilung nach Abstand in Games endet bei sechs: ein Satz endet
+// höchstens 6:0, und nur ein langer Satz kommt darüber. Sie hatte zehn
+// Säulen bis „10 und mehr", die Leiter der Kicker-Liga bis 10:0, und die
+// Säulen 7 bis 10 standen im Padel immer leer.
+const SP_ABSTAND_MAX = 6;
 const _spBasisMemo = new WeakMap();
 function _spBasis(){
   let b = _spBasisMemo.get(matches);
   if(b) return b;
   const chrono = (matches || []).slice().sort((a, b) => mts(a) - mts(b));
   const idx = new Map(chrono.map((m, i) => [m.id, i]));
-  // kum[d][i]: Partien mit d Toren Abstand unter den ersten i der Liga.
-  const kum = Array.from({length:11}, () => new Int32Array(chrono.length + 1));
+  // kum[d][i]: Sätze mit d Games Abstand unter den ersten i der Liga, der
+  // letzte Topf für alle ab `SP_ABSTAND_MAX`.
+  const kum = Array.from({length:SP_ABSTAND_MAX + 1}, () => new Int32Array(chrono.length + 1));
   const lauf = {}, best = {}, vor = new Map();
   let liga = 0, ligaWer = null;
   const bloecke = [];
   let r = null;
   chrono.forEach((m, i) => {
-    const d = Math.min(10, Math.abs(m.games_a - m.games_b));
-    for(let k = 0; k < 11; k++) kum[k][i + 1] = kum[k][i] + (k === d ? 1 : 0);
+    const d = Math.min(SP_ABSTAND_MAX, Math.abs(m.games_a - m.games_b));
+    for(let k = 0; k <= SP_ABSTAND_MAX; k++) kum[k][i + 1] = kum[k][i] + (k === d ? 1 : 0);
     const ids = [m.a1, m.a2, m.b1, m.b2];
     vor.set(m.id, {best:Object.fromEntries(ids.map(id => [id, best[id] || 0])), liga, ligaWer});
     ids.forEach(id => {
@@ -350,15 +356,16 @@ function _spNervenBild(d){
 }
 
 // ── Die Verteilung: der klare Sieg ───────────────────────────────────
-// „Zuletzt so deutlich am …" sagte, wann; nicht, wie selten. Zehn Säulen,
-// eine je Abstand in Games von 1 bis 10 und mehr, gezählt über die Liga bis
-// zu dieser Partie — diese hell, die deutlicheren leiser dahinter. Gelesen aus der
-// Präfixsumme: eine Karte kostet elf Zugriffe, nicht einen Lauf.
+// „Zuletzt so deutlich am …" sagte, wann; nicht, wie selten. Eine Säule je
+// Abstand in Games von 1 bis `SP_ABSTAND_MAX` und mehr, gezählt über die
+// Liga bis zu diesem Satz — dieser hell, die deutlicheren leiser dahinter.
+// Gelesen aus der Präfixsumme: eine Karte kostet sieben Zugriffe, nicht
+// einen Lauf.
 function _spVerteilungDaten(a){
-  const m = a.m, b = _spBasis(), i = b.idx.get(m.id) + 1, diff = Math.min(10, Math.abs(m.games_a - m.games_b));
+  const m = a.m, b = _spBasis(), i = b.idx.get(m.id) + 1, diff = Math.min(SP_ABSTAND_MAX, Math.abs(m.games_a - m.games_b));
   const n = b.kum.map(k => k[i]);
   let so = 0;
-  for(let k = diff; k <= 10; k++) so += n[k];
+  for(let k = diff; k <= SP_ABSTAND_MAX; k++) so += n[k];
   let zuletzt = null;
   for(let j = i - 2; j >= 0; j--){
     const x = b.chrono[j];
@@ -366,15 +373,23 @@ function _spVerteilungDaten(a){
   }
   return {n, diff, gesamt:i, so, zuletzt};
 }
+// Eine Reihe mit mehr Töpfen (elf, wie sie die Kicker-Liga zählte) legt
+// alles ab `SP_ABSTAND_MAX` in den letzten.
+const _spAbstandTopf = n => {
+  const t = Array.from({length:SP_ABSTAND_MAX + 1}, (_, k) => n[k] || 0);
+  for(let k = SP_ABSTAND_MAX + 1; k < n.length; k++) t[SP_ABSTAND_MAX] += n[k] || 0;
+  return t;
+};
 function _spVerteilungBild(d){
-  const max = Math.max(1, ...d.n.slice(1));
+  const n = _spAbstandTopf(d.n), diff = Math.min(SP_ABSTAND_MAX, d.diff);
+  const max = Math.max(1, ...n.slice(1));
   const saeulen = [];
-  for(let k = 1; k <= 10; k++){
-    saeulen.push(`<span class="sp-vt-s${k === d.diff ? ' jetzt' : k > d.diff ? ' mehr' : ''}" style="--i:${k}">`
-      + `<i style="height:${(d.n[k] / max * 100).toFixed(0)}%"></i><em>${k}${k === 10 ? '+' : ''}</em></span>`);
+  for(let k = 1; k <= SP_ABSTAND_MAX; k++){
+    saeulen.push(`<span class="sp-vt-s${k === diff ? ' jetzt' : k > diff ? ' mehr' : ''}" style="--i:${k}">`
+      + `<i style="height:${(n[k] / max * 100).toFixed(0)}%"></i><em>${k}${k === SP_ABSTAND_MAX ? '+' : ''}</em></span>`);
   }
   return `<div class="sp-vt"><div class="sp-k">Alle ${_spZahl(d.gesamt)} Sätze nach Abstand in Games</div>
-    <div class="sp-vt-g">${saeulen.join('')}</div>`
+    <div class="sp-vt-g" style="--n:${SP_ABSTAND_MAX}">${saeulen.join('')}</div>`
     // Auf der Karte steht der Satz als Zeile über dem Fuß („96 von 626
     // Partien der Liga endeten so deutlich"), darunter stand er ein zweites Mal.
     + (d.nurAnlass ? '' : `<div class="sp-vt-f"><b class="num">${_spZahl(d.so)}</b> von ${_spZahl(d.gesamt)} Sätzen so deutlich oder deutlicher`
@@ -817,7 +832,7 @@ function _spTagBild(d){
 // davon.
 //
 // IN JEDER FORM STEHT DER STAND (`_spSt`), und zwar dort, wo er zur
-// Zeichnung gehört — im Feld des Mosaiks, unter der Nadel, als Ende des
+// Zeichnung gehört — unter der Nadel, als Ende des
 // Kalenders. Wer den Feed überfliegt, will wissen, welche Partie es war;
 // beim Tagesring stand er zuerst nur im Satz.
 //
@@ -957,28 +972,8 @@ const SP_TAG_STUFEN = new Set([4, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50]);
 const _spMarke = n => n >= 50 && n % 50 === 0;
 const _spNl = ids => _namenListe(ids.map(_spName));
 
-// Strengere V2-Befunde fuer Grafiken, die sonst fast jede normale Partie
-// erklaeren koennten. Die historischen 13 Formen behalten ihre Regeln;
-// neue Score-Snapshots verwenden diese belastbareren Anlaesse.
-// Im Padel nicht im Gebrauch: das Mosaik zählte die Endstände 10:0 bis
-// 10:9, und ein Satzergebnis hat keine solche feste Leiter.
-function _spMosaikBefund(F){
-  return null;
-  const gesamt = F.vert.slice(1).reduce((s, n) => s + n, 0);
-  if(gesamt < 30) return null;
-  const n = F.vert[F.diff] || 0, max = Math.max(...F.vert.slice(1, 10));
-  const selten = n <= Math.max(2, Math.floor(gesamt * 0.04));
-  // Der Modalwert bleibt oft ueber viele Partien derselbe. Er ist nur bei
-  // jeder fuenften Bestaetigung neu erzaehlenswert; eine allgemeine runde
-  // Ergebnismarke erst in Zehnerschritten.
-  const haeufig = n === max && n / gesamt >= 0.18 && n >= 5 && n % 5 === 0;
-  const marke = n >= 10 && n % 10 === 0;
-  return selten || haeufig || marke
-    ? {grund:selten ? 'selten' : (haeufig ? 'haeufig' : 'marke')} : null;
-}
-
 // ── Die vier eines Kopfs nach dem Katalog ───────────────────────────
-// Die Sieger links, je Paar die Abwehr zuerst: so steht jeder in jedem Kopf
+// Die Sieger links, je Paar der Revés zuerst: so steht jeder in jedem Kopf
 // an derselben Stelle. Dazu das Elo, das die Partie jedem brachte — die zwei
 // Sieger bekommen selten dasselbe, und ein Schnitt „Elo je Sieger" stimmte
 // für keinen von beiden.
@@ -1003,9 +998,10 @@ function _spImMonat(F, art){
 }
 // ── Was eine gewöhnliche Partie sagt, das ihr Kopf nicht zeigt ─────────
 // Kopf und Teamzeile zeigen schon, wer gegen wen wie hoch gewann, mit
-// welcher Elo und Chance. „Maxi und Johannes gewinnen mit 2 Toren
-// Abstand" über zehn und acht Pucks, darunter „Leon und Stefan treffen
-// 8-mal" und im Fuß noch einmal 10:8 — dieselbe Zahl viermal. Die
+// welcher Elo und Chance. In der Kicker-Liga stand „Maxi und Johannes
+// gewinnen mit 2 Toren Abstand" über zehn und acht Pucks, darunter „Leon
+// und Stefan treffen 8-mal" und im Fuß noch einmal 10:8 — dieselbe Zahl
+// viermal. Die
 // Schlagzeile nennt deshalb etwas aus der Geschichte dieser Leute: das
 // Duell dieser zwei Duos, die gemeinsamen Siege, den Tag eines Siegers.
 // Welche, entscheidet die Partie selbst (`_spVisualHash`), damit nicht
@@ -1043,24 +1039,6 @@ const _spZuNull = x => partie(x).zuNull;
 // Bild braucht — nur Zahlen und IDs, damit `tests/blatt` jedes Bild auch
 // mit Grenzwerten zeichnen kann [§11.6c].
 const SP_FORM = {
-  // Das Mosaik: wie gewöhnlich dieses Ergebnis ist, je Abstand in Games ein
-  // Feld, jedes so hell, wie oft die Liga bis hier so endete.
-  mosaik:{rang:12, ic:'chartBar',
-    wann:() => null,
-    gewicht:x => x.grund === 'selten' ? 28 : (x.grund === 'haeufig' ? 22 : 18),
-    daten:(F, x) => ({W:F.W, L:F.L, hoch:F.hoch, tief:F.tief, diff:F.diff,
-      n:F.vert.slice(), mal:F.vert[F.diff], grund:x.grund,
-      gesamt:F.vert.slice(1).reduce((s, n) => s + n, 0)}),
-    text:(F, x) => {
-      const eig = _spEigene(F.W[0], F.m).filter(x => _spGew(x, F.W[0]) && Math.abs(x.games_a - x.games_b) === F.diff).length;
-      if(!x.grund) return {t:`${_spNl(F.W)} gewinnen das ${F.vert[F.diff]}. ${F.satz} der Liga`,
-        d:`Für ${_spName(F.W[0])} ist es der ${eig}. Sieg mit diesem Ergebnis.`};
-      const art = x.grund === 'selten' ? 'seltenen' : 'häufigsten';
-      return {t:x.grund === 'marke'
-          ? `${_spNl(F.W)} gewinnen das ${F.vert[F.diff]}. ${F.satz} der Liga`
-          : `${_spNl(F.W)} landen beim ${art} Ergebnis der Liga`,
-        d:`Für ${_spName(F.W[0])} ist es der ${eig}. Sieg mit diesem Ergebnis.`};
-    }},
   // Pflicht erfüllt: der Favorit gewinnt, und die Nadel zeigt, wie sicher
   // es vorher aussah.
   tacho:{rang:20, ic:'target',
@@ -1301,12 +1279,6 @@ const SP_FORM = {
     wann:() => ({}),
     daten:F => _spKopfDaten(F),
     text:F => _spKontext(F)},
-  // Die Pucks zählten Tore bis zehn; ein Padel-Ergebnis hat keine solche
-  // Leiter, die Form wird nicht mehr gewählt.
-  pucks:{rang:10, ic:'padelBall', v2:true,
-    wann:() => null,
-    daten:F => _spKopfDaten(F),
-    text:F => _spKontext(F)},
 
   // Der Elo-Pegel (`_spStromBild`): was der Satz jedem brachte, als Säule an
   // einer Nulllinie. Der Schlüssel heißt nach dem Strom, den er ersetzt.
@@ -1420,19 +1392,6 @@ function _spFormBild(m){
 
 // ── Die Bilder der Formen ────────────────────────────────────────────
 // Jedes zeichnet nur, was `daten` ihm gibt [§11.6c].
-function _spMosaikBild(d){
-  const sum = d.n.reduce((s, v) => s + v, 0) || 1, max = Math.max(1, ...d.n.slice(1));
-  const feld = k => `<div class="sp-mo-k${k === d.diff ? ' jetzt' : ''}" style="--a:${(d.n[k] / max).toFixed(2)};--i:${10 - k}">`
-    + (k === d.diff ? _spSt(d) : `<b class="num">10:${10 - k}</b>`) + `<span class="num">${_spZahl(Math.round(d.n[k] / sum * 100))} %</span></div>`;
-  const label = d.grund === 'selten' ? 'SELTENER AUSGANG'
-    : (d.grund === 'haeufig' ? 'HÄUFIGSTER AUSGANG' : 'RUNDE ZAHL');
-  const beleg = d.grund === 'marke'
-    ? `${_spZahl(d.mal)}. Satz mit diesem Ergebnis`
-    : `${_spZahl(d.mal)} von ${_spZahl(d.gesamt || sum)} Sätzen`;
-  return `<div class="sp-fk sp-mo"><div class="sp-mo-g">${Array.from({length:10}, (_, i) => feld(10 - i)).join('')}</div>`
-    + (d.grund ? `<div class="sp-mo-a"><b>${label}</b><span>${beleg}</span></div>` : '')
-    + _spNz(d.W, d.L) + `</div>`;
-}
 function _spTachoBild(d){
   const a = p => { const w = (p / 100 * 180 - 180) * Math.PI / 180; return [50 + 40 * Math.cos(w), 50 + 40 * Math.sin(w)]; };
   const [x1, y1] = a(d.pct);
@@ -1534,7 +1493,7 @@ function _spZaehlwerkBild(d){
   // zehn Ziffern hinter overflow:hidden ist für jede Messung abgeschnittener Text,
   // und ohne Bewegung braucht es niemand.
   const rolle = c => `<span class="sp-zw-r" style="--z:${c}"><b>${c}</b></span>`;
-  return `<div class="sp-fk sp-zw">${d.wer ? _spWappen(d.wer, 48) : `<span class="sp-zw-l">${svgI('ball')}</span>`}
+  return `<div class="sp-fk sp-zw">${d.wer ? _spWappen(d.wer, 48) : `<span class="sp-zw-l">${svgI('padelBall')}</span>`}
     <div class="sp-zw-m"><span class="sp-zw-w num">${z.map(rolle).join('')}</span>
       <span class="sp-zw-u">${(SP_MEHRZAHL[einheit] || einheit) + (!d.nurAnlass && d.wer && _spPasst([d.wer], 12, true) ? ` von ${esc(_spName(d.wer))}` : '')}</span></div>
     ${d.nurAnlass ? '' : `<div class="sp-zw-s">${_spSt(d)}</div>`}</div>`
@@ -1847,8 +1806,8 @@ function _spHochBild(d){
 // ── Die Köpfe des Katalogs ──────────────────────────────────────────
 // Jeder zeigt den Endstand und alle vier Gesichter, die Sieger links, und
 // endet mit der Namenszeile (`_spNz`). Der Stand ist `_spSt`, wo er neben
-// der Zeichnung steht; bei Klapptafel, Pucks und Tor ist er die Zeichnung
-// selbst, die Siegerzahl zuerst. Ein eigener Stand für Strom und Herzschlag
+// der Zeichnung steht; bei der Klapptafel ist er die Zeichnung selbst, die
+// Siegerzahl zuerst. Ein eigener Stand für Strom und Herzschlag
 // sah fast aus wie `_spSt` und war doch ein zweites Bauteil [§C27]. Sie nehmen nur die Daten aus
 // `_spKopfDaten` und zeichnen ohne Rechnung.
 const _spKopfPaar = ids => `<span class="sp-kp">${ids.map(_spChip).join('')}</span>`;
@@ -1859,15 +1818,6 @@ function _spAnzeigeBild(d){
     + `<span class="sp-ag-k w"><b>${_spZahl(d.hoch)}</b></span><i></i><span class="sp-ag-k"><b>${_spZahl(d.tief)}</b></span></div>`
     + (d.pct != null ? `<small class="sp-ag-c num">Chance vorher ${_spZahl(d.pct)} %</small>` : '')
     + `</div>${seite(d.L, false)}</div>` + _spNz(d.W, d.L);
-}
-function _spPucksBild(d){
-  // Bis zehn Tore ein Puck je Tor; darüber hinaus (eine Verlängerung, ein
-  // anderes Ziel) zählt die Zahl allein.
-  const n = Math.max(10, d.hoch);
-  const reihe = (k, w) => k > 10 ? '' : Array.from({length:10}, (_, i) => `<i class="${i < k ? (w ? 'w' : 'l') : ''}"></i>`).join('');
-  const z = (ids, k, w) => `<div class="sp-pu-z${w ? ' w' : ''}">${_spKopfPaar(ids)}<span class="sp-pu-r">${reihe(k, w)}`
-    + (!w && n === 10 ? `<u style="--von:${k}"></u>` : '') + `</span><b class="num">${_spZahl(k)}</b></div>`;
-  return `<div class="sp-fk sp-pu">${z(d.W, d.hoch, true)}${z(d.L, d.tief, false)}</div>` + _spNz(d.W, d.L);
 }
 // ── Der Elo-Pegel: was der Satz jedem brachte ─────────────────────────
 // Unter jedem Gesicht eine Säule an einer gemeinsamen Nulllinie, so hoch wie
@@ -1960,12 +1910,12 @@ function _spZunullBild(d){
     + `</div>` + _spNz(d.W, d.L);
 }
 
-const SP_FORM_BILD = {mosaik:_spMosaikBild, tacho:_spTachoBild, streu:_spStreuBild, transfer:_spTransferBild,
+const SP_FORM_BILD = {tacho:_spTachoBild, streu:_spStreuBild, transfer:_spTransferBild,
   chemie:_spChemieBild, gegner:_spGegnerBild, revanche:_spRevancheBild, gipfel:_spGipfelBild,
   rueckkehr:_spRueckkehrBild, gefaelle:_spGefaelleBild, tagesring:_spTagesringBild, zaehlwerk:_spZaehlwerkBild,
   tauziehen:_spTauziehenBild, muenze:_spMuenzeBild, weste:_spWesteBild,
   uhr:_spUhrBild, ueberholt:_spUeberholtBild, duoserie:_spDuoserieBild, hoch:_spHochBild,
-  feld:_spFeldBild, tafel:_spAnzeigeBild, pucks:_spPucksBild, strom:_spStromBild, balken:_spBalkenBild,
+  feld:_spFeldBild, tafel:_spAnzeigeBild, strom:_spStromBild, balken:_spBalkenBild,
   herz:_spHerzBild, zunull:_spZunullBild};
 
 // ── Kopf und Fuß je Anlass ───────────────────────────────────────────
@@ -2013,15 +1963,16 @@ function _spScoreSpezial(m){
   return null;
 }
 // Die Grundansichten des Katalogs in seiner Reihenfolge: drei für jede
-// Partie (Anzeigetafel, Elo-Pegel, Games-Balken), das Spielfeld, und sechs, die
-// eine Bedingung haben. Ob eine zutrifft, sagt ihre Form (`wann`); das
-// Mosaik nur mit einem benannten Befund (`_spMosaikBefund`).
-const SP_KOPF_GRUND = ['tafel', 'strom', 'balken', 'feld', 'tauziehen', 'tacho', 'muenze', 'gefaelle', 'mosaik', 'streu'];
+// Partie (Anzeigetafel, Elo-Pegel, Games-Balken), das Spielfeld, und fünf, die
+// eine Bedingung haben. Ob eine zutrifft, sagt ihre Form (`wann`). Das
+// Mosaik der Endstände 10:0 bis 10:9 und die Pucks, die Tore bis zehn
+// zählten, sind mit der Kicker-Liga gegangen.
+const SP_KOPF_GRUND = ['tafel', 'strom', 'balken', 'feld', 'tauziehen', 'tacho', 'muenze', 'gefaelle', 'streu'];
 function _spScoreKandidaten(m){
   const F = _spFakten(m);
   return SP_KOPF_GRUND.map(key => {
     let x = null;
-    try { x = key === 'mosaik' ? _spMosaikBefund(F) : SP_FORM[key].wann(F); } catch(e){ x = null; }
+    try { x = SP_FORM[key].wann(F); } catch(e){ x = null; }
     return x ? {key, x, rang:SP_FORM[key].rang} : null;
   }).filter(Boolean);
 }
@@ -2321,7 +2272,7 @@ function _spAnlassSnapshot(m, fakten, scoreKey){
 const SP_FUSS_FAMILIE = {kippt:'linie', plus:'linie', hoehe:'linie', monatsbest:'linie', halb:'linie',
   wende:'linie', hoch:'linie', woche:'rangliste', partner:'rangliste', spitze:'tabelle', rang:'tabelle',
   ueberholt:'tabelle', gipfel:'tabelle', serie:'serie', teamserie:'serie', duoserie:'serie',
-  duell:'duell', gegner:'duell', nerven:'statistik', verteilung:'statistik', mosaik:'statistik',
+  duell:'duell', gegner:'duell', nerven:'statistik', verteilung:'statistik',
   marken:'zahl', zaehlwerk:'zahl', tagesring:'tag', uhr:'tag'};
 // Der Fuß der unmittelbar vorigen Partie, veröffentlicht oder in diesem
 // Lauf gewählt; null, wenn sie keinen trug.

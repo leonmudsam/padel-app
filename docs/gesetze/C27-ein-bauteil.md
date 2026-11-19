@@ -326,7 +326,7 @@ dort ging es nur zum Duo weiter.
 `_ndChanceSkala`, `_ndEloWirkung`, `_ndDuelle`, `_ndTagLeiste`,
 `_ndVerteilung`). Oben steht die **Zeichnung der Karte als Bühne**: das
 Blatt zeigte einen nackten Stand und zwei Wappen mit „gewinnen diese
-Partie", und wer eine Karte wegen ihres Mosaiks öffnete, verlor das Bild.
+Partie", und wer eine Karte wegen ihres Bildes öffnete, verlor es.
 Darunter stehen Zeichnungen in fester Folge — die Aufstellung, die
 **Siegchance auf ihrer Skala** mit den drei Linien der Elo-Rechnung [§5.2]
 und dem Wort dazu, die **Elo-Wirkung je Spieler** als Ausschlag um die Null

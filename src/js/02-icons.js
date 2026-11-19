@@ -24,7 +24,6 @@ const ICONS = {
   star:      `<polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>`,
   medal:     `<circle cx="12" cy="15" r="6"/><path d="M9 9L7 3h10l-2 6"/>`,
   // Sport / Performance
-  ball:      `<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/>`,
   target:    `<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>`,
   flame:     `<g transform="translate(0 2.5)"><path d="M12 2s5 5 5 10a5 5 0 01-10 0c0-2 1-3 1-3s.5 2 2 2c-1-3 2-4 2-9z"/></g>`,
   bolt:      `<polygon points="13,2 4,14 11,14 9,22 20,10 13,10"/>`,
@@ -221,10 +220,6 @@ const ICONS = {
   // laeuft. Bewusst anders als `trendUp` (nur die Bahn) und `sollMinus` (das
   // Untersoll, dieselbe Frage andersherum) — hier ist die LINIE die Aussage.
   sollPlus:      `<path d="M3 18h18" stroke-dasharray="3 3"/><path d="M4 15l4-4 4 2 4-7 4 3"/>`,
-  // Stammplatz: eine Figur auf einem festen Platz, mit Lehne. Anders als
-  // `soloPath` (Figur mit leeren Plaetzen daneben) und `refresh` (der
-  // Wandler, der die Rolle tauscht): hier bewegt sich nichts.
-  roleFix:       `<circle cx="12" cy="6" r="2.6"/><path d="M7 20v-5a3 3 0 013-3h4a3 3 0 013 3v5"/><path d="M4 20h16"/>`,
   // Allrounder: zwei Haelften, beide gefuellt — vorne wie hinten ueber der
   // Erwartung. `switcher` fragt nach dem Gleichmass der Aufstellung, dieses
   // Zeichen nach der Leistung auf beiden Seiten.
@@ -362,7 +357,12 @@ const ICONS = {
   sirene:        `<g transform="translate(0 0.5)"><path d="M7 17v-5a5 5 0 0110 0v5"/><rect x="5" y="17" width="14" height="3.5" rx="1"/><path d="M12 2.5v2M4.3 5.8l1.4 1.4M19.7 5.8l-1.4 1.4M10 12a2 2 0 012-2"/></g>`,
   funkeln:       `<g transform="translate(0 0.5)"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18 14l.9 2.1 2.1.9-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></g>`,
   abzeichen:     `<path d="M12 2.5l8 4.6v9.8l-8 4.6-8-4.6V7.1z"/><path d="M12 8.2l1.2 2.4 2.6.4-1.9 1.8.5 2.6L12 14.2l-2.4 1.2.5-2.6-1.9-1.8 2.6-.4z"/>`,
-  spielfeld:     `<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.5"/><path d="M3 9.5h1.8v5H3M21 9.5h-1.8v5H21"/>`,
+  // Der Padel-Court quer, wie auf der Karte einer Partie (`SP_FELD_PLATZ`):
+  // das Netz in der Mitte mit seinen Pfosten über die Seiten hinaus, die
+  // Aufschlaglinien 6,95 m davor, die Mittellinie zwischen ihnen. Es war das
+  // Fußballfeld der Kicker-Liga mit Mittelkreis und Strafräumen, und es
+  // stand als Wasserzeichen auf jeder Karte vom Spieltag.
+  spielfeld:     `<rect x="2.5" y="7" width="19" height="10" rx="1"/><path d="M12 5.5v13M5.5 7v10M18.5 7v10M5.5 12h13"/>`,
 
   // ── Partie und Spieltag
   premiere:      `<circle cx="8" cy="12" r="2.6"/><circle cx="16" cy="12" r="2.6"/><path d="M3.2 21a4.8 4.8 0 019.6 0M11.2 21a4.8 4.8 0 019.6 0"/><path d="M12 2.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 4.3l2-.3z"/>`,
@@ -489,7 +489,12 @@ const ICONS = {
   bollwerk:       `<g transform="translate(0 -1.25)"><path d="M4 21.5V8h3V5h3v3h4V5h3v3h3v13.5z"/><path d="M10 21.5v-5a2 2 0 014 0v5"/></g>`,
   antwort:        `<g transform="translate(1.3 -1.2)"><path d="M4 7h9.5a5.5 5.5 0 010 11H8"/><path d="M11 15l-3 3 3 3"/><circle cx="4" cy="7" r="1.6" fill="currentColor"/></g>`,
   aufstehen:      `<path d="M3 21h18"/><circle cx="12" cy="5" r="2.4"/><path d="M12 8.5V16M8.5 12L12 8.5l3.5 3.5"/><path d="M8 21l4-4 4 4"/>`,
-  abwehrFenster:  `<rect x="5" y="3" width="14" height="18" rx="2" stroke-dasharray="2.4 2.2"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7z" fill="currentColor" fill-opacity=".3"/><path d="M5 12h14"/><circle cx="12" cy="16.5" r="2" fill="currentColor"/>`,
+  // Der halbe Court wie bei den Positionen, gestrichelt für das Fenster der
+  // letzten Sätze, die ganze Seite getönt: „Der Dauer-Revés" und „Der
+  // Dauer-Drive". Vorher die hintere Hälfte des Kickertischs (die Abwehr)
+  // und eine Figur auf ihrem Sockel (der Dauerstürmer) — beides keine Seite.
+  revesFenster:   `<rect x="5" y="4" width="14" height="16" rx="1.5" stroke-dasharray="2.4 2.2"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M12 4v16H6.5A1.5 1.5 0 015 18.5v-13A1.5 1.5 0 016.5 4z" fill="currentColor" fill-opacity=".3"/>`,
+  driveFenster:   `<rect x="5" y="4" width="14" height="16" rx="1.5" stroke-dasharray="2.4 2.2"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M12 4v16h5.5a1.5 1.5 0 001.5-1.5v-13A1.5 1.5 0 0017.5 4z" fill="currentColor" fill-opacity=".3"/>`,
   lieblingszahl:  `<path d="M9.5 3L7.5 21M16.5 3l-2 18M4 8.5h16.5M3.5 15.5h16.5"/>`,
   eiskalt:        `<g transform="translate(0.25 0.5)"><path d="M12 3v10M7.7 5.5l8.6 5M7.7 10.5l8.6-5"/><path d="M3 18.5l1.5 1.5 3-3M9.5 18.5l1.5 1.5 3-3M16 18.5l1.5 1.5 3-3"/></g>`,
   fehlstart:      `<g transform="translate(0 0.5)"><circle cx="12" cy="13" r="7.5"/><path d="M12 2.5v3M9.5 2.5h5"/><path d="M9.5 10.5l5 5M14.5 10.5l-5 5"/></g>`,
@@ -532,6 +537,7 @@ const ZEICHEN_ALT = {
   iceCube:'dropTriple',
   // Kicker-Zeichen, durch Padel-Zeichen ersetzt [§C41]
   sturmfuehrer:'driveVirtuose', shieldRank:'revesVirtuose', whistle:'padelBall',
+  ball:'padelBall', abwehrFenster:'revesFenster', roleFix:'driveFenster',
 };
 // Die Zeichnung zu einem Namen, auch zu einem alten. Jeder Zugriff auf den
 // Katalog geht hierüber — ein direktes `ICONS[name]` sähe die alten Namen

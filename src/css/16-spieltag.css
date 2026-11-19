@@ -114,7 +114,7 @@
 
 /* ── Die Verteilung ── */
 .sp-vt{padding:9px 13px 10px;border-top:1px solid var(--line)}
-.sp-vt-g{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;height:62px;margin:7px 0 4px;align-items:end}
+.sp-vt-g{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;height:62px;margin:7px 0 4px;align-items:end}
 .sp-vt-s{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;min-width:0}
 .sp-vt-s i{display:block;width:100%;min-height:2px;border-radius:3px 3px 1px 1px;background:var(--surface3)}
 .sp-vt-s.mehr i{background:rgba(182,193,207,.32)}
@@ -486,19 +486,6 @@
 .sp-ag-k b{position:relative;z-index:1;font:400 32px/1 'Archivo Black',sans-serif;color:var(--ink2)}
 .sp-ag-k.w b{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.5)}
 
-/* Torpucks: jedes Tor ein Puck, die fehlenden als leere Ringe. */
-.sp-pu{display:flex;flex-direction:column;gap:8px}
-.sp-pu .av{--av:24px;width:24px;height:24px;font-size:9px}
-.sp-pu-z{display:grid;grid-template-columns:auto minmax(0,1fr) 30px;align-items:center;gap:9px}
-.sp-pu-z:not(.w) .sp-kp{opacity:.78}
-.sp-pu-r{position:relative;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;align-items:center}
-.sp-pu-r i{aspect-ratio:1;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line2)}
-.sp-pu-r i.w{background:radial-gradient(circle at 35% 30%,#efffc2,var(--acid) 45%,#6f9a2c);box-shadow:0 0 7px rgba(228,242,74,.35)}
-.sp-pu-r i.l{background:radial-gradient(circle at 35% 30%,#ffc2ca,var(--red) 50%,#9b2c3f);opacity:.8}
-.sp-pu-r u{position:absolute;top:-4px;bottom:-4px;left:calc(var(--von) * 10% - 2px);right:-2px;border:1px dashed rgba(228,242,74,.35);border-radius:9px;pointer-events:none}
-.sp-pu-z b{font:400 22px/1 'Archivo Black',sans-serif;text-align:right;color:var(--ink2)}
-.sp-pu-z.w b{color:var(--acid)}
-
 /* Elo-Pegel: oben die vier Gesichter, je Paar nebeneinander, darunter je
    Gesicht eine Säule an einer gemeinsamen Nulllinie — nach oben grün, nach
    unten rot —, der Stand in der Mitte auf der Linie. Jedes Teil hat seine
@@ -616,9 +603,6 @@
 @media (prefers-reduced-motion:no-preference){
   .sp-ag-k b{animation:spKopfKlapp .55s cubic-bezier(.3,1.4,.5,1) both}
   .sp-ag-z .sp-ag-k + i + .sp-ag-k b{animation-delay:.12s}
-  .sp-pu-r i.w,.sp-pu-r i.l{animation:spKopfPuck .35s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--n, 0) * 30ms)}
-  .sp-pu-r i:nth-child(2){--n:1}.sp-pu-r i:nth-child(3){--n:2}.sp-pu-r i:nth-child(4){--n:3}.sp-pu-r i:nth-child(5){--n:4}
-  .sp-pu-r i:nth-child(6){--n:5}.sp-pu-r i:nth-child(7){--n:6}.sp-pu-r i:nth-child(8){--n:7}.sp-pu-r i:nth-child(9){--n:8}.sp-pu-r i:nth-child(10){--n:9}
   .sp-sm-s i{animation:spPegel .6s cubic-bezier(.3,0,.2,1) .15s both}
   .sp-sm-s b{animation:spDa .4s ease-out .5s both}
   .sp-zn-reihe.w .sp-zn-game{animation:spKopfTreffer .42s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i) * 70ms + .25s)}
@@ -765,20 +749,6 @@
 @keyframes spFussGleit{from{transform:translateX(calc(var(--d) * 100cqw / var(--n)))}}
 @keyframes spFussPraegen{from{transform:scale(.6);opacity:0}}
 @keyframes spFussGlanz{0%{opacity:0;background-position:100% 0}25%,75%{opacity:1}100%{opacity:0;background-position:0 0}}
-
-/* Das Mosaik: das Feld dieses Ergebnisses trägt den Stand. */
-.sp-mo-g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
-.sp-mo-k{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:38px;padding:4px 0;border-radius:7px;
-  background:rgba(194,201,208,calc(.04 + var(--a) * .16));box-shadow:inset 0 0 0 1px rgba(194,201,208,calc(.06 + var(--a) * .2))}
-.sp-mo-k > b{font:700 11px 'Sometype Mono',monospace;color:var(--ink2)}
-.sp-mo-k > span{font:600 8.5px 'Sometype Mono',monospace;color:var(--muted)}
-.sp-mo-k.jetzt{background:rgba(228,242,74,.14);box-shadow:inset 0 0 0 1.5px var(--acid)}
-.sp-mo-k.jetzt .sp-st{font-size:18px}
-.sp-mo-k.jetzt .sp-st em{color:var(--acid)}
-.sp-mo-a{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;
-  font:600 8.5px 'Sometype Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
-.sp-mo-a b{font-weight:700;color:var(--acid)}
-.sp-mo-a span{color:var(--muted);letter-spacing:0;text-transform:none;text-align:right}
 
 /* Pflicht erfüllt: der Tacho und daneben der Stand. */
 .sp-ta{display:grid;grid-template-columns:128px minmax(0,1fr);gap:10px;align-items:center}
@@ -1034,7 +1004,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 @keyframes spMuenze{0%{transform:translateY(0) rotateY(0)}40%{transform:translateY(-7px) rotateY(720deg)}
   75%{transform:translateY(0) rotateY(1260deg)}87%{transform:translateY(-2px) rotateY(1340deg)}100%{transform:translateY(0) rotateY(1440deg)}}
 @media (prefers-reduced-motion:no-preference){
-  .sp-mo-k,.sp-gp-z,.sp-gg-r i,.sp-zu-k i,.sp-ch-r circle,.sp-tr-r circle,.sp-uh-s line,.sp-ds-r i{animation:spDa .35s ease-out both;animation-delay:calc(var(--i,0) * 40ms)}
+  .sp-gp-z,.sp-gg-r i,.sp-zu-k i,.sp-ch-r circle,.sp-tr-r circle,.sp-uh-s line,.sp-ds-r i{animation:spDa .35s ease-out both;animation-delay:calc(var(--i,0) * 40ms)}
   .sp-tz-k{animation:spZug .7s cubic-bezier(.3,1.4,.5,1) .15s both}
   .sp-ta-n{animation:spNadel 1.1s cubic-bezier(.3,1.4,.5,1) .15s both}
   /* Geworfen, gedreht, gelandet — und dann liegt sie. */

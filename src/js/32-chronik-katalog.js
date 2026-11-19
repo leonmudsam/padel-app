@@ -1330,7 +1330,7 @@ const DISZIPLINEN = [
   // Anteil links in den letzten RF.rolle Partien. Auf einem Fenster, damit die
   // Marke den Halter wechseln kann: ueber eine ganze Laufbahn mittelt sich
   // jede Rolle heraus.
-  {id:'dauersturm', name:'Der Dauer-Drive', short:'Rechts fest', ic:'roleFix', tone:'orange', art:'ereignis',
+  {id:'dauersturm', name:'Der Dauer-Drive', short:'Rechts fest', ic:'driveFenster', tone:'orange', art:'ereignis',
     allzeit:{
       kammer:'form', basis:REKORD_GRUNDWERT.fuegung, offen:true, fenster:true,
       zeitraum:`Die letzten ${RF.rolle} Sätze`,
@@ -1341,7 +1341,7 @@ const DISZIPLINEN = [
       ev:(p,v) => `${Math.round(v*100)} % rechts · ${p.r50Atk} von ${p.r50N} Sätzen`
     }},
 
-  {id:'abwehrmauer', name:'Der Dauer-Revés', short:'Links fest', ic:'abwehrFenster', tone:'blue', art:'ereignis',
+  {id:'abwehrmauer', name:'Der Dauer-Revés', short:'Links fest', ic:'revesFenster', tone:'blue', art:'ereignis',
     allzeit:{
       kammer:'form', basis:REKORD_GRUNDWERT.fuegung, offen:true, fenster:true,
       zeitraum:`Die letzten ${RF.rolle} Sätze`,

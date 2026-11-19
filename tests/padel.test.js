@@ -408,6 +408,42 @@ const _krone = J(`(()=>{const _m=matches,_p=players,_s=seasons;
 ok(_krone.v === 1 && _krone.n === 1,
   `Die Wochenkrone zählt eine Woche mit einem Spieltag nicht mit (${_krone.v} von ${_krone.n})`);
 
+// ── Keine Zeichnung aus der Kicker-Liga ─────────────────────────────
+// Das Zeichen des Spieltags war ein Fußballfeld mit Mittelkreis und
+// Strafräumen und stand als Wasserzeichen auf jeder Karte einer Partie; die
+// Verteilung nach Abstand reichte bis „10 und mehr" (die Kicker-Leiter bis
+// 10:0), das Zählwerk der Liga trug einen Ball mit Kreuzlinien, „Der
+// Dauer-Revés" die hintere Hälfte des Kickertischs und „Der Dauer-Drive"
+// den Dauerstürmer auf seinem Sockel.
+const _kicker = J(`(()=>{const _m=matches,_p=players,_s=seasons;
+  players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=(id,i,a,b)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a,b,art:'n'}]),exp_a:.5,created_at:new Date(2026,7,4,10,i*10).toISOString()});
+  matches=[[6,4],[6,3],[7,5],[6,1],[3,0],[6,2],[6,0]].map(([a,b],i)=>mk('k'+i,i,a,b));invalidateCache();
+  const m=matches[matches.length-1], feld=icPfad('spielfeld'), r=feld.match(/<rect[^>]*width="([\\d.]+)" height="([\\d.]+)"/)||[];
+  const karte=_spVerteilungBild(_spVerteilungDaten({m})), blatt=_ndVerteilung(m);
+  const disz=id=>(DISZIPLINEN.find(d=>d.id===id)||{}).ic;
+  const r2={feldQuer:+r[1]>+r[2], feldKreis:/<circle/.test(feld),
+    karteSaeulen:(karte.match(/class="sp-vt-s/g)||[]).length, karteEnde:karte.includes('<em>6+</em>'),
+    blattSaeulen:(blatt.match(/<span class="(dies)?" style="--k:/g)||[]).length, blattEnde:blatt.includes('6 und mehr'),
+    sechsNull:_spVerteilungDaten({m}).n[6],
+    ball:_spZaehlwerkBild({wert:100,nurAnlass:true}).includes(icPfad('padelBall')),
+    alt:['ball','abwehrFenster','roleFix'].every(k=>!ICONS[k]&&icPfad(k)&&icPfad(k)===ICONS[ZEICHEN_ALT[k]]),
+    seiten:disz('abwehrmauer')+','+disz('dauersturm'),
+    formen:['mosaik','pucks'].filter(k=>k in SP_FORM||k in SP_FORM_BILD).join(',')};
+  matches=_m;players=_p;seasons=_s;invalidateCache();
+  return r2;})()`);
+ok(_kicker.feldQuer && !_kicker.feldKreis,
+  'Das Zeichen des Spieltags ist ein Padel-Court im Querformat, kein Fußballfeld mit Mittelkreis');
+ok(_kicker.karteSaeulen === 6 && _kicker.karteEnde && _kicker.blattSaeulen === 6 && _kicker.blattEnde && _kicker.sechsNull === 1,
+  `Die Verteilung nach Abstand reicht in Karte und Blatt bis „6 und mehr", ein 6:0 steht in der letzten Säule (${_kicker.karteSaeulen}/${_kicker.blattSaeulen} Säulen)`);
+ok(_kicker.ball && _kicker.alt,
+  'Das Zählwerk der Liga trägt den Padelball; die alten Kicker-Zeichen gibt es nur noch als Verweis auf ihr Padel-Zeichen');
+ok(_kicker.seiten === 'revesFenster,driveFenster',
+  `„Der Dauer-Revés" und „Der Dauer-Drive" zeigen den halben Court mit ihrer Seite (${_kicker.seiten})`);
+ok(_kicker.formen === '',
+  'Das Mosaik der Endstände 10:0 bis 10:9 und die Pucks bis zehn Tore gibt es nicht mehr' + (_kicker.formen ? ': ' + _kicker.formen : ''));
+
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
   hinweiseWeg().add('Probe');const b=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');

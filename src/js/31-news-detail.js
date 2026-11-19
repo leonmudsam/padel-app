@@ -311,7 +311,7 @@ function _newsBlattKopf(s){
   if(d.type === 'runde') return '';
   // Das Blatt einer Partie trägt die Zeichnung ihrer Karte als Bühne. Es
   // zeigte einen nackten Stand und darunter zwei Wappen mit „gewinnen diese
-  // Partie", während die Karte darüber Spielfeld, Mosaik oder Revanche trug:
+  // Partie", während die Karte darüber Court, Pegel oder Revanche trug:
   // wer sie öffnete, verlor das Bild, wegen dem er getippt hatte.
   if(d.matchId && (d.type === 'spiel' || (d.type === 'sammel' && _newsSorte(s) === 'spiel'))){ const b = _ndBuehne(s); if(b) return b; }
   { const x = _ndEigenesBlatt(s); if(x) return x.kopf; }
@@ -378,12 +378,15 @@ function _ndTagLeiste(m){
 }
 // Wie oft die Liga bis hier mit diesem Abstand endete: eine Säule je
 // Abstand, diese hell und mit ihrem Anteil.
+// Bis `SP_ABSTAND_MAX` Games und mehr, wie die Karte: hier standen zehn
+// Säulen bis „10 und mehr", und die rechten vier blieben im Padel leer.
 function _ndVerteilung(m){
-  const F = _spFakten(m), v = F.vert.slice(1), sum = v.reduce((a, b) => a + b, 0) || 1, max = Math.max(1, ...v);
-  return `<div class="nd-vt">${v.map((n, k) => `<span class="${k + 1 === F.diff ? 'dies' : ''}" style="--k:${k}">`
-    + (k + 1 === F.diff ? `<em class="num">${_spZahl(Math.round(n / sum * 100))} %</em>` : '')
-    + `<i style="height:${Math.max(3, Math.round(n / max * 100))}%"></i><b class="num">${k + 1}</b></span>`).join('')}</div>`
-    + `<div class="nd-vt-l"><span>1 Game Abstand</span><span>10 und mehr</span></div>`;
+  const F = _spFakten(m), v = _spAbstandTopf(F.vert).slice(1), diff = Math.min(SP_ABSTAND_MAX, F.diff);
+  const sum = v.reduce((a, b) => a + b, 0) || 1, max = Math.max(1, ...v);
+  return `<div class="nd-vt">${v.map((n, k) => `<span class="${k + 1 === diff ? 'dies' : ''}" style="--k:${k}">`
+    + (k + 1 === diff ? `<em class="num">${_spZahl(Math.round(n / sum * 100))} %</em>` : '')
+    + `<i style="height:${Math.max(3, Math.round(n / max * 100))}%"></i><b class="num">${k + 1}${k + 1 === SP_ABSTAND_MAX ? '+' : ''}</b></span>`).join('')}</div>`
+    + `<div class="nd-vt-l"><span>1 Game Abstand</span><span>${SP_ABSTAND_MAX} und mehr</span></div>`;
 }
 
 // Das Ergebnis der Partie, aus der die Story stammt. Vorher stand es je nach

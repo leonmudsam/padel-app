@@ -7,8 +7,9 @@
 - Ausnahme in der Gegenrichtung: Disziplinen (Liga-Rekorde und Monatschroniken) stehen in der Chronik nebeneinander und brauchen dort jede ihr eigenes Bild, auch wo eine von ihnen mit einem Award dieselbe Sache meint.
 - Kein Schlüssel steht im Katalog zweimal, keine zwei Schlüssel tragen dieselbe Zeichnung.
 - Jeder Zugriff auf eine Zeichnung geht über `icPfad` (oder `svgI`/`zkHtml`, die ihn rufen). Ein ersetzter Name steht in `ZEICHEN_ALT` und zeigt auf die Zeichnung, die seine Sache jetzt trägt; lebender Code setzt nur heutige Namen.
-- Was der Code wörtlich setzt (Schalter, Kopfzeilen, Rubriken und Filter des Feeds), folgt derselben Regel: der Schalter „Sturm“ zeigt die Position, nicht den Blitz des kompletten Stürmers.
-- Ränge sind eine Leiter aus Winkeln (`rang1` bis `rang5`), Positionen der halbe Tisch von oben mit dem Platz des Spielers (`posSturm` … `posReinAbwehr`).
+- Was der Code wörtlich setzt (Schalter, Kopfzeilen, Rubriken und Filter des Feeds), folgt derselben Regel: der Schalter „Drive“ zeigt die Seite, nicht das Zeichen des Drive-Virtuosen.
+- Ränge sind eine Leiter aus Winkeln (`rang1` bis `rang5`), Seiten der halbe Court von oben mit dem Platz des Spielers (`posDrive` … `posReinReves`), „Der Dauer-Drive“ und „Der Dauer-Revés“ derselbe Court gestrichelt mit der ganzen Seite getönt (`driveFenster`, `revesFenster`).
+- Jedes Zeichen ist eine Padel-Zeichnung: die Rubrik Spieltag ist der Court quer mit Netz, Aufschlaglinien und Mittellinie (`spielfeld`), ein Ball ist der Padelball. Ein Zeichen aus der Kicker-Liga (Fußballfeld, Kickertisch, Stürmer, Pfeife, Ball mit Kreuzlinien) steht nur noch als alter Name in `ZEICHEN_ALT`.
 
 ## Stellen
 
@@ -16,7 +17,7 @@
 
 ## Prüfung
 
-`tests/umbau/disziplinen` (kein Zeichen mit zwei Bedeutungen über Award, Badge, Disziplin, News, Rang, Ring, Position, Spieltag und Rubrik; jede Familie hat mindestens zwei Träger; jeder Träger nennt ein Zeichen, das es gibt; keine doppelte Zeichnung, kein doppelter Schlüssel; jeder alte Name zeigt auf eine bestehende Zeichnung; jedes wörtlich gesetzte Zeichen steht unter seinem heutigen Namen im Katalog; jede Disziplin hat ihr eigenes Zeichen), `tests/umbau/tafel` (kein Zeichen ohne Aufrufer).
+`tests/umbau/disziplinen` (kein Zeichen mit zwei Bedeutungen über Award, Badge, Disziplin, News, Rang, Ring, Position, Spieltag und Rubrik; jede Familie hat mindestens zwei Träger; jeder Träger nennt ein Zeichen, das es gibt; keine doppelte Zeichnung, kein doppelter Schlüssel; jeder alte Name zeigt auf eine bestehende Zeichnung; jedes wörtlich gesetzte Zeichen steht unter seinem heutigen Namen im Katalog; jede Disziplin hat ihr eigenes Zeichen), `tests/umbau/tafel` (kein Zeichen ohne Aufrufer), `tests/padel` (die Rubrik Spieltag ein Court quer ohne Mittelkreis, das Zählwerk mit dem Padelball, Dauer-Revés und Dauer-Drive mit ihrer Seite, die Kicker-Namen nur in `ZEICHEN_ALT`).
 
 ## Herleitung
 
@@ -50,3 +51,16 @@ Gespeicherte Stories tragen ihren Zeichenschlüssel, und der
 Snapshot-Vertrag [§C33] verbietet, sie umzuschreiben. Deshalb verschwindet
 kein Name ersatzlos: `ZEICHEN_ALT` lässt eine Karte vom Juni das Zeichen
 zeigen, das ihre Sache heute trägt, statt einer Lücke.
+
+**Kein Zeichen aus der Kicker-Liga.** Die Liga ist aus der Kicker-Liga
+hervorgegangen, und mit dem Katalog kamen Zeichnungen, die ein Padelspieler
+nicht als seine liest: die Rubrik Spieltag war ein Fußballfeld mit
+Mittelkreis und Strafräumen und stand als Wasserzeichen auf jeder Karte
+einer Partie, das Zählwerk der Liga trug einen Ball mit Kreuzlinien, „Der
+Dauer-Revés“ die hintere Hälfte des Kickertischs (die Abwehr) und „Der
+Dauer-Drive“ den Dauerstürmer auf seinem Sockel — die Seite, um die es
+geht, zeigte keins von beiden. Jetzt ist die Rubrik der Court quer wie auf
+der Karte einer Partie, der Ball der Padelball und das Dauer-Paar der halbe
+Court der Seiten-Zeichen, gestrichelt für das Fenster der letzten Sätze.
+Die alten Namen zeigen über `ZEICHEN_ALT` auf ihre Padel-Zeichnung, damit
+eine gespeicherte Karte, die einen von ihnen trägt, ihr Bild behält.
