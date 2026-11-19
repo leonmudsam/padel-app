@@ -495,8 +495,9 @@ function _ambientTemplatePool(now, pm, nameOf){
       // Ganze Sätze statt Etikett und „vs" [§C33]: „Duell der Liga: Leon vs
       // Maxi" und „Siege: Leon 152, Maxi 89." waren Aufschriften.
       title:`${nameOf(best.pa)} und ${nameOf(best.pb)} sind das Duell der Liga`,
-      desc:`${best.total} direkte Duelle, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
-      vv: best.total, vl:'Duelle',
+      // Gezählt sind Sätze gegeneinander, keine Duelle über mehrere Sätze.
+      desc:`${best.total} Sätze gegeneinander, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
+      vv: best.total, vl:'Sätze',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
   }});
 
@@ -519,8 +520,8 @@ function _ambientTemplatePool(now, pm, nameOf){
       // Zwischen den beiden Zahlen stand ein Halbgeviertstrich, und der ist in
       // einem Satz ein Gedankenstrich und kein Bilanzstrich. Die Bilanz steht
       // jetzt als Doppelpunkt-Paar da, wie ueberall sonst in der App.
-      desc:best.diff === 0 ? `${best.total} direkte Duelle, und jeder hat ${best.wa} gewonnen.`
-        : `${best.total} direkte Duelle, nur ${best.diff} ${best.diff === 1 ? 'Sieg' : 'Siege'} Unterschied. Es steht ${Math.max(best.wa, best.wb)}:${Math.min(best.wa, best.wb)} für ${nameOf(best.wa > best.wb ? best.pa : best.pb)}.`,
+      desc:best.diff === 0 ? `${best.total} Sätze gegeneinander, und jeder hat ${best.wa} gewonnen.`
+        : `${best.total} Sätze gegeneinander, nur ${best.diff} ${best.diff === 1 ? 'Sieg' : 'Siege'} Unterschied. Es steht ${Math.max(best.wa, best.wb)}:${Math.min(best.wa, best.wb)} für ${nameOf(best.wa > best.wb ? best.pa : best.pb)}.`,
       vv: best.wa+':'+best.wb, vl:'Bilanz',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
   }});

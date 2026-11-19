@@ -2073,7 +2073,7 @@ const DISZIPLINEN = [
         p=>p.thronRang != null,
         p=>-p.thronRang,
         -2,
-        (p)=>`Nie schlechter als Platz ${p.thronRang} · ${p.tagN} eigene Spieltage`))}},
+        (p)=>`Nie schlechter als Platz ${p.thronRang} · ${p.tagN} ${p.tagN === 1 ? 'eigener Spieltag' : 'eigene Spieltage'}`))}},
 
   // Die Ausnahme von der Regel oben, wie der Thron davor: sie fragt nach der
   // Tabelle [§C39]. Leon gewann den Juni mit 103 Elo Vorsprung und hielt in

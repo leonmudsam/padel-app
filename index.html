@@ -5168,6 +5168,7 @@
   border-radius:7px;background:rgba(255,255,255,.03)}
 .sp-rs-z i{font-style:normal;font-size:9px;color:var(--faint)}
 .sp-rs-z b{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:12px;color:var(--ink2)}
+.sp-rs-z.ab b{color:var(--muted)}
 @media (prefers-reduced-motion: no-preference){
   .sp-rq-f{animation:spDa .4s ease-out both;animation-delay:calc(var(--i,0) * 60ms)}
 }
@@ -6746,7 +6747,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.19.6b659ed6';
+const BUILD_VERSION='2026.11.19.13120cdc';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -19985,6 +19986,7 @@ const STORY_PRIO = {
   top_form:          64,
   spiel:             41,
   runde:             40,
+  match:             40,
   ehrung:            41,
   match_result:      63,
   chronik_geholt:    62,
@@ -20534,7 +20536,8 @@ function _buildStories(){
   const _morningSlotSig = (now.getHours() * 60 + now.getMinutes()) >= (23 * 60 + 59) ? 1 : 0;
   const _weekSlotSig = _wocheDue ? 1 : 0;
   let _rundenSig = 0;
-  try { const _rn = now.getTime(); _rundenSig = _spBasis().runden.filter(r => r.t + RUNDE_PAUSE_MS <= _rn).length; } catch(e){}
+  try { const _rn = now.getTime(); _rundenSig = _spBasis().runden.filter(r => r.t + RUNDE_PAUSE_MS <= _rn).length
+    + 1000 * _spMatchGruppen().filter(g => _spMatchEnde(g) <= _rn).length; } catch(e){}
   let _zukunft = 0;
   for(let i = matches.length - 1; i >= 0 && mts(matches[i]) > now.getTime(); i--) _zukunft++;
   const _buildStoriesKey = matches.length + '_' + _cache.version + '_' + weekKey + '_' + todayKey + '_' + _ambientSlotSig + '_' + _morningSlotSig + '_' + _weekSlotSig + '_' + _rundenSig + '_' + _zukunft;
@@ -20773,7 +20776,9 @@ function _buildStories(){
         cat: 'team',
         ic: 'trendCrash',
         title: `${nameOf(t.ids[0])} und ${nameOf(t.ids[1])} verlieren zusammen zum ${t.streak}. Mal in Folge`,
-        desc: `Ohne gemeinsamen Sieg seit dem ${tagImSatz(t.firstT || t.when)}`,
+        desc: tagKey(t.firstT || t.when) === tagKey(t.when)
+          ? `Ohne gemeinsamen Sieg seit ${datumFmt(t.firstT || t.when, 'uhr')} Uhr.`
+          : `Ohne gemeinsamen Sieg seit dem ${tagImSatz(t.firstT || t.when)}`,
         when: t.when,
         prio: STORY_PRIO.team_loss_streak + (t.streak >= 7 ? 4 : 0),
         dataRef: {type:'team_loss_streak', a:t.ids[0], b:t.ids[1], streak:t.streak,
@@ -21229,8 +21234,8 @@ function _buildStories(){
       }));
       if(kippt) neuSt.push({id:'kippt_' + kippt.w + '_' + kippt.l + '_' + m.id, cat:'rivalry', ic:'crossedSwords',
         title:`${nameOf(kippt.w)} geht im Duell gegen ${nameOf(kippt.l)} in Führung, ${kippt.s}:${kippt.n - kippt.s}`,
-        desc:kippt.zuletzt == null ? `Zum ersten Mal in ${kippt.n} Duellen liegt ${nameOf(kippt.w)} vorn.`
-          : `Zuletzt lag ${nameOf(kippt.w)} vor ${kippt.n - kippt.zuletzt} Duellen vorn.`,
+        desc:kippt.zuletzt == null ? `Zum ersten Mal in ${kippt.n} Sätzen gegeneinander liegt ${nameOf(kippt.w)} vorn.`
+          : `Zuletzt lag ${nameOf(kippt.w)} vor ${kippt.n - kippt.zuletzt} Sätzen gegeneinander vorn.`,
         when:zeit, prio:STORY_PRIO.duell_kippt,
         dataRef:{type:'duell_kippt', pid:kippt.w, gegen:kippt.l, s:kippt.s, n:kippt.n, matchId:m.id, playerIds:[kippt.w, kippt.l]}});
       const wk = _wochenKey(m.created_at), wo = woche[wk] || (woche[wk] = {});
@@ -22092,6 +22097,8 @@ function _buildStories(){
   catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] ehrung', e); }
   try { _newsRundenStories(now.getTime()).forEach(st => stories.push(st)); }
   catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] runde', e); }
+  try { _newsMatchStories(now.getTime()).forEach(st => stories.push(st)); }
+  catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] match', e); }
 
 
   try {
@@ -22121,7 +22128,8 @@ function _buildStories(){
   } catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] team der woche', e); }
 
   try {
-    if(_wocheDue && _wochenTeile.length >= 2){
+    const _wocheSpiele = matches.filter(m => { const t = mts(m); return t >= _wocheStart && t < _wocheEnde; });
+    if(_wocheDue && _wochenTeile.length >= 2 && _wocheHatSpieltage(_wocheSpiele)){
       const _wRang = ['potw', 'team', 'riser', 'blowout', 'upset', 'thriller'];
       _wochenTeile.sort((a, b) => {
         const ra = _wRang.indexOf(a.art), rb = _wRang.indexOf(b.art);
@@ -22907,8 +22915,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!best) return null;
     return { cat:'rivalry', ic:'crossedSwords', prio:4,
       title:`${nameOf(best.pa)} und ${nameOf(best.pb)} sind das Duell der Liga`,
-      desc:`${best.total} direkte Duelle, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
-      vv: best.total, vl:'Duelle',
+      desc:`${best.total} Sätze gegeneinander, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
+      vv: best.total, vl:'Sätze',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
   }});
 
@@ -22927,8 +22935,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!best) return null;
     return { cat:'rivalry', ic:'crossedSwords', prio:4,
       title:`${nameOf(best.pa)} und ${nameOf(best.pb)} liegen Kopf an Kopf`,
-      desc:best.diff === 0 ? `${best.total} direkte Duelle, und jeder hat ${best.wa} gewonnen.`
-        : `${best.total} direkte Duelle, nur ${best.diff} ${best.diff === 1 ? 'Sieg' : 'Siege'} Unterschied. Es steht ${Math.max(best.wa, best.wb)}:${Math.min(best.wa, best.wb)} für ${nameOf(best.wa > best.wb ? best.pa : best.pb)}.`,
+      desc:best.diff === 0 ? `${best.total} Sätze gegeneinander, und jeder hat ${best.wa} gewonnen.`
+        : `${best.total} Sätze gegeneinander, nur ${best.diff} ${best.diff === 1 ? 'Sieg' : 'Siege'} Unterschied. Es steht ${Math.max(best.wa, best.wb)}:${Math.min(best.wa, best.wb)} für ${nameOf(best.wa > best.wb ? best.pa : best.pb)}.`,
       vv: best.wa+':'+best.wb, vl:'Bilanz',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
   }});
@@ -23773,6 +23781,10 @@ function _storyWiderrufen(s){
     const m = d.matchId ? _spMatch(d.matchId) : null;
     return !!m && _spieltagDerWoche(m) < WOCHE_MIN_SPIELTAGE;
   }
+  if(d.type === 'runde') return Number(d.paarungen) === 1;
+  if(d.type === 'woche' && d.woche) return !_gewerteteWochen(matches || []).has(d.woche);
+  if(d.type === 'ehrung' && d.periode === 'woche' && d.woche)
+    return !_gewerteteWochen(matches || []).has(_wochenKey(new Date(d.woche + 'T12:00:00').getTime()));
   if(d.type !== 'karriereende') return false;
   const p = pmap()[d.pid];
   return !p || !p.retired_at || ruhestandMs(p) !== Date.parse(d.retiredAt);
@@ -24026,7 +24038,7 @@ function _consolidateStoriesLegacy(list){
   const seenTitel = new Set();
   const _sperreMs = 0;
   const _OHNE_SPERRE = new Set(['ambient', 'sammel', 'season_endgame', 'spiel',
-                                'potd', 'woche', 'season_recap', 'runde',
+                                'potd', 'woche', 'season_recap', 'runde', 'match',
                                 'ehrung', 'karriereende']);
   const _aussage = st => {
     const d = (st && st.dataRef) || {};
@@ -24711,7 +24723,7 @@ function _consolidateStoriesLegacy(list){
   });
 
   const OHNE_DECKEL = new Set(['lead_change','elo_record','streak_record',
-                               'season_endgame','ambient','group','runde','ehrung']);
+                               'season_endgame','ambient','group','runde','match','ehrung']);
   const NF_DECKEL = Number.POSITIVE_INFINITY;
   const _deckelSorte = s => {
     const d = (s && s.dataRef) || {};
@@ -25563,6 +25575,7 @@ function _newsGlanzVersatz(id){
 }
 function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
   if(((s && s.dataRef) || {}).type === 'runde') return _newsRundeHtml(s, isRead, fadenHtml);
+  if(((s && s.dataRef) || {}).type === 'match') return _newsMatchHtml(s, isRead, fadenHtml);
   if(((s && s.dataRef) || {}).type === 'ehrung') return _newsEhrungHtml(s, isRead, fadenHtml);
   const dcat = _displayCat(s);
   const meta = NEWS_CATEGORIES[dcat] || NEWS_CATEGORIES.fun;
@@ -25727,6 +25740,7 @@ function _newsRubrik(sorte, s){
   const d = (s && s.dataRef) || {};
   if(_isBreaking(s)) return 'BREAKING';
   if(d.type === 'runde') return 'DIE RUNDE';
+  if(d.type === 'match') return 'DAS MATCH';
   if(d.type === 'ehrung') return 'DIE EHRUNG';
   switch(sorte){
     case 'spiel':  return 'AM SPIELTAG';
@@ -25945,7 +25959,7 @@ function _newsFaeden(cards){
   _newsFadenMemo.set(roh, {m: matches, n: cards.length, map});
   const rohId = new Map(roh.map(x => [x.id, x]));
   const partie = c => { const d = c.dataRef || {};
-    return d.type === 'spiel' || d.type === 'runde' || !!d.matchId
+    return d.type === 'spiel' || d.type === 'runde' || d.type === 'match' || !!d.matchId
       || (d.type === 'sammel' && (d.teile || []).some(t => /^spiel_/.test(String((t && t.id) || '')))); };
   cards = cards.filter(c => !partie(c));
   const glieder = new Map();
@@ -26109,7 +26123,7 @@ function _newsSorte(s){
   const d = (s && s.dataRef) || {};
   const t = d.type || '';
   if(t === 'woche') return 'woche';
-  if(t === 'runde') return 'spiel';
+  if(t === 'runde' || t === 'match') return 'spiel';
   if(t === 'ehrung') return 'badge';
   if(t === 'insignium_stufe') return 'ins';
   if(t === 'insignium_tag') return 'ins';
@@ -26145,7 +26159,7 @@ function _newsSeite(s){
   if(sorte === 'ins') return 'zeichen';
   if(s.cat === 'tafel' || d.quelle === 'tafel' || d.quelle === 'form') return 'tafel';
   if(sorte === 'badge' || sorte === 'spieler' || sorte === 'erfolg') return 'ehrung';
-  if(d.type !== 'ambient' && (d.matchId || ['potd', 'potw', 'woche', 'runde'].includes(d.type)
+  if(d.type !== 'ambient' && (d.matchId || ['potd', 'potw', 'woche', 'runde', 'match'].includes(d.type)
      || (d.type === 'sammel' && d.quelle === 'spiel'))) return 'spieltag';
   return 'liga';
 }
@@ -26403,7 +26417,7 @@ function _newsTagSpannung(s){
 
 const NEWS_TAGKARTE_OHNE = new Set(['ambient', 'dry_spell', 'season_endgame',
   'quiet_week', 'season_start', 'potd', 'potw', 'woche',
-  'season_recap', 'runde', 'ehrung']);
+  'season_recap', 'runde', 'match', 'ehrung']);
 function _newsTagKarteWuerdig(st){
   if(NEWS_TAGKARTE_OHNE.has(((st && st.dataRef) || {}).type || '')) return false;
   if(_newsIstNegativ(st)) return false;
@@ -26587,7 +26601,7 @@ function newsKarteHtml(voll, ersatz){
   return vorschauHtml('newspaper', 'Die Liga-News',
     voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
     [
-      ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
+      ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu jedes Match mit allen seinen Sätzen.'],
       ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
       ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
       ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
@@ -27246,7 +27260,12 @@ function _spFakten(m){
     const a = team(x, 'A'), b = team(x, 'B');
     return (a === wSet && b === lSet) || (a === lSet && b === wSet);
   });
-  if(vorher && _spSieger(vorher).slice().sort().join() === lSet) F.revanche = {vorher, ms:mts(m) - mts(vorher)};
+  const gruppe = _begegnungsGruppen(), dieses = gruppe.get(m.id);
+  const frueher = vorher && gruppe.get(vorher.id) !== dieses ? vorher : null;
+  const frueherSieger = frueher ? (() => { const g2 = gruppe.get(frueher.id);
+    const z = g2 ? g2.zeilen[g2.zeilen.length - 1] : frueher, bb = begegnungVon(z);
+    return bb.setsA === bb.setsB ? '' : _spTeam(z, bb.winner).slice().sort().join(); })() : '';
+  if(frueher && frueherSieger === lSet) F.revanche = {vorher:frueher, ms:mts(m) - mts(frueher)};
   F.treffen = _spEigene(W[0], m).filter(x => { const a = team(x, 'A'), b = team(x, 'B');
     return (a === wSet && b === lSet) || (a === lSet && b === wSet); });
   F.pause = W.map(id => { const eig = _spEigene(id, m), v = eig[eig.length - 2];
@@ -27282,23 +27301,40 @@ function _spImMonat(F, art){
   }
   return n;
 }
+function _spMatchStand(F){
+  const g = _begegnungsGruppen().get(F.m.id);
+  const bis = g ? g.zeilen.slice(0, g.zeilen.indexOf(F.m) + 1) : [F.m];
+  if(bis.length < 2) return null;
+  const w = F.W[0], sw = bis.filter(z => _spGew(z, w)).length, sl = bis.length - sw;
+  const gw = bis.reduce((a, z) => a + (teamVon(z, w) === 'A' ? z.games_a : z.games_b), 0);
+  const gl = bis.reduce((a, z) => a + (teamVon(z, w) === 'A' ? z.games_b : z.games_a), 0);
+  return {nr:bis.length, sw, sl, gw, gl};
+}
+const _spSaetzeAn = (s, W) => `${s === 1 ? 'ging einer' : `gingen ${_spZahl(s)}`} an ${W}`;
 function _spKontext(F){
   const W = _spNl(F.W), L = _spNl(F.L), n = F.treffen.length;
   const s = F.treffen.filter(x => _spGew(x, F.W[0])).length;
+  const st = _spMatchStand(F);
+  if(st) return {
+    t:st.sw === st.sl ? `${W} gleichen im Match zum ${st.sw}:${st.sl} aus`
+      : st.sw > st.sl ? `${W} holen den ${_spZahl(st.nr)}. Satz zum ${st.sw}:${st.sl}`
+      : `${W} verkürzen im Match auf ${st.sw}:${st.sl}`,
+    d:n > st.nr ? `Gegen ${L} sind es damit ${_spZahl(s)} von ${_spZahl(n)} Sätzen.`
+      : `Im Match steht es ${_spZahl(st.gw)}:${_spZahl(st.gl)} in Games.`};
   const wahl = [];
   if(n >= 3) wahl.push({
-    t:s * 2 > n ? (s - 1) * 2 <= n - 1 ? `${W} gehen gegen ${L} in Führung` : `${W} bleiben gegen ${L} vorn`
-      : s * 2 === n ? `${W} gleichen gegen ${L} aus` : `${W} verkürzen gegen ${L}`,
-    d:`Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.`});
-  if(F.duo.p >= 2) wahl.push({t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
+    t:s * 2 > n ? (s - 1) * 2 <= n - 1 ? `${W} gehen in der Bilanz gegen ${L} in Führung` : `${W} bleiben in der Bilanz gegen ${L} vorn`
+      : s * 2 === n ? `${W} gleichen die Bilanz gegen ${L} aus` : `${W} verkürzen in der Bilanz gegen ${L}`,
+    d:`Von ${_spZahl(n)} Sätzen dieser beiden Duos ${_spSaetzeAn(s, W)}.`});
+  if(F.duo.p >= 2) wahl.push({t:`${W} gewinnen zum ${F.duo.s === 1 ? 'ersten' : _spZahl(F.duo.s) + '.'} Mal zusammen`,
     d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   const tag = F.W.map(id => { const l = F.tag.filter(x => [x.a1, x.a2, x.b1, x.b2].includes(id));
     return {id, k:l.length, w:l.filter(x => _spGew(x, id)).length}; }).filter(x => x.k >= 3).sort((a, b) => b.w - a.w)[0];
   if(tag) wahl.push({t:`${_spName(tag.id)} holt den ${_spZahl(tag.w)}. Sieg des Tages`,
     d:`${_spName(tag.id)} kommt an diesem Tag auf ${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen.`});
   if(!wahl.length) wahl.push(F.duo.p <= 1 ? {t:`${W} gewinnen den ersten gemeinsamen Satz`,
-      d:n > 1 ? `Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.` : `Es ist das erste Treffen dieser beiden Duos.`}
-    : {t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
+      d:n > 1 ? `Von ${_spZahl(n)} Sätzen dieser beiden Duos ${_spSaetzeAn(s, W)}.` : `Es ist der erste Satz dieser beiden Duos gegeneinander.`}
+    : {t:`${W} gewinnen zum ${F.duo.s === 1 ? 'ersten' : _spZahl(F.duo.s) + '.'} Mal zusammen`,
       d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   return wahl[_spVisualHash(F.m.id + '|kontext') % wahl.length];
 }
@@ -27393,9 +27429,8 @@ const SP_FORM = {
     text:F => {
       const s = F.treffen.filter(y => _spGew(y, F.W[0])).length, n = F.treffen.length;
       return {t:F.revanche.ms <= 1800000 ? `${_spNl(F.W)} antworten sofort` : `${_spNl(F.W)} holen sich die Revanche`,
-        d:n <= 2 ? `Es ist das ${n}. Treffen dieser beiden Duos.`
-          : s === n - s ? `Von ${n} Treffen dieser beiden Duos gingen je ${s} an jede Seite.`
-          : `Von ${n} Treffen dieser beiden Duos gingen ${Math.max(s, n - s)} an ${_spNl(s > n - s ? F.W : F.L)}.`};
+        d:s === n - s ? `Von ${n} Sätzen dieser beiden Duos gingen je ${s} an jede Seite.`
+          : `Von ${n} Sätzen dieser beiden Duos ${_spSaetzeAn(Math.max(s, n - s), _spNl(s > n - s ? F.W : F.L))}.`};
     }},
   gipfel:{rang:26, ic:'peak',
     wann:F => { const r = F.W.concat(F.L).map(id => F.rang[id] && F.rang[id].pre);
@@ -28393,6 +28428,7 @@ function _newsRundeStory(r, ende){
   const vorn = spieler.filter(x => x.w === top.w).map(x => x.id);
   const n = ms.length;
   const paarungen = new Set(ms.map(m => paarKey([m.a1, m.a2].sort().join('+'), [m.b1, m.b2].sort().join('+')))).size;
+  if(paarungen === 1) return null;
   const teamA = [ms[0].a1, ms[0].a2], teamB = [ms[0].b1, ms[0].b2];
   const zwei = t => _namenListe(t.map(_spName));
   let title;
@@ -28408,13 +28444,80 @@ function _newsRundeStory(r, ende){
   } else {
     title = `${_namenListe(vorn.map(_spName))} teilen sich die Runde`;
   }
-  const desc = `${n} Sätze zwischen ${datumFmt(mts(ms[0]), 'uhr')} und ${datumFmt(mts(ms[n - 1]), 'uhr')} Uhr`
+  const von = datumFmt(mts(ms[0]), 'uhr'), bis = datumFmt(mts(ms[n - 1]), 'uhr');
+  const desc = (von === bis ? `${n} Sätze, eingetragen um ${von} Uhr` : `${n} Sätze zwischen ${von} und ${bis} Uhr`)
     + (paarungen === 3 ? ', jede Paarung mindestens einmal.' : paarungen > 1 ? `, ${paarungen} verschiedene Paarungen.` : ', immer dieselben Teams.');
   return {
     id:'runde_' + ms[0].id, cat:'highlight', ic:'users', when:new Date(ende),
     prio:STORY_PRIO.runde, title, desc,
     dataRef:{type:'runde', matchIds:ms.map(m => m.id), playerIds:ids, spieler, paarungen}
   };
+}
+const _spMatchMemo = new WeakMap();
+function _spMatchGruppen(){
+  let l = _spMatchMemo.get(matches);
+  if(l) return l;
+  l = [...new Set(_begegnungsGruppen().values())].filter(g => g.zeilen.length >= 2);
+  _spMatchMemo.set(matches, l);
+  return l;
+}
+const _spMatchEnde = g => mts(g.zeilen[g.zeilen.length - 1]) + BEGEGNUNG_PAUSE_MIN * 60000;
+function _newsMatchStories(nowMs){
+  const seit = nowMs - NEWS_FENSTER_TAGE * 86400000;
+  return _spMatchGruppen().filter(g => _spMatchEnde(g) <= nowMs && mts(g.zeilen[0]) >= seit)
+    .map(g => _newsMatchStory(g, _spMatchEnde(g))).filter(Boolean);
+}
+function _newsMatchStory(g, ende){
+  const ms = g.zeilen, letzte = ms[ms.length - 1];
+  const b = begegnungVon(letzte);
+  const A = _spTeam(letzte, 'A'), B = _spTeam(letzte, 'B');
+  const remis = b.setsA === b.setsB, bv = !remis && b.winner === 'B';
+  const W = bv ? B : A, L = bv ? A : B;
+  const sw = bv ? b.setsB : b.setsA, sl = bv ? b.setsA : b.setsB;
+  const gw = bv ? b.gamesB : b.gamesA, gl = bv ? b.gamesA : b.gamesB;
+  const nl = ids => _namenListe(ids.map(_spName));
+  const aRef = _paarSchluessel(letzte.a1, letzte.a2), saetze = [];
+  ms.forEach(z => { const dreh = _paarSchluessel(z.a1, z.a2) !== aRef;
+    partieSaetze(z).forEach(x => { const a = dreh ? x.b : x.a, c = dreh ? x.a : x.b, t = bv ? `${c}:${a}` : `${a}:${c}`;
+      saetze.push({mid:z.id, s:x.art === 'open' ? `(${t})` : t, w:bv ? c > a : a > c}); }); });
+  const title = remis ? `${nl(A)} trennen sich von ${nl(B)} ${sw}:${sl}`
+    : b.wende ? `${nl(W)} drehen das Match gegen ${nl(L)} und gewinnen ${sw}:${sl}`
+    : `${nl(W)} gewinnen das Match gegen ${nl(L)} ${sw}:${sl}`;
+  const desc = `${saetze.map(x => x.s).join(', ')}, ${gw}:${gl} Games.`
+    + (b.wende ? ` Der erste Satz ging an ${nl(L)}.` : '');
+  const ids = W.concat(L);
+  const spieler = ids.map(id => {
+    const x = {id, w:0, l:0, e:0};
+    ms.forEach(m => { _spGew(m, id) ? x.w++ : x.l++; x.e += _newsEloDelta(id, m.id) || 0; });
+    return x;
+  });
+  return {
+    id:'match_' + ms[0].id, cat:'highlight', ic:'spielfeld', when:new Date(ende),
+    prio:STORY_PRIO.match, title, desc,
+    dataRef:{type:'match', matchIds:ms.map(m => m.id), playerIds:ids, spieler, sieger:remis ? null : W, saetze, wende:!!b.wende}
+  };
+}
+function _spMatchStreifen(d){
+  return `<div class="sp-rs">${(d.saetze || []).map((x, i) => {
+    const m = x.mid ? _spMatch(x.mid) : null;
+    return `<span class="sp-rs-z${x.w ? '' : ' ab'}" style="--i:${i}">${m ? `<i class="num">${datumFmt(mts(m), 'uhr')}</i>` : ''}<b class="num">${esc(x.s)}</b></span>`;
+  }).join('')}</div>`;
+}
+function _newsMatchHtml(s, isRead, fadenHtml){
+  const d = s.dataRef || {};
+  return `<div class="nf-card nf-s-spiel nf-runde nf-match nfc-${esc(s.cat || 'fun')}${isRead ? ' read' : ''}" data-sid="${esc(s.id)}">
+    ${_newsMotiv('spiel', s)}
+    <div class="nf-top"><span class="nf-rub"><i>${svgI('spielfeld')}</i><b>DAS MATCH</b></span>
+      <span class="nf-when">${svgI('clock')}${esc(_newsUhrzeit(s.when))}${isRead ? '' : '<span class="nf-dot"></span>'}</span></div>
+    <div class="nf-gr"><div class="nf-gr-r"><div class="nf-h">${esc(s.title)}</div><div class="nf-d">${_newsBetont(s.desc || '')}</div></div>
+      <span class="nf-chev">${svgI('chevron')}</span></div>
+    ${_spRundeKurz(d.spieler || [])}${_spMatchStreifen(d)}${fadenHtml || ''}</div>`;
+}
+function _newsMatchBlatt(s){
+  const d = s.dataRef || {};
+  if(!(d.matchIds || []).length) return '';
+  return `<div class="nd-section">Die Elo im Match</div>${_spRundeTafel(d.spieler)}`
+    + `<div class="nd-section">Die Sätze</div><div class="sp-rd-ps nd-rd">${d.matchIds.map((mid, i) => _spRundeZeile(mid, i, true)).join('')}</div>`;
 }
 const _spKarteMemo = new WeakMap();
 function _spKarteDerPartie(mid){
@@ -28491,7 +28594,7 @@ function _newsRundeBlatt(s){
     + `<span></span>${bl.map(m => `<span class="sp-rm-u num">${datumFmt(mts(m), 'uhr')}</span>`).join('')}`
     + ids.map(id => `${_spChip(id)}${bl.map(m => {
         const w = _spGew(m, id), r = rolle(m, id);
-        return `<span class="sp-rm-z ${w ? 'w' : 'l'}">${r === 'reves' ? 'A' : r === 'drive' ? 'S' : ''}</span>`;
+        return `<span class="sp-rm-z ${w ? 'w' : 'l'}">${r === 'reves' ? 'L' : r === 'drive' ? 'R' : ''}</span>`;
       }).join('')}`).join('') + `</div>`).join('');
   return `<div class="nd-section">Die Tabelle der Runde</div>${_spRundeTafel(d.spieler)}`
     + `<div class="nd-section">Wer mit wem</div><div class="sp-rms">${matrix}</div>`
@@ -29064,7 +29167,7 @@ function _ehrungVereint(listen){
 
 function _ehrungGroessere(tagMs){
   if(tagKey(seasonEnd(seasonOf(tagMs).id).getTime()) === tagKey(tagMs)) return 'monat';
-  return new Date(tagMs).getDay() === 0 ? 'woche' : '';
+  return new Date(tagMs).getDay() === 0 && _gewerteteWochen(matches || []).has(_wochenKey(tagMs)) ? 'woche' : '';
 }
 
 function _ehrungDesTages(tagMs){
@@ -29090,6 +29193,7 @@ function _newsZeitraumEhrungen(nowMs){
     const ende = new Date(ab); ende.setDate(ende.getDate() + 7);
     const S = ende.getTime();
     if(S > nowMs || S < seit || _ehrungGroessere(S - 1) === 'monat') return;
+    if(!_gewerteteWochen(matches || []).has(_wochenKey(ab))) return;
     const st = _ehrungKarte(_ehrungAusLaufbahn(rcpWocheLaufbahn(ab, S - 1)), 'ehrung_der_woche_' + tagKey(ab), S - 60000 + 5000,
       {periode:'woche', woche:tagKey(ab), von:ab, bis:S - 1, breaking:_ehrungBrkGrund('woche', S).length > 0});
     if(st) out.push(st);
@@ -29489,7 +29593,7 @@ function _newsBlattKopf(s){
   const nm = pid => (pm[pid] && pm[pid].name) || '';
   let ids = [];
   try { ids = (_newsPids(s) || []).filter(id => pm[id]); } catch(e){}
-  if(d.type === 'runde') return '';
+  if(d.type === 'runde' || d.type === 'match') return '';
   if(d.matchId && (d.type === 'spiel' || (d.type === 'sammel' && _newsSorte(s) === 'spiel'))){ const b = _ndBuehne(s); if(b) return b; }
   { const x = _ndEigenesBlatt(s); if(x) return x.kopf; }
   const erg = d.matchId ? _newsBlattErgebnis(d.matchId) : '';
@@ -30651,6 +30755,7 @@ function _ndMitteRoh(s){
   try {
     switch(d.type){
       case 'runde': return _newsRundeBlatt(s);
+      case 'match': return _newsMatchBlatt(s);
       case 'rekord_erstmals':
       case 'rekord_gesteigert':
       case 'rekord_geholt': {
@@ -32919,7 +33024,7 @@ const DISZIPLINEN = [
         p=>p.thronRang != null,
         p=>-p.thronRang,
         -2,
-        (p)=>`Nie schlechter als Platz ${p.thronRang} · ${p.tagN} eigene Spieltage`))}},
+        (p)=>`Nie schlechter als Platz ${p.thronRang} · ${p.tagN} ${p.tagN === 1 ? 'eigener Spieltag' : 'eigene Spieltage'}`))}},
 
   {id:'souveraen', name:'Der Souverän', short:'Souverän', ic:'souveraen', tone:'gold', art:'leistung',
     monat:{

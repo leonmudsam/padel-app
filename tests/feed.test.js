@@ -22,9 +22,10 @@ const ms = (tag, h, mi, s) => new Date(`${tag}T${String(h).padStart(2, '0')}:${S
 
 // Ein Stand der Liga: alle Sätze bis `bis`, die Uhr auf `jetzt`, ohne
 // gespeicherte Stories — der Generator bildet alles, was er bilden würde.
-const stand = (bis, jetzt) => {
+const stand = (bis, jetzt, dazu) => {
   setNow(jetzt);
-  const liste = L.matches.filter(m => new Date(m.created_at).getTime() <= bis);
+  const liste = L.matches.filter(m => new Date(m.created_at).getTime() <= bis).concat(dazu || [])
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
   K(`players=${JSON.stringify(L.players)};seasons=${JSON.stringify(L.seasons)};matches=${JSON.stringify(liste)};
     invalidateCache();_cache._stories=[];window.__roh=_buildStories();0`);
 };
@@ -67,8 +68,19 @@ ok(/Mit dem Schluss des Tages/.test(k1.e || '') && /Der letzte Ball/.test(k1.e |
 // Woche; was der Schluss an der Tafel ändert, steht unter dem Spieler des
 // Tages. Reihenfolge: Woche und Ehrung der Woche 23:59:05, darunter der
 // Spieler des Tages 23:59.
+// In der Testliga ist der Sonntag der einzige Spieltag seiner Woche, und
+// eine solche Woche hat weder Karte noch Ehrung [§C31]: der Sonntag behält
+// dann seine. Für die Woche, die ihn trägt, bekommt sie einen zweiten
+// Spieltag, einen Satz am Donnerstag.
 const D2 = '2026-08-02';
+const sonntag = L.matches.filter(m => m.created_at.slice(0, 10) === D2);
 stand(ms(D2, 23, 59, 59) + 999, ms('2026-08-03', 0, 5));
+const s2allein = J(`({tag:__roh.some(x=>x.id==='tagesehrung_${D2}'), woche:__roh.some(x=>/^woche_/.test(x.id)&&tagKey(x.when)==='${D2}'),
+  ew:__roh.some(x=>/^ehrung_der_woche_2026-07-27/.test(x.id))})`);
+ok(s2allein.tag && !s2allein.woche && !s2allein.ew,
+  'Ist der Sonntag der einzige Spieltag seiner Woche, behält er seine Ehrung, und die Woche hat weder Karte noch Ehrung');
+stand(ms(D2, 23, 59, 59) + 999, ms('2026-08-03', 0, 5),
+  [Object.assign({}, sonntag[0], {id:sonntag[0].id + '-do', created_at:'2026-07-30T18:00:00'})]);
 const s2 = J(`(()=>{const l=__roh.slice().sort(_storyFolge), i=id=>l.findIndex(x=>x.id===id);
   const p=l.find(x=>x.id==='potd_${D2}'), w=l.find(x=>/^woche_/.test(x.id)&&tagKey(x.when)==='${D2}'), ew=l.find(x=>/^ehrung_der_woche_/.test(x.id));
   return {tagesehrung:i('tagesehrung_${D2}')>=0, ein:p&&p.dataRef.ehrungIn, ts:((p&&p.dataRef.tagesschluss)||[]).map(z=>z.text),

@@ -489,6 +489,59 @@ ok(_kicker.seiten === 'revesFenster,driveFenster',
 ok(_kicker.formen === '',
   'Das Mosaik der Endstände 10:0 bis 10:9 und die Pucks bis zehn Tore gibt es nicht mehr' + (_kicker.formen ? ': ' + _kicker.formen : ''));
 
+// ── Das Match statt der Runde, Sätze statt Treffen ──────────────────
+// Die zwei Spieltage der Liga (die Sätze aus der Elo-Prüfung oben): am
+// 19.11. dieselben zwei Teams in drei Sätzen 7:6, 5:7, 1:6. Die Kicker-Liga
+// nannte das „gewinnen die Runde … 2:1" unter „3 Sätze zwischen 19:46 und
+// 19:46 Uhr", ihr Satz zum 1:1 hieß „holen sich die Revanche", fünf Sätze
+// eines Matches „5 Treffen dieser beiden Duos", und die Woche mit einem
+// Spieltag stand als Wochenkarte und Ehrung der Woche ein zweites Mal da.
+setNow(new Date('2026-11-20T12:00:00Z').getTime());
+const _feed = J(`(()=>{const _m=matches,_p=players,_s=seasons,_c=cfg;
+  cfg={k_factor:40,start_elo:0,risk_split:0,pos_swing:0.1,win_boost:1.08,mov_max_boost:0.5,mov_loss_damp:0.5,match_bonus:0,
+    low_elo_loss_damp:0,exp_protect_max:0.1,underdog_elo_max:0.5,underdog_games_max:0.3,new_player_mult:1.5,
+    new_player_mid_mult:1.2,veteran_damp:0.5,tb_ausgleich:0.5};
+  players=['P1','P2','P3','P4','P5','P6','P7'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const A=(a1,a2,b1,b2,s,t,art)=>({a1,a2,b1,b2,s,t,art:art||'n'});
+  const l=[A('P6','P2','P7','P5',[1,2],'11T15:42'),A('P6','P2','P7','P5',[1,2],'11T15:58'),A('P6','P2','P7','P5',[2,0],'11T15:59'),
+    A('P6','P2','P7','P5',[1,2],'11T16:00'),A('P6','P2','P7','P5',[0,2],'11T16:01'),A('P6','P2','P1','P4',[0,2],'11T16:18'),
+    A('P6','P2','P1','P4',[0,2],'11T16:19'),A('P6','P2','P1','P4',[2,1],'11T16:20'),A('P7','P5','P1','P4',[0,2],'11T16:21'),
+    A('P7','P5','P1','P4',[2,1],'11T16:22'),A('P7','P5','P1','P4',[0,2],'11T16:23'),A('P7','P5','P1','P4',[2,1],'11T16:24'),
+    A('P7','P5','P1','P4',[1,2],'11T16:25'),A('P6','P2','P1','P4',[2,1],'11T16:37'),A('P6','P2','P7','P5',[2,1],'11T16:53'),
+    A('P6','P2','P1','P4',[0,2],'11T16:54'),A('P6','P2','P1','P4',[2,1],'11T16:55'),A('P6','P2','P1','P4',[2,1],'11T16:56'),
+    A('P5','P7','P1','P4',[0,2],'11T16:58'),A('P6','P2','P1','P4',[4,5],'11T17:27'),
+    A('P7','P5','P3','P4',[7,6],'19T18:46','tb'),A('P7','P5','P3','P4',[5,7],'19T18:46'),A('P7','P5','P3','P4',[1,6],'19T18:46')];
+  matches=l.map((x,i)=>Object.assign({id:'f'+i,a1:x.a1,a2:x.a2,b1:x.b1,b2:x.b2,a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    created_at:'2026-11-'+x.t+':'+String(i % 60).padStart(2,'0')+'Z'},partieFelder([{a:x.s[0],b:x.s[1],art:x.art}])));
+  invalidateCache();const sim=simulateEloWithSliders(matches);matches.forEach((m,i)=>{m.deltas=sim.history[i].deltas;});invalidateCache();
+  _cache._stories=[];const st=_buildStories();
+  const typ=t=>st.filter(x=>(x.dataRef||{}).type===t), karte=id=>st.find(x=>(x.dataRef||{}).matchId===id&&(x.dataRef||{}).type==='spiel')||{};
+  const match=typ('match').find(x=>x.id==='match_f20')||{};
+  const text=st.map(x=>x.title+' '+x.desc).join(' | ');
+  const allein=(()=>{const mm=matches;matches=[mm[20],mm[21]].map(x=>Object.assign({},x,{created_at:'2026-11-22T18:00:00Z'}));
+    matches[1].created_at='2026-11-22T18:20:00Z';invalidateCache();const g=_ehrungGroessere(new Date('2026-11-22T12:00:00').getTime());
+    matches=mm;invalidateCache();return g;})();
+  const r={match:match.title||'', matchDesc:match.desc||'', matchWann:match.when?new Date(match.when).toISOString().slice(11,16):'',
+    runden:typ('runde').length, satz2:karte('f21').title||'', satz3:karte('f22').title||'', revanche:!!_spFakten(matches[21]).revanche,
+    woche:typ('woche').length, wochenEhrung:st.filter(x=>/^ehrung_der_woche/.test(x.id)).length, tagEhrung:st.filter(x=>x.id==='tagesehrung_2026-11-11').length,
+    pleite:(typ('team_loss_streak')[0]||{}).desc||'', kicker:(text.match(/Treffen|direkte Duelle|Duellen|die Runde gegen|und 18:46 Uhr/)||[''])[0],
+    alt:[{type:'runde',paarungen:1},{type:'woche',woche:'2026-W46'},{type:'ehrung',periode:'woche',woche:'2026-11-09'},{type:'runde',paarungen:3}]
+      .map(d=>_storyWiderrufen({dataRef:d})).join(','), allein};
+  matches=_m;players=_p;seasons=_s;cfg=_c;invalidateCache();_cache._stories=[];
+  return r;})()`);
+setNow(new Date(2026, 7, 26, 18, 40).getTime());
+ok(_feed.match === 'P3 und P4 drehen das Match gegen P7 und P5 und gewinnen 2:1'
+  && _feed.matchDesc === '6:7, 7:5, 6:1, 19:13 Games. Der erste Satz ging an P7 und P5.' && _feed.matchWann === '20:16' && _feed.runden === 0,
+  `Drei Sätze derselben Teams sind ein Match mit eigener Karte, die Sätze aus Sicht der Sieger, 90 Minuten nach dem letzten; keine Runde (${_feed.match} / ${_feed.matchDesc} / ${_feed.matchWann})`);
+ok(_feed.satz2 === 'P3 und P4 gleichen im Match zum 1:1 aus' && _feed.satz3 === 'P3 und P4 holen den 3. Satz zum 2:1' && !_feed.revanche,
+  `Ein Satz im Match erzählt den Stand im Match, und der Ausgleich ist keine Revanche (${_feed.satz2} / ${_feed.satz3})`);
+ok(_feed.woche === 0 && _feed.wochenEhrung === 0 && _feed.tagEhrung === 1 && _feed.allein === '',
+  'Eine Woche mit einem Spieltag hat weder Wochenkarte noch Ehrung der Woche, der Tag behält seine, auch als Sonntag');
+ok(/^Ohne gemeinsamen Sieg seit \d\d:\d\d Uhr\.$/.test(_feed.pleite) && _feed.kicker === '',
+  `Am selben Tag nennt die Pleitenserie die Uhrzeit, und kein Text zählt Sätze als Treffen oder Duelle (${_feed.pleite}${_feed.kicker ? ' · ' + _feed.kicker : ''})`);
+ok(_feed.alt === 'true,true,true,false',
+  'Gespeicherte Runden fester Teams und Wochenkarten mit einem Spieltag treten zurück, eine Runde mit wechselnden Partnern bleibt');
+
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');
   hinweiseWeg().add('Probe');const b=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');

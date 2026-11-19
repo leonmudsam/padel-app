@@ -9,6 +9,7 @@ function _newsRubrik(sorte, s){
   const d = (s && s.dataRef) || {};
   if(_isBreaking(s)) return 'BREAKING';
   if(d.type === 'runde') return 'DIE RUNDE';
+  if(d.type === 'match') return 'DAS MATCH';
   if(d.type === 'ehrung') return 'DIE EHRUNG';
   switch(sorte){
     case 'spiel':  return 'AM SPIELTAG';
@@ -390,7 +391,7 @@ function _newsFaeden(cards){
   _newsFadenMemo.set(roh, {m: matches, n: cards.length, map});
   const rohId = new Map(roh.map(x => [x.id, x]));
   const partie = c => { const d = c.dataRef || {};
-    return d.type === 'spiel' || d.type === 'runde' || !!d.matchId
+    return d.type === 'spiel' || d.type === 'runde' || d.type === 'match' || !!d.matchId
       || (d.type === 'sammel' && (d.teile || []).some(t => /^spiel_/.test(String((t && t.id) || '')))); };
   cards = cards.filter(c => !partie(c));
   // Jede Karte → ihre Meldungen.
@@ -647,7 +648,7 @@ function _newsSorte(s){
   const d = (s && s.dataRef) || {};
   const t = d.type || '';
   if(t === 'woche') return 'woche';                       // Zeilen der Wertungen
-  if(t === 'runde') return 'spiel';                       // die Runde der Vier [§11.6c]
+  if(t === 'runde' || t === 'match') return 'spiel';      // Runde und Match [§11.6c]
   if(t === 'ehrung') return 'badge';                      // die Ehrung nach einer Runde [§11.6f]
   if(t === 'insignium_stufe') return 'ins';               // die Leiter
   if(t === 'insignium_tag') return 'ins';                 // die Leiter des Tages
@@ -712,7 +713,7 @@ function _newsSeite(s){
   // Ehrung, die einzelne Auszeichnung, die runden Marken, „Alles auf
   // einmal" und „Gemeinsam geholt".
   if(sorte === 'badge' || sorte === 'spieler' || sorte === 'erfolg') return 'ehrung';
-  if(d.type !== 'ambient' && (d.matchId || ['potd', 'potw', 'woche', 'runde'].includes(d.type)
+  if(d.type !== 'ambient' && (d.matchId || ['potd', 'potw', 'woche', 'runde', 'match'].includes(d.type)
      || (d.type === 'sammel' && d.quelle === 'spiel'))) return 'spieltag';
   return 'liga';
 }
@@ -1113,7 +1114,7 @@ function _newsTagSpannung(s){
 // beantwortet haben — zwei Listen fuer dieselbe Aussage waere eine zu viel.
 const NEWS_TAGKARTE_OHNE = new Set(['ambient', 'dry_spell', 'season_endgame',
   'quiet_week', 'season_start', 'potd', 'potw', 'woche',
-  'season_recap', 'runde', 'ehrung']);
+  'season_recap', 'runde', 'match', 'ehrung']);
 function _newsTagKarteWuerdig(st){
   if(NEWS_TAGKARTE_OHNE.has(((st && st.dataRef) || {}).type || '')) return false;
   if(_newsIstNegativ(st)) return false;
@@ -1363,7 +1364,7 @@ function newsKarteHtml(voll, ersatz){
   return vorschauHtml('newspaper', 'Die Liga-News',
     voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
     [
-      ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu die Runde des Tages.'],
+      ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu jedes Match mit allen seinen Sätzen.'],
       ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
       ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
       ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],

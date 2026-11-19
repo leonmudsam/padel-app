@@ -75,6 +75,7 @@ function _ndMitteRoh(s){
       // Die Runde der Vier [§11.6c]: Tabelle, Aufstellung je Partie und jede
       // Partie mit ihrer Uhrzeit.
       case 'runde': return _newsRundeBlatt(s);
+      case 'match': return _newsMatchBlatt(s);
       // ── Die Ewige Tafel ─────────────────────────────────────────
       // Der ganze Awards-Reiter hatte im Blatt gar keinen Fall: wer eine
       // Rekord-Karte oeffnete, sah den Kopf und den Satz, den er auf der

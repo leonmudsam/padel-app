@@ -308,7 +308,7 @@ function _newsBlattKopf(s){
   let ids = [];
   try { ids = (_newsPids(s) || []).filter(id => pm[id]); } catch(e){}
   // Die Runde hat ihre Tabelle als Kopf; vier Wappen darüber sagten dasselbe.
-  if(d.type === 'runde') return '';
+  if(d.type === 'runde' || d.type === 'match') return '';
   // Das Blatt einer Partie trägt die Zeichnung ihrer Karte als Bühne. Es
   // zeigte einen nackten Stand und darunter zwei Wappen mit „gewinnen diese
   // Partie", während die Karte darüber Court, Pegel oder Revanche trug:

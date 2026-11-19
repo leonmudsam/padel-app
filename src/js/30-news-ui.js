@@ -567,6 +567,7 @@ function _newsGlanzVersatz(id){
 }
 function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
   if(((s && s.dataRef) || {}).type === 'runde') return _newsRundeHtml(s, isRead, fadenHtml);
+  if(((s && s.dataRef) || {}).type === 'match') return _newsMatchHtml(s, isRead, fadenHtml);
   if(((s && s.dataRef) || {}).type === 'ehrung') return _newsEhrungHtml(s, isRead, fadenHtml);
   const dcat = _displayCat(s);
   const meta = NEWS_CATEGORIES[dcat] || NEWS_CATEGORIES.fun;

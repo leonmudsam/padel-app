@@ -122,7 +122,8 @@ function _buildStories(){
   // Die Runde der Vier entsteht dreißig Minuten nach ihrer letzten Partie,
   // auch ohne neue Partie: die Zahl der geschlossenen Runden bricht den Key.
   let _rundenSig = 0;
-  try { const _rn = now.getTime(); _rundenSig = _spBasis().runden.filter(r => r.t + RUNDE_PAUSE_MS <= _rn).length; } catch(e){}
+  try { const _rn = now.getTime(); _rundenSig = _spBasis().runden.filter(r => r.t + RUNDE_PAUSE_MS <= _rn).length
+    + 1000 * _spMatchGruppen().filter(g => _spMatchEnde(g) <= _rn).length; } catch(e){}
   // Und die Partien, die für diese Uhr noch in der Zukunft liegen. Den
   // Zeitpunkt einer Partie setzt der Server, `now` das Telefon: geht dessen
   // Uhr zwei Sekunden nach, gilt die gerade gespeicherte Partie im ersten
@@ -483,7 +484,11 @@ function _buildStories(){
         // zweimal im Feed. Die Zahl steht in der Schlagzeile; hier steht,
         // seit wann. „Seit dem 04.11. gehen drei gemeinsame Spiele in Folge
         // verloren" stand unter „verlieren zusammen zum 3. Mal in Folge".
-        desc: `Ohne gemeinsamen Sieg seit dem ${tagImSatz(t.firstT || t.when)}`,
+        // Am selben Tag die Uhrzeit: „seit dem 11.11." stand unter einer
+        // Karte vom 11.11., an dem die kurzen Sätze Minuten auseinanderlagen.
+        desc: tagKey(t.firstT || t.when) === tagKey(t.when)
+          ? `Ohne gemeinsamen Sieg seit ${datumFmt(t.firstT || t.when, 'uhr')} Uhr.`
+          : `Ohne gemeinsamen Sieg seit dem ${tagImSatz(t.firstT || t.when)}`,
         when: t.when,
         prio: STORY_PRIO.team_loss_streak + (t.streak >= 7 ? 4 : 0),
         dataRef: {type:'team_loss_streak', a:t.ids[0], b:t.ids[1], streak:t.streak,
@@ -1178,8 +1183,10 @@ function _buildStories(){
       }));
       if(kippt) neuSt.push({id:'kippt_' + kippt.w + '_' + kippt.l + '_' + m.id, cat:'rivalry', ic:'crossedSwords',
         title:`${nameOf(kippt.w)} geht im Duell gegen ${nameOf(kippt.l)} in Führung, ${kippt.s}:${kippt.n - kippt.s}`,
-        desc:kippt.zuletzt == null ? `Zum ersten Mal in ${kippt.n} Duellen liegt ${nameOf(kippt.w)} vorn.`
-          : `Zuletzt lag ${nameOf(kippt.w)} vor ${kippt.n - kippt.zuletzt} Duellen vorn.`,
+        // Gezählt sind Sätze gegeneinander; „vor 16 Duellen" las sich wie
+        // sechzehn Matches.
+        desc:kippt.zuletzt == null ? `Zum ersten Mal in ${kippt.n} Sätzen gegeneinander liegt ${nameOf(kippt.w)} vorn.`
+          : `Zuletzt lag ${nameOf(kippt.w)} vor ${kippt.n - kippt.zuletzt} Sätzen gegeneinander vorn.`,
         when:zeit, prio:STORY_PRIO.duell_kippt,
         dataRef:{type:'duell_kippt', pid:kippt.w, gegen:kippt.l, s:kippt.s, n:kippt.n, matchId:m.id, playerIds:[kippt.w, kippt.l]}});
       // (8) Die Woche: ein Sieger übernimmt die beste Siegquote der Woche.
@@ -2380,6 +2387,8 @@ function _buildStories(){
   catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] ehrung', e); }
   try { _newsRundenStories(now.getTime()).forEach(st => stories.push(st)); }
   catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] runde', e); }
+  try { _newsMatchStories(now.getTime()).forEach(st => stories.push(st)); }
+  catch(e){ if(NEWS_DEBUG || window.NEWS_DEBUG) console.warn('[news] match', e); }
 
   // Hinweis (v8.6): Die Konsolidierung gegen Match-Event-Spam (mehrere fast
   // identische Karten pro Match) passiert bewusst NICHT hier im Generator,
@@ -2425,7 +2434,11 @@ function _buildStories(){
   // als Spieltag noch nicht angefangen hat. Erscheint gar nicht, wenn die Woche
   // keine Partie hatte: ein Wochenrückblick ohne Woche ist ein Kalendereintrag.
   try {
-    if(_wocheDue && _wochenTeile.length >= 2){
+    // Eine Woche mit einem einzigen Spieltag ist dieser Spieltag: ihre Karte
+    // wiederholte ihn („20 Sätze an 1 Tag", das Team des Tages als Team der
+    // Woche), wie der Spieler der Woche den des Tages [§C31].
+    const _wocheSpiele = matches.filter(m => { const t = mts(m); return t >= _wocheStart && t < _wocheEnde; });
+    if(_wocheDue && _wochenTeile.length >= 2 && _wocheHatSpieltage(_wocheSpiele)){
       // Die Reihenfolge ist die Wertigkeit, nicht die Reihenfolge, in der die
       // sechs Bloecke im Generator stehen. Das Team der Woche entstand als
       // letztes und stand damit auch als letztes: die zwei Wertungen, die

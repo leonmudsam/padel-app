@@ -951,15 +951,25 @@ function _spFakten(m){
   }));
   const tag = FB.tage.get(tagKey(m.created_at)) || [m];
   F.tag = tag.slice(0, tag.indexOf(m) + 1);
-  // Die Revanche: dieselben zwei Duos haben sich vorher getroffen, und
-  // damals gewann die andere Seite.
+  // Die Revanche: dieselben zwei Duos haben sich in einem früheren Match
+  // getroffen, und damals gewann die andere Seite. Ein Satz im selben Match
+  // ist keine Revanche: wer den ersten verliert und den zweiten gewinnt,
+  // gleicht aus (`_spMatchStand`). Hier zählte der vorige Satz, und ein 1:1
+  // hieß „antworten sofort", ein 2:1 nach verlorenem ersten „holen sich die
+  // Revanche".
   const wSet = W.slice().sort().join(), lSet = L.slice().sort().join();
   const team = (x, s) => _spTeam(x, s).slice().sort().join();
   const vorher = _spEigene(W[0], m).slice(0, -1).reverse().find(x => {
     const a = team(x, 'A'), b = team(x, 'B');
     return (a === wSet && b === lSet) || (a === lSet && b === wSet);
   });
-  if(vorher && _spSieger(vorher).slice().sort().join() === lSet) F.revanche = {vorher, ms:mts(m) - mts(vorher)};
+  const gruppe = _begegnungsGruppen(), dieses = gruppe.get(m.id);
+  const frueher = vorher && gruppe.get(vorher.id) !== dieses ? vorher : null;
+  // Wer das frühere Match gewann, nicht wer seinen letzten Satz.
+  const frueherSieger = frueher ? (() => { const g2 = gruppe.get(frueher.id);
+    const z = g2 ? g2.zeilen[g2.zeilen.length - 1] : frueher, bb = begegnungVon(z);
+    return bb.setsA === bb.setsB ? '' : _spTeam(z, bb.winner).slice().sort().join(); })() : '';
+  if(frueher && frueherSieger === lSet) F.revanche = {vorher:frueher, ms:mts(m) - mts(frueher)};
   F.treffen = _spEigene(W[0], m).filter(x => { const a = team(x, 'A'), b = team(x, 'B');
     return (a === wSet && b === lSet) || (a === lSet && b === wSet); });
   F.pause = W.map(id => { const eig = _spEigene(id, m), v = eig[eig.length - 2];
@@ -1017,23 +1027,46 @@ function _spImMonat(F, art){
 // Die zweite Zeile steht oft unter einem anderen Titel („gewinnen im
 // Tiebreak", „stürzen die Favoriten"): sie muss für sich stehen. Vorher
 // begann sie mit „Das sind …" und bezog sich auf ihren eigenen Titel.
+// Ab dem zweiten Satz eines Matches ist sein Stand die Geschichte: „Max und
+// Lukas gleichen im Match zum 1:1 aus", „Matti und Niggo holen den 3. Satz
+// zum 2:1". Vorher stand dort, was die Kicker-Liga über jede Partie sagte —
+// „gewinnen zum 2. Mal zusammen" über dem Satz, der ein Match drehte, und
+// „Von 5 Treffen dieser beiden Duos gingen 4 an …" über fünf Sätzen
+// desselben Matches. Gezählt wird nur bis zu diesem Satz.
+function _spMatchStand(F){
+  const g = _begegnungsGruppen().get(F.m.id);
+  const bis = g ? g.zeilen.slice(0, g.zeilen.indexOf(F.m) + 1) : [F.m];
+  if(bis.length < 2) return null;
+  const w = F.W[0], sw = bis.filter(z => _spGew(z, w)).length, sl = bis.length - sw;
+  const gw = bis.reduce((a, z) => a + (teamVon(z, w) === 'A' ? z.games_a : z.games_b), 0);
+  const gl = bis.reduce((a, z) => a + (teamVon(z, w) === 'A' ? z.games_b : z.games_a), 0);
+  return {nr:bis.length, sw, sl, gw, gl};
+}
+const _spSaetzeAn = (s, W) => `${s === 1 ? 'ging einer' : `gingen ${_spZahl(s)}`} an ${W}`;
 function _spKontext(F){
   const W = _spNl(F.W), L = _spNl(F.L), n = F.treffen.length;
   const s = F.treffen.filter(x => _spGew(x, F.W[0])).length;
+  const st = _spMatchStand(F);
+  if(st) return {
+    t:st.sw === st.sl ? `${W} gleichen im Match zum ${st.sw}:${st.sl} aus`
+      : st.sw > st.sl ? `${W} holen den ${_spZahl(st.nr)}. Satz zum ${st.sw}:${st.sl}`
+      : `${W} verkürzen im Match auf ${st.sw}:${st.sl}`,
+    d:n > st.nr ? `Gegen ${L} sind es damit ${_spZahl(s)} von ${_spZahl(n)} Sätzen.`
+      : `Im Match steht es ${_spZahl(st.gw)}:${_spZahl(st.gl)} in Games.`};
   const wahl = [];
   if(n >= 3) wahl.push({
-    t:s * 2 > n ? (s - 1) * 2 <= n - 1 ? `${W} gehen gegen ${L} in Führung` : `${W} bleiben gegen ${L} vorn`
-      : s * 2 === n ? `${W} gleichen gegen ${L} aus` : `${W} verkürzen gegen ${L}`,
-    d:`Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.`});
-  if(F.duo.p >= 2) wahl.push({t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
+    t:s * 2 > n ? (s - 1) * 2 <= n - 1 ? `${W} gehen in der Bilanz gegen ${L} in Führung` : `${W} bleiben in der Bilanz gegen ${L} vorn`
+      : s * 2 === n ? `${W} gleichen die Bilanz gegen ${L} aus` : `${W} verkürzen in der Bilanz gegen ${L}`,
+    d:`Von ${_spZahl(n)} Sätzen dieser beiden Duos ${_spSaetzeAn(s, W)}.`});
+  if(F.duo.p >= 2) wahl.push({t:`${W} gewinnen zum ${F.duo.s === 1 ? 'ersten' : _spZahl(F.duo.s) + '.'} Mal zusammen`,
     d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   const tag = F.W.map(id => { const l = F.tag.filter(x => [x.a1, x.a2, x.b1, x.b2].includes(id));
     return {id, k:l.length, w:l.filter(x => _spGew(x, id)).length}; }).filter(x => x.k >= 3).sort((a, b) => b.w - a.w)[0];
   if(tag) wahl.push({t:`${_spName(tag.id)} holt den ${_spZahl(tag.w)}. Sieg des Tages`,
     d:`${_spName(tag.id)} kommt an diesem Tag auf ${_spZahl(tag.w)} ${tag.w === 1 ? 'Sieg' : 'Siege'} aus ${_spZahl(tag.k)} Sätzen.`});
   if(!wahl.length) wahl.push(F.duo.p <= 1 ? {t:`${W} gewinnen den ersten gemeinsamen Satz`,
-      d:n > 1 ? `Von ${_spZahl(n)} Treffen dieser beiden Duos gingen ${_spZahl(s)} an ${W}.` : `Es ist das erste Treffen dieser beiden Duos.`}
-    : {t:`${W} gewinnen zum ${_spZahl(F.duo.s)}. Mal zusammen`,
+      d:n > 1 ? `Von ${_spZahl(n)} Sätzen dieser beiden Duos ${_spSaetzeAn(s, W)}.` : `Es ist der erste Satz dieser beiden Duos gegeneinander.`}
+    : {t:`${W} gewinnen zum ${F.duo.s === 1 ? 'ersten' : _spZahl(F.duo.s) + '.'} Mal zusammen`,
       d:`Zusammen ${_spZahl(F.duo.s)} von ${_spZahl(F.duo.p)} Sätzen gewonnen, ${_spZahl(Math.round(F.duo.s / F.duo.p * 100))} %.`});
   return wahl[_spVisualHash(F.m.id + '|kontext') % wahl.length];
 }
@@ -1156,9 +1189,8 @@ const SP_FORM = {
       return {t:F.revanche.ms <= 1800000 ? `${_spNl(F.W)} antworten sofort` : `${_spNl(F.W)} holen sich die Revanche`,
         // Die Bilanz steht als Satz und nicht als „x:y": ein zweiter Stand im Text
         // neben dem der Partie liest sich als ihr Ergebnis.
-        d:n <= 2 ? `Es ist das ${n}. Treffen dieser beiden Duos.`
-          : s === n - s ? `Von ${n} Treffen dieser beiden Duos gingen je ${s} an jede Seite.`
-          : `Von ${n} Treffen dieser beiden Duos gingen ${Math.max(s, n - s)} an ${_spNl(s > n - s ? F.W : F.L)}.`};
+        d:s === n - s ? `Von ${n} Sätzen dieser beiden Duos gingen je ${s} an jede Seite.`
+          : `Von ${n} Sätzen dieser beiden Duos ${_spSaetzeAn(Math.max(s, n - s), _spNl(s > n - s ? F.W : F.L))}.`};
     }},
   // Gipfeltreffen: der Erste und der Zweite der Monatstabelle am selben Tisch.
   gipfel:{rang:26, ic:'peak',
@@ -2507,6 +2539,11 @@ function _newsRundeStory(r, ende){
   const vorn = spieler.filter(x => x.w === top.w).map(x => x.id);
   const n = ms.length;
   const paarungen = new Set(ms.map(m => paarKey([m.a1, m.a2].sort().join('+'), [m.b1, m.b2].sort().join('+')))).size;
+  // Spielen immer dieselben zwei Teams, ist es ein Match, und das erzählt
+  // seine eigene Karte (`_newsMatchStory`). Die Runde der Kicker-Liga stand
+  // dann als „Ferdi und Niggo gewinnen die Runde gegen Matti und Lukas 2:1"
+  // im Feed. Sie bleibt für vier, die die Partner wechseln.
+  if(paarungen === 1) return null;
   // Die Schlagzeile nennt, wer die Runde gewonnen hat. Spielen immer
   // dieselben zwei Teams, ist es ein Duell und kein Turnier: dann gewinnt
   // ein Team oder beide trennen sich. Wechseln die Paarungen und steht
@@ -2528,13 +2565,101 @@ function _newsRundeStory(r, ende){
     title = `${_namenListe(vorn.map(_spName))} teilen sich die Runde`;
   }
   // Die Uhrzeiten stehen im Satz: an ihnen lässt sich die Runde nachlesen.
-  const desc = `${n} Sätze zwischen ${datumFmt(mts(ms[0]), 'uhr')} und ${datumFmt(mts(ms[n - 1]), 'uhr')} Uhr`
+  // Wurden alle Sätze in derselben Minute eingetragen, steht eine Uhrzeit
+  // da: „zwischen 19:46 und 19:46 Uhr" sagte nichts.
+  const von = datumFmt(mts(ms[0]), 'uhr'), bis = datumFmt(mts(ms[n - 1]), 'uhr');
+  const desc = (von === bis ? `${n} Sätze, eingetragen um ${von} Uhr` : `${n} Sätze zwischen ${von} und ${bis} Uhr`)
     + (paarungen === 3 ? ', jede Paarung mindestens einmal.' : paarungen > 1 ? `, ${paarungen} verschiedene Paarungen.` : ', immer dieselben Teams.');
   return {
     id:'runde_' + ms[0].id, cat:'highlight', ic:'users', when:new Date(ende),
     prio:STORY_PRIO.runde, title, desc,
     dataRef:{type:'runde', matchIds:ms.map(m => m.id), playerIds:ids, spieler, paarungen}
   };
+}
+// ── Das Match [§C33, §1.3] ───────────────────────────────────────────
+// Sätze derselben zwei Paare direkt hintereinander am selben Tag sind ein
+// Match (`begegnungVon`), dasselbe, das der Verlauf „Match 2:1" nennt. Ab
+// zwei Sätzen bekommt es eine Karte, sobald es zu ist: `BEGEGNUNG_PAUSE_MIN`
+// nach seinem letzten Satz kommt keiner mehr dazu, und die Karte sagt kein
+// 2:1, aus dem später ein 3:1 wird. Vorher stand an dieser Stelle die Runde
+// der Kicker-Liga — dieselben vier, ab drei Partien —, mit „gewinnen die
+// Runde" in der Schlagzeile, „zwischen 19:46 und 19:46 Uhr" im Satz und
+// jedem Satz aus Sicht seines Siegers (7:6, 7:5, 6:1, obwohl der zweite
+// verloren ging). Ein Satz allein ist kein Match; ihn erzählt seine Karte.
+const _spMatchMemo = new WeakMap();
+function _spMatchGruppen(){
+  let l = _spMatchMemo.get(matches);
+  if(l) return l;
+  l = [...new Set(_begegnungsGruppen().values())].filter(g => g.zeilen.length >= 2);
+  _spMatchMemo.set(matches, l);
+  return l;
+}
+const _spMatchEnde = g => mts(g.zeilen[g.zeilen.length - 1]) + BEGEGNUNG_PAUSE_MIN * 60000;
+function _newsMatchStories(nowMs){
+  const seit = nowMs - NEWS_FENSTER_TAGE * 86400000;
+  return _spMatchGruppen().filter(g => _spMatchEnde(g) <= nowMs && mts(g.zeilen[0]) >= seit)
+    .map(g => _newsMatchStory(g, _spMatchEnde(g))).filter(Boolean);
+}
+function _newsMatchStory(g, ende){
+  const ms = g.zeilen, letzte = ms[ms.length - 1];
+  // Aus Sicht von Team A des letzten Satzes; die Sätze sind dorthin gedreht.
+  const b = begegnungVon(letzte);
+  const A = _spTeam(letzte, 'A'), B = _spTeam(letzte, 'B');
+  // Gleich viele Sätze heißt unentschieden, auch wenn die Games einen
+  // Sieger hätten: „gewinnen das Match 1:1" ist keiner.
+  const remis = b.setsA === b.setsB, bv = !remis && b.winner === 'B';
+  const W = bv ? B : A, L = bv ? A : B;
+  const sw = bv ? b.setsB : b.setsA, sl = bv ? b.setsA : b.setsB;
+  const gw = bv ? b.gamesB : b.gamesA, gl = bv ? b.gamesA : b.gamesB;
+  const nl = ids => _namenListe(ids.map(_spName));
+  // Je Zeile ihre Sätze, gedreht wie in `begegnungVon`: eine alte Zeile
+  // kann mehrere tragen, und jeder Satz kennt so seine Zeile.
+  const aRef = _paarSchluessel(letzte.a1, letzte.a2), saetze = [];
+  ms.forEach(z => { const dreh = _paarSchluessel(z.a1, z.a2) !== aRef;
+    partieSaetze(z).forEach(x => { const a = dreh ? x.b : x.a, c = dreh ? x.a : x.b, t = bv ? `${c}:${a}` : `${a}:${c}`;
+      saetze.push({mid:z.id, s:x.art === 'open' ? `(${t})` : t, w:bv ? c > a : a > c}); }); });
+  const title = remis ? `${nl(A)} trennen sich von ${nl(B)} ${sw}:${sl}`
+    : b.wende ? `${nl(W)} drehen das Match gegen ${nl(L)} und gewinnen ${sw}:${sl}`
+    : `${nl(W)} gewinnen das Match gegen ${nl(L)} ${sw}:${sl}`;
+  const desc = `${saetze.map(x => x.s).join(', ')}, ${gw}:${gl} Games.`
+    + (b.wende ? ` Der erste Satz ging an ${nl(L)}.` : '');
+  const ids = W.concat(L);
+  const spieler = ids.map(id => {
+    const x = {id, w:0, l:0, e:0};
+    ms.forEach(m => { _spGew(m, id) ? x.w++ : x.l++; x.e += _newsEloDelta(id, m.id) || 0; });
+    return x;
+  });
+  return {
+    id:'match_' + ms[0].id, cat:'highlight', ic:'spielfeld', when:new Date(ende),
+    prio:STORY_PRIO.match, title, desc,
+    dataRef:{type:'match', matchIds:ms.map(m => m.id), playerIds:ids, spieler, sieger:remis ? null : W, saetze, wende:!!b.wende}
+  };
+}
+// Die Sätze des Matches aus Sicht seiner Sieger, ein abgegebener leiser.
+function _spMatchStreifen(d){
+  return `<div class="sp-rs">${(d.saetze || []).map((x, i) => {
+    const m = x.mid ? _spMatch(x.mid) : null;
+    return `<span class="sp-rs-z${x.w ? '' : ' ab'}" style="--i:${i}">${m ? `<i class="num">${datumFmt(mts(m), 'uhr')}</i>` : ''}<b class="num">${esc(x.s)}</b></span>`;
+  }).join('')}</div>`;
+}
+function _newsMatchHtml(s, isRead, fadenHtml){
+  const d = s.dataRef || {};
+  return `<div class="nf-card nf-s-spiel nf-runde nf-match nfc-${esc(s.cat || 'fun')}${isRead ? ' read' : ''}" data-sid="${esc(s.id)}">
+    ${_newsMotiv('spiel', s)}
+    <div class="nf-top"><span class="nf-rub"><i>${svgI('spielfeld')}</i><b>DAS MATCH</b></span>
+      <span class="nf-when">${svgI('clock')}${esc(_newsUhrzeit(s.when))}${isRead ? '' : '<span class="nf-dot"></span>'}</span></div>
+    <div class="nf-gr"><div class="nf-gr-r"><div class="nf-h">${esc(s.title)}</div><div class="nf-d">${_newsBetont(s.desc || '')}</div></div>
+      <span class="nf-chev">${svgI('chevron')}</span></div>
+    ${_spRundeKurz(d.spieler || [])}${_spMatchStreifen(d)}${fadenHtml || ''}</div>`;
+}
+// Das Blatt des Matches: die Elo jedes Spielers darin und jeder Satz als
+// Zeile, die ihr eigenes Blatt öffnet. Die Matrix „Wer mit wem" der Runde
+// fehlt: im Match stehen alle Sätze dieselben Paare.
+function _newsMatchBlatt(s){
+  const d = s.dataRef || {};
+  if(!(d.matchIds || []).length) return '';
+  return `<div class="nd-section">Die Elo im Match</div>${_spRundeTafel(d.spieler)}`
+    + `<div class="nd-section">Die Sätze</div><div class="sp-rd-ps nd-rd">${d.matchIds.map((mid, i) => _spRundeZeile(mid, i, true)).join('')}</div>`;
 }
 // Der Anlass einer Partie der Runde: aus ihrer Karte im Feed, damit die Zeile
 // dasselbe Zeichen trägt wie die Karte darüber [§C27].
@@ -2621,7 +2746,7 @@ function _newsRundeHtml(s, isRead, fadenHtml){
       <span class="nf-chev">${svgI('chevron')}</span></div>
     ${_spRundeKurz(d.spieler || [])}${_spRundeStreifen(ps)}${fadenHtml || ''}</div>`;
 }
-// Das Blatt der Runde: die Tabelle, wer mit wem an welcher Stange stand, und
+// Das Blatt der Runde: die Tabelle, wer mit wem auf welcher Seite stand, und
 // jede Partie mit ihrer Uhrzeit. Die Aufstellung ist eine Matrix — eine
 // Spalte je Partie, eine Zeile je Spieler —, in Blöcken zu acht:
 // dreiundzwanzig Spalten wären auf einem Telefon Striche.
@@ -2637,7 +2762,9 @@ function _newsRundeBlatt(s){
     + `<span></span>${bl.map(m => `<span class="sp-rm-u num">${datumFmt(mts(m), 'uhr')}</span>`).join('')}`
     + ids.map(id => `${_spChip(id)}${bl.map(m => {
         const w = _spGew(m, id), r = rolle(m, id);
-        return `<span class="sp-rm-z ${w ? 'w' : 'l'}">${r === 'reves' ? 'A' : r === 'drive' ? 'S' : ''}</span>`;
+        // L für Revés, R für Drive, wie im Verlauf. Hier standen A und S, die
+        // Abwehr und der Sturm des Kickertischs.
+        return `<span class="sp-rm-z ${w ? 'w' : 'l'}">${r === 'reves' ? 'L' : r === 'drive' ? 'R' : ''}</span>`;
       }).join('')}`).join('') + `</div>`).join('');
   // Die Zeilen stehen in derselben Folge wie die Tabelle darüber, mit
   // Gesicht. Eine Legende („Von oben nach unten: … S steht für Sturm, A für

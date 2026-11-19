@@ -407,6 +407,8 @@ const STORY_PRIO = {
   // Die Runde der Vier fasst Partien zusammen, die jede schon ihre Karte
   // haben [§11.6c]: sie steht knapp unter der einzelnen Partie.
   runde:             40,
+  // Das Match fasst seine Sätze zusammen wie die Runde [§C33].
+  match:             40,
   // Die Ehrung nach einer Runde [§11.6f]: über der Runde, unter dem Zeichen.
   ehrung:            41,
   match_result:      63,   // ein außergewöhnliches, exakt belegtes Ergebnis

@@ -171,6 +171,14 @@ function _storyWiderrufen(s){
     const m = d.matchId ? _spMatch(d.matchId) : null;
     return !!m && _spieltagDerWoche(m) < WOCHE_MIN_SPIELTAGE;
   }
+  // Eine Runde, in der immer dieselben zwei Teams standen, war ein Match;
+  // das erzählt jetzt seine eigene Karte (`_newsMatchStory`) [§C33].
+  if(d.type === 'runde') return Number(d.paarungen) === 1;
+  // Die Karte und die Ehrung einer Woche mit nur einem Spieltag wiederholten
+  // ihn; gespeicherte treten zurück wie neue nicht mehr entstehen [§C31].
+  if(d.type === 'woche' && d.woche) return !_gewerteteWochen(matches || []).has(d.woche);
+  if(d.type === 'ehrung' && d.periode === 'woche' && d.woche)
+    return !_gewerteteWochen(matches || []).has(_wochenKey(new Date(d.woche + 'T12:00:00').getTime()));
   if(d.type !== 'karriereende') return false;
   const p = pmap()[d.pid];
   return !p || !p.retired_at || ruhestandMs(p) !== Date.parse(d.retiredAt);
@@ -605,7 +613,7 @@ function _consolidateStoriesLegacy(list){
   // Die Runde fasst ihre Partien zusammen wie der Spieler des Tages seinen
   // Tag: es gibt sie je Runde genau einmal, also wiederholt sie nichts.
   const _OHNE_SPERRE = new Set(['ambient', 'sammel', 'season_endgame', 'spiel',
-                                'potd', 'woche', 'season_recap', 'runde',
+                                'potd', 'woche', 'season_recap', 'runde', 'match',
                                 'ehrung', 'karriereende']);
   const _aussage = st => {
     const d = (st && st.dataRef) || {};
@@ -1836,7 +1844,7 @@ function _consolidateStoriesLegacy(list){
   // derselben Woche zu unterschlagen wäre genau der Fehler, den die Regel
   // verhindern soll. Und `ambient`/`group` sind ohnehin je Slot einzeln.
   const OHNE_DECKEL = new Set(['lead_change','elo_record','streak_record',
-                               'season_endgame','ambient','group','runde','ehrung']);
+                               'season_endgame','ambient','group','runde','match','ehrung']);
   const NF_DECKEL = Number.POSITIVE_INFINITY;
   // Eine Sammelkarte zaehlt nach ihrer ACHSE mit, nicht als „sammel". Sie war
   // ganz ausgenommen, und gemessen standen am 26.08. vier Karten „Ein Spiel,

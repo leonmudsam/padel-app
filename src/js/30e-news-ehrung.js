@@ -224,9 +224,12 @@ function _ehrungVereint(listen){
 // des Tages bleibt, ohne Ehrung, ein Tag ohne ihn hat keine Karte, und die
 // Woche, die mit dem Monat endet, hat keine eigene Ehrung. 'monat', 'woche'
 // oder '' für einen Tag (irgendeine Zeit in ihm).
+// Die Woche trägt ihren Sonntag nur, wenn sie eine eigene Ehrung hat, also
+// zwei Spieltage (`_gewerteteWochen`): sonst verlöre ein Sonntag, der der
+// einzige Spieltag seiner Woche war, seine Ehrung an eine, die es nicht gibt.
 function _ehrungGroessere(tagMs){
   if(tagKey(seasonEnd(seasonOf(tagMs).id).getTime()) === tagKey(tagMs)) return 'monat';
-  return new Date(tagMs).getDay() === 0 ? 'woche' : '';
+  return new Date(tagMs).getDay() === 0 && _gewerteteWochen(matches || []).has(_wochenKey(tagMs)) ? 'woche' : '';
 }
 
 // ── Die Ehrung eines Tages ────────────────────────────────────────────
@@ -282,6 +285,11 @@ function _newsZeitraumEhrungen(nowMs){
     const ende = new Date(ab); ende.setDate(ende.getDate() + 7);
     const S = ende.getTime();
     if(S > nowMs || S < seit || _ehrungGroessere(S - 1) === 'monat') return;
+    // Eine Woche mit einem Spieltag ehrt nichts, was der Tag nicht schon
+    // ehrte: ihr Schluss vergibt nur den Spieler der Woche, und den gibt es
+    // erst ab zwei Spieltagen [§C31]. Ihre Ehrung stand mit denselben 74
+    // Auszeichnungen vier Tage nach der des Tages im Feed.
+    if(!_gewerteteWochen(matches || []).has(_wochenKey(ab))) return;
     const st = _ehrungKarte(_ehrungAusLaufbahn(rcpWocheLaufbahn(ab, S - 1)), 'ehrung_der_woche_' + tagKey(ab), S - 60000 + 5000,
       {periode:'woche', woche:tagKey(ab), von:ab, bis:S - 1, breaking:_ehrungBrkGrund('woche', S).length > 0});
     if(st) out.push(st);
