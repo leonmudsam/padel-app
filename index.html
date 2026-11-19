@@ -6771,7 +6771,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.18.7f6581b7';
+const BUILD_VERSION='2026.11.19.a03aba88';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -12422,16 +12422,21 @@ function ligaVorschauHtml(){
     [
       [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
       ['court', '2. Sätze eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz zählt für sich.'],
-      ['chartBar', '3. Rangliste lesen', 'Saison ist der laufende Monat, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.'],
+      ['chartBar', '3. Rangliste lesen', `Saison ist der laufende Monat, Woche die Kalenderwoche ab ihrem ${WOCHE_MIN_SPIELTAGE}. Spieltag, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.`],
       ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
     ]);
 }
+function ligaWocheOffen(){
+  return _wocheHatSpieltage(matchesInPeriod('week'));
+}
 function _vRankingCore(){
+  if(period==='week' && !ligaWocheOffen()) period='season';
   const sid = ligaSaisonId(), laeuft = ligaSaisonLaeuft();
   const saisonArg = period==='season' ? sid : undefined;
   const periodBar=`
     <div class="ui-switch">
       <button data-period="season" class="${period==='season'?'on':''}">Saison</button>
+      ${ligaWocheOffen()?`<button data-period="week" class="${period==='week'?'on':''}">Woche</button>`:''}
       <button data-period="day" class="${period==='day'?'on':''}">Tag</button>
       <button data-period="all" class="${period==='all'?'on':''}">Gesamt</button>
     </div>`;
@@ -12458,20 +12463,8 @@ function _vRankingCore(){
     if(period==='season'){
       winner=ps.length&&ps[0].games>0?ps[0]:null;
     } else {
-      const minWins = period==='week' ? PERIODE_MIN_SIEGE.woche : period==='day' ? PERIODE_MIN_SIEGE.tag : 1;
-      const qual=ps.filter(x=>x.wins>=minWins);
-      if(period==='week'){
-        winner=qual.length?[...qual].sort((a,b)=>
-          (b.wins/b.games)-(a.wins/a.games)
-          ||b.wins-a.wins
-          ||b.eloNet-a.eloNet
-        )[0]:null;
-      } else {
-        winner=qual.length?[...qual].sort((a,b)=>
-          b.wins-a.wins
-          ||b.eloNet-a.eloNet
-        )[0]:null;
-      }
+      const erster=_periodeRangliste(periodMs, period==='week'?'woche':'tag', true)[0];
+      winner=erster?ps.find(x=>x.id===erster.id)||null:null;
     }
     const RAV = 52;
     const feuerAn = period!=='season' || laeuft;
@@ -13242,13 +13235,14 @@ function _awardRankingsUncached(period, sid){
   const visiblePlayers = players.filter(dabei);
   const eigene = {};
   const laufendeWoche = _wochenKey(Date.now());
+  const gewerteteWochen = _gewerteteWochen(matches);
   ms.forEach(m => {
     const d = mdayKey(m), w = _wochenKey(m.created_at), zu = _tagZu(d);
     [m.a1, m.a2, m.b1, m.b2].forEach(id => {
       if(!id) return;
       const e = eigene[id] || (eigene[id] = {tage:new Set(), wochen:new Set()});
       if(zu) e.tage.add(d);
-      if(w !== laufendeWoche) e.wochen.add(w);
+      if(w !== laufendeWoche && gewerteteWochen.has(w)) e.wochen.add(w);
     });
   });
   const koenig = (id, v, n, ab) => ({id, v, n, q:n ? v / n : 0, gilt:n >= ab});
@@ -14037,8 +14031,8 @@ function openTopList(kind){
       rows:list.map(k=>({ids:[k.id], name:pname(k.id), val:Math.round(k.q*100)+' %',
         detail:`${k.v} von ${k.n} ${isWeek?'Wochen':'Spieltagen'}`+(k.gilt?'':` · ab ${isWeek?KOENIG_MIN.woche:KOENIG_MIN.tag}`)})),
       why:isWeek
-        ? `Der Anteil der eigenen abgeschlossenen Wochen, die ein Spieler als Bester beendet hat (mit mindestens 5 Siegen), ab ${KOENIG_MIN.woche} Wochen.`
-        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens 3 Siegen), ab ${KOENIG_MIN.tag} Spieltagen.`});
+        ? `Der Anteil der eigenen abgeschlossenen Wochen mit mindestens ${WOCHE_MIN_SPIELTAGE} Spieltagen, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.woche} Siegen), ab ${KOENIG_MIN.woche} Wochen.`
+        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.tag} Siegen), ab ${KOENIG_MIN.tag} Spieltagen.`});
   }
 }
 
@@ -19855,7 +19849,7 @@ function _processAchToastQueue(){
 
 const HILFE = {
   liga: {titel:'Liga', absaetze:[
-    '<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.',
+    () => `<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Woche</b> steht da, sobald die Woche ${WOCHE_MIN_SPIELTAGE} Spieltage hat, wie der Player of the Week. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.`,
     'Die Reiter über der Liste sortieren um: Elo, Quote, Game-Bilanz und mehr. Ein Name öffnet das Profil.',
     'Sätze trägt das Plus unten rechts ein. Mehrere Sätze derselben Paare direkt hintereinander zählen außerdem als Match.']},
   seiten: {titel:'Seiten', absaetze:[

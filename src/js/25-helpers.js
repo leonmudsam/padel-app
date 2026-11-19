@@ -244,7 +244,7 @@ function _processAchToastQueue(){
 // über der Liste, die sonst jeder bei jedem Öffnen wegscrollen müsste.
 const HILFE = {
   liga: {titel:'Liga', absaetze:[
-    '<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.',
+    () => `<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Woche</b> steht da, sobald die Woche ${WOCHE_MIN_SPIELTAGE} Spieltage hat, wie der Player of the Week. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.`,
     'Die Reiter über der Liste sortieren um: Elo, Quote, Game-Bilanz und mehr. Ein Name öffnet das Profil.',
     'Sätze trägt das Plus unten rechts ein. Mehrere Sätze derselben Paare direkt hintereinander zählen außerdem als Match.']},
   seiten: {titel:'Seiten', absaetze:[

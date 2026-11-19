@@ -40,8 +40,8 @@ ok(jahr.wochen.join() === '2026-W53',
 // ── Der Fortschritt in der Liga nach dem Kalender ─────────────────────
 // Der Oktober hat mit der Umstellung 31 Tage und eine Stunde. Gerechnet in
 // Millisekunden durch vierundzwanzig Stunden stand „Tag 27 von 32".
-const lauf = (t, per) => { setNow(t); return K(`(()=>{tab='ranking';period=${JSON.stringify(per)};ligaSeasonId=null;
-  matches=[__p('l1',${B(2026, 9, 3, 15)},1)];invalidateCache();
+const lauf = (t, per, tage = [B(2026, 9, 3, 15)]) => { setNow(t); return K(`(()=>{tab='ranking';period=${JSON.stringify(per)};ligaSeasonId=null;
+  matches=[${tage.map((x, i) => `__p('l${i}',${x},1)`).join(',')}];invalidateCache();
   const h=vRanking(), m=h.match(/<span class="lauf-t">[^<]*<b class="num">(\\d+)<\\/b> von <b class="num">(\\d+)<\\/b>/),
     z=(h.match(/<span class="lauf-z"[^>]*>([\\s\\S]*?)<\\/span>/)||[,''])[1];
   return m ? m[1]+'/'+m[2]+'/'+(z.match(/<i/g)||[]).length+'/'+((z.match(/<i[^>]*class="[^"]*\\bh\\b/g)||[]).length) : 'fehlt';})()`); };
@@ -49,8 +49,13 @@ const okt27 = lauf(B(2026, 9, 27, 12), 'season'), okt31 = lauf(B(2026, 9, 31, 23
 const mrz31 = lauf(B(2026, 2, 31, 0, 30), 'season');
 ok(okt27 === '27/31/31/1' && okt31 === '31/31/31/1' && mrz31 === '31/31/31/1',
   'Die Saison zählt die Tage des Monats nach dem Kalender, auch mit Zeitumstellung: ' + [okt27, okt31, mrz31].join(' '));
-const woche = lauf(B(2026, 2, 30, 0, 30), 'week'), tag = lauf(B(2026, 9, 25, 10, 30), 'day');
-ok(woche === '1/7/7/1' && tag === '11/24/24/1',
+// Die Woche zeigt die Liga erst ab ihrem zweiten Spieltag [§C28]; hier
+// Dienstag und Donnerstag vor der Umstellung auf die Winterzeit, die Uhr am
+// Sonntag danach um 23:30. In Millisekunden ab Montag gezählt ist das ein
+// achter Tag, weil die Woche eine Stunde länger ist.
+const woche = lauf(B(2026, 9, 25, 23, 30), 'week', [B(2026, 9, 20, 15), B(2026, 9, 22, 15)]),
+  tag = lauf(B(2026, 9, 25, 10, 30), 'day');
+ok(woche === '7/7/7/1' && tag === '11/24/24/1',
   'Woche und Tag rahmen den Tag und die Stunde, die die Uhr zeigt: ' + woche + ' ' + tag);
 
 // ── Ein Tag endet an der nächsten Mitternacht ─────────────────────────

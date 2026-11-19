@@ -443,16 +443,23 @@ function _awardRankingsUncached(period, sid){
   // selbst (`_tagZu`, die laufende Woche nicht). Wer weniger als
   // `KOENIG_MIN` hat, steht hinter allen anderen: ein Titel aus einem
   // einzigen Spieltag ist kein Anteil.
+  // Eine Woche zählt nur, wenn es in ihr einen Player of the Week geben
+  // konnte, also ab zwei Spieltagen der Liga (`_gewerteteWochen`). Gezählt
+  // über alle Partien der Liga, nicht nur die des Zeitraums: eine Woche über
+  // den Monatswechsel hat ihre Spieltage in zwei Saisons. Vorher stand jede
+  // Woche mit einem Spieltag im Nenner, die niemand gewinnen konnte, und der
+  // Anteil sank mit jeder.
   const visiblePlayers = players.filter(dabei);
   const eigene = {};
   const laufendeWoche = _wochenKey(Date.now());
+  const gewerteteWochen = _gewerteteWochen(matches);
   ms.forEach(m => {
     const d = mdayKey(m), w = _wochenKey(m.created_at), zu = _tagZu(d);
     [m.a1, m.a2, m.b1, m.b2].forEach(id => {
       if(!id) return;
       const e = eigene[id] || (eigene[id] = {tage:new Set(), wochen:new Set()});
       if(zu) e.tage.add(d);
-      if(w !== laufendeWoche) e.wochen.add(w);
+      if(w !== laufendeWoche && gewerteteWochen.has(w)) e.wochen.add(w);
     });
   });
   const koenig = (id, v, n, ab) => ({id, v, n, q:n ? v / n : 0, gilt:n >= ab});

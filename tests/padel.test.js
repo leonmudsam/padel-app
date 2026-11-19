@@ -128,7 +128,7 @@ for(const [n, c] of Object.entries(ANSICHTEN)) html[n] = K(c);
 const ohne = Object.keys(html).filter(n => !html[n].includes('class="vorschau"'));
 ok(!ohne.length, 'Jede Ansicht der leeren Liga trägt eine Vorschau' + (ohne.length ? ': fehlt in ' + ohne.join(', ') : ''));
 ok(!/data-period="week"|data-awperiod="week"/.test(html['Liga Saison'] + html['Awards']),
-  'Kein Wochenfilter: die Liga kennt Saison, Tag und Gesamt, die Awards nur die Saison');
+  'Ohne Spieltag in der Woche kein Wochenreiter: die Liga bietet Saison, Tag und Gesamt, die Awards nur die Saison');
 ok(/data-period="season"[\s\S]*data-period="day"[\s\S]*data-period="all"/.test(html['Liga Saison']),
   'Die Liga bietet Saison, Tag und Gesamt in dieser Reihenfolge');
 ok((html['Awards'].match(/class="aw-trophy/g) || []).length >= 30,
@@ -363,6 +363,50 @@ ok(_spitze.dienstag === 0 && _spitze.donnerstag >= 1 && _spitze.tagNr === '1,2',
   `Die Wochenspitze im Feed erst ab dem zweiten Spieltag der Woche (${_spitze.dienstag} am ersten, ${_spitze.donnerstag} am zweiten)`);
 ok(_spitze.widerrufen && _spitze.gilt,
   'Eine schon gespeicherte Wochenspitze vom ersten Spieltag gilt nicht mehr, eine vom zweiten bleibt');
+
+// Der Reiter „Woche" in der Liga erst ab dem zweiten Spieltag der Woche,
+// mit demselben Spieler der Woche wie die Auszeichnung. Heute ist Mittwoch,
+// der 26. August; die Woche begann am Montag. Am Montag gewinnen p1 und p2
+// fünf Sätze, am Mittwoch p5 und p6 sechs von sieben mit mehr Elo: die
+// Woche geht nach der Quote an p1, der Tag nach den Siegen an p5.
+const _wochenReiter = J(`(()=>{const _m=matches,_p=players,_s=seasons,_per=period;
+  players=['p1','p2','p3','p4','p5','p6'].map(id=>({id,name:id.toUpperCase(),hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=(id,tag,std,[a1,a2,b1,b2],d)=>({id,a1,a2,b1,b2,a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a:6,b:3,art:'n'}]),deltas:{[a1]:d,[a2]:d,[b1]:-d,[b2]:-d},exp_a:.5,created_at:new Date(2026,7,tag,std,0).toISOString()});
+  const montag=Array.from({length:5},(_,i)=>mk('m'+i,24,10+i,['p1','p2','p3','p4'],1));
+  const mittwoch=Array.from({length:6},(_,i)=>mk('w'+i,26,9+i,['p5','p6','p3','p4'],5)).concat([mk('w9',26,15,['p3','p4','p5','p6'],5)]);
+  const lauf=(ms,per)=>{matches=ms;period=per;invalidateCache();const h=_vRankingCore();
+    const name=(h.match(/class="nw-name">([^<]*)</)||[])[1]||null;
+    return {reiter:/data-period="week"/.test(h), folge:/data-period="season"[\\s\\S]*data-period="week"[\\s\\S]*data-period="day"[\\s\\S]*data-period="all"/.test(h),
+      potw:h.includes('Player of the Week'), name, nachher:period,
+      saisonAn:/data-period="season" class="on"/.test(h), offen:ligaWocheOffen(),
+      auszeichnung:(_periodeRangliste(matchesInPeriod('week'),'woche',true)[0]||{}).id||null};};
+  const ein=lauf(montag,'season'), einWoche=lauf(montag,'week');
+  const zwei=lauf(montag.concat(mittwoch),'season'), zweiWoche=lauf(montag.concat(mittwoch),'week');
+  matches=_m;players=_p;seasons=_s;period=_per;invalidateCache();
+  return {ein,einWoche,zwei,zweiWoche};})()`);
+ok(!_wochenReiter.ein.reiter && !_wochenReiter.ein.offen,
+  'Mit einem Spieltag in der Woche hat die Liga keinen Reiter „Woche"');
+ok(_wochenReiter.zwei.reiter && _wochenReiter.zwei.folge && _wochenReiter.zwei.offen,
+  'Ab dem zweiten Spieltag steht „Woche" in der Leiste, zwischen Saison und Tag');
+ok(_wochenReiter.einWoche.nachher === 'season' && _wochenReiter.einWoche.saisonAn && !_wochenReiter.einWoche.potw,
+  'Stand die Liga auf „Woche" und hat die Woche keine zwei Spieltage, zeigt sie die Saison');
+ok(_wochenReiter.zweiWoche.potw && _wochenReiter.zweiWoche.nachher === 'week'
+  && _wochenReiter.zweiWoche.auszeichnung === 'p1' && _wochenReiter.zweiWoche.name === 'P1',
+  `Die Woche nennt denselben Player of the Week wie die Auszeichnung (${_wochenReiter.zweiWoche.name}, Auszeichnung ${_wochenReiter.zweiWoche.auszeichnung})`);
+// Die Wochenkrone zählt im Nenner nur Wochen, die jemand gewinnen konnte.
+// p1 gewinnt die Woche vom 3. August (zwei Spieltage) und spielt in der vom
+// 10. August nur an einem Tag: ein Titel aus einer Woche, nicht aus zwei.
+const _krone = J(`(()=>{const _m=matches,_p=players,_s=seasons;
+  players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+  const mk=(id,tag,std)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a:6,b:3,art:'n'}]),deltas:{p1:6,p2:4,p3:-5,p4:-5},exp_a:.5,created_at:new Date(2026,7,tag,std).toISOString()});
+  matches=Array.from({length:5},(_,i)=>mk('a'+i,4,10+i)).concat([mk('b0',6,10)],Array.from({length:3},(_,i)=>mk('c'+i,11,10+i)));
+  invalidateCache();const k=(_awardRankingsUncached('all').weekKingList||[]).find(x=>x.id==='p1')||{};
+  matches=_m;players=_p;seasons=_s;invalidateCache();
+  return {v:k.v,n:k.n};})()`);
+ok(_krone.v === 1 && _krone.n === 1,
+  `Die Wochenkrone zählt eine Woche mit einem Spieltag nicht mit (${_krone.v} von ${_krone.n})`);
 
 // ── Erklärkarten lassen sich schließen ─────────────────────────────
 ok(J(`(()=>{const a=vorschauHtml('info','Probe','Satz',null,'','<i>Ersatz</i>');

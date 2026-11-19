@@ -123,8 +123,8 @@ function openTopList(kind){
       rows:list.map(k=>({ids:[k.id], name:pname(k.id), val:Math.round(k.q*100)+' %',
         detail:`${k.v} von ${k.n} ${isWeek?'Wochen':'Spieltagen'}`+(k.gilt?'':` · ab ${isWeek?KOENIG_MIN.woche:KOENIG_MIN.tag}`)})),
       why:isWeek
-        ? `Der Anteil der eigenen abgeschlossenen Wochen, die ein Spieler als Bester beendet hat (mit mindestens 5 Siegen), ab ${KOENIG_MIN.woche} Wochen.`
-        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens 3 Siegen), ab ${KOENIG_MIN.tag} Spieltagen.`});
+        ? `Der Anteil der eigenen abgeschlossenen Wochen mit mindestens ${WOCHE_MIN_SPIELTAGE} Spieltagen, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.woche} Siegen), ab ${KOENIG_MIN.woche} Wochen.`
+        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.tag} Siegen), ab ${KOENIG_MIN.tag} Spieltagen.`});
   }
 }
 

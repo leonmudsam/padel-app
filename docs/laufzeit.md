@@ -26,6 +26,12 @@ rechnen weiter mit `currentSeason()`. Sie wird beim Tabwechsel UND beim
 Zeitraumwechsel geleert: die gewählte Saison gehört zur Ansicht „Saison",
 und die Saison-Tools darunter (Recap, Positionsverlauf) folgen ihr.
 
+`period` steht nur auf `week`, solange die laufende Woche ihren Reiter hat
+(`ligaWocheOffen`, ab `WOCHE_MIN_SPIELTAGE` Spieltagen) [§C28]; sonst stellt
+`_vRankingCore` sie beim Zeichnen auf `season` zurück. Am Montag beginnt
+eine Woche ohne Spieltag: wer am Sonntag auf „Woche" stand, bekäme eine
+Ansicht, deren Knopf es nicht mehr gibt, und keiner wäre markiert.
+
 `einblickOffen` nennt die aufgeklappten Einblicke (`rollen`, `netz`,
 `ruhe_liga`, `ruhe_pos`, `ruhe_teams`, `ruhe_chronik`), durch Leerzeichen getrennt, und ist
 sonst leer. Es sind mehrere, weil ein Reiter zwei tragen kann: mit einem

@@ -1,5 +1,5 @@
 // ╔═══ §5.1 ─── VIEW: RANKING ──────────────────────────────────────────╗
-//     Zeigt Saison/Tag/Gesamt-Rangliste, Hall of Fame, POTD.
+//     Zeigt Saison/Woche/Tag/Gesamt-Rangliste, Hall of Fame, POTW/POTD.
 // ╚═════════════════════════════════════════════════════════════════════════╝
 function vRanking(){
   // Ein abgeschlossener Monat ist Geschichte [§C40].
@@ -131,11 +131,25 @@ function ligaVorschauHtml(){
     [
       [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
       ['court', '2. Sätze eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz zählt für sich.'],
-      ['chartBar', '3. Rangliste lesen', 'Saison ist der laufende Monat, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.'],
+      ['chartBar', '3. Rangliste lesen', `Saison ist der laufende Monat, Woche die Kalenderwoche ab ihrem ${WOCHE_MIN_SPIELTAGE}. Spieltag, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.`],
       ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
     ]);
 }
+// ── Die Woche als Zeitraum der Liga ─────────────────────────────────
+// Sie steht in der Leiste erst, wenn die laufende Woche so viele Spieltage
+// hat wie ein Player of the Week (`WOCHE_MIN_SPIELTAGE`), gleich wer an
+// ihnen gespielt hat. Mit einem einzigen Spieltag zeigte sie dieselbe
+// Tabelle wie der Tag noch einmal und einen Spieler der Woche, den die
+// Auszeichnung nicht kennt; deshalb war sie ganz weg, auch in den Wochen,
+// in denen die Liga zweimal spielte.
+function ligaWocheOffen(){
+  return _wocheHatSpieltage(matchesInPeriod('week'));
+}
 function _vRankingCore(){
+  // Am Montag beginnt eine Woche ohne Spieltag, und ihr Reiter fällt weg.
+  // Wer am Sonntag auf „Woche" stand, bekäme sonst eine Ansicht, deren
+  // Knopf es nicht mehr gibt, und keiner wäre markiert.
+  if(period==='week' && !ligaWocheOffen()) period='season';
   // Welche Saison gezeigt wird, steht an EINER Stelle — und nur unter
   // „Saison" gibt es dazu etwas zu wählen. Woche, Tag und Gesamt kennen
   // keine Saison.
@@ -144,11 +158,12 @@ function _vRankingCore(){
   // Der Zeitraum ist die erste Wahl dieser Seite, also der äußere Wähler
   // [§C27] — wie „Awards · Rekorde · Chronik" im Awards-Reiter. Als innere
   // Ebene stand er gleichrangig über „Spieler · Teams" und der Metrik.
-  // Keine Woche: die Liga spielt meist an einem Tag in der Woche, und die
-  // Woche zeigte dieselbe Tabelle wie der Tag noch einmal.
+  // Die Woche nur ab ihrem zweiten Spieltag (`ligaWocheOffen`), vom
+  // längeren Zeitraum zum kürzeren, Gesamt am Ende.
   const periodBar=`
     <div class="ui-switch">
       <button data-period="season" class="${period==='season'?'on':''}">Saison</button>
+      ${ligaWocheOffen()?`<button data-period="week" class="${period==='week'?'on':''}">Woche</button>`:''}
       <button data-period="day" class="${period==='day'?'on':''}">Tag</button>
       <button data-period="all" class="${period==='all'?'on':''}">Gesamt</button>
     </div>`;
@@ -180,41 +195,23 @@ function _vRankingCore(){
       games:    (a,b)=>b.games-a.games||b.wins-a.wins
     };
     ps.sort(sortierer[metrik]||sortierer.elo);
-    // Saison-Champion: höchste Saison-Elo. Woche/Tag: identisch zur POTW/POTD-Badge-Logik.
+    // Saison-Champion: höchste Saison-Elo. Woche und Tag: der Erste der
+    // Auszeichnung selbst (`_periodeRangliste`), mit ihrer Mindestzahl an
+    // Siegen, ihrer Reihenfolge und den zwei Spieltagen der Woche.
+    // Die Karte rechnete das vorher hier nach, mit eigener Sortierung, und
+    // kannte die Spieltage der Woche nicht; davor standen hier die Schwellen
+    // der Kicker-Liga, und die Karte nannte einen Spieler des Tages erst
+    // einen Sieg später als das Zeichen, das er dafür bekam. Der Sieger
+    // hängt außerdem nicht an der gewählten Metrik — sonst stand je nach
+    // Sortierung ein anderer Spieler des Tages da (zwei mit 4–1 und 80 %
+    // waren das schon einmal).
     const totalMatches=periodMs.length;
     let winner;
     if(period==='season'){
       winner=ps.length&&ps[0].games>0?ps[0]:null;
     } else {
-      // Dieselbe Schwelle wie die Auszeichnung (PERIODE_MIN_SIEGE): hier standen die
-      // Kicker-Zahlen (3 und 5), und die Karte nannte einen Spieler des Tages
-      // erst einen Sieg später als das Zeichen, das er dafür bekam.
-      const minWins = period==='week' ? PERIODE_MIN_SIEGE.woche : period==='day' ? PERIODE_MIN_SIEGE.tag : 1;
-      const qual=ps.filter(x=>x.wins>=minWins);
-      // ────────────────────────────────────────────────────────────────
-      // Tie-Break IDENTISCH zur POTW/POTD-Badge-Logik:
-      //   • Woche: WR desc → Siege desc → Elo-Delta desc
-      //     (siehe POTW-Recap, Zeile ~3604)
-      //   • Tag:   Siege desc → Elo-Delta desc
-      //     (siehe showPotdRecap, Zeile ~4015)
-      // Wichtig: der Sieger darf NICHT von der gewählten Metrik abhängen — sonst
-      // wechselt die Hero-Card je nach "Nach Siegen"/"Nach Elo"-Filter
-      // (das war der Bug: zwei Spieler mit 4W-1L 80% wurden je nach
-      // Sortierung verschieden als Tagessieger angezeigt).
-      // ────────────────────────────────────────────────────────────────
-      if(period==='week'){
-        winner=qual.length?[...qual].sort((a,b)=>
-          (b.wins/b.games)-(a.wins/a.games)
-          ||b.wins-a.wins
-          ||b.eloNet-a.eloNet
-        )[0]:null;
-      } else {
-        // period==='day' — exakt analog showPotdRecap
-        winner=qual.length?[...qual].sort((a,b)=>
-          b.wins-a.wins
-          ||b.eloNet-a.eloNet
-        )[0]:null;
-      }
+      const erster=_periodeRangliste(periodMs, period==='week'?'woche':'tag', true)[0];
+      winner=erster?ps.find(x=>x.id===erster.id)||null:null;
     }
     // ── Eine Zeile, ein Bauplan [§C27] ───────────────────────────────
     // Jede Zeile der Liga hat dieselbe Anatomie: Platzziffer links, Avatar
