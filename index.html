@@ -4910,7 +4910,8 @@
 .sp-vt-g{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;height:62px;margin:7px 0 4px;align-items:end}
 .sp-vt-s{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;min-width:0}
 .sp-vt-s i{display:block;width:100%;min-height:2px;border-radius:3px 3px 1px 1px;background:var(--surface3)}
-.sp-vt-s.mehr i{background:rgba(182,193,207,.32)}
+.sp-vt-s.andere i{background:rgba(182,193,207,.14)}
+.sp-vt-s.andere em{font-style:italic}
 .sp-vt-s.jetzt i{background:var(--acid);box-shadow:0 0 12px rgba(228,242,74,.25)}
 .sp-vt-s em{font:600 8.5px 'Sometype Mono',monospace;font-style:normal;color:var(--faint);line-height:1}
 .sp-vt-s.jetzt em{color:var(--acid)}
@@ -5712,6 +5713,8 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-vt b{font-size:8.5px;color:var(--muted)}
 .nd-vt em{font-style:normal;font-size:9px;font-weight:700;color:var(--ink)}
 .nd-vt span.dies b{color:var(--ink)}
+.nd-vt span.andere i{background:rgba(194,201,208,.14)}
+.nd-vt span.andere b{font-style:italic}
 .nd-vt-l{display:flex;justify-content:space-between;margin:3px 0 6px;font:600 8px 'Sometype Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){
   .nd-buehne{animation:spBuehne .45s cubic-bezier(.2,.9,.3,1) both}
@@ -6743,7 +6746,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.19.9ba89907';
+const BUILD_VERSION='2026.11.19.f40d4d85';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -26633,21 +26636,25 @@ function _spStand(d){
 
 const RUNDE_PAUSE_MS = 30 * 60 * 1000;
 const RUNDE_MIN = 3;
-const SP_ABSTAND_MAX = 6;
+const SP_ERGEBNIS_MAX = 6;
+function _spErgebnis(m){
+  const s = (partie(m).saetze || [])[0] || {a:m.games_a, b:m.games_b};
+  return `${Math.max(s.a, s.b)}:${Math.min(s.a, s.b)}`;
+}
 const _spBasisMemo = new WeakMap();
 function _spBasis(){
   let b = _spBasisMemo.get(matches);
   if(b) return b;
   const chrono = (matches || []).slice().sort((a, b) => mts(a) - mts(b));
   const idx = new Map(chrono.map((m, i) => [m.id, i]));
-  const kum = Array.from({length:SP_ABSTAND_MAX + 1}, () => new Int32Array(chrono.length + 1));
+  const erg = new Map();
   const lauf = {}, best = {}, vor = new Map();
   let liga = 0, ligaWer = null;
   const bloecke = [];
   let r = null;
   chrono.forEach((m, i) => {
-    const d = Math.min(SP_ABSTAND_MAX, Math.abs(m.games_a - m.games_b));
-    for(let k = 0; k <= SP_ABSTAND_MAX; k++) kum[k][i + 1] = kum[k][i] + (k === d ? 1 : 0);
+    const e = _spErgebnis(m);
+    (erg.get(e) || erg.set(e, []).get(e)).push(i);
     const ids = [m.a1, m.a2, m.b1, m.b2];
     vor.set(m.id, {best:Object.fromEntries(ids.map(id => [id, best[id] || 0])), liga, ligaWer});
     ids.forEach(id => {
@@ -26665,7 +26672,7 @@ function _spBasis(){
     }
   });
   const runden = bloecke.filter(x => x.set && x.ids.length >= RUNDE_MIN);
-  b = {chrono, idx, kum, vor, runden, byId:new Map(chrono.map(m => [m.id, m]))};
+  b = {chrono, idx, erg, vor, runden, byId:new Map(chrono.map(m => [m.id, m]))};
   _spBasisMemo.set(matches, b);
   return b;
 }
@@ -26810,34 +26817,33 @@ function _spNervenBild(d){
   return `<div class="sp-nv"><div class="sp-k">Tiebreak-Sätze bis zu dieser</div>${z}</div>`;
 }
 
-function _spVerteilungDaten(a){
-  const m = a.m, b = _spBasis(), i = b.idx.get(m.id) + 1, diff = Math.min(SP_ABSTAND_MAX, Math.abs(m.games_a - m.games_b));
-  const n = b.kum.map(k => k[i]);
-  let so = 0;
-  for(let k = diff; k <= SP_ABSTAND_MAX; k++) so += n[k];
-  let zuletzt = null;
-  for(let j = i - 2; j >= 0; j--){
-    const x = b.chrono[j];
-    if(Math.abs(x.games_a - x.games_b) >= diff){ zuletzt = mts(x); break; }
-  }
-  return {n, diff, gesamt:i, so, zuletzt};
-}
-const _spAbstandTopf = n => {
-  const t = Array.from({length:SP_ABSTAND_MAX + 1}, (_, k) => n[k] || 0);
-  for(let k = SP_ABSTAND_MAX + 1; k < n.length; k++) t[SP_ABSTAND_MAX] += n[k] || 0;
-  return t;
+const _spErgFolge = (x, y) => {
+  const [a, b] = x.split(':').map(Number), [c, d] = y.split(':').map(Number);
+  return c - a || b - d;
 };
-function _spVerteilungBild(d){
-  const n = _spAbstandTopf(d.n), diff = Math.min(SP_ABSTAND_MAX, d.diff);
-  const max = Math.max(1, ...n.slice(1));
-  const saeulen = [];
-  for(let k = 1; k <= SP_ABSTAND_MAX; k++){
-    saeulen.push(`<span class="sp-vt-s${k === diff ? ' jetzt' : k > diff ? ' mehr' : ''}" style="--i:${k}">`
-      + `<i style="height:${(n[k] / max * 100).toFixed(0)}%"></i><em>${k}${k === SP_ABSTAND_MAX ? '+' : ''}</em></span>`);
+function _spVerteilungDaten(a){
+  const m = a.m, B = _spBasis(), i = B.idx.get(m.id) + 1, dies = _spErgebnis(m);
+  const bis = l => { let lo = 0, hi = l.length; while(lo < hi){ const h = (lo + hi) >> 1; if(l[h] < i) lo = h + 1; else hi = h; } return lo; };
+  const alle = [...B.erg].map(([k, l]) => ({k, n:bis(l)})).filter(x => x.n)
+    .sort((x, y) => y.n - x.n || _spErgFolge(x.k, y.k));
+  let l = alle;
+  if(alle.length > SP_ERGEBNIS_MAX){
+    const kopf = alle.slice(0, SP_ERGEBNIS_MAX - 1);
+    if(!kopf.some(x => x.k === dies)){ kopf.pop(); kopf.push(alle.find(x => x.k === dies)); }
+    l = kopf.concat([{k:'', n:alle.filter(x => !kopf.includes(x)).reduce((s, x) => s + x.n, 0), andere:true}]);
   }
-  return `<div class="sp-vt"><div class="sp-k">Alle ${_spZahl(d.gesamt)} Sätze nach Abstand in Games</div>
-    <div class="sp-vt-g" style="--n:${SP_ABSTAND_MAX}">${saeulen.join('')}</div>`
-    + (d.nurAnlass ? '' : `<div class="sp-vt-f"><b class="num">${_spZahl(d.so)}</b> von ${_spZahl(d.gesamt)} Sätzen so deutlich oder deutlicher`
+  const eigene = B.erg.get(dies) || [], j = bis(eigene);
+  const vorher = j > 1 ? B.chrono[eigene[j - 2]] : null;
+  return {l, dies, gesamt:i, so:(alle.find(x => x.k === dies) || {}).n || 0, zuletzt:vorher ? mts(vorher) : null};
+}
+function _spVerteilungBild(d){
+  if(!d || !Array.isArray(d.l)) return '';
+  const max = Math.max(1, ...d.l.map(x => x.n));
+  const saeulen = d.l.map((x, k) => `<span class="sp-vt-s${!x.andere && x.k === d.dies ? ' jetzt' : ''}${x.andere ? ' andere' : ''}" style="--i:${k + 1}">`
+    + `<i style="height:${(x.n / max * 100).toFixed(0)}%"></i><em>${x.andere ? 'andere' : esc(x.k)}</em></span>`);
+  return `<div class="sp-vt"><div class="sp-k">Alle ${_spZahl(d.gesamt)} Sätze nach Ergebnis</div>
+    <div class="sp-vt-g" style="--n:${d.l.length}">${saeulen.join('')}</div>`
+    + (d.nurAnlass ? '' : `<div class="sp-vt-f"><b class="num">${_spZahl(d.so)}</b> von ${_spZahl(d.gesamt)} Sätzen ${d.so === 1 ? 'endete' : 'endeten'} ${esc(d.dies)}`
       + `${d.zuletzt ? `, zuletzt am ${datumFmt(d.zuletzt, 'tmx')}` : ''}</div>`) + `</div>`;
 }
 
@@ -27249,7 +27255,6 @@ function _spFakten(m){
   try { frei = _storyRangFrei(seasonOf(m.created_at).id, mts(m)).frei; } catch(e){}
   F.rang = {};
   alle.forEach(id => { F.rang[id] = frei ? _newsRankChange(id, m.id) : null; });
-  F.vert = B.kum.map(k => k[i + 1]);
   FB.fakten.set(m.id, F);
   return F;
 }
@@ -28208,7 +28213,7 @@ function _spAnlassSnapshot(m, fakten, scoreKey){
       () => `${_spName(b.id)} gewinnt ${_spZahl(b.w)} von ${_spZahl(b.w + b.l)} Sätzen im Tiebreak`); }
   if(partie(m).deutlich){ const vt = _spVerteilungDaten({m});
     plus('verteilung', scoreKey === 'deutlich' || scoreKey === 'zunull' ? 14 : 24, () => vt,
-      () => `${_spZahl(vt.so)} von ${_spZahl(vt.gesamt)} Sätzen der Liga endeten so deutlich`); }
+      () => `${_spZahl(vt.so)} von ${_spZahl(vt.gesamt)} Sätzen der Liga ${vt.so === 1 ? 'endete' : 'endeten'} ${vt.dies}`); }
   _spFormKand(m).filter(k => SP_ANLASS_FORMEN.has(k.key) && k.key !== 'zaehlwerk' && k.key !== 'rueckkehr')
     .forEach(k => plus(k.key, k.rang, () => SP_FORM[k.key].daten(F, k.x), () => SP_FORM[k.key].text(F, k.x).t));
   if(!kand.length) return null;
@@ -29524,16 +29529,16 @@ function _ndTagLeiste(m){
   const tag = _spFormBasis().tage.get(tagKey(m.created_at)) || [];
   if(tag.length < 2) return '';
   return `<div class="nd-tl">${tag.map((y, k) => `<span class="nd-tl-z${y === m ? ' dies' : ''}" style="--k:${k}">`
-    + `<b class="num">${Math.max(y.games_a, y.games_b)}:${Math.min(y.games_a, y.games_b)}</b>`
+    + `<b class="num">${esc(_spErgebnis(y))}</b>`
     + `<small class="num">${esc(datumFmt(y.created_at, 'uhr'))}</small></span>`).join('')}</div>`;
 }
 function _ndVerteilung(m){
-  const F = _spFakten(m), v = _spAbstandTopf(F.vert).slice(1), diff = Math.min(SP_ABSTAND_MAX, F.diff);
-  const sum = v.reduce((a, b) => a + b, 0) || 1, max = Math.max(1, ...v);
-  return `<div class="nd-vt">${v.map((n, k) => `<span class="${k + 1 === diff ? 'dies' : ''}" style="--k:${k}">`
-    + (k + 1 === diff ? `<em class="num">${_spZahl(Math.round(n / sum * 100))} %</em>` : '')
-    + `<i style="height:${Math.max(3, Math.round(n / max * 100))}%"></i><b class="num">${k + 1}${k + 1 === SP_ABSTAND_MAX ? '+' : ''}</b></span>`).join('')}</div>`
-    + `<div class="nd-vt-l"><span>1 Game Abstand</span><span>${SP_ABSTAND_MAX} und mehr</span></div>`;
+  const d = _spVerteilungDaten({m}), max = Math.max(1, ...d.l.map(x => x.n));
+  return `<div class="nd-vt">${d.l.map((x, k) => { const dies = !x.andere && x.k === d.dies;
+    return `<span class="${dies ? 'dies' : x.andere ? 'andere' : ''}" style="--k:${k}">`
+      + (dies ? `<em class="num">${_spZahl(Math.round(x.n / (d.gesamt || 1) * 100))} %</em>` : '')
+      + `<i style="height:${Math.max(3, Math.round(x.n / max * 100))}%"></i><b class="num">${x.andere ? 'andere' : esc(x.k)}</b></span>`; }).join('')}</div>`
+    + `<div class="nd-vt-l"><span>das häufigste zuerst</span><span>${_spZahl(d.gesamt)} Sätze</span></div>`;
 }
 
 function _newsBlattErgebnis(matchId){

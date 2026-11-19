@@ -368,25 +368,27 @@ function _ndDuelle(m, nur){
       + `<span class="nd-lf">${f.map((w, j) => `<i class="${w ? 'w' : 'l'}${j === f.length - 1 ? ' dies' : ''}"></i>`).join('')}</span></div>`;
   }).join('')}</div>`;
 }
-// Der Tag als Leiste: jede Partie mit Stand und Uhrzeit, diese gerahmt.
+// Der Tag als Leiste: jede Partie mit Stand und Uhrzeit, diese gerahmt. Der
+// Stand ist das Ergebnis des Satzes (`_spErgebnis`); aus den Games stand
+// ein Match-Tiebreak als „1:0" da, weil er als ein Game zählt.
 function _ndTagLeiste(m){
   const tag = _spFormBasis().tage.get(tagKey(m.created_at)) || [];
   if(tag.length < 2) return '';
   return `<div class="nd-tl">${tag.map((y, k) => `<span class="nd-tl-z${y === m ? ' dies' : ''}" style="--k:${k}">`
-    + `<b class="num">${Math.max(y.games_a, y.games_b)}:${Math.min(y.games_a, y.games_b)}</b>`
+    + `<b class="num">${esc(_spErgebnis(y))}</b>`
     + `<small class="num">${esc(datumFmt(y.created_at, 'uhr'))}</small></span>`).join('')}</div>`;
 }
-// Wie oft die Liga bis hier mit diesem Abstand endete: eine Säule je
-// Abstand, diese hell und mit ihrem Anteil.
-// Bis `SP_ABSTAND_MAX` Games und mehr, wie die Karte: hier standen zehn
-// Säulen bis „10 und mehr", und die rechten vier blieben im Padel leer.
+// Wie oft die Liga bis hier so endete: eine Säule je Ergebnis, dieselben
+// Daten wie der Fuß der Karte (`_spVerteilungDaten`), dieses hell und mit
+// seinem Anteil. Hier standen zehn Säulen nach Abstand bis „10 und mehr",
+// die Leiter der Kicker-Liga; die rechten vier blieben im Padel leer.
 function _ndVerteilung(m){
-  const F = _spFakten(m), v = _spAbstandTopf(F.vert).slice(1), diff = Math.min(SP_ABSTAND_MAX, F.diff);
-  const sum = v.reduce((a, b) => a + b, 0) || 1, max = Math.max(1, ...v);
-  return `<div class="nd-vt">${v.map((n, k) => `<span class="${k + 1 === diff ? 'dies' : ''}" style="--k:${k}">`
-    + (k + 1 === diff ? `<em class="num">${_spZahl(Math.round(n / sum * 100))} %</em>` : '')
-    + `<i style="height:${Math.max(3, Math.round(n / max * 100))}%"></i><b class="num">${k + 1}${k + 1 === SP_ABSTAND_MAX ? '+' : ''}</b></span>`).join('')}</div>`
-    + `<div class="nd-vt-l"><span>1 Game Abstand</span><span>${SP_ABSTAND_MAX} und mehr</span></div>`;
+  const d = _spVerteilungDaten({m}), max = Math.max(1, ...d.l.map(x => x.n));
+  return `<div class="nd-vt">${d.l.map((x, k) => { const dies = !x.andere && x.k === d.dies;
+    return `<span class="${dies ? 'dies' : x.andere ? 'andere' : ''}" style="--k:${k}">`
+      + (dies ? `<em class="num">${_spZahl(Math.round(x.n / (d.gesamt || 1) * 100))} %</em>` : '')
+      + `<i style="height:${Math.max(3, Math.round(x.n / max * 100))}%"></i><b class="num">${x.andere ? 'andere' : esc(x.k)}</b></span>`; }).join('')}</div>`
+    + `<div class="nd-vt-l"><span>das häufigste zuerst</span><span>${_spZahl(d.gesamt)} Sätze</span></div>`;
 }
 
 // Das Ergebnis der Partie, aus der die Story stammt. Vorher stand es je nach

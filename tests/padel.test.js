@@ -411,22 +411,33 @@ ok(_krone.v === 1 && _krone.n === 1,
 // ── Keine Zeichnung aus der Kicker-Liga ─────────────────────────────
 // Das Zeichen des Spieltags war ein Fußballfeld mit Mittelkreis und
 // Strafräumen und stand als Wasserzeichen auf jeder Karte einer Partie; die
-// Verteilung nach Abstand reichte bis „10 und mehr" (die Kicker-Leiter bis
-// 10:0), das Zählwerk der Liga trug einen Ball mit Kreuzlinien, „Der
+// Verteilung zählte nach Abstand bis „10 und mehr" (die Kicker-Leiter bis
+// 10:0) und warf ein 2:0 und ein 6:4 in eine Säule; „Der Tag" schrieb einen
+// Match-Tiebreak als „1:0"; das Zählwerk der Liga trug einen Ball mit
+// Kreuzlinien, „Der
 // Dauer-Revés" die hintere Hälfte des Kickertischs und „Der Dauer-Drive"
 // den Dauerstürmer auf seinem Sockel.
 const _kicker = J(`(()=>{const _m=matches,_p=players,_s=seasons;
   players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
-  const mk=(id,i,a,b)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
-    ...partieFelder([{a,b,art:'n'}]),exp_a:.5,created_at:new Date(2026,7,4,10,i*10).toISOString()});
-  matches=[[6,4],[6,3],[7,5],[6,1],[3,0],[6,2],[6,0]].map(([a,b],i)=>mk('k'+i,i,a,b));invalidateCache();
-  const m=matches[matches.length-1], feld=icPfad('spielfeld'), r=feld.match(/<rect[^>]*width="([\\d.]+)" height="([\\d.]+)"/)||[];
-  const karte=_spVerteilungBild(_spVerteilungDaten({m})), blatt=_ndVerteilung(m);
+  const mk=(id,i,a,b,art)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a,b,art:art||'n'}]),exp_a:.5,created_at:new Date(2026,7,4,10,i*10).toISOString()});
+  const liga=l=>{matches=l.map(([a,b,art],i)=>mk('k'+i,i,a,b,art));invalidateCache();return matches[matches.length-1];};
+  const saeulen=h=>(h.match(/<em>[^<]*<\\/em><\\/span>/g)||[]).map(x=>x.replace(/<[^>]+>/g,'')).join(',');
+  const hell=h=>((h.match(/class="sp-vt-s jetzt"[^>]*><i[^>]*><\\/i><em>([^<]*)</)||[])[1])||'';
+  // Kurze Sätze, ein 6:4 und ein 7:5 (derselbe Abstand), ein Match-Tiebreak.
+  let m=liga([[6,4],[7,5],[6,4],[2,1],[2,0],[2,1],[10,8,'mtb'],[6,1]]);
+  const karte=_spVerteilungBild(_spVerteilungDaten({m})), blatt=_ndVerteilung(m), tag=_ndTagLeiste(m);
+  const r1={karte:saeulen(karte), hell:hell(karte), fuss:((karte.match(/<div class="sp-vt-f">([\\s\\S]*?)<\\/div>/)||[])[1]||'').replace(/<[^>]+>/g,''),
+    blatt:(blatt.match(/<b class="num">[^<]*<\\/b><\\/span>/g)||[]).map(x=>x.replace(/<[^>]+>/g,'')).join(','),
+    blattHell:/<span class="dies"[^>]*><em class="num">13 %<\\/em><i[^>]*><\\/i><b class="num">6:1</.test(blatt),
+    abstand:/Abstand|und mehr/.test(karte+blatt), tagMtb:tag.includes('>10:8<')&&!tag.includes('>1:0<')};
+  // Mehr Ergebnisse als Säulen: die seltenen stehen als „andere", dieses bleibt.
+  m=liga([[6,4],[6,3],[7,5],[6,1],[3,0],[6,2],[6,0]]);
+  const r2v=saeulen(_spVerteilungBild(_spVerteilungDaten({m})));
+  const feld=icPfad('spielfeld'), r=feld.match(/<rect[^>]*width="([\\d.]+)" height="([\\d.]+)"/)||[];
   const disz=id=>(DISZIPLINEN.find(d=>d.id===id)||{}).ic;
   const r2={feldQuer:+r[1]>+r[2], feldKreis:/<circle/.test(feld),
-    karteSaeulen:(karte.match(/class="sp-vt-s/g)||[]).length, karteEnde:karte.includes('<em>6+</em>'),
-    blattSaeulen:(blatt.match(/<span class="(dies)?" style="--k:/g)||[]).length, blattEnde:blatt.includes('6 und mehr'),
-    sechsNull:_spVerteilungDaten({m}).n[6],
+    vert:r1, andere:r2v,
     ball:_spZaehlwerkBild({wert:100,nurAnlass:true}).includes(icPfad('padelBall')),
     alt:['ball','abwehrFenster','roleFix'].every(k=>!ICONS[k]&&icPfad(k)&&icPfad(k)===ICONS[ZEICHEN_ALT[k]]),
     seiten:disz('abwehrmauer')+','+disz('dauersturm'),
@@ -435,8 +446,12 @@ const _kicker = J(`(()=>{const _m=matches,_p=players,_s=seasons;
   return r2;})()`);
 ok(_kicker.feldQuer && !_kicker.feldKreis,
   'Das Zeichen des Spieltags ist ein Padel-Court im Querformat, kein Fußballfeld mit Mittelkreis');
-ok(_kicker.karteSaeulen === 6 && _kicker.karteEnde && _kicker.blattSaeulen === 6 && _kicker.blattEnde && _kicker.sechsNull === 1,
-  `Die Verteilung nach Abstand reicht in Karte und Blatt bis „6 und mehr", ein 6:0 steht in der letzten Säule (${_kicker.karteSaeulen}/${_kicker.blattSaeulen} Säulen)`);
+ok(_kicker.vert.karte === '6:4,2:1,10:8,7:5,6:1,2:0' && _kicker.vert.blatt === _kicker.vert.karte && _kicker.vert.hell === '6:1'
+  && _kicker.vert.blattHell && !_kicker.vert.abstand,
+  `Die Verteilung zeigt in Karte und Blatt die Ergebnisse der Liga, das häufigste zuerst, 6:4 und 7:5 getrennt, dieses hell (${_kicker.vert.karte})`);
+ok(_kicker.vert.fuss.trim() === '1 von 8 Sätzen endete 6:1' && _kicker.andere === '7:5,6:0,6:1,6:2,6:3,andere',
+  `Unter der Karte steht, wie oft die Liga so endete; mehr als sechs Ergebnisse stehen als „andere" (${_kicker.vert.fuss.trim()} · ${_kicker.andere})`);
+ok(_kicker.vert.tagMtb, '„Der Tag" schreibt einen Match-Tiebreak mit seinen Punkten (10:8), nicht als „1:0"');
 ok(_kicker.ball && _kicker.alt,
   'Das Zählwerk der Liga trägt den Padelball; die alten Kicker-Zeichen gibt es nur noch als Verweis auf ihr Padel-Zeichen');
 ok(_kicker.seiten === 'revesFenster,driveFenster',

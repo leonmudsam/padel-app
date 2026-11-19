@@ -110,27 +110,32 @@ const RUNDE_PAUSE_MS = 30 * 60 * 1000;
 // beim Bauen der Story —, und eine Grenze, die zweimal blank dasteht, ändert
 // man einmal und hat dann zwei.
 const RUNDE_MIN = 3;
-// Die Verteilung nach Abstand in Games endet bei sechs: ein Satz endet
-// höchstens 6:0, und nur ein langer Satz kommt darüber. Sie hatte zehn
-// Säulen bis „10 und mehr", die Leiter der Kicker-Liga bis 10:0, und die
-// Säulen 7 bis 10 standen im Padel immer leer.
-const SP_ABSTAND_MAX = 6;
+// Höchstens so viele Ergebnisse zeigt die Verteilung je eine Säule, der
+// Rest steht zusammen als „andere" [§C33]. Sieben schmale Säulen passen bei
+// 360 px noch mit „10:8" darunter.
+const SP_ERGEBNIS_MAX = 6;
+// Das Ergebnis eines Satzes, der Sieger zuerst: „2:1", „7:5", im
+// Match-Tiebreak die Punkte („10:8"), nicht das eine Game, als das er zählt.
+function _spErgebnis(m){
+  const s = (partie(m).saetze || [])[0] || {a:m.games_a, b:m.games_b};
+  return `${Math.max(s.a, s.b)}:${Math.min(s.a, s.b)}`;
+}
 const _spBasisMemo = new WeakMap();
 function _spBasis(){
   let b = _spBasisMemo.get(matches);
   if(b) return b;
   const chrono = (matches || []).slice().sort((a, b) => mts(a) - mts(b));
   const idx = new Map(chrono.map((m, i) => [m.id, i]));
-  // kum[d][i]: Sätze mit d Games Abstand unter den ersten i der Liga, der
-  // letzte Topf für alle ab `SP_ABSTAND_MAX`.
-  const kum = Array.from({length:SP_ABSTAND_MAX + 1}, () => new Int32Array(chrono.length + 1));
+  // erg: je Ergebnis die Stellen seiner Sätze in der Reihenfolge der Liga.
+  // Wie oft es bis zum i-ten Satz vorkam, ist eine Suche in seiner Liste.
+  const erg = new Map();
   const lauf = {}, best = {}, vor = new Map();
   let liga = 0, ligaWer = null;
   const bloecke = [];
   let r = null;
   chrono.forEach((m, i) => {
-    const d = Math.min(SP_ABSTAND_MAX, Math.abs(m.games_a - m.games_b));
-    for(let k = 0; k <= SP_ABSTAND_MAX; k++) kum[k][i + 1] = kum[k][i] + (k === d ? 1 : 0);
+    const e = _spErgebnis(m);
+    (erg.get(e) || erg.set(e, []).get(e)).push(i);
     const ids = [m.a1, m.a2, m.b1, m.b2];
     vor.set(m.id, {best:Object.fromEntries(ids.map(id => [id, best[id] || 0])), liga, ligaWer});
     ids.forEach(id => {
@@ -149,7 +154,7 @@ function _spBasis(){
     }
   });
   const runden = bloecke.filter(x => x.set && x.ids.length >= RUNDE_MIN);
-  b = {chrono, idx, kum, vor, runden, byId:new Map(chrono.map(m => [m.id, m]))};
+  b = {chrono, idx, erg, vor, runden, byId:new Map(chrono.map(m => [m.id, m]))};
   _spBasisMemo.set(matches, b);
   return b;
 }
@@ -357,42 +362,46 @@ function _spNervenBild(d){
 
 // ── Die Verteilung: der klare Sieg ───────────────────────────────────
 // „Zuletzt so deutlich am …" sagte, wann; nicht, wie selten. Eine Säule je
-// Abstand in Games von 1 bis `SP_ABSTAND_MAX` und mehr, gezählt über die
-// Liga bis zu diesem Satz — dieser hell, die deutlicheren leiser dahinter.
-// Gelesen aus der Präfixsumme: eine Karte kostet sieben Zugriffe, nicht
-// einen Lauf.
-function _spVerteilungDaten(a){
-  const m = a.m, b = _spBasis(), i = b.idx.get(m.id) + 1, diff = Math.min(SP_ABSTAND_MAX, Math.abs(m.games_a - m.games_b));
-  const n = b.kum.map(k => k[i]);
-  let so = 0;
-  for(let k = diff; k <= SP_ABSTAND_MAX; k++) so += n[k];
-  let zuletzt = null;
-  for(let j = i - 2; j >= 0; j--){
-    const x = b.chrono[j];
-    if(Math.abs(x.games_a - x.games_b) >= diff){ zuletzt = mts(x); break; }
-  }
-  return {n, diff, gesamt:i, so, zuletzt};
-}
-// Eine Reihe mit mehr Töpfen (elf, wie sie die Kicker-Liga zählte) legt
-// alles ab `SP_ABSTAND_MAX` in den letzten.
-const _spAbstandTopf = n => {
-  const t = Array.from({length:SP_ABSTAND_MAX + 1}, (_, k) => n[k] || 0);
-  for(let k = SP_ABSTAND_MAX + 1; k < n.length; k++) t[SP_ABSTAND_MAX] += n[k] || 0;
-  return t;
+// Ergebnis, das die Liga bis zu diesem Satz gespielt hat, das häufigste
+// zuerst, dieses hell. Vorher stand eine Säule je Abstand in Games von 1
+// bis „10 und mehr", die Leiter der Kicker-Liga bis 10:0: im Padel blieben
+// die Säulen über sechs immer leer, und ein 2:0 und ein 6:4 standen als
+// derselbe Abstand in derselben Säule. Die Liga spielt viele kurze Sätze
+// (2:1, 2:0), und die stehen jetzt, wie sie heißen.
+// Gleich oft: der Satz mit mehr Games des Siegers zuerst, dann der mit
+// weniger des Verlierers — 7:5 vor 6:0 vor 6:4.
+const _spErgFolge = (x, y) => {
+  const [a, b] = x.split(':').map(Number), [c, d] = y.split(':').map(Number);
+  return c - a || b - d;
 };
-function _spVerteilungBild(d){
-  const n = _spAbstandTopf(d.n), diff = Math.min(SP_ABSTAND_MAX, d.diff);
-  const max = Math.max(1, ...n.slice(1));
-  const saeulen = [];
-  for(let k = 1; k <= SP_ABSTAND_MAX; k++){
-    saeulen.push(`<span class="sp-vt-s${k === diff ? ' jetzt' : k > diff ? ' mehr' : ''}" style="--i:${k}">`
-      + `<i style="height:${(n[k] / max * 100).toFixed(0)}%"></i><em>${k}${k === SP_ABSTAND_MAX ? '+' : ''}</em></span>`);
+function _spVerteilungDaten(a){
+  const m = a.m, B = _spBasis(), i = B.idx.get(m.id) + 1, dies = _spErgebnis(m);
+  // Wie viele Stellen einer Liste vor `i` liegen: die Sätze bis zu diesem.
+  const bis = l => { let lo = 0, hi = l.length; while(lo < hi){ const h = (lo + hi) >> 1; if(l[h] < i) lo = h + 1; else hi = h; } return lo; };
+  const alle = [...B.erg].map(([k, l]) => ({k, n:bis(l)})).filter(x => x.n)
+    .sort((x, y) => y.n - x.n || _spErgFolge(x.k, y.k));
+  let l = alle;
+  if(alle.length > SP_ERGEBNIS_MAX){
+    const kopf = alle.slice(0, SP_ERGEBNIS_MAX - 1);
+    if(!kopf.some(x => x.k === dies)){ kopf.pop(); kopf.push(alle.find(x => x.k === dies)); }
+    l = kopf.concat([{k:'', n:alle.filter(x => !kopf.includes(x)).reduce((s, x) => s + x.n, 0), andere:true}]);
   }
-  return `<div class="sp-vt"><div class="sp-k">Alle ${_spZahl(d.gesamt)} Sätze nach Abstand in Games</div>
-    <div class="sp-vt-g" style="--n:${SP_ABSTAND_MAX}">${saeulen.join('')}</div>`
-    // Auf der Karte steht der Satz als Zeile über dem Fuß („96 von 626
-    // Partien der Liga endeten so deutlich"), darunter stand er ein zweites Mal.
-    + (d.nurAnlass ? '' : `<div class="sp-vt-f"><b class="num">${_spZahl(d.so)}</b> von ${_spZahl(d.gesamt)} Sätzen so deutlich oder deutlicher`
+  const eigene = B.erg.get(dies) || [], j = bis(eigene);
+  const vorher = j > 1 ? B.chrono[eigene[j - 2]] : null;
+  return {l, dies, gesamt:i, so:(alle.find(x => x.k === dies) || {}).n || 0, zuletzt:vorher ? mts(vorher) : null};
+}
+// Ohne Säulen (eine Karte aus der Zeit der Abstände) bleibt der Fuß leer:
+// die alten Zahlen lassen sich keinem Ergebnis zuordnen.
+function _spVerteilungBild(d){
+  if(!d || !Array.isArray(d.l)) return '';
+  const max = Math.max(1, ...d.l.map(x => x.n));
+  const saeulen = d.l.map((x, k) => `<span class="sp-vt-s${!x.andere && x.k === d.dies ? ' jetzt' : ''}${x.andere ? ' andere' : ''}" style="--i:${k + 1}">`
+    + `<i style="height:${(x.n / max * 100).toFixed(0)}%"></i><em>${x.andere ? 'andere' : esc(x.k)}</em></span>`);
+  return `<div class="sp-vt"><div class="sp-k">Alle ${_spZahl(d.gesamt)} Sätze nach Ergebnis</div>
+    <div class="sp-vt-g" style="--n:${d.l.length}">${saeulen.join('')}</div>`
+    // Auf der Karte steht der Satz als Zeile über dem Fuß („3 von 23
+    // Sätzen der Liga endeten 6:1"), darunter stand er ein zweites Mal.
+    + (d.nurAnlass ? '' : `<div class="sp-vt-f"><b class="num">${_spZahl(d.so)}</b> von ${_spZahl(d.gesamt)} Sätzen ${d.so === 1 ? 'endete' : 'endeten'} ${esc(d.dies)}`
       + `${d.zuletzt ? `, zuletzt am ${datumFmt(d.zuletzt, 'tmx')}` : ''}</div>`) + `</div>`;
 }
 
@@ -959,7 +968,6 @@ function _spFakten(m){
   try { frei = _storyRangFrei(seasonOf(m.created_at).id, mts(m)).frei; } catch(e){}
   F.rang = {};
   alle.forEach(id => { F.rang[id] = frei ? _newsRankChange(id, m.id) : null; });
-  F.vert = B.kum.map(k => k[i + 1]);
   FB.fakten.set(m.id, F);
   return F;
 }
@@ -2235,7 +2243,7 @@ function _spAnlassSnapshot(m, fakten, scoreKey){
       () => `${_spName(b.id)} gewinnt ${_spZahl(b.w)} von ${_spZahl(b.w + b.l)} Sätzen im Tiebreak`); }
   if(partie(m).deutlich){ const vt = _spVerteilungDaten({m});
     plus('verteilung', scoreKey === 'deutlich' || scoreKey === 'zunull' ? 14 : 24, () => vt,
-      () => `${_spZahl(vt.so)} von ${_spZahl(vt.gesamt)} Sätzen der Liga endeten so deutlich`); }
+      () => `${_spZahl(vt.so)} von ${_spZahl(vt.gesamt)} Sätzen der Liga ${vt.so === 1 ? 'endete' : 'endeten'} ${vt.dies}`); }
   // Die Zeichnungen aus dem Katalog der Formen. Das Zählwerk und die
   // Rückkehr sind Fakten geworden (Jubiläum, Siegmarke, `rueckkehr`): als
   // Form standen sie ohne Satz da.

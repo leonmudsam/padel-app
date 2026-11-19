@@ -117,7 +117,9 @@
 .sp-vt-g{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;height:62px;margin:7px 0 4px;align-items:end}
 .sp-vt-s{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;min-width:0}
 .sp-vt-s i{display:block;width:100%;min-height:2px;border-radius:3px 3px 1px 1px;background:var(--surface3)}
-.sp-vt-s.mehr i{background:rgba(182,193,207,.32)}
+/* „andere" fasst die seltenen Ergebnisse zusammen und tritt zurück. */
+.sp-vt-s.andere i{background:rgba(182,193,207,.14)}
+.sp-vt-s.andere em{font-style:italic}
 .sp-vt-s.jetzt i{background:var(--acid);box-shadow:0 0 12px rgba(228,242,74,.25)}
 .sp-vt-s em{font:600 8.5px 'Sometype Mono',monospace;font-style:normal;color:var(--faint);line-height:1}
 .sp-vt-s.jetzt em{color:var(--acid)}
@@ -1058,6 +1060,8 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
 .nd-vt b{font-size:8.5px;color:var(--muted)}
 .nd-vt em{font-style:normal;font-size:9px;font-weight:700;color:var(--ink)}
 .nd-vt span.dies b{color:var(--ink)}
+.nd-vt span.andere i{background:rgba(194,201,208,.14)}
+.nd-vt span.andere b{font-style:italic}
 .nd-vt-l{display:flex;justify-content:space-between;margin:3px 0 6px;font:600 8px 'Sometype Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){
   .nd-buehne{animation:spBuehne .45s cubic-bezier(.2,.9,.3,1) both}
