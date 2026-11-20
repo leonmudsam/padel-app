@@ -3332,8 +3332,9 @@ function _newsPeriodWinner(rangeMatches, regel){
   const cand = _periodeRangliste(rangeMatches, regel, true);
   if(!cand.length) return null;
   const top = cand[0];
+  // Der Tag hat immer genau einen (`_tagVerdient`).
   const tied = byWins
-    ? cand.filter(c => c.wins === top.wins && Math.abs(c.eloDelta - top.eloDelta) < 0.001)
+    ? [top]
     : cand.filter(c => Math.abs(c.wr - top.wr) < 0.001);
   return { winners: tied, main: top };
 }

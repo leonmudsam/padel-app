@@ -166,6 +166,27 @@ const ATTR = /(?:style|d|width|height|x|y|cx|cy|r|points|transform|viewBox)="[^"
     const gemerkt = await K(`JSON.parse(localStorage.getItem('padel_hinweise_weg_v1')||'[]')`).catch(() => null);
     ok(!!zu && wieder.length === 0 && (gemerkt === null || gemerkt.includes(zu)),
       `Eine geschlossene Karte („${zu}") kommt in keinem Reiter wieder, auch nicht nach frischem Rechnen${wieder.length ? ' — wieder in: ' + wieder.join(', ') : ''}`);
+    // ── Die Knöpfe eines Formulars im Blatt schweben unten [§C27] ──────
+    // Im Profil standen Abbrechen und Speichern unter 100 Bildern; wer eines
+    // gewählt hatte, musste ans Ende scrollen. Gemessen bei 844 px Höhe: oben
+    // und am Ende liegt „Speichern" frei über dem unteren Rand des Blatts,
+    // und am Ende steht die letzte Reihe über den Knöpfen.
+    await page.setViewportSize({width:390, height:844});
+    await K(`closeNewsDetail();closeSheet(true);showEditPlayer(players[0].id)`); await page.waitForTimeout(900);
+    const fuss = () => page.evaluate(() => {
+      const sh = document.getElementById('sheet'), k = document.getElementById('editSave');
+      if(!sh || !k) return null;
+      const b = k.getBoundingClientRect(), o = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+      const f = document.querySelector('.sheet-fuss'), l = [...document.querySelectorAll('.av-opt')].pop();
+      return {lang:sh.scrollHeight - sh.clientHeight > 100, sicht:b.bottom <= sh.getBoundingClientRect().bottom && b.top >= 0,
+        frei:!!o && !!o.closest("#editSave"), auf:o ? (o.id || o.className || o.tagName) + "/" + ((o.parentElement || {}).className || "") : "", ueber:!!f && !!l && l.getBoundingClientRect().bottom <= f.getBoundingClientRect().top + 1};
+    });
+    const fOben = await fuss();
+    await page.evaluate(() => { const sh = document.getElementById('sheet'); sh.scrollTop = sh.scrollHeight; }); await page.waitForTimeout(300);
+    const fUnten = await fuss();
+    ok(!!fOben && !!fUnten && fOben.lang && fOben.sicht && fOben.frei && fUnten.sicht && fUnten.frei && fUnten.ueber,
+      `Im Profil stehen Abbrechen und Speichern ohne Scrollen frei am unteren Rand, und am Ende bleibt die letzte Reihe darüber (${JSON.stringify({fOben, fUnten})})`);
+    await K(`closeSheet(true);0`);
   } finally { await browser.close(); }
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
   process.exit(fails ? 1 : 0);

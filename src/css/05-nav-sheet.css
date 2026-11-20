@@ -82,6 +82,16 @@
      hält den Knopf lesbar, ohne eine Kante zu ziehen. */
   .sheet-leiste{position:sticky;top:-10px;z-index:6;margin-top:-10px;padding-top:10px;
     background:linear-gradient(180deg,var(--bg2) 55%,rgba(15,19,17,0))}
+  /* Das Gegenstück unten [§C27]: die Knöpfe eines Formulars im Blatt
+     (Abbrechen, Speichern) bleiben am unteren Rand stehen, über dem Inhalt,
+     der darunter weiterläuft. Im Profil standen sie unter 100 Bildern, und
+     wer eines gewählt hatte, musste zum Speichern ans Ende scrollen. Der
+     Fuß reicht über den Innenrand des Blatts hinaus bis an seine Kante; der
+     Verlauf hält die Knöpfe lesbar, ohne eine Kante zu ziehen. */
+  .sheet-fuss{position:sticky;bottom:calc(-26px - var(--safe-bot));z-index:6;
+    margin:14px -20px calc(-26px - var(--safe-bot));padding:22px 20px calc(16px + var(--safe-bot));
+    background:linear-gradient(180deg,rgba(15,19,17,0),var(--bg2) 38%)}
+  .sheet-fuss .btn-row{max-width:420px;margin:0 auto}
   .sheet-zu{position:absolute;top:8px;right:0;width:34px;height:34px;border-radius:11px;
     display:grid;place-items:center;cursor:pointer;color:var(--muted);
     background:var(--surface);border:1px solid var(--line)}

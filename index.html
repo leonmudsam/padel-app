@@ -962,6 +962,10 @@
   .sheet-grab{width:38px;height:4px;border-radius:2px;background:var(--line2);margin:6px auto 16px}
   .sheet-leiste{position:sticky;top:-10px;z-index:6;margin-top:-10px;padding-top:10px;
     background:linear-gradient(180deg,var(--bg2) 55%,rgba(15,19,17,0))}
+  .sheet-fuss{position:sticky;bottom:calc(-26px - var(--safe-bot));z-index:6;
+    margin:14px -20px calc(-26px - var(--safe-bot));padding:22px 20px calc(16px + var(--safe-bot));
+    background:linear-gradient(180deg,rgba(15,19,17,0),var(--bg2) 38%)}
+  .sheet-fuss .btn-row{max-width:420px;margin:0 auto}
   .sheet-zu{position:absolute;top:8px;right:0;width:34px;height:34px;border-radius:11px;
     display:grid;place-items:center;cursor:pointer;color:var(--muted);
     background:var(--surface);border:1px solid var(--line)}
@@ -6747,7 +6751,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.19.9840a28e';
+const BUILD_VERSION='2026.11.20.da1d1a41';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -15497,7 +15501,7 @@ const BG = {
   tag: 5,
   elo: [75, 150, 300],
 };
-const PERIODE_MIN_SIEGE = {tag:3, woche:5, monat:10};
+const PERIODE_MIN_SIEGE = {tag:2, woche:5, monat:10};
 const PERIODE_SAMMLER = {tag:3, woche:1};
 const WOCHE_MIN_SPIELTAGE = 2;
 function _wocheHatSpieltage(ms){
@@ -15873,6 +15877,22 @@ function countGames(id,ms){return matchesOfPlayer(id,ms).length;}
 function countWins(id,ms){return matchesOfPlayer(id,ms).filter(m=>won(id,m)).length;}
 
 const _winnerCountsMemo = new WeakMap();
+function _tagVerdient(ms, ps){
+  let hist = null;
+  try { hist = getHistoryByMatchId(); } catch(e){ hist = null; }
+  const k = cfg.k_factor ?? 32;
+  ms.forEach(m=>{
+    const h = hist && hist.get(m.id), vor = (h && h.eloBefore) || {};
+    const elo = id => vor[id] != null ? vor[id] : 0;
+    [m.a1,m.a2,m.b1,m.b2].forEach(pid=>{
+      const s = ps[pid]; if(!s) return;
+      const onA=(pid===m.a1||pid===m.a2), opp = onA ? [m.b1,m.b2] : [m.a1,m.a2];
+      const e = 1/(1+Math.pow(10, ((elo(opp[0])+elo(opp[1]))/2 - elo(pid))/400));
+      s.erwartet = (s.erwartet || 0) + e;
+    });
+  });
+  Object.values(ps).forEach(s=>{ s.verdient = s.eloDelta + k * (s.wins - (s.erwartet || 0)); });
+}
 function _periodeRangliste(ms, regel, nurSichtbar){
   if(regel==='woche' && !_wocheHatSpieltage(ms)) return [];
   const ps={};
@@ -15882,13 +15902,14 @@ function _periodeRangliste(ms, regel, nurSichtbar){
     if((onA&&m.winner==='A')||(!onA&&m.winner==='B')) s.wins++; else s.losses++;
     s.eloDelta += (m.deltas && m.deltas[pid]) || 0;
   }));
+  if(regel==='tag') _tagVerdient(ms, ps);
   const minW = PERIODE_MIN_SIEGE[regel];
   const pm = nurSichtbar ? pmap() : null;
   return Object.values(ps)
     .filter(s=>s.wins>=minW && (!pm || sichtbar(pm[s.id])))
     .map(s=>{ s.wr=s.wins/((s.wins+s.losses)||1); return s; })
     .sort(regel==='tag'
-      ? (a,b)=> b.wins!==a.wins ? b.wins-a.wins : b.eloDelta-a.eloDelta
+      ? (a,b)=> b.wins-a.wins || b.verdient-a.verdient || b.wr-a.wr || (a.id<b.id?-1:a.id>b.id?1:0)
       : (a,b)=> Math.abs(a.wr-b.wr)>0.001 ? b.wr-a.wr
              : a.wins!==b.wins ? b.wins-a.wins : b.eloDelta-a.eloDelta);
 }
@@ -17629,10 +17650,10 @@ function showEditPlayer(id){
     <div class="field-label">Profilbild</div>
     ${avPickerHtml}
 
-    <div class="btn-row" style="margin-top:20px">
+    <div class="sheet-fuss"><div class="btn-row">
       <button class="btn ghost" id="editCancel">Abbrechen</button>
       <button class="btn" id="editSave">Speichern</button>
-    </div>
+    </div></div>
   `);
 
   const picker = document.getElementById('avPicker');
@@ -19533,10 +19554,10 @@ function showEditMatch(mid){
     </div>
     <div id="eSatzSlot" class="score-board saetze" style="margin-top:12px">${satzEditorHtml(E)}</div>
     <div id="editWarn" style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px"></div>
-    <div class="btn-row">
+    <div class="sheet-fuss"><div class="btn-row">
       <button class="btn ghost sm" id="cancelEdit" style="flex:0 0 38%">Abbrechen</button>
       <button class="btn" id="saveEdit">Speichern</button>
-    </div>`);
+    </div></div>`);
   let speichert=false;
   const fehlerE=()=>{
     const ids=[E.A1,E.A2,E.B1,E.B2];
@@ -22601,7 +22622,7 @@ function _newsPeriodWinner(rangeMatches, regel){
   if(!cand.length) return null;
   const top = cand[0];
   const tied = byWins
-    ? cand.filter(c => c.wins === top.wins && Math.abs(c.eloDelta - top.eloDelta) < 0.001)
+    ? [top]
     : cand.filter(c => Math.abs(c.wr - top.wr) < 0.001);
   return { winners: tied, main: top };
 }

@@ -145,12 +145,15 @@ console.log('=== ARCHIVLAUF FRIERT DIE CHRONIK EIN ===');
   const g = JSON.parse(K.eval(`JSON.stringify((function(){
     const s = (seasons || []).find(x => x && x.id === '2026-07');
     const t = seasonTitles('2026-07');
-    const erster = (t.awarded || [])[0];
+    // Der Eintrag, der für diesen Spieler zählt (chronikEintragVon), nicht
+    // einfach der erste: hat er mehrere, zeigt das Profil den stärksten.
+    const erster = chronikEintragVon(t, ((t.awarded || [])[0] || {}).pid);
     if(!s || !erster) return {leer:true};
     const sicher = JSON.stringify(s.titles);
     try {
       const kopie = JSON.parse(sicher);
-      kopie.awarded[0].name = 'Eingefroren';
+      const i = kopie.awarded.findIndex(a => a.pid === erster.pid && a.titleId === erster.titleId);
+      kopie.awarded[i].name = 'Eingefroren';
       s.titles = kopie;
       invalidateCache();
       const nach = seasonTitleOf(erster.pid, '2026-07');

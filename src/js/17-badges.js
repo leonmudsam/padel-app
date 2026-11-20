@@ -52,7 +52,10 @@ const BG = {
 // des Monats [§7.3], und was der Award-Sammler davon in einer Saison
 // braucht. Ein Spieltag hat je Spieler sechs bis zehn Sätze: mit zwei
 // Siegen wäre schon ein einziges gewonnenes Match genug gewesen.
-const PERIODE_MIN_SIEGE = {tag:3, woche:5, monat:10};
+// Der Spieler des Tages ab zwei gewonnenen Sätzen: an einem Tag mit drei
+// langen Sätzen (7:6, 7:5, 6:1) kam niemand auf drei, und der Tag hatte
+// keinen.
+const PERIODE_MIN_SIEGE = {tag:2, woche:5, monat:10};
 const PERIODE_SAMMLER = {tag:3, woche:1};
 // Einen Player of the Week gibt es nur in einer Woche, in der die LIGA an
 // mindestens zwei Tagen gespielt hat, gleich wie viele Spieler dabei waren.
@@ -593,6 +596,30 @@ const _winnerCountsMemo = new WeakMap(); // msArray → { '<kind>_<curKey>': {pi
 // Eine Woche mit weniger als WOCHE_MIN_SPIELTAGE Spieltagen hat niemanden:
 // hier und nicht bei jedem Aufrufer, damit Auszeichnung, Rückblick, Feed
 // und Ring dieselbe Woche ohne Sieger sehen.
+// Am Tag zählen die Siege. Bei gleich vielen entscheidet, wer es mehr
+// verdient hat (`verdient`): die Elo des Tages plus die eigene Überleistung,
+// die gewonnenen Sätze weniger die erwarteten, gerechnet aus der eigenen Elo
+// vor jedem Satz gegen den Schnitt der Gegner, ein Satz Überleistung so viel
+// wie ein Satz Elo (Tempo). Partner in denselben Sätzen haben oft dieselbe
+// Elo des Tages, und es gab zwei Spieler des Tages („Ferdi und Niggo");
+// ihre Erwartung trennt sie: wer schwächer antrat, hat mehr geleistet.
+// Danach die bessere Quote, dann die ID — es gibt immer genau einen.
+function _tagVerdient(ms, ps){
+  let hist = null;
+  try { hist = getHistoryByMatchId(); } catch(e){ hist = null; }
+  const k = cfg.k_factor ?? 32;
+  ms.forEach(m=>{
+    const h = hist && hist.get(m.id), vor = (h && h.eloBefore) || {};
+    const elo = id => vor[id] != null ? vor[id] : 0;
+    [m.a1,m.a2,m.b1,m.b2].forEach(pid=>{
+      const s = ps[pid]; if(!s) return;
+      const onA=(pid===m.a1||pid===m.a2), opp = onA ? [m.b1,m.b2] : [m.a1,m.a2];
+      const e = 1/(1+Math.pow(10, ((elo(opp[0])+elo(opp[1]))/2 - elo(pid))/400));
+      s.erwartet = (s.erwartet || 0) + e;
+    });
+  });
+  Object.values(ps).forEach(s=>{ s.verdient = s.eloDelta + k * (s.wins - (s.erwartet || 0)); });
+}
 function _periodeRangliste(ms, regel, nurSichtbar){
   if(regel==='woche' && !_wocheHatSpieltage(ms)) return [];
   const ps={};
@@ -602,13 +629,14 @@ function _periodeRangliste(ms, regel, nurSichtbar){
     if((onA&&m.winner==='A')||(!onA&&m.winner==='B')) s.wins++; else s.losses++;
     s.eloDelta += (m.deltas && m.deltas[pid]) || 0;
   }));
+  if(regel==='tag') _tagVerdient(ms, ps);
   const minW = PERIODE_MIN_SIEGE[regel];
   const pm = nurSichtbar ? pmap() : null;
   return Object.values(ps)
     .filter(s=>s.wins>=minW && (!pm || sichtbar(pm[s.id])))
     .map(s=>{ s.wr=s.wins/((s.wins+s.losses)||1); return s; })
     .sort(regel==='tag'
-      ? (a,b)=> b.wins!==a.wins ? b.wins-a.wins : b.eloDelta-a.eloDelta
+      ? (a,b)=> b.wins-a.wins || b.verdient-a.verdient || b.wr-a.wr || (a.id<b.id?-1:a.id>b.id?1:0)
       : (a,b)=> Math.abs(a.wr-b.wr)>0.001 ? b.wr-a.wr
              : a.wins!==b.wins ? b.wins-a.wins : b.eloDelta-a.eloDelta);
 }

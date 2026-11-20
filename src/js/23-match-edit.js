@@ -33,10 +33,10 @@ function showEditMatch(mid){
     </div>
     <div id="eSatzSlot" class="score-board saetze" style="margin-top:12px">${satzEditorHtml(E)}</div>
     <div id="editWarn" style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px"></div>
-    <div class="btn-row">
+    <div class="sheet-fuss"><div class="btn-row">
       <button class="btn ghost sm" id="cancelEdit" style="flex:0 0 38%">Abbrechen</button>
       <button class="btn" id="saveEdit">Speichern</button>
-    </div>`);
+    </div></div>`);
   let speichert=false;
   const fehlerE=()=>{
     const ids=[E.A1,E.A2,E.B1,E.B2];

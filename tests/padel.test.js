@@ -144,9 +144,10 @@ ok(J(`(()=>{period='day';players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidd
     ...partieFelder([{a:6,b:3,art:'n'}]),deltas:{p1:5,p2:5,p3:-5,p4:-5},exp_a:.5,created_at:new Date(Date.now()-3600000).toISOString()};
   matches=[m,{...m,id:'e',created_at:new Date(Date.now()-1800000).toISOString()},{...m,id:'f',created_at:new Date(Date.now()-900000).toISOString()}];invalidateCache();
   const h=_vRankingCore();return h.includes('Player of the Day') && h.includes('nw-name');})()`),
-  'Spieler des Tages ab drei gewonnenen Sätzen, dieselbe Schwelle wie die Auszeichnung');
-ok(J(`(()=>{matches=matches.slice(0,2);invalidateCache();return !_vRankingCore().includes('nw-name');})()`),
-  'Zwei gewonnene Sätze reichen nicht für den Spieler des Tages');
+  'Spieler des Tages mit gewonnenen Sätzen, dieselbe Schwelle wie die Auszeichnung');
+ok(J(`(()=>{matches=matches.slice(0,2);invalidateCache();const zwei=_vRankingCore().includes('nw-name');
+  matches=matches.slice(0,1);invalidateCache();return zwei && !_vRankingCore().includes('nw-name');})()`),
+  'Zwei gewonnene Sätze reichen für den Spieler des Tages, einer nicht: an einem Tag mit drei langen Sätzen hätte sonst niemand drei');
 
 
 // ── Jeder Satz ist eine eigene Rechnung ──────────────────────────────
@@ -524,6 +525,7 @@ const _feed = J(`(()=>{const _m=matches,_p=players,_s=seasons,_c=cfg;
   const r={match:match.title||'', matchDesc:match.desc||'', matchWann:match.when?new Date(match.when).toISOString().slice(11,16):'',
     runden:typ('runde').length, satz2:karte('f21').title||'', satz3:karte('f22').title||'', revanche:!!_spFakten(matches[21]).revanche,
     woche:typ('woche').length, wochenEhrung:st.filter(x=>/^ehrung_der_woche/.test(x.id)).length, tagEhrung:st.filter(x=>x.id==='tagesehrung_2026-11-11').length,
+    potd:typ('potd').map(x=>x.title+'|'+(x.dataRef.playerIds||[]).length).join(' / '),
     pleite:(typ('team_loss_streak')[0]||{}).desc||'', kicker:(text.match(/Treffen|direkte Duelle|Duellen|die Runde gegen|und 18:46 Uhr/)||[''])[0],
     alt:[{type:'runde',paarungen:1},{type:'woche',woche:'2026-W46'},{type:'ehrung',periode:'woche',woche:'2026-11-09'},{type:'runde',paarungen:3}]
       .map(d=>_storyWiderrufen({dataRef:d})).join(','), allein};
@@ -539,6 +541,10 @@ ok(_feed.woche === 0 && _feed.wochenEhrung === 0 && _feed.tagEhrung === 1 && _fe
   'Eine Woche mit einem Spieltag hat weder Wochenkarte noch Ehrung der Woche, der Tag behält seine, auch als Sonntag');
 ok(/^Ohne gemeinsamen Sieg seit \d\d:\d\d Uhr\.$/.test(_feed.pleite) && _feed.kicker === '',
   `Am selben Tag nennt die Pleitenserie die Uhrzeit, und kein Text zählt Sätze als Treffen oder Duelle (${_feed.pleite}${_feed.kicker ? ' · ' + _feed.kicker : ''})`);
+// Am 19.11. gewannen P3 und P4 zwei Sätze mit derselben Elo; früher hieß es
+// „P3 und P4: Spieler des Tages". Jetzt gibt es einen, und am 11.11. auch.
+ok(/^P\d ist Spieler des Tages\|1 \/ P\d ist Spieler des Tages\|1$/.test(_feed.potd),
+  `Jeder Tag hat genau einen Spieler des Tages, auch bei gleichen Siegen und gleicher Elo (${_feed.potd})`);
 ok(_feed.alt === 'true,true,true,false',
   'Gespeicherte Runden fester Teams und Wochenkarten mit einem Spieltag treten zurück, eine Runde mit wechselnden Partnern bleibt');
 
