@@ -197,5 +197,36 @@ const ruhe = J(`(()=>{players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:
 ok(ruhe.a25 === true && ruhe.a26 === false,
   `Drei Tage (72 Stunden) nach dem letzten Satz bleibt der Fun Fact aus, einen Tag davor steht er (25.08. ${ruhe.a25}, 26.08. ${ruhe.a26})`);
 
+// ── Die Monatschronik bis zum letzten Satz ändert sich mit dem Schluss nicht
+// Die Spieltage zählten bis zum Stand, die Spieler des Tages und der Woche
+// bis zur Uhr: nach 23:59 kam ein Tagessieg ohne seinen Tag dazu, und die
+// Tafel des letzten Satzes bekam „Der Tagesregent" nachträglich — in der
+// Kicker-Liga am 19.11. um 01:16 für 17:15. Geprüft an jedem Spieltag der
+// Testliga, am Tag danach mittags; montags ist damit auch die Woche zu.
+{
+  const letzte = {};
+  L.matches.forEach(m => { const t = new Date(m.created_at).getTime(), d = new Date(t);
+    const k = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); letzte[k] = Math.max(letzte[k] || 0, t); });
+  const tage = Object.values(letzte).sort((a, b) => a - b);
+  const halter = (t, jetzt) => { stand(t, jetzt);
+    // Halter UND die Zählung darunter: eine Liga, in der niemand die
+    // Schwelle des Tagesregenten erreicht, ändert keinen Halter, und der
+    // Fehler bliebe unsichtbar, bis er es tut.
+    return J(`(()=>{const sid=seasonOf(new Date(${t})).id, h=seasonTitleHalter(sid, ${t}), C=_seasonTitleCtx(sid, ${t});
+      return Object.keys(h).sort().map(k=>k+':'+[].concat(h[k].halter||h[k].pids||h[k]).join('+'))
+        .concat(Object.keys(C.P).sort().map(id=>id+' Tage '+C.P[id].tagN+' Tagessiege '+C.P[id].potd+' Wochen '+C.P[id].potwG+' Wochensiege '+C.P[id].potw));})()`); };
+  const anders = [];
+  tage.forEach(t => {
+    const morgen = new Date(t); morgen.setDate(morgen.getDate() + 1); morgen.setHours(12, 0, 0, 0);
+    const vor = halter(t, t + 60000), nach = halter(t, morgen.getTime());
+    if(JSON.stringify(vor) !== JSON.stringify(nach)){
+      const a = [].concat(vor), b = [].concat(nach);
+      anders.push(new Date(t).toISOString().slice(0, 10) + ': ' + b.filter(x => !a.includes(x)).concat(a.filter(x => !b.includes(x)).map(x => '−' + x)).join(' '));
+    }
+  });
+  ok(tage.length > 10 && !anders.length,
+    `Die Monatschronik bis zum letzten Satz eines Tages ändert sich mit dem Schluss um 23:59 nicht (${tage.length} Spieltage)` + (anders.length ? ' — ' + anders.slice(0, 3).join(' | ') : ''));
+}
+
 console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
 process.exit(fails ? 1 : 0);

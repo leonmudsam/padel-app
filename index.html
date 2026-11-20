@@ -6751,7 +6751,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.20.da1d1a41';
+const BUILD_VERSION='2026.11.20.04d6b9f0';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -34626,7 +34626,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
     });
   });
 
-  const wochenSieger = _periodWinnerMap(matches || [], 'week');
+  const wochenSieger = _periodWinnerMap(matches || [], 'week', bisMs);
   const gewerteteWochen = _gewerteteWochen(matches || []);
   const prevId = _prevSeasonId(sid);
   const prevElos = prevId ? (gSim.seasonEndElos[prevId] || {}) : {};
@@ -34647,7 +34647,7 @@ function _seasonTitleCtxRechnen(sid, bisMs){
   _bannLaufDerLiga(P, ms);
   _thronDerLiga(P, ms, offen);
 
-  const potdOfSeason = _winnerCountsOf(ms, 'day');
+  const potdOfSeason = _winnerCountsOf(ms, 'day', bisMs);
   Object.keys(P).forEach(id => {
     const dc = dayCount[id] || {}, dw = dayWins[id] || {};
     let big = 0, perf = 0, pos = 0, bestPerfTag = 0;
