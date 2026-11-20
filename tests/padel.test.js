@@ -274,11 +274,29 @@ ok(J(`(()=>{const _m=matches,_p=players,_s=seasons;players=['p1','p2','p3','p4']
   matches=_m;players=_p;seasons=_s;invalidateCache();
   return Math.abs(kurz-2)<0.01 && lang===2;})()`),
   'Acht Sätze bis 2 zählen für die Neulingsphase wie zwei volle Sätze, ein Viertel je Satz');
-ok(J(`(()=>{const mk=(i,a,b)=>({id:'w'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
-    ...partieFelder([{a,b,art:'n'}]),exp_a:.5,created_at:new Date(Date.UTC(2026,7,10,16,i)).toISOString()});
-  const z=ms=>BADGES.find(b=>b.id==='repeat_score').count('p1',ms);
-  return z([0,1,2].map(i=>mk(i,2,1)))===0 && z([0,1,2].map(i=>mk(i,6,3)))===1;})()`),
-  'Wiederholungstäter zählt nur volle Sätze: dreimal 2:1 nicht, dreimal 6:3 schon');
+// Der Zittersieg ist jeder knapp gewonnene Satz: im Tiebreak, mit einem
+// Game Vorsprung ab 4:3 oder in der Verlängerung. Vorher nur der Tiebreak,
+// und ein 5:4 zählte nicht. Die Verlängerung (ab 8 Games des Siegers)
+// ersetzt den Wiederholungstäter und ist selten; Unschlagbar gibt es ab
+// drei Sätzen am Tag statt ab fünf.
+const zitter = J(`(()=>{const mk=(i,a,b,art)=>({id:'z'+i,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+    ...partieFelder([{a,b,art:art||satzArt([a,b])}]),exp_a:.5,created_at:new Date(Date.UTC(2026,7,10,16,i)).toISOString()});
+  const P=(a,b,art)=>partie(mk(0,a,b,art));
+  const zs=[[4,3],[5,4],[6,5],[7,6],[8,6],[3,2],[2,1],[6,4],[7,5],[9,6]].map(([a,b])=>a+':'+b+'='+(P(a,b).zittersieg?1:0)+(P(a,b).lang?'L':'')).join(' ');
+  const c=(bid,ms,bis)=>{const b=BADGES.find(x=>x.id===bid);return b?b.count('p1',ms,bis):-1;};
+  const verloren=mk(9,4,5);
+  const tag=[0,1,2].map(i=>mk(20+i,2,1)).map((m,i)=>({...m,created_at:new Date(Date.UTC(2026,7,3,15,i)).toISOString()}));
+  return {zs, nail:c('nail_biter',[mk(1,4,3),mk(2,5,4),mk(3,2,1),mk(4,6,4),verloren]),
+    lang:c('long_set',[mk(5,8,6),mk(6,9,7),mk(7,6,4),mk(8,6,8)]),
+    unschlagbar:c('unbeatable',tag,Date.UTC(2026,7,5)),
+    klasse:rarityOf('long_set'), alt:BADGES.some(x=>x.id==='repeat_score'),
+    selten:RARITY_META.rare.total===BADGES.filter(x=>rarityOf(x.id)==='rare').length};})()`);
+ok(zitter.zs === '4:3=1 5:4=1 6:5=1 7:6=1 8:6=1L 3:2=0 2:1=0 6:4=0 7:5=0 9:6=0L',
+  'Zittersieg ab 4:3 mit einem Game Vorsprung, im Tiebreak und in der Verlängerung; 3:2, 6:4 und 9:6 nicht: ' + zitter.zs);
+ok(zitter.nail === 2, `Zittersieg zählt 4:3 und 5:4, nicht 2:1, 6:4 oder ein verlorenes 4:5 (${zitter.nail})`);
+ok(zitter.lang === 2 && zitter.klasse === 'rare' && zitter.alt === false && zitter.selten === true,
+  `Die Verlängerung zählt gewonnene Sätze ab 8 Games (8:6, 9:7), ist selten und ersetzt den Wiederholungstäter (${zitter.lang}, ${zitter.klasse})`);
+ok(zitter.unschlagbar === 1, `Unschlagbar gibt es ab drei Sätzen am Tag ohne Satzverlust (${zitter.unschlagbar})`);
 
 // ── Chronik und Rekorde: jede Schwelle der Rechnung steht im Text ────
 // Seit eine Zeile ein Satz ist, stehen die Schwellen in Sätzen; vorher

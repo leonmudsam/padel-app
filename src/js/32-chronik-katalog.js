@@ -1465,8 +1465,10 @@ const DISZIPLINEN = [
       kammer:'fuegung', basis:REKORD_GRUNDWERT.fuegung, offen:true,
       zeitraum:'Ganze Laufbahn, alle im Tiebreak entschiedenen Sätze',
       mind:'6 im Tiebreak entschiedene Sätze',
-      wie:'Gezählt werden die Zittersiege, geteilt durch alle eigenen Sätze, die im Tiebreak oder Match-Tiebreak entschieden wurden. Gefragt ist, wem der letzte Ballwechsel öfter gehört.',
-      cond:'Höchster Anteil an Zittersiegen unter allen im Tiebreak entschiedenen Sätzen, ab 6 solchen Sätzen',
+      // „Zittersiege" hieß hier der gewonnene Tiebreak; seit der Zittersieg
+      // auch 5:4 und 8:6 umfasst, heißt er hier, was gezählt wird.
+      wie:'Gezählt werden die gewonnenen Tiebreaks, geteilt durch alle eigenen Sätze, die im Tiebreak oder Match-Tiebreak entschieden wurden. Gefragt ist, wem der letzte Ballwechsel öfter gehört.',
+      cond:'Höchster Anteil gewonnener Tiebreaks unter allen im Tiebreak entschiedenen Sätzen, ab 6 solchen Sätzen',
       val:p => (p.nail + p.bitter) >= 6 ? p.nail / (p.nail + p.bitter) : null,
       ev:(p,v) => `${Math.round(v*100)} % der ${p.nail + p.bitter} Zitterpartien gewonnen · ${p.nail} zu ${p.bitter}`
     }},

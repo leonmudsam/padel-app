@@ -40,9 +40,14 @@ const BG = {
   seite: 50, allrounder: 25,
   serien: [5, 10, 15, 20],     // streak5, streak10, streak15, streak20
   talfahrt: 5,
-  krimi: 5, krimiNied: 3, wiederholung: 3, tbSerie: 3, bagelSaison: 5,
+  krimi: 5, krimiNied: 3, tbSerie: 3, bagelSaison: 5,
   angstgegner: 5, serienbrecher: 5,
   tag: 5,                       // Sätze an einem Tag für die Tagesmuster
+  // Unschlagbar schon ab drei Sätzen: an einem Tag mit drei langen Sätzen
+  // ohne Satzverlust stand nichts, weil die Schwelle der anderen
+  // Tagesmuster galt. Schwarzer Tag, Comeback-Tag und Zusammenbruch
+  // brauchen einen Verlauf und bleiben bei BG.tag.
+  unschlagbar: 3,
   // Saison-Elo für Aufsteiger, Dominator und Dynastie, von der Liga
   // vorgegeben: 150 und 300 für die beiden legendären, die Hälfte davon
   // für den Aufsteiger.
@@ -76,7 +81,12 @@ function bgZuNull(m){ return partie(m).zuNull; }
 // Nur die Wende reicht über mehrere Sätze: die Begegnung, die an diesem
 // Satz endet, und wer sie gewann — nicht der Sieger des letzten Satzes.
 function bgBegegnungSieg(id, m){ return begegnungGewonnen(m, id) === true; }
+// Die Bittere Pille bleibt der verlorene Tiebreak; der Zittersieg ist jeder
+// knapp gewonnene entscheidende Satz (`zittersieg`, §1.3), die Verlängerung
+// ein Satz ab LANG_AB Games.
 function bgZitter(m){ return partie(m).entscheidTb; }
+function bgZittersieg(id, m){ return won(id, m) && partie(m).zittersieg; }
+function bgLang(id, m){ return won(id, m) && partie(m).lang; }
 function bgKlar(id, m){ return won(id, m) && partie(m).deutlich; }
 function bgKnapp(m){ return partie(m).knapp; }
 function bgWende(id, m){ return begegnungAm(m).wende && bgBegegnungSieg(id, m); }
@@ -122,7 +132,7 @@ const BADGES=[
   // Tages-Muster
   {id:'early_bird',ic:'sunrise',name:'Frühschicht',desc:'Ersten Satz des Spieltags gewonnen',
     multi:true,count:(id,ms)=>countEarlyBirdDays(id,ms)},
-  {id:'unbeatable',ic:'crownPlus',name:'Unschlagbar',desc:'Spieltag ohne verlorenen Satz (ab '+BG.tag+' Sätzen)',
+  {id:'unbeatable',ic:'crownPlus',name:'Unschlagbar',desc:'Spieltag ohne verlorenen Satz (ab '+BG.unschlagbar+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countUnbeatableDays(id,ms,bis)},
   {id:'comeback_day',ic:'comeback',name:'Comeback-Tag',desc:'Spieltag mit einem verlorenen Satz begonnen und mit einem gewonnenen beendet (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countComebackDays(id,ms,bis)},
@@ -133,8 +143,12 @@ const BADGES=[
     multi:true,count:(id,ms)=>countClearWins(id,ms)},
   {id:'krimi',ic:'thriller',name:'Krimi-Reihe',desc:BG.krimi+' knappe Sätze in Folge, gewonnen oder verloren (Tiebreak, 6:4 oder 7:5)',
     multi:true,count:(id,ms)=>countKrimiStreaks(id,ms)},
-  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' volle Sätze in Folge mit demselben Ergebnis gewonnen (bis 6 und länger)',
-    multi:true,count:(id,ms)=>countRepeatScoreStreaks(id,ms)},
+  // Die Verlängerung ersetzt den Wiederholungstäter: dreimal dasselbe
+  // Ergebnis in Folge erzählte nichts über das Spiel, ein 8:6 erzählt einen
+  // Satz, der bei 6:6 nicht enden wollte. Sie ist zugleich ein Zittersieg,
+  // solange der Abstand zwei Games ist.
+  {id:'long_set',ic:'verlaengerung',name:'Verlängerung',desc:'Satz mit mindestens '+LANG_AB+' Games gewonnen ('+LANG_AB+':6 und länger)',
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgLang(id,m)).length},
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
   // Zu Null heißt: ein Satz ohne abgegebenes Game, 6:0 [§1.3].
@@ -144,8 +158,8 @@ const BADGES=[
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&won(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
-  {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Satz im Tiebreak oder Match-Tiebreak gewonnen',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&bgZitter(m)).length},
+  {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Satz knapp gewonnen: im Tiebreak, mit einem Game Vorsprung ab '+ZITTER_AB+':'+(ZITTER_AB-1)+' oder in der Verlängerung',
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZittersieg(id,m)).length},
   // Serien
   {id:'streak5',ic:'flame',name:BG.serien[0]+'er Serie',desc:BG.serien[0]+' Sätze in Folge gewonnen',
     multi:true,count:(id,ms)=>countStreakOccurrences(id,ms,BG.serien[0])},
@@ -259,7 +273,7 @@ const BADGE_RARITY = {
   wins200:         'rare',      // Siegermaschine (BG.siegermaschine Satzsiege) — zählt Anwesenheit
   vice_champion:   'rare',      // Vize-Meister
   perfect_win:     'rare',      // Bagel serviert — ein Satz zu Null; fünf in einer Saison sind legendär
-  repeat_score:    'rare',      // Wiederholungstäter
+  long_set:        'rare',      // Verlängerung — Satz ab LANG_AB Games
   streak10:        'rare',      // 10er Serie
   krimi:           'rare',      // Krimi-Reihe
   allrounder:      'rare',      // Allrounder
@@ -775,26 +789,6 @@ function countClearWins(id,ms){
   return matchesOfPlayer(id,ms).filter(m=>bgKlar(id,m)).length;
 }
 
-// ─── Wiederholungstäter: BG.wiederholung Siege in Folge, identisches Ergebnis ───
-// Niederlagen oder Siege mit anderem Ergebnis brechen die Serie. Verglichen
-// wird Satz für Satz aus Sicht des Siegers („6:4 6:3").
-function countRepeatScoreStreaks(id,ms){
-  const ordered=matchesOfPlayer(id,ms);
-  let lastScore=null,cur=0,count=0;
-  ordered.forEach(m=>{
-    if(!won(id,m)){cur=0; lastScore=null; return;}
-    if(!vollerSatz(m)) return;   // kurze Sätze zählen nicht, sie brechen aber auch nichts
-    const score=standFuer(m);
-    if(score===lastScore){
-      cur++;
-      if(cur>=BG.wiederholung){count++; cur=0; lastScore=null;}
-    } else {
-      cur=1; lastScore=score;
-    }
-  });
-  return count;
-}
-
 // ─── Comeback-Tag: Tag mit Niederlage gestartet, mit Sieg beendet, min. 3 Matches ───
 // Beendet ist ein Tag erst, wenn er zu ist (`_tagZu`).
 function countComebackDays(id,ms,bis){
@@ -1084,7 +1078,7 @@ function _tagZu(dk, jetzt){
   const ende = new Date(dk + 'T00:00:00'); ende.setHours(23, 59, 0, 0);
   return (Number.isFinite(jetzt) ? jetzt : Date.now()) >= ende.getTime();
 }
-// Zählt Tage an denen der Spieler min. 3 Spiele hatte und keines verloren hat
+// Zählt Tage, an denen der Spieler mindestens BG.unschlagbar Sätze hatte und keinen verloren hat
 // — nur Tage, die zu sind (`_tagZu`): „Ganzer Tag ohne Niederlage" stand nach
 // dem dritten Sieg schon im Profil, und eine Niederlage am Abend nahm sie
 // wieder weg.
@@ -1093,7 +1087,7 @@ function countUnbeatableDays(id,ms,bis){
   const byDay={};
   mine.forEach(m=>{const d=mdayKey(m);
     if(!byDay[d])byDay[d]={games:0,losses:0}; byDay[d].games++; if(!won(id,m))byDay[d].losses++;});
-  return Object.entries(byDay).filter(([k,d])=>d.games>=BG.tag&&d.losses===0&&_tagZu(k,bis)).length;
+  return Object.entries(byDay).filter(([k,d])=>d.games>=BG.unschlagbar&&d.losses===0&&_tagZu(k,bis)).length;
 }
 // ─── Pflichterfüller: Sieg gegen mind. 1 Gegner aus Bottom-2 der ─────
 // ─── Saison-Rangliste zum Zeitpunkt des Matches ──────────────────────
@@ -1349,8 +1343,6 @@ function getBadgeEarnedCache(){
       // ebenfalls zurückgesetzt, sobald wieder ein Sieg gegen X gelingt.
       nemesisVs: {},          // oppId → Streak
       nemesisFired: {},       // oppId → schon gefeuert (wartet auf Reset)
-      // Wiederholungstäter: letzter Sieg-Score und aktueller Counter
-      lastWinScore: null, wtCur: 0,
       // Comeback-Tag und Zusammenbruch: erstes Ergebnis pro Tag
       firstResOfDay: {},   // "YYYY-MM-DD" → 'W' | 'L'
       // Revanchist: letztes verlorenes Gegner-Team (sortierter String "p1|p2")
@@ -1424,7 +1416,8 @@ function getBadgeEarnedCache(){
       // ── Match-Ergebnis-Badges ──
       if(w  && bgZuNull(m))                         fire('perfect_win');
       if(!w && bgZuNull(m))                         fire('perfect_loss');
-      if(w  && bgZitter(m))                         fire('nail_biter');
+      if(bgZittersieg(id,m))                        fire('nail_biter');
+      if(bgLang(id,m))                              fire('long_set');
       if(!w && bgZitter(m))                         fire('bitter_loss');
       if(bgWende(id,m))                             fire('wall_badge');
       if(w  && siegChance<CHANCE_UPSET)                      fire('upset_king');
@@ -1476,12 +1469,12 @@ function getBadgeEarnedCache(){
       // Nur wenn der Tag zu ist; davor kann jede dieser vier Aussagen noch
       // kippen (siehe oben).
       const d=s.days[day];
-      if(letzteDesTages[id+'|'+day]===m.id && d.g>=BG.tag && _tagZu(day)){
+      if(letzteDesTages[id+'|'+day]===m.id && _tagZu(day)){
         const ende={tagEnde:day};
-        if(d.l===0)                                   fire('unbeatable', ende);
-        if(d.l===d.g)                                 fire('black_day', ende);
-        if(s.firstResOfDay[day]==='L' && w)           fire('comeback_day', ende);
-        if(s.firstResOfDay[day]==='W' && !w)          fire('crash_day', ende);
+        if(d.g>=BG.unschlagbar && d.l===0)            fire('unbeatable', ende);
+        if(d.g>=BG.tag && d.l===d.g)                  fire('black_day', ende);
+        if(d.g>=BG.tag && s.firstResOfDay[day]==='L' && w)  fire('comeback_day', ende);
+        if(d.g>=BG.tag && s.firstResOfDay[day]==='W' && !w) fire('crash_day', ende);
       }
 
       // ── Frühschicht: Sieg im chronologisch ersten Match des Tages ──
@@ -1542,22 +1535,6 @@ function getBadgeEarnedCache(){
       } else {
         s.krimiLossCur=0;
         s.krimiLossFired=false;
-      }
-
-
-      // ── Wiederholungstäter: identisches Ergebnis, Satz für Satz ──
-      // Niederlagen oder Siege mit anderem Ergebnis brechen die Serie.
-      // Nur volle Sätze: bis 2 gibt es nur 2:0 und 2:1.
-      if(w && vollerSatz(m)){
-        const score=standFuer(m);
-        if(score===s.lastWinScore){
-          s.wtCur++;
-          if(s.wtCur>=BG.wiederholung){ fire('repeat_score'); s.wtCur=0; s.lastWinScore=null; }
-        } else {
-          s.wtCur=1; s.lastWinScore=score;
-        }
-      } else if(!w){
-        s.wtCur=0; s.lastWinScore=null;
       }
 
 

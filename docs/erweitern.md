@@ -33,7 +33,13 @@ zwei Einträge pro Zeile: Dynastie/Dominator, 20er/15er Serie,
 Meister/Team der Saison, Untouchable/Award-Sammler und Tag der Götter/
 Bagel-Bäcker. Danach bleibt die Reihenfolge aus `BADGES[]` stabil. Gezählt
 wird in Sätzen (`BG`): Serien 5/10/15/20, Saison-Elo 75/150/300 für
-Aufsteiger, Dominator und Dynastie. „Bagel serviert" (früher „Absoluter Sieger") ist ein einzelner
+Aufsteiger, Dominator und Dynastie, Unschlagbar ab 3 Sätzen am Tag
+(`BG.unschlagbar`), die übrigen Tagesmuster ab 5 (`BG.tag`). Ein
+Zittersieg ist jeder knapp gewonnene entscheidende Satz (`zittersieg`,
+§1.3): im Tiebreak, mit einem Game Vorsprung ab 4:3 (`ZITTER_AB`) oder in
+der Verlängerung. Die Verlängerung (`long_set`, Rare) ist ein Satz, den
+der Sieger mit mindestens 8 Games gewann (`LANG_AB`); sie ersetzt den
+Wiederholungstäter. „Bagel serviert" (früher „Absoluter Sieger") ist ein einzelner
 Satz zu Null und deshalb Rare; fünf davon in einer Saison („Bagel-Bäcker")
 sind Legendary, ebenso drei Spieltage in Folge als Player of the Day.
 

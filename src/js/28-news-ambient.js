@@ -370,7 +370,9 @@ function _ambientTemplatePool(now, pm, nameOf){
         else if(pos === 'reves'){ a.dG++; if(won) a.dW++; }
         // Knapp und im Tiebreak entschieden nach §1.3.
         if(pz.knapp){ a.cg++; if(won) a.cw++; }
-        if(won && pz.entscheidTb) a.c1w++;
+        // Ein Zittersieg ist jeder knapp gewonnene Satz (§1.3), nicht nur der
+        // Tiebreak; sonst hieße die Zahl hier anders als die Auszeichnung.
+        if(won && pz.zittersieg) a.c1w++;
       }
     }
     _recentMemo = { agg, count };
@@ -905,7 +907,7 @@ function _ambientTemplatePool(now, pm, nameOf){
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].cw / agg[id].cg, v => Math.round(v * 100) + ' %') } };
   }});
 
-  // ── Zittersiege: höchster Anteil im Tiebreak gewonnener Partien (14 Tage) ──
+  // ── Zittersiege: höchster Anteil knapp gewonnener Sätze (14 Tage) ──
   T.push({ key:'form_close_wins', make: () => {
     const { agg, count } = recentAgg();
     if(count < 6) return null;
@@ -920,8 +922,8 @@ function _ambientTemplatePool(now, pm, nameOf){
       // dem Helden, der Satz der Liga. Und die Stichprobe gehoert zur
       // Aussage: „x von y", nicht nur der Anteil [§C37].
       desc:`${a.c1w} von ${a.g} Sätzen der letzten 14 Tage gewann `
-        + `${nameOf(best.pid)} im Tiebreak, das sind `
-        + `${Math.round(best.v*100)} %.`,
+        + `${nameOf(best.pid)} knapp, das sind `
+        + `${Math.round(best.v*100)}\u00a0%.`,
       vv: a.c1w, vl:'Zittersiege',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].c1w / agg[id].g, v => Math.round(v * 100) + ' %') } };
   }});

@@ -585,7 +585,7 @@ const NEWS_BADGE_WHITELIST = new Set([
   'krimi_loser', // Krimi-Versager — 3 knappe Niederlagen in Folge
   'losing5',     // Losing Streak — 5 Niederlagen in Folge
   // Hinweis: Die gewünschten POSITIVEN Auszeichnungen (Nerven aus Stahl,
-  // Wiederholungstäter, Krimi-Reihe, 10er Serie) sind bereits 'rare' und
+  // Verlängerung, Krimi-Reihe, 10er Serie) sind bereits 'rare' und
   // laufen daher ohnehin über die generische Badge-News-Regel unten.
 ]);
 

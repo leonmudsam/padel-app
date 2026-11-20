@@ -6751,7 +6751,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.20.04d6b9f0';
+const BUILD_VERSION='2026.11.20.f352bd8a';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -7160,6 +7160,7 @@ const ICONS = {
   revesVirtuose: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 18.5v-5M6.3 15.7l2.2-2.2 2.2 2.2"/>`,
   revesAce: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 13.3l.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor"/>`,
   langstrecke: `<circle cx="12" cy="11" r="7"/><path d="M12 7v4l3 2"/><path d="M4 21h16"/>`,
+  verlaengerung: `<path d="M3.5 6v12M7.5 6v12"/><path d="M11.5 12h9M17.5 9l3 3-3 3"/>`,
 };
 const ZEICHEN_ALT = {
   weightSmall:'weight', heartBroken:'pille', concreteWall:'betonmauer', blackDay:'schwarzerTag',
@@ -7364,6 +7365,8 @@ function availableSeasons(){
 const SATZ_ARTEN = ['n', 'tb', 'mtb', 'open'];
 const MTB_AB = 10;
 const BAGEL_AB = 6;
+const ZITTER_AB = 4;
+const LANG_AB = 8;
 
 function satzArt(satz, art){
   if(SATZ_ARTEN.includes(art)) return art;
@@ -7427,6 +7430,11 @@ function saetzeAuswerten(saetze){
   const entscheidTb = !!letzter && (letzter.art === 'tb' || letzter.art === 'mtb')
     && sieger[letzterIdx] === winner && (umkaempft || winSaetze === 1);
   const gameDiff = Math.abs(gamesA - gamesB);
+  const zaehlt = !!letzter && sieger[letzterIdx] === winner && (umkaempft || winSaetze === 1);
+  const hi = letzter ? Math.max(letzter.a, letzter.b) : 0, lo = letzter ? Math.min(letzter.a, letzter.b) : 0;
+  const lang = zaehlt && letzter.art === 'n' && hi >= LANG_AB;
+  const zittersieg = entscheidTb || (zaehlt && letzter.art === 'n'
+    && ((hi - lo === 1 && hi >= ZITTER_AB) || (lang && hi - lo <= 2)));
   return {
     saetze, sieger, winner, fehler,
     setsA, setsB, gamesA, gamesB, bagelsA, bagelsB,
@@ -7435,7 +7443,7 @@ function saetzeAuswerten(saetze){
     zuNull, doppelBagel, umkaempft,
     wende: !!winner && !!ersterSieger && ersterSieger !== winner,
     tiebreaks, mtb: saetze.some(s => s.art === 'mtb'),
-    entscheidTb,
+    entscheidTb, zittersieg, lang,
     knapp: !!winner && (umkaempft || entscheidTb || (gameDiff <= 2 && gW >= 6)),
     deutlich: !!winner && !umkaempft && total >= 6 && gW / total >= 0.75,
     gamesSieger: gW, gamesVerlierer: gL,
@@ -15496,9 +15504,10 @@ const BG = {
   seite: 50, allrounder: 25,
   serien: [5, 10, 15, 20],
   talfahrt: 5,
-  krimi: 5, krimiNied: 3, wiederholung: 3, tbSerie: 3, bagelSaison: 5,
+  krimi: 5, krimiNied: 3, tbSerie: 3, bagelSaison: 5,
   angstgegner: 5, serienbrecher: 5,
   tag: 5,
+  unschlagbar: 3,
   elo: [75, 150, 300],
 };
 const PERIODE_MIN_SIEGE = {tag:2, woche:5, monat:10};
@@ -15510,6 +15519,8 @@ function _wocheHatSpieltage(ms){
 function bgZuNull(m){ return partie(m).zuNull; }
 function bgBegegnungSieg(id, m){ return begegnungGewonnen(m, id) === true; }
 function bgZitter(m){ return partie(m).entscheidTb; }
+function bgZittersieg(id, m){ return won(id, m) && partie(m).zittersieg; }
+function bgLang(id, m){ return won(id, m) && partie(m).lang; }
 function bgKlar(id, m){ return won(id, m) && partie(m).deutlich; }
 function bgKnapp(m){ return partie(m).knapp; }
 function bgWende(id, m){ return begegnungAm(m).wende && bgBegegnungSieg(id, m); }
@@ -15544,7 +15555,7 @@ const BADGES=[
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&myExp(id,m)<0.35).length},
   {id:'early_bird',ic:'sunrise',name:'Frühschicht',desc:'Ersten Satz des Spieltags gewonnen',
     multi:true,count:(id,ms)=>countEarlyBirdDays(id,ms)},
-  {id:'unbeatable',ic:'crownPlus',name:'Unschlagbar',desc:'Spieltag ohne verlorenen Satz (ab '+BG.tag+' Sätzen)',
+  {id:'unbeatable',ic:'crownPlus',name:'Unschlagbar',desc:'Spieltag ohne verlorenen Satz (ab '+BG.unschlagbar+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countUnbeatableDays(id,ms,bis)},
   {id:'comeback_day',ic:'comeback',name:'Comeback-Tag',desc:'Spieltag mit einem verlorenen Satz begonnen und mit einem gewonnenen beendet (ab '+BG.tag+' Sätzen)',
     multi:true,count:(id,ms,bis)=>countComebackDays(id,ms,bis)},
@@ -15554,8 +15565,8 @@ const BADGES=[
     multi:true,count:(id,ms)=>countClearWins(id,ms)},
   {id:'krimi',ic:'thriller',name:'Krimi-Reihe',desc:BG.krimi+' knappe Sätze in Folge, gewonnen oder verloren (Tiebreak, 6:4 oder 7:5)',
     multi:true,count:(id,ms)=>countKrimiStreaks(id,ms)},
-  {id:'repeat_score',ic:'duplicate',name:'Wiederholungstäter',desc:BG.wiederholung+' volle Sätze in Folge mit demselben Ergebnis gewonnen (bis 6 und länger)',
-    multi:true,count:(id,ms)=>countRepeatScoreStreaks(id,ms)},
+  {id:'long_set',ic:'verlaengerung',name:'Verlängerung',desc:'Satz mit mindestens '+LANG_AB+' Games gewonnen ('+LANG_AB+':6 und länger)',
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgLang(id,m)).length},
   {id:'losing5',ic:'trendCrash',name:'Die Talfahrt',desc:BG.talfahrt+' Sätze in Folge verloren',
     multi:true,count:(id,ms)=>countLossStreakOccurrences(id,ms,BG.talfahrt)},
   {id:'perfect_loss',ic:'dizzy',name:'Bagel kassiert',desc:'Satz 0:6 verloren, ohne ein einziges Game',
@@ -15564,8 +15575,8 @@ const BADGES=[
     multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZuNull(m)&&won(id,m)).length},
   {id:'nerves_of_steel',ic:'nerves',name:'Nerven aus Stahl',desc:BG.tbSerie+' Tiebreaks in Folge gewonnen',
     multi:true,count:(id,ms)=>countNailBiterStreaks(id,ms,BG.tbSerie)},
-  {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Satz im Tiebreak oder Match-Tiebreak gewonnen',
-    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>won(id,m)&&bgZitter(m)).length},
+  {id:'nail_biter',ic:'pinch',name:'Zittersieg',desc:'Satz knapp gewonnen: im Tiebreak, mit einem Game Vorsprung ab '+ZITTER_AB+':'+(ZITTER_AB-1)+' oder in der Verlängerung',
+    multi:true,count:(id,ms)=>matchesOfPlayer(id,ms).filter(m=>bgZittersieg(id,m)).length},
   {id:'streak5',ic:'flame',name:BG.serien[0]+'er Serie',desc:BG.serien[0]+' Sätze in Folge gewonnen',
     multi:true,count:(id,ms)=>countStreakOccurrences(id,ms,BG.serien[0])},
   {id:'streak10',ic:'flameDouble',name:BG.serien[1]+'er Serie',desc:BG.serien[1]+' Sätze in Folge gewonnen',
@@ -15636,7 +15647,7 @@ const BADGE_RARITY = {
   wins200:         'rare',
   vice_champion:   'rare',
   perfect_win:     'rare',
-  repeat_score:    'rare',
+  long_set:        'rare',
   streak10:        'rare',
   krimi:           'rare',
   allrounder:      'rare',
@@ -16012,23 +16023,6 @@ function countClearWins(id,ms){
   return matchesOfPlayer(id,ms).filter(m=>bgKlar(id,m)).length;
 }
 
-function countRepeatScoreStreaks(id,ms){
-  const ordered=matchesOfPlayer(id,ms);
-  let lastScore=null,cur=0,count=0;
-  ordered.forEach(m=>{
-    if(!won(id,m)){cur=0; lastScore=null; return;}
-    if(!vollerSatz(m)) return;
-    const score=standFuer(m);
-    if(score===lastScore){
-      cur++;
-      if(cur>=BG.wiederholung){count++; cur=0; lastScore=null;}
-    } else {
-      cur=1; lastScore=score;
-    }
-  });
-  return count;
-}
-
 function countComebackDays(id,ms,bis){
   const mine=matchesOfPlayer(id,ms);
   const byDay={};
@@ -16238,7 +16232,7 @@ function countUnbeatableDays(id,ms,bis){
   const byDay={};
   mine.forEach(m=>{const d=mdayKey(m);
     if(!byDay[d])byDay[d]={games:0,losses:0}; byDay[d].games++; if(!won(id,m))byDay[d].losses++;});
-  return Object.entries(byDay).filter(([k,d])=>d.games>=BG.tag&&d.losses===0&&_tagZu(k,bis)).length;
+  return Object.entries(byDay).filter(([k,d])=>d.games>=BG.unschlagbar&&d.losses===0&&_tagZu(k,bis)).length;
 }
 function countBottomTwoMatchWins(id,ms){
   const snaps = getRankSnapshots();
@@ -16414,7 +16408,6 @@ function getBadgeEarnedCache(){
       mrDisasterFired: {},
       nemesisVs: {},
       nemesisFired: {},
-      lastWinScore: null, wtCur: 0,
       firstResOfDay: {},
       lastLossOpp: null,
     };
@@ -16476,7 +16469,8 @@ function getBadgeEarnedCache(){
 
       if(w  && bgZuNull(m))                         fire('perfect_win');
       if(!w && bgZuNull(m))                         fire('perfect_loss');
-      if(w  && bgZitter(m))                         fire('nail_biter');
+      if(bgZittersieg(id,m))                        fire('nail_biter');
+      if(bgLang(id,m))                              fire('long_set');
       if(!w && bgZitter(m))                         fire('bitter_loss');
       if(bgWende(id,m))                             fire('wall_badge');
       if(w  && siegChance<CHANCE_UPSET)                      fire('upset_king');
@@ -16519,12 +16513,12 @@ function getBadgeEarnedCache(){
       }
 
       const d=s.days[day];
-      if(letzteDesTages[id+'|'+day]===m.id && d.g>=BG.tag && _tagZu(day)){
+      if(letzteDesTages[id+'|'+day]===m.id && _tagZu(day)){
         const ende={tagEnde:day};
-        if(d.l===0)                                   fire('unbeatable', ende);
-        if(d.l===d.g)                                 fire('black_day', ende);
-        if(s.firstResOfDay[day]==='L' && w)           fire('comeback_day', ende);
-        if(s.firstResOfDay[day]==='W' && !w)          fire('crash_day', ende);
+        if(d.g>=BG.unschlagbar && d.l===0)            fire('unbeatable', ende);
+        if(d.g>=BG.tag && d.l===d.g)                  fire('black_day', ende);
+        if(d.g>=BG.tag && s.firstResOfDay[day]==='L' && w)  fire('comeback_day', ende);
+        if(d.g>=BG.tag && s.firstResOfDay[day]==='W' && !w) fire('crash_day', ende);
       }
 
       if(isFirstOfDay && w) fire('early_bird');
@@ -16566,19 +16560,6 @@ function getBadgeEarnedCache(){
       } else {
         s.krimiLossCur=0;
         s.krimiLossFired=false;
-      }
-
-
-      if(w && vollerSatz(m)){
-        const score=standFuer(m);
-        if(score===s.lastWinScore){
-          s.wtCur++;
-          if(s.wtCur>=BG.wiederholung){ fire('repeat_score'); s.wtCur=0; s.lastWinScore=null; }
-        } else {
-          s.wtCur=1; s.lastWinScore=score;
-        }
-      } else if(!w){
-        s.wtCur=0; s.lastWinScore=null;
       }
 
 
@@ -18030,15 +18011,6 @@ function _badgeStreakState(badgeId, playerId){
       let cur = 0;
       ordered.forEach(m => { cur = bgKnapp(m) ? cur + 1 : 0; });
       return {cur, tgt:BG.krimi, label:'knappe Sätze in Folge', hint:'Setzt bei einem deutlichen Ergebnis zurück'};
-    }
-    case 'repeat_score': {
-      let lastScore=null, cur=0;
-      ordered.forEach(m => {
-        if(!won(playerId,m)){cur=0;lastScore=null;return;}
-        const score=standFuer(m);
-        if(score===lastScore) cur++; else {cur=1;lastScore=score;}
-      });
-      return {cur, tgt:BG.wiederholung, label:'Siege mit gleichem Ergebnis in Folge', hint:'Setzt bei Niederlage oder anderem Ergebnis zurück'};
     }
     case 'losing5': {
       let cur=0;
@@ -22852,7 +22824,7 @@ function _ambientTemplatePool(now, pm, nameOf){
         if(pos === 'drive'){ a.aG++; if(won) a.aW++; }
         else if(pos === 'reves'){ a.dG++; if(won) a.dW++; }
         if(pz.knapp){ a.cg++; if(won) a.cw++; }
-        if(won && pz.entscheidTb) a.c1w++;
+        if(won && pz.zittersieg) a.c1w++;
       }
     }
     _recentMemo = { agg, count };
@@ -23276,8 +23248,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     return { cat:'personal', ic:'nerves', prio:4,
       title:`${nameOf(best.pid)} zittert sich durch`,
       desc:`${a.c1w} von ${a.g} Sätzen der letzten 14 Tage gewann `
-        + `${nameOf(best.pid)} im Tiebreak, das sind `
-        + `${Math.round(best.v*100)} %.`,
+        + `${nameOf(best.pid)} knapp, das sind `
+        + `${Math.round(best.v*100)}\u00a0%.`,
       vv: a.c1w, vl:'Zittersiege',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].c1w / agg[id].g, v => Math.round(v * 100) + ' %') } };
   }});
@@ -24023,7 +23995,7 @@ function _consolidateStoriesLegacy(list){
     'chronik_frei', 'karriereende']);
 
   const BADGE_DECKT = {zu_null:['perfect_win'], upset:['upset_king'],
-                       krimi:['krimi', 'nerves_of_steel', 'nail_biter'],
+                       krimi:['krimi', 'nerves_of_steel', 'nail_biter', 'long_set'],
                        eng:['krimi', 'nerves_of_steel']};
   const _badgeJeMatch = new Map();
   const _merk = (mid, bid) => {
@@ -26737,7 +26709,7 @@ function _spChance(m){
   return e == null ? null : (m.winner === 'A' ? e : 1 - e);
 }
 
-const SP_ERGEBNIS_BADGE = new Set(['perfect_win', 'upset_king', 'krimi', 'nerves_of_steel', 'nail_biter']);
+const SP_ERGEBNIS_BADGE = new Set(['perfect_win', 'upset_king', 'krimi', 'nerves_of_steel', 'nail_biter', 'long_set']);
 function _spAnlass(s){
   const d = s.dataRef || {};
   const m = d.matchId ? _spMatch(d.matchId) : null;
@@ -32564,8 +32536,8 @@ const DISZIPLINEN = [
       kammer:'fuegung', basis:REKORD_GRUNDWERT.fuegung, offen:true,
       zeitraum:'Ganze Laufbahn, alle im Tiebreak entschiedenen Sätze',
       mind:'6 im Tiebreak entschiedene Sätze',
-      wie:'Gezählt werden die Zittersiege, geteilt durch alle eigenen Sätze, die im Tiebreak oder Match-Tiebreak entschieden wurden. Gefragt ist, wem der letzte Ballwechsel öfter gehört.',
-      cond:'Höchster Anteil an Zittersiegen unter allen im Tiebreak entschiedenen Sätzen, ab 6 solchen Sätzen',
+      wie:'Gezählt werden die gewonnenen Tiebreaks, geteilt durch alle eigenen Sätze, die im Tiebreak oder Match-Tiebreak entschieden wurden. Gefragt ist, wem der letzte Ballwechsel öfter gehört.',
+      cond:'Höchster Anteil gewonnener Tiebreaks unter allen im Tiebreak entschiedenen Sätzen, ab 6 solchen Sätzen',
       val:p => (p.nail + p.bitter) >= 6 ? p.nail / (p.nail + p.bitter) : null,
       ev:(p,v) => `${Math.round(v*100)} % der ${p.nail + p.bitter} Zitterpartien gewonnen · ${p.nail} zu ${p.bitter}`
     }},

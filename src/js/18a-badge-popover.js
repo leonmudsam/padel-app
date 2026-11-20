@@ -214,15 +214,6 @@ function _badgeStreakState(badgeId, playerId){
       ordered.forEach(m => { cur = bgKnapp(m) ? cur + 1 : 0; });
       return {cur, tgt:BG.krimi, label:'knappe Sätze in Folge', hint:'Setzt bei einem deutlichen Ergebnis zurück'};
     }
-    case 'repeat_score': {
-      let lastScore=null, cur=0;
-      ordered.forEach(m => {
-        if(!won(playerId,m)){cur=0;lastScore=null;return;}
-        const score=standFuer(m);
-        if(score===lastScore) cur++; else {cur=1;lastScore=score;}
-      });
-      return {cur, tgt:BG.wiederholung, label:'Siege mit gleichem Ergebnis in Folge', hint:'Setzt bei Niederlage oder anderem Ergebnis zurück'};
-    }
     case 'losing5': {
       let cur=0;
       ordered.forEach(m => { cur = won(playerId,m) ? 0 : cur+1; });

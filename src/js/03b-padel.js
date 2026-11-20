@@ -27,6 +27,14 @@
 //   Tiebreak-Krimi  der entscheidende Satz ging in den Tiebreak oder
 //               Match-Tiebreak, und der Verlierer hatte selbst einen Satz
 //               gewonnen — oder es war der einzige Satz.
+//   Verlängerung  ein normaler Satz, den der Sieger mit mindestens acht
+//               Games gewann (8:6 und länger): bei 6:6 ging es ohne
+//               Tiebreak weiter, bis einer zwei vorn lag.
+//   Zittersieg  der entscheidende Satz ging knapp an den Sieger: im
+//               Tiebreak, mit einem Game Vorsprung ab 4:3 (4:3, 5:4, 6:5)
+//               oder in der Verlängerung mit zwei. Vorher war es nur der
+//               Tiebreak, und ein 5:4 zählte nicht, obwohl es enger war
+//               als ein 7:6 nach Satzrückstand.
 
 const SATZ_ARTEN = ['n', 'tb', 'mtb', 'open'];
 // Ab welchem Wert ein Satz ohne Angabe als Match-Tiebreak gilt: kein Satz
@@ -35,6 +43,11 @@ const MTB_AB = 10;
 // Welcher Satz ein Bagel ist: der Gewinner hat mindestens sechs Games, der
 // Verlierer keins. Ein kurzer 4:0 ist ein klarer Satz, aber kein Bagel.
 const BAGEL_AB = 6;
+// Ab wie vielen Games des Siegers ein Satz mit einem Game Vorsprung ein
+// Zittersieg ist: 4:3 schon, 2:1 nicht — der war nur kurz.
+const ZITTER_AB = 4;
+// Ab wie vielen Games des Siegers ein normaler Satz eine Verlängerung ist.
+const LANG_AB = 8;
 
 // Die Art eines Satzes. Ohne Angabe wird sie aus den Zahlen gelesen:
 // 7:6 ist ein Tiebreak, ab zehn ein Match-Tiebreak.
@@ -107,6 +120,14 @@ function saetzeAuswerten(saetze){
   const entscheidTb = !!letzter && (letzter.art === 'tb' || letzter.art === 'mtb')
     && sieger[letzterIdx] === winner && (umkaempft || winSaetze === 1);
   const gameDiff = Math.abs(gamesA - gamesB);
+  // Der entscheidende Satz aus Sicht seines Siegers, wenn er an den Sieger
+  // der Partie ging und für sich zählt (der einzige oder nach Satzverlust,
+  // wie beim Tiebreak-Krimi).
+  const zaehlt = !!letzter && sieger[letzterIdx] === winner && (umkaempft || winSaetze === 1);
+  const hi = letzter ? Math.max(letzter.a, letzter.b) : 0, lo = letzter ? Math.min(letzter.a, letzter.b) : 0;
+  const lang = zaehlt && letzter.art === 'n' && hi >= LANG_AB;
+  const zittersieg = entscheidTb || (zaehlt && letzter.art === 'n'
+    && ((hi - lo === 1 && hi >= ZITTER_AB) || (lang && hi - lo <= 2)));
   return {
     saetze, sieger, winner, fehler,
     setsA, setsB, gamesA, gamesB, bagelsA, bagelsB,
@@ -115,7 +136,7 @@ function saetzeAuswerten(saetze){
     zuNull, doppelBagel, umkaempft,
     wende: !!winner && !!ersterSieger && ersterSieger !== winner,
     tiebreaks, mtb: saetze.some(s => s.art === 'mtb'),
-    entscheidTb,
+    entscheidTb, zittersieg, lang,
     // Knapp: umkämpft, im Tiebreak entschieden oder ein voller Satz mit
     // höchstens zwei Games Abstand (6:4, 7:5). Ein kurzer 1:0 oder 3:2 ist
     // nicht knapp, er war nur kurz. Deutlich: kein Satz abgegeben und

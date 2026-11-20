@@ -191,7 +191,7 @@ function _spChance(m){
 // zwei Plätze, weil die Tabelle aus drei Leuten besteht — gemessen trug am
 // ersten Spieltag eines Monats jede zweite Karte die Tabelle. Er zählt erst,
 // wenn die Rangliste belastbar ist (`_storyRangFrei`), wie der Spitzenwechsel.
-const SP_ERGEBNIS_BADGE = new Set(['perfect_win', 'upset_king', 'krimi', 'nerves_of_steel', 'nail_biter']);
+const SP_ERGEBNIS_BADGE = new Set(['perfect_win', 'upset_king', 'krimi', 'nerves_of_steel', 'nail_biter', 'long_set']);
 function _spAnlass(s){
   const d = s.dataRef || {};
   const m = d.matchId ? _spMatch(d.matchId) : null;

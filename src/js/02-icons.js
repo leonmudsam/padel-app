@@ -525,6 +525,10 @@ const ICONS = {
   revesVirtuose: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 18.5v-5M6.3 15.7l2.2-2.2 2.2 2.2"/>`,
   revesAce: `<rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M3.5 4h17M5 11.5h14M12 4v7.5"/><path d="M8.5 13.3l.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor"/>`,
   langstrecke: `<circle cx="12" cy="11" r="7"/><path d="M12 7v4l3 2"/><path d="M4 21h16"/>`,
+  // Die Verlängerung: zwei Striche für den Gleichstand bei 6:6 und ein Pfeil,
+  // der weiterläuft. Ein eigenes Zeichen [§C41]: Sanduhr und Stoppuhr
+  // stehen schon für Karriereende und Erwartung.
+  verlaengerung: `<path d="M3.5 6v12M7.5 6v12"/><path d="M11.5 12h9M17.5 9l3 3-3 3"/>`,
 };
 // Alte Namen, deren Zeichnung ersetzt ist [§C41]. Gespeicherte Stories
 // tragen ihren Zeichenschlüssel (`_storyToRow`), und der Snapshot-Vertrag

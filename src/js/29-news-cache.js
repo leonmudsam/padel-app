@@ -490,7 +490,7 @@ function _consolidateStoriesLegacy(list){
   // „Ein-Tor-Krimi und Auszeichnung in einer Partie", waehrend ihre Zeile
   // „Johannes holt ‚Zittersieg' zum 5. Mal · 10:9 Sieg" trug.
   const BADGE_DECKT = {zu_null:['perfect_win'], upset:['upset_king'],
-                       krimi:['krimi', 'nerves_of_steel', 'nail_biter'],
+                       krimi:['krimi', 'nerves_of_steel', 'nail_biter', 'long_set'],
                        eng:['krimi', 'nerves_of_steel']};
   const _badgeJeMatch = new Map();
   // ── Eine gewoehnliche Auszeichnung deckt genauso ──────────────────
