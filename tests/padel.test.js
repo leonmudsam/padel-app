@@ -561,8 +561,8 @@ ok(/^Ohne gemeinsamen Sieg seit \d\d:\d\d Uhr\.$/.test(_feed.pleite) && _feed.ki
   `Am selben Tag nennt die Pleitenserie die Uhrzeit, und kein Text zählt Sätze als Treffen oder Duelle (${_feed.pleite}${_feed.kicker ? ' · ' + _feed.kicker : ''})`);
 // Am 19.11. gewannen P3 und P4 zwei Sätze mit derselben Elo; früher hieß es
 // „P3 und P4: Spieler des Tages". Jetzt gibt es einen, und am 11.11. auch.
-ok(/^P\d ist Spieler des Tages\|1 \/ P\d ist Spieler des Tages\|1$/.test(_feed.potd),
-  `Jeder Tag hat genau einen Spieler des Tages, auch bei gleichen Siegen und gleicher Elo (${_feed.potd})`);
+ok(/^P\d ist Player of the Day\|1 \/ P\d ist Player of the Day\|1$/.test(_feed.potd),
+  `Jeder Tag hat genau einen Player of the Day, im Feed unter demselben Namen wie im Profil (${_feed.potd})`);
 ok(_feed.alt === 'true,true,true,false',
   'Gespeicherte Runden fester Teams und Wochenkarten mit einem Spieltag treten zurück, eine Runde mit wechselnden Partnern bleibt');
 
@@ -649,6 +649,33 @@ const bogen = J(`[3,8,25].map(n => {
 })`);
 ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => b.sterne === 2 && b.zahl === b.n && b.x === 50),
   'Über dem Zeichen dieselbe Form: ab sechs die Zahl mittig zwischen zwei Sternen: ' + JSON.stringify(bogen));
+
+// ── Tages- und Wochenkönig ohne Mindestzahl [§C28] ───────────────────
+// Mit fünf Spieltagen und drei Wochen standen beide Awards einer Saison bis
+// weit in den Monat leer, und ihr Blatt sagte „Keine Daten". An den ersten
+// drei Spieltagen der Testliga hat jeder höchstens drei eigene Spieltage —
+// und es gibt trotzdem einen Tageskönig.
+{
+  const {ladeLiga} = require('./fixture.js');
+  const L = ladeLiga();
+  const tage = [...new Set(L.matches.map(m => m.created_at.slice(0, 10)))].sort().slice(0, 3);
+  const frueh = L.matches.filter(m => tage.includes(m.created_at.slice(0, 10)));
+  setNow(new Date(tage[2] + 'T12:00:00Z').getTime() + 30 * 86400000);
+  const k = J(`(()=>{const _m=matches,_p=players,_s=seasons;
+    players=${JSON.stringify(L.players)};seasons=${JSON.stringify(L.seasons)};matches=${JSON.stringify(frueh)};invalidateCache();
+    const R=awardRankings('all');
+    const r={tag:awListe('dayKing',R).map(x=>x.n), satz:[AWARD_META.dayKing.why, AWARD_META.weekKing.why]};
+    matches=_m;players=_p;seasons=_s;invalidateCache();return r;})()`);
+  ok(k.tag.length > 0 && Math.max(...k.tag) <= 3 && k.satz.every(t => !/\bab \d/.test(t)),
+    'Tages- und Wochenkönig zählen ohne Mindestzahl, nach drei Spieltagen steht ein Tageskönig: ' + JSON.stringify(k));
+}
+// Dieselbe Sache hat einen Namen: kein „Spieler des Tages" neben „Player of
+// the Day", kein „Duell" für Sätze gegeneinander — in keinem Text der App.
+{
+  const html = require('fs').readFileSync(require('./ziel.js'), 'utf8');
+  const fund = (html.match(/Spieler des Tages|Spieler der Woche|\bDuell\w*|\bBegegnung\w*|Satzquote/g) || []);
+  ok(fund.length === 0, 'Kein „Spieler des Tages", „Duell", „Begegnung" oder „Satzquote" in der App: ' + JSON.stringify([...new Set(fund)]));
+}
 
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 Promise.all([ANSCHLUSS, GERAET]).catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {

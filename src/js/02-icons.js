@@ -432,7 +432,7 @@ const ICONS = {
   // Einer allein und eine Frage daneben: „Das Fremdeln" neben neuen Partnern.
   fremdeln:      `<circle cx="7" cy="8" r="2.5"/><path d="M2.5 20c0-3 2-5 4.5-5s4.5 2 4.5 5"/><path d="M15 6.5a2.5 2.5 0 114 2c-1 .7-1.5 1.2-1.5 2.5"/><circle cx="17.5" cy="15" r=".7" fill="currentColor"/><path d="M14 20h7"/>`,
   // ── Die sechste Fassung der Monatschronik [§C39] ────────────────
-  // Zwei Figuren und ein Hin und Her: „Das Stammduell" gegen den Gegner,
+  // Zwei Figuren und ein Hin und Her: „Der Stammgegner" gegen den Gegner,
   // den der Monat am häufigsten gegenüberstellte. Keine gekreuzten
   // Schwerter — die gehören der Rivalität zweier Teams.
   stammduell:    `<circle cx="5" cy="7" r="2.5"/><circle cx="19" cy="7" r="2.5"/><path d="M2 20c0-3 1.3-5 3-5s3 2 3 5M16 20c0-3 1.3-5 3-5s3 2 3 5"/><path d="M9 9.5h6M13 7.5l2 2-2 2M15 14H9M11 12l-2 2 2 2"/>`,

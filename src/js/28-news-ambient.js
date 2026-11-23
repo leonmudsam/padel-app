@@ -1071,7 +1071,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(lead.length > 1){
       return { cat:'badge', ic:'trophyDay', prio:4,
         title:`Kopf-an-Kopf um die Tagessiege`,
-        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Spieler des Tages.`,
+        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Player of the Day.`,
         vv: top.v + '×', vl:'Tagessiege',
         dataRef:{ ambientPids: lead.slice(0,2).map(x=>x.pid), pairKind:'duel', bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
     }
@@ -1080,8 +1080,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     return { cat:'badge', ic:'trophyDay', prio:4,
       title:`${nameOf(top.pid)} sammelt Tagessiege`,
       desc: nxt
-        ? `${top.v}× Spieler des Tages, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
-        : `${top.v}× Spieler des Tages. Bislang der Einzige mit diesem Titel.`,
+        ? `${top.v}× Player of the Day, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
+        : `${top.v}× Player of the Day. Bislang der Einzige mit diesem Titel.`,
       vv: top.v + '×', vl:'Tagessiege',
       dataRef:{ ambientPid: top.pid, bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
   }});
@@ -1095,15 +1095,15 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(lead.length > 1){
       return { cat:'badge', ic:'weekKing', prio:4,
         title:`Kopf-an-Kopf um die Wochensiege`,
-        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Spieler der Woche.`,
+        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Player of the Week.`,
         vv: top.v + '×', vl:'Wochensiege',
         dataRef:{ ambientPids: lead.slice(0,2).map(x=>x.pid), pairKind:'duel', bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
     }
     return { cat:'badge', ic:'weekKing', prio:4,
       title:`${nameOf(top.pid)} sammelt Wochensiege`,
       desc: nxt
-        ? `${top.v}× Spieler der Woche, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
-        : `${top.v}× Spieler der Woche. Bisher hat das sonst niemand geschafft.`,
+        ? `${top.v}× Player of the Week, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
+        : `${top.v}× Player of the Week. Bisher hat das sonst niemand geschafft.`,
       vv: top.v + '×', vl:'Wochensiege',
       dataRef:{ ambientPid: top.pid, bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
   }});

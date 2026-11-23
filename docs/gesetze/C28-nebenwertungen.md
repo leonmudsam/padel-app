@@ -6,7 +6,7 @@
 - Die Woche steht in der Zeitraumleiste der Liga nur, wenn die laufende Woche mindestens `WOCHE_MIN_SPIELTAGE` Spieltage hat (`ligaWocheOffen`), gleich wer an ihnen gespielt hat, also genau dann, wenn es einen Player of the Week geben kann [§C31]. Sie steht zwischen Saison und Tag. Steht die Liga auf „Woche" und die Woche hat ihren Reiter nicht mehr, zeigt sie die Saison.
 - Alle Zeiträume tragen dieselbe Metrikleiste (`METRIC_LABEL`, `METRIC_REITER`); der erste Eintrag ist die Leitgröße, nach ihr wird der Erste bestimmt. Elo heißt im Zeitraum der Zuwachs, in Saison und Gesamt der Stand.
 - Die Torbilanz in Gesamt und unter den Teams ist ein Schnitt je Partie, geschrieben und gerechnet wie Plus-Minus (`AW_WERT.plusMinus`, „Ø +1,4"); in Gesamt steht dahinter, wer weniger als `AW_MIN.spielerSaldo` Partien hat, und unter seiner Zahl steht die Schwelle.
-- Tageskönig und Wochenkönig zählen den Anteil der eigenen Spieltage und Wochen als Player of the Day und Week, nicht die Zahl der Titel; gezählt wird nur, was zu ist, und beim Wochenkönig nur eine Woche, die jemand gewinnen konnte (`_gewerteteWochen`). Wer weniger als `KOENIG_MIN` (5 Spieltage, 3 Wochen) hat, steht hinter allen anderen.
+- Tageskönig und Wochenkönig zählen den Anteil der eigenen Spieltage und Wochen als Player of the Day und Week, nicht die Zahl der Titel; gezählt wird nur, was zu ist, und beim Wochenkönig nur eine Woche, die jemand gewinnen konnte (`_gewerteteWochen`). Eine Mindestzahl gibt es nicht: beide zeigen ab der ersten abgeschlossenen Woche, bei gleichem Anteil steht vorn, wer öfter Player of the Day oder Week war.
 
 ## Stellen
 
@@ -14,7 +14,7 @@
 
 ## Prüfung
 
-`tests/umbau/blatt` zeichnet jeden Reiter bei 360 px und misst die Nebenwertungen der Liga; `tests/umbau/tafel` ordnet die Torbilanz in Gesamt und unter den Teams nach und liest jede Zahl; `tests/umbau/rechnen` stellt einen Seltenspieler mit höherem Anteil vor einen Vielspieler mit mehr Titeln; `tests/padel` zeigt den Reiter „Woche" erst ab dem zweiten Spieltag der Woche, zwischen Saison und Tag, fällt ohne ihn auf die Saison zurück, nennt den Spieler der Woche der Auszeichnung (nach der Quote, nicht nach den Siegen) und lässt eine Woche mit einem Spieltag aus dem Nenner des Wochenkönigs.
+`tests/umbau/blatt` zeichnet jeden Reiter bei 360 px und misst die Nebenwertungen der Liga; `tests/umbau/tafel` ordnet die Torbilanz in Gesamt und unter den Teams nach und liest jede Zahl; `tests/umbau/rechnen` stellt einen Seltenspieler mit höherem Anteil vor einen Vielspieler mit mehr Titeln; `tests/padel` zeigt den Reiter „Woche" erst ab dem zweiten Spieltag der Woche, zwischen Saison und Tag, fällt ohne ihn auf die Saison zurück, nennt den Spieler der Woche der Auszeichnung (nach der Quote, nicht nach den Siegen) und lässt eine Woche mit einem Spieltag aus dem Nenner des Wochenkönigs; nach drei Spieltagen steht ein Tageskönig, ohne Mindestzahl.
 
 ## Herleitung
 
@@ -55,10 +55,13 @@ Wochenkönig zählten die Titel als Player of the Day und Week, und vorn stand,
 wer am häufigsten spielte: zwölf Tagessiege aus zwanzig Spieltagen standen
 hinter dreizehn aus hundert. Gezählt wird jetzt der Anteil der eigenen
 Spieltage und Wochen, die zu sind — der laufende Tag und die laufende Woche
-haben noch keinen Titel und dürfen den Nenner nicht vergrößern. Unter
-`KOENIG_MIN` ist ein Anteil Zufall: ein Titel aus einem einzigen Spieltag
-wäre hundert Prozent. Wer darunter liegt, steht hinter allen anderen, und
-in der Liste steht die Schwelle unter seiner Zahl. Der Wochenkönig zählte
+haben noch keinen Titel und dürfen den Nenner nicht vergrößern. Eine
+Mindestzahl gibt es nicht mehr. Mit fünf Spieltagen und drei Wochen standen
+beide Awards einer Saison bis weit in den Monat leer, und das Blatt sagte
+„Keine Daten", obwohl die Liga längst Player of the Day und Week hatte; ein
+Award zeigt ab der ersten abgeschlossenen Woche. Dass ein Titel aus einem
+einzigen Spieltag hundert Prozent sind, gilt dafür; bei gleichem Anteil
+steht vorn, wer öfter gewann. Der Wochenkönig zählte
 dazu jede eigene Woche, auch eine mit einem einzigen Spieltag, in der es
 seit der Regel der zwei Spieltage [§C31] keinen Player of the Week geben
 kann: jede solche Woche senkte den Anteil, ohne dass jemand sie hätte

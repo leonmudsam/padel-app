@@ -396,9 +396,8 @@ function _vRankingCore(){
       // ist dort schon ausgeschlossen, der Cache verhindert Neuberechnung.
       const _allRanks=getCachedAwardRankings('all');
       const _kingList=period==='week'?(_allRanks.weekKingList||[]):(_allRanks.dayKingList||[]);
-      // Nur, wer `KOENIG_MIN` erreicht, wie der Halter im Awards-Reiter:
-      // sonst stünde hier ein Titel aus einem einzigen Spieltag als 100 %.
-      const topKing=_kingList.find(k=>k.gilt)||null;
+      // Derselbe Halter wie im Awards-Reiter, ohne Mindestzahl [§C28].
+      const topKing=_kingList[0]||null;
       const mitte = period==='week'
         ? renderHl('streak','Siegesserie',AW_IC.streaks, topStreak?pname(topStreak.id):null,
             topStreak?`${topStreak.v} in Folge`:'', topStreak?'data-toplist="periodStreak"':'')

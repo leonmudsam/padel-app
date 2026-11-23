@@ -121,10 +121,10 @@ function openTopList(kind){
     return showTopList({title:isWeek?'Wochenkönig':'Tageskönig', sub:'Alle Saisons',
       ic:isWeek?'weekKing':'dayKing', cls:'gold',
       rows:list.map(k=>({ids:[k.id], name:pname(k.id), val:Math.round(k.q*100)+' %',
-        detail:`${k.v} von ${k.n} ${isWeek?'Wochen':'Spieltagen'}`+(k.gilt?'':` · ab ${isWeek?KOENIG_MIN.woche:KOENIG_MIN.tag}`)})),
+        detail:`${k.v} von ${k.n} ${isWeek?'Wochen':'Spieltagen'}`})),
       why:isWeek
-        ? `Der Anteil der eigenen abgeschlossenen Wochen mit mindestens ${WOCHE_MIN_SPIELTAGE} Spieltagen, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.woche} Siegen), ab ${KOENIG_MIN.woche} Wochen.`
-        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.tag} Siegen), ab ${KOENIG_MIN.tag} Spieltagen.`});
+        ? `Der Anteil der eigenen abgeschlossenen Wochen mit mindestens ${WOCHE_MIN_SPIELTAGE} Spieltagen, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.woche} Siegen).`
+        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.tag} Siegen).`});
   }
 }
 

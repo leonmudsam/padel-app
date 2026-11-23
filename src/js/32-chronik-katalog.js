@@ -554,7 +554,7 @@ function _stUnwahr(a, unten){
   return -Math.log10(Math.max(unten ? 1 - _stPBinom(ps, k + 1) : _stPBinom(ps, k), 1e-9));
 }
 // Der Gegner mit den meisten Duellen im Monat, bei Gleichstand der mit der
-// kleineren ID: „Das Stammduell" und „Die Übermacht" fragen nach dem Gegner,
+// kleineren ID: „Der Stammgegner" und „Die Übermacht" fragen nach dem Gegner,
 // den der Monat am häufigsten gegenüberstellte, nicht nach dem besten oder
 // schlechtesten — eine Auswahl unter allen Gegnern hinge wieder an der
 // Zahl der Gegner („Der Lieblingsgegner" mit 0,54 an der Spielzahl).
@@ -1878,7 +1878,7 @@ const DISZIPLINEN = [
         (p, v, C) => { const x = _stDuellWende(p, C, 1);
           return `${_ppLage(v, 'unter', 'über')} der Laufbahn gegen ${pname(x.fid)} · ${x.mw} von ${x.mn} Sätzen, davor ${pct(x.kq)} % in ${x.kn}`; }))}},
 
-  // Das Gegenstück zum Stammduell: gegen den häufigsten Gegner des Monats so
+  // Das Gegenstück zum Stammgegner: gegen den häufigsten Gegner des Monats so
   // selten gewonnen, wie es die Rechnung kaum erwartete. Der Angstgegner
   // fragt nach einem Gegner ohne einen Sieg, gleich wie stark er ist.
   {id:'uebermacht', name:'Die Übermacht', short:'Übermacht', ic:'uebermacht', tone:'red', art:'schatten',
@@ -3061,9 +3061,12 @@ const DISZIPLINEN = [
   // Gegner der Laufbahn; hier wählt der Monat selbst, und wer viel spielt,
   // hat gegen den Rivalen eine große Stichprobe, die schwer zu reißen ist,
   // wenn nur der Zufall spielt.
-  {id:'stammduell', name:'Das Stammduell', short:'Duell', ic:'stammduell', tone:'gold', art:'leistung',
+  // Name und Beiname sagen „Gegner", nicht „Duell": ein Satz gegeneinander
+  // ist in Padel kein Duell, das Wort kam aus der Kicker-Vorlage. Die id
+  // bleibt, an ihr hängen Archiv und Zeichen [§C41].
+  {id:'stammduell', name:'Der Stammgegner', short:'Stammgegner', ic:'stammduell', tone:'gold', art:'leistung',
     monat:{
-      beiname:'Der Duellsieger',
+      beiname:'Der Rivalenbezwinger',
       art:'koennen',
       klasse:'selten', aus:2.32, streu:0.298,
       wie:'Gewertet wird der Gegner mit den meisten Sätzen gegeneinander im Monat. Aus den Siegchancen aller Sätze gegen diesen Gegner folgt, wie wahrscheinlich mindestens so viele Siege waren.',

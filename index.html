@@ -6755,7 +6755,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.23.8fe3963d';
+const BUILD_VERSION='2026.11.23.6f11c3b8';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -12613,7 +12613,7 @@ function _vRankingCore(){
       const teamName=bestTeam?`${pname(bestTeam.ids[0])} & ${pname(bestTeam.ids[1])}`:null;
       const _allRanks=getCachedAwardRankings('all');
       const _kingList=period==='week'?(_allRanks.weekKingList||[]):(_allRanks.dayKingList||[]);
-      const topKing=_kingList.find(k=>k.gilt)||null;
+      const topKing=_kingList[0]||null;
       const mitte = period==='week'
         ? renderHl('streak','Siegesserie',AW_IC.streaks, topStreak?pname(topStreak.id):null,
             topStreak?`${topStreak.v} in Folge`:'', topStreak?'data-toplist="periodStreak"':'')
@@ -13273,14 +13273,14 @@ function _awardRankingsUncached(period, sid){
       if(w !== laufendeWoche && gewerteteWochen.has(w)) e.wochen.add(w);
     });
   });
-  const koenig = (id, v, n, ab) => ({id, v, n, q:n ? v / n : 0, gilt:n >= ab});
-  const koenigFolge = (a, b) => (b.gilt - a.gilt) || (b.q - a.q) || (b.v - a.v);
+  const koenig = (id, v, n) => ({id, v, n, q:n ? v / n : 0});
+  const koenigFolge = (a, b) => (b.q - a.q) || (b.v - a.v);
   const weekKingList = visiblePlayers
-    .map(p=>koenig(p.id, countPeriodWins(p.id, ms, 'week'), ((eigene[p.id] || {}).wochen || new Set()).size, KOENIG_MIN.woche))
+    .map(p=>koenig(p.id, countPeriodWins(p.id, ms, 'week'), ((eigene[p.id] || {}).wochen || new Set()).size))
     .filter(x=>x.v>0)
     .sort(koenigFolge);
   const dayKingList = visiblePlayers
-    .map(p=>koenig(p.id, countDayWins(p.id, ms), ((eigene[p.id] || {}).tage || new Set()).size, KOENIG_MIN.tag))
+    .map(p=>koenig(p.id, countDayWins(p.id, ms), ((eigene[p.id] || {}).tage || new Set()).size))
     .filter(x=>x.v>0)
     .sort(koenigFolge);
 
@@ -13753,7 +13753,6 @@ const AW_IC = {
   cheesePlatter:'cheese', favoriteLoser:'crownFallen'
 };
 
-const KOENIG_MIN = {tag:5, woche:3};
 
 const AWARD_META={
   wins:        {title:'Meiste Siege',          cls:'gold',  why:`Die meisten gewonnenen Sätze der Saison.`},
@@ -13782,8 +13781,8 @@ const AWARD_META={
   formtief:    {title:'Formtief',              cls:'red',   why:`Der größte Abstand zwischen dem höchsten und dem aktuellen Elo-Stand innerhalb einer Saison.`},
   zirkus:      {title:'Zirkus',                cls:'red',   why:`Das Duo, bei dem die meisten verlorenen Sätze deutlich ausfallen (2:6 oder klarer), gemessen an allen verlorenen. Ab ${AW_MIN.teamPleiten} verlorenen Sätzen.`},
   baustelle:   {title:'Baustelle',             cls:'red',   why:`Das Duo mit der längsten gemeinsamen Serie verlorener Sätze.`},
-  weekKing:    {title:'Wochenkönig',           cls:'gold',  why:`Der größte Anteil der eigenen Wochen als Player of the Week, ab ${KOENIG_MIN.woche} Wochen. Die laufende Woche zählt noch nicht.`},
-  dayKing:     {title:'Tageskönig',            cls:'gold',  why:`Der größte Anteil der eigenen Spieltage als Player of the Day, ab ${KOENIG_MIN.tag} Spieltagen. Der laufende Tag zählt noch nicht.`},
+  weekKing:    {title:'Wochenkönig',           cls:'gold',  why:`Der größte Anteil der eigenen Wochen als Player of the Week. Die laufende Woche zählt noch nicht.`},
+  dayKing:     {title:'Tageskönig',            cls:'gold',  why:`Der größte Anteil der eigenen Spieltage als Player of the Day. Der laufende Tag zählt noch nicht.`},
   plusMinus:   {title:'Plus-Minus',            cls:'orange',why:`Der höchste Game-Saldo je Satz (gewonnene minus abgegebene Games). Ab ${AW_MIN.spielerSaldo} Sätzen.`},
   underdog:    {title:'Underdog-Held',         cls:'purple',why:`Die höchste Siegquote als Außenseiter (Siegchance unter 35 %). Ab ${AW_MIN.unter} solchen Sätzen.`},
   pechvogel:   {title:'Pechvogel',             cls:'red',   why:`Der höchste Anteil verlorener knapper Sätze. Ab ${AW_MIN.enge} knappen Sätzen.`},
@@ -13807,9 +13806,9 @@ const AW_WERT = {
   streaks:     {l:R=>R.streaks, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge gewonnen','Sätze in Folge gewonnen'), lauf:true},
   showmaster:  {l:R=>R.showmasterList, s:x=>x.v, z:x=>x.v+'×', e:()=>'Match nach Satzrückstand gewonnen'},
   weekKing:    {l:R=>R.weekKingList||[], s:x=>Math.round(x.q*1000), z:x=>_awPz(x.q), e:()=>'der eigenen Wochen',
-                b:x=>x.v+' von '+x.n+' als Player of the Week', f:x=>x.q, gilt:x=>x.gilt},
+                b:x=>x.v+' von '+x.n+' als Player of the Week', f:x=>x.q},
   dayKing:     {l:R=>R.dayKingList||[], s:x=>Math.round(x.q*1000), z:x=>_awPz(x.q), e:()=>'der eigenen Spieltage',
-                b:x=>x.v+' von '+x.n+' als Player of the Day', f:x=>x.q, gilt:x=>x.gilt},
+                b:x=>x.v+' von '+x.n+' als Player of the Day', f:x=>x.q},
   mvt:         {l:R=>R.mvt, s:x=>Math.round(x.v), z:x=>(x.v>=0?'+':'')+Math.round(x.v), e:()=>'Elo zusammen', b:x=>x.g+' Sätze zusammen'},
   bestDuo:     {l:R=>R.bestDuo, s:x=>x.g, z:x=>x.g, e:()=>'Sätze zusammen', b:x=>x.w+' davon gewonnen', gilt:x=>x.g>=2},
   unstoppable: {l:R=>R.unstoppableList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge gewonnen','Sätze in Folge gewonnen'), lauf:true},
@@ -14058,10 +14057,10 @@ function openTopList(kind){
     return showTopList({title:isWeek?'Wochenkönig':'Tageskönig', sub:'Alle Saisons',
       ic:isWeek?'weekKing':'dayKing', cls:'gold',
       rows:list.map(k=>({ids:[k.id], name:pname(k.id), val:Math.round(k.q*100)+' %',
-        detail:`${k.v} von ${k.n} ${isWeek?'Wochen':'Spieltagen'}`+(k.gilt?'':` · ab ${isWeek?KOENIG_MIN.woche:KOENIG_MIN.tag}`)})),
+        detail:`${k.v} von ${k.n} ${isWeek?'Wochen':'Spieltagen'}`})),
       why:isWeek
-        ? `Der Anteil der eigenen abgeschlossenen Wochen mit mindestens ${WOCHE_MIN_SPIELTAGE} Spieltagen, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.woche} Siegen), ab ${KOENIG_MIN.woche} Wochen.`
-        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.tag} Siegen), ab ${KOENIG_MIN.tag} Spieltagen.`});
+        ? `Der Anteil der eigenen abgeschlossenen Wochen mit mindestens ${WOCHE_MIN_SPIELTAGE} Spieltagen, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.woche} Siegen).`
+        : `Der Anteil der eigenen Spieltage, die ein Spieler als Bester beendet hat (mit mindestens ${PERIODE_MIN_SIEGE.tag} Siegen).`});
   }
 }
 
@@ -19742,6 +19741,8 @@ function emptyState(e,t){
   return `<div class="leerstand">${inner}${t}</div>`;
 }
 const HINWEISE_WEG_LS = 'padel_hinweise_weg_v1';
+const HINWEIS_TITEL_ALT = [['Drive · rechts', 'Die Seiten'], ['Revés · links', 'Die Seiten'],
+  ['Die Auszeichnungen der Saison', 'Die Awards der Saison']];
 let _hinweiseWeg = null;
 function hinweiseWeg(){
   if(!_hinweiseWeg){
@@ -19749,6 +19750,7 @@ function hinweiseWeg(){
       const a = JSON.parse(localStorage.getItem(HINWEISE_WEG_LS) || '[]');
       _hinweiseWeg = new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []);
     }catch(e){ _hinweiseWeg = new Set(); }
+    for(const [alt, neu] of HINWEIS_TITEL_ALT) if(_hinweiseWeg.has(alt)) _hinweiseWeg.add(neu);
   }
   return _hinweiseWeg;
 }
@@ -22087,7 +22089,7 @@ function _buildStories(){
         const main = res.main;
         const names = res.winners.map(w => nameOf(w.id));
         _wochenTeile.unshift({
-          art: 'potw', ic: 'weekKing', label: 'Spieler der Woche', held: true,
+          art: 'potw', ic: 'weekKing', label: 'Player of the Week', held: true,
           pids: res.winners.map(w => w.id), wert: Math.round(main.wr*100) + ' %',
           satz: `${_namenListe(names)} ${names.length > 1 ? 'gewinnen' : 'gewinnt'} `
               + `${main.wins} von ${main.wins + main.losses} Sätzen und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Siegquote.`,
@@ -22109,7 +22111,7 @@ function _buildStories(){
         id: 'potd_' + dayKey,
         cat: 'highlight',
         ic: 'dayKing',
-        title: names.length > 1 ? `${titleNames}: Spieler des Tages` : `${titleNames} ist Spieler des Tages`,
+        title: names.length > 1 ? `${titleNames} sind Player of the Day` : `${titleNames} ist Player of the Day`,
         desc: `${main.wins} von ${main.wins + main.losses} Sätzen gewonnen, `
             + `das sind ${Math.round(main.wr*100)} %. Mehr Siege hat am `
             + `${dLabel} niemand geholt.`,
@@ -23368,15 +23370,15 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(lead.length > 1){
       return { cat:'badge', ic:'trophyDay', prio:4,
         title:`Kopf-an-Kopf um die Tagessiege`,
-        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Spieler des Tages.`,
+        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Player of the Day.`,
         vv: top.v + '×', vl:'Tagessiege',
         dataRef:{ ambientPids: lead.slice(0,2).map(x=>x.pid), pairKind:'duel', bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
     }
     return { cat:'badge', ic:'trophyDay', prio:4,
       title:`${nameOf(top.pid)} sammelt Tagessiege`,
       desc: nxt
-        ? `${top.v}× Spieler des Tages, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
-        : `${top.v}× Spieler des Tages. Bislang der Einzige mit diesem Titel.`,
+        ? `${top.v}× Player of the Day, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
+        : `${top.v}× Player of the Day. Bislang der Einzige mit diesem Titel.`,
       vv: top.v + '×', vl:'Tagessiege',
       dataRef:{ ambientPid: top.pid, bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
   }});
@@ -23389,15 +23391,15 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(lead.length > 1){
       return { cat:'badge', ic:'weekKing', prio:4,
         title:`Kopf-an-Kopf um die Wochensiege`,
-        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Spieler der Woche.`,
+        desc:`${_namesOf(lead)} stehen gleichauf bei je ${top.v}× Player of the Week.`,
         vv: top.v + '×', vl:'Wochensiege',
         dataRef:{ ambientPids: lead.slice(0,2).map(x=>x.pid), pairKind:'duel', bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
     }
     return { cat:'badge', ic:'weekKing', prio:4,
       title:`${nameOf(top.pid)} sammelt Wochensiege`,
       desc: nxt
-        ? `${top.v}× Spieler der Woche, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
-        : `${top.v}× Spieler der Woche. Bisher hat das sonst niemand geschafft.`,
+        ? `${top.v}× Player of the Week, so oft wie sonst niemand. ${nameOf(nxt.pid)} kommt auf ${nxt.v}.`
+        : `${top.v}× Player of the Week. Bisher hat das sonst niemand geschafft.`,
       vv: top.v + '×', vl:'Wochensiege',
       dataRef:{ ambientPid: top.pid, bild:_bRennen(rank.map(x => ({p:x.pid, v:x.v, n:x.v, t:x.v + '×'})), false, 'sammlung') } };
   }});
@@ -33924,9 +33926,9 @@ const DISZIPLINEN = [
         (p, v, C) => { const x = _stDuellWende(p, C, -1);
           return `${_ppZeichen(v)} %-Punkte gegen ${pname(x.fid)} · ${x.mw} von ${x.mn} Sätzen, davor ${pct(x.kq)} % in ${x.kn}`; }))}},
 
-  {id:'stammduell', name:'Das Stammduell', short:'Duell', ic:'stammduell', tone:'gold', art:'leistung',
+  {id:'stammduell', name:'Der Stammgegner', short:'Stammgegner', ic:'stammduell', tone:'gold', art:'leistung',
     monat:{
-      beiname:'Der Duellsieger',
+      beiname:'Der Rivalenbezwinger',
       art:'koennen',
       klasse:'selten', aus:2.32, streu:0.298,
       wie:'Gewertet wird der Gegner mit den meisten Sätzen gegeneinander im Monat. Aus den Siegchancen aller Sätze gegen diesen Gegner folgt, wie wahrscheinlich mindestens so viele Siege waren.',

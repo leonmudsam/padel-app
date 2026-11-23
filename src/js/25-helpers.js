@@ -92,6 +92,10 @@ function emptyState(e,t){
 // `ersatz` steht, wo die Karte der einzige Inhalt einer Ansicht war: eine
 // leere Seite liest sich als Fehler [§6 „Ein leeres Feld liest sich als Fehler"].
 const HINWEISE_WEG_LS = 'padel_hinweise_weg_v1';
+// Frühere Titel einer Karte und ihr heutiger. Die beiden Seiten hatten je
+// eine Karte, die Awards hießen „Die Auszeichnungen der Saison".
+const HINWEIS_TITEL_ALT = [['Drive · rechts', 'Die Seiten'], ['Revés · links', 'Die Seiten'],
+  ['Die Auszeichnungen der Saison', 'Die Awards der Saison']];
 let _hinweiseWeg = null;
 function hinweiseWeg(){
   if(!_hinweiseWeg){
@@ -99,6 +103,9 @@ function hinweiseWeg(){
       const a = JSON.parse(localStorage.getItem(HINWEISE_WEG_LS) || '[]');
       _hinweiseWeg = new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []);
     }catch(e){ _hinweiseWeg = new Set(); }
+    // Wer eine Karte unter ihrem früheren Titel geschlossen hat, sieht sie
+    // unter dem neuen nicht wieder: der Titel ist der Schlüssel.
+    for(const [alt, neu] of HINWEIS_TITEL_ALT) if(_hinweiseWeg.has(alt)) _hinweiseWeg.add(neu);
   }
   return _hinweiseWeg;
 }
