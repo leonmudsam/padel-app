@@ -142,8 +142,8 @@ function rcpKachelHtml(o){
     <div class="rcp-aw-ic">${svgI(o.ic || 'trophy')}</div>
     <div class="rcp-aw-info">
       <div class="rcp-aw-label">${esc(o.label)}</div>
-      <div class="rcp-aw-name">–</div>
-      <div class="rcp-aw-val">keine Daten</div>
+      <div class="rcp-aw-name">—</div>
+      <div class="rcp-aw-val">Noch nicht vergeben</div>
     </div>
   </div>`;
   return `<div class="rcp-aw ${o.ton || 'gold'}${o.attr ? ' klick' : ''}" ${o.attr || ''}>

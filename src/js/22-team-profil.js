@@ -13,7 +13,7 @@ function showTeam(p1Id,p2Id){
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:var(--muted);font-weight:700;font-family:'Sometype Mono',monospace">Team</div>
         <h3 style="margin-top:8px">${esc(pA.name)} &amp; ${esc(pB.name)}</h3>
       </div>
-      ${emptyState('handshake','Noch keine gemeinsamen Sätze')}
+      ${emptyState('handshake','Noch kein gemeinsamer Satz.')}
     `);
     return;
   }
@@ -48,7 +48,7 @@ function showTeam(p1Id,p2Id){
         ${avSm(op,false)}
         <div class="rmid" style="margin-left:11px">
           <div class="rname" style="font-size:13px">${esc(op.name)}</div>
-          <div class="rmeta"><span class="num">${opp.g} Begegnungen</span></div>
+          <div class="rmeta"><span class="num">${opp.g} ${opp.g===1?'Satz':'Sätze'} gegeneinander</span></div>
         </div>
         <div class="num" style="font-size:13px;font-weight:600;flex-shrink:0">
           <span style="color:var(--acid)">${opp.w}</span><span style="color:var(--faint)"> · </span><span style="color:var(--red)">${opp.g-opp.w}</span>
@@ -148,7 +148,7 @@ function showTeam(p1Id,p2Id){
   // Wenn beide Aufstellungen je ≥2× vorkamen UND die beste Quote von der
   // typischen abweicht (in teamDetail.bestLineup gesetzt), zeigen wir beide
   // Karten nebeneinander. Sonst nur die typische wie bisher.
-  const POS_LABEL = {drive:'Drive · rechts', reves:'Revés · links'};
+  const POS_LABEL = SEITE_LANG;
   const POS_ICON  = {drive:svgI('posDrive'), reves:svgI('posReves')};
   const POS_COLOR = {drive:'var(--orange)', reves:'var(--blue)'};
   const pA_side = d.posStats[pA.id].dom;
@@ -206,7 +206,7 @@ function showTeam(p1Id,p2Id){
         ${blattAbschnittHtml('users', 'Aufstellungs-Vergleich')}
         <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
           ${buildLineupCard('Typisch', typWr+'\u00A0% aus '+typGames, d.posStats[d.ids[0]].dom, 48)}
-          ${buildLineupCard('Beste Quote', bestWr+'\u00A0% aus '+d.bestLineup.games, d.bestLineup.p0, 48)}
+          ${buildLineupCard('Beste Siegquote', bestWr+'\u00A0% aus '+d.bestLineup.games, d.bestLineup.p0, 48)}
         </div>
       </div>`;
   } else {
@@ -297,7 +297,8 @@ function showTeam(p1Id,p2Id){
         <div style="display:grid;grid-template-columns:${cols};gap:8px">
           ${facts.map(f => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center">
             <div class="num" style="font-family:'Archivo Black',sans-serif;font-size:15px;color:${f.color};line-height:1">${f.value}</div>
-            <div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px">${f.label}</div>
+            ${/* Die Beschriftung einer Zahlenkachel steht wie im Profil in 9,5 px
+                 und fett (`.pp-k .l`); in 8 px dünn war sie eine andere Kachel. */''}<div style="font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px">${f.label}</div>
             ${f.sub?`<div style="font-size:8px;color:var(--muted);margin-top:2px;font-family:'Sometype Mono',monospace">${f.sub}</div>`:''}
           </div>`).join('')}
         </div>
@@ -392,8 +393,10 @@ function showMatchDetail(mid){
   };
   // Auszeichnungen durch dieses Match
   const earned=badgesEarnedInMatch(mid);
+  // Der Abschnitt ist der jedes Blatts [§C27]; als `.mini-label` stand er
+  // in anderer Schrift, Größe und Laufweite als die Abschnitte daneben.
   const earnedHtml=earned.length?`
-    <div class="mini-label" style="margin-top:14px">Auszeichnungen in diesem Satz</div>
+    ${blattAbschnittHtml('medal', 'Auszeichnungen in diesem Satz')}
     <div style="display:flex;flex-direction:column;gap:5px">
       ${(()=>{
         // Eine Zeile je Spieler, nicht je Auszeichnung: fünf Marken zweier
@@ -453,7 +456,7 @@ function showMatchDetail(mid){
     document.getElementById('showBreakdownBtn').onclick=()=>{
     const bd=matchBreakdown(mid);
     const slot=document.getElementById('breakdownSlot');
-    if(!bd||!Object.keys(bd).length){slot.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center">Keine Daten verfügbar</p>';return;}
+    if(!bd||!Object.keys(bd).length){slot.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center">Für diesen Satz gibt es keine Aufschlüsselung.</p>';return;}
     // DB-First-Werte (was tatsächlich in der DB steht & oben angezeigt wird).
     // Die Aufschlüsselungs-Faktoren stammen aus simulateEloWithSliders und können
     // abweichen, wenn Slider oder Code-Logik seit dem Match geändert wurden.

@@ -47,7 +47,7 @@
   .rav .zn-fx{left:50%;top:50%;
     width:calc(var(--rav) * .930);height:calc(var(--rav) * .930);
     transform:translate(-50%,-60%);
-    filter:blur(calc(var(--rav) * .021))}
+    --zn-blur:calc(var(--rav) * .021)}
   .rav.zn-l1 .zn-fx{opacity:.82}
   .rav.zn-l2 .zn-fx{opacity:.92}
   .rav.zn-l3 .zn-fx{opacity:1}
@@ -56,10 +56,10 @@
      mit warmem Kern war in der Zeile ein zweites Feuer neben dem des
      Profils. Der Schein ist kräftiger als dort, weil vom Feuer in einer
      Zeile nur der Streifen über dem Reif zu sehen ist. */
-  .rav.zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 3px rgba(var(--zn-rgb,255,143,74),.6))}
-  .rav.zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 4px rgba(var(--zn-rgb,255,143,74),.7))}
-  .rav.zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 5px rgba(var(--zn-rgb,255,143,74),.8))}
-  .rav .zn-fx .zk{fill:#fff;opacity:.38;filter:none}
+  .rav.zn-l1 .zn-fx{--zn-sr:3px;--zn-sc:rgba(var(--zn-rgb,255,143,74),.6)}
+  .rav.zn-l2 .zn-fx{--zn-sr:4px;--zn-sc:rgba(var(--zn-rgb,255,143,74),.7)}
+  .rav.zn-l3 .zn-fx{--zn-sr:5px;--zn-sc:rgba(var(--zn-rgb,255,143,74),.8)}
+  .rav .zn-fx .zk{fill:#fff;opacity:.38}
   /* Der Hof. In einer Zeile ist vom Feuer nur ein schmaler Streifen über
      dem Reif zu sehen — zu wenig, um „der brennt gerade" auf einen Blick zu
      sagen. Der Hof trägt diese Aussage: er hat keine Kante, kann also nicht

@@ -41,8 +41,15 @@
       #000 0 80%,rgba(0,0,0,.88) 89%,rgba(0,0,0,.5) 95%,transparent 100%);
     /* Die Zungen sind Polygone. Ohne diesen Hauch Unschärfe enden sie als
        Kante statt als Schein — der Rest der Weichzeichnung rechnet sich
-       je Bauteil aus dessen Größe. */
-    filter:blur(.9px)}
+       je Bauteil aus dessen Größe (`--zn-blur`).
+       Weichzeichner und Schein stehen in EINER Kette auf dem Feuer, nie ein
+       Filter auf einer Flamme darunter. Der Schein saß auf jedem Pfad und der
+       Weichzeichner auf dem SVG darüber: ein Filter im Filter. Safari zeichnete
+       daraus auf dem Telefon einen violetten Strich neben dem Kreis, in jeder
+       Liste, sobald jemand eine Serie hatte. Der Schein bleibt unter der
+       Maske: ein Filter wird vor der Maske gerechnet, nichts blüht über den
+       Rand. Die Stufen setzen nur `--zn-sr` (Weite) und `--zn-sc` (Farbe). */
+    filter:blur(var(--zn-blur,.9px)) drop-shadow(0 0 var(--zn-sr,0px) var(--zn-sc,transparent))}
   .zn-fx .zf{fill:var(--zn-c,#ff8f4a);opacity:0}
   /* Der Kern ist warmweiß, egal welche Farbe die Hülle trägt — heiß ist
      heiß. Im Profil wird er weiß und blass: dort gilt die Rangfarbe
@@ -57,14 +64,13 @@
   .zn-l3 .zn-fx{opacity:1}
   /* Der Schein gehört zum Feuer, nicht zur höchsten Stufe: eine Flamme
      ohne Hof ist eine Zeichnung von einer Flamme. Er wächst mit der Stufe.
-     Er sitzt auf den Pfaden, nicht auf der Box — damit ihn dieselbe Maske
-     beschneidet und nichts über den Rand blüht. */
-  .zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 2.5px rgba(255,143,74,.55))}
-  .zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 3.5px rgba(255,143,74,.65))}
-  .zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 4.5px rgba(255,120,73,.75))}
-  .zn-rang.zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 2.5px rgba(var(--ak-rgb),.45))}
-  .zn-rang.zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 3.5px rgba(var(--ak-rgb),.55))}
-  .zn-rang.zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 4.5px rgba(var(--ak-rgb),.65))}
+     Er steht in der Kette des Feuers (`.zn-fx`), unter derselben Maske. */
+  .zn-l1 .zn-fx{--zn-sr:2.5px;--zn-sc:rgba(255,143,74,.55)}
+  .zn-l2 .zn-fx{--zn-sr:3.5px;--zn-sc:rgba(255,143,74,.65)}
+  .zn-l3 .zn-fx{--zn-sr:4.5px;--zn-sc:rgba(255,120,73,.75)}
+  .zn-rang.zn-l1 .zn-fx{--zn-sc:rgba(var(--ak-rgb),.45)}
+  .zn-rang.zn-l2 .zn-fx{--zn-sc:rgba(var(--ak-rgb),.55)}
+  .zn-rang.zn-l3 .zn-fx{--zn-sc:rgba(var(--ak-rgb),.65)}
 
   /* ── Stop-Motion ──────────────────────────────────────────────────
      Keine Interpolation: die Bilder werden hart geschaltet, wie bei einer
@@ -93,9 +99,16 @@
   .zn-ti{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);
     z-index:2;line-height:0;pointer-events:none}
   .zn-ti .zs-k{fill:none;stroke:var(--bg);stroke-width:3.2;stroke-linejoin:round}
-  .zn-ti .zs{fill:var(--gold)}
-  .zn-ti .zn-ti-n{fill:var(--gold);font-family:'Sometype Mono',monospace;
-    font-size:8px;font-weight:700}
+  .zn-ti .zs{fill:#cf961a}
+  .zn-ti .zs-h{fill:#ffe39a}
+  /* Die Zahl ab sechs Titeln steht zwischen zwei Sternen, im hellen Gold
+     der Facetten und mit derselben dunklen Kontur. Sie trägt die Schrift
+     der Zahl im Zeichen, nicht die Maschinenschrift der Werte: in der
+     Zeile stehen daneben Siege und Elo, und die Titel sollen nicht wie
+     ein weiterer Wert aussehen. */
+  .zn-ti .zn-ti-n{fill:#ffe39a;font-family:'Archivo Black',sans-serif;
+    font-size:8.5px;font-weight:700;stroke:var(--bg);stroke-width:2.4px;
+    stroke-linejoin:round;paint-order:stroke}
 
   /* ── Im Profil trägt das Feuer die Rangfarbe ──────────────────────
      [§C25] Eine Seite, eine Farbe. Orange wäre dort eine zweite Meinung. */
@@ -184,7 +197,7 @@
     left:50%; top:50%;
     width:calc(var(--ins-w) * .6020); height:calc(var(--ins-w) * .9030);
     transform:translate(-50%,-73.333%);
-    filter:blur(calc(var(--ins-w) * .0058));
+    --zn-blur:calc(var(--ins-w) * .0058);
     -webkit-mask-image:none; mask-image:none}
   /* Über dem Zeichen ist der Platz zu Ende: .pp-header hat 32 px
      Innenabstand und overflow:hidden, und die Bandbox des Zeichens füllt
@@ -202,8 +215,8 @@
   .pp-av-wrap.zn-l1 .zn-fx{opacity:.80}
   .pp-av-wrap.zn-l2 .zn-fx{opacity:.90}
   .pp-av-wrap.zn-l3 .zn-fx{opacity:1}
-  .pp-av-wrap .zn-fx .zf{filter:drop-shadow(0 0 6px rgba(var(--ak-rgb),.5))}
+  .pp-av-wrap .zn-fx{--zn-sr:6px;--zn-sc:rgba(var(--ak-rgb),.5)}
   /* Der Kern war ausgeblendet, solange die Maske ohnehin nur einen schmalen
      Streifen übrig ließ. Jetzt steht der ganze Flammenkörper da, und eine
      hellere Innenzunge macht aus der Silhouette wieder Feuer. */
-  .pp-av-wrap .zn-fx .zk{fill:#fff;opacity:.30;filter:none}
+  .pp-av-wrap .zn-fx .zk{fill:#fff;opacity:.30}

@@ -118,11 +118,13 @@ function showSeasonTable(sid){
     <div class="tplates">${offen.map(a => _titlePlateHtml(a, {sid, schatten:chronikUeberschattet(T, a)})).join('')}</div>
     ${weitere.length ? `<div class="tplates chron-rest">${weitere.map(a => _titlePlateHtml(a, {sid, schatten:chronikUeberschattet(T, a)})).join('')}</div>
     ${_chronMehrKnopf(weitere.length)}` : ''}
-    ${emptyNames.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Ohne Eintrag</h4></div></div>
+    ${/* Die Abschnitte eines Blatts sind `blattAbschnittHtml` [§C27]; hier
+         stand die Überschrift des Profils (`.pp-sec-title h4`) in einer
+         anderen Schrift, Größe und Laufweite als die Abschnitte daneben. */''}${emptyNames.length ? `${blattAbschnittHtml('', 'Ohne Eintrag')}
       <div class="tempty">${esc(emptyNames.join(', '))}<span>Keine Bedingung erfüllt, die Saison zählt trotzdem.</span></div>` : ''}
-    ${zuWenigNames.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Nicht gewertet</h4></div></div>
+    ${zuWenigNames.length ? `${blattAbschnittHtml('', 'Nicht gewertet')}
       <div class="tempty">${esc(zuWenigNames.join(', '))}<span>Eine Monatschronik gibt es ab ${CHRONIK_MIN_SPIELE} eigenen Sätzen im Monat.</span></div>` : ''}
-    ${unawarded.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Nicht vergeben</h4></div><div class="m">${unawarded.length}</div></div>
+    ${unawarded.length ? `${blattAbschnittHtml('', 'Nicht vergeben', unawarded.length)}
       <div class="tunawarded">${unawarded.map(t => {
         // Wer der Bedingung am naechsten kommt. Vorher stand hier nur die
         // Bedingung, und acht der siebenundzwanzig Eintraege ueberhaupt: der
@@ -383,11 +385,12 @@ function showDisziplin(tid, sid){
     ${schattenM ? `<div class="tnote">„${esc(schattenM.name)}“ wiegt in diesem Monat schwerer. Diese Chronik bleibt in der Tafel, bringt aber kein Prestige.</div>` : ''}
     ${loescht.length ? `<div class="tnote">Wiegt in diesem Monat schwerer als ${esc(_namenListe(loescht.map(a => '„' + a.name + '“')))}. ${
       loescht.length === 1 ? 'Sie bleibt' : loescht.length === 2 ? 'Beide bleiben' : 'Alle bleiben'} in der Tafel, ${esc(pname(eigene[0].pid))} bekommt dafür aber kein Prestige.</div>` : ''}
-    ${def.wie ? `<div class="tnote">${esc(def.wie)}</div>` : ''}
+    ${/* Wie gezählt wird, steht in jedem Blatt gleich: ein Abschnitt und der
+         Text des Blatts, wie im Blatt eines Awards. Hier stand es als
+         Randnotiz in 11,5 px ohne Überschrift. */''}${def.wie ? `${blattAbschnittHtml('info', 'So wird gezählt')}<div class="blatt-text">${esc(def.wie)}</div>` : ''}
     ${beleg}
     ${rang.length
-      ? `<div class="pp-sec-title" style="margin-top:14px"><div class="l"><h4>Dieser Monat</h4></div>
-           <div class="m num">${rang.length} erfüllt${rang.length === 1 ? '' : 'en'} die Bedingung</div></div>
+      ? `${blattAbschnittHtml('trophy', 'Dieser Monat', `${rang.length} erfüllt${rang.length === 1 ? '' : 'en'} die Bedingung`)}
          ${podest}`
       : (eigene.length
           ? `<div class="tplates">${eigene.map(a => _titlePlateHtml(a, {keinDetail:true})).join('')}</div>`
@@ -479,11 +482,10 @@ function showChronicle(cid){
     ).join('')}</div>
     ${halterN > 1 ? `<div class="tnote">${halterN} Spieler halten diesen Rekord gemeinsam und teilen sich sein Prestige,
       bis einer ihn überbietet.</div>` : ''}
-    ${def.wie ? `<div class="tnote">${esc(def.wie)}</div>` : ''}
+    ${def.wie ? `${blattAbschnittHtml('info', 'So wird gezählt')}<div class="blatt-text">${esc(def.wie)}</div>` : ''}
     ${beleg}
     ${rang.length
-      ? `<div class="pp-sec-title" style="margin-top:14px"><div class="l"><h4>Die Tafel</h4></div>
-           <div class="m num">${rang.length} von ${allChronicles().rated} erfüllen die Mindestbasis</div></div>
+      ? `${blattAbschnittHtml('trophy', 'Die Tafel', `${rang.length} von ${allChronicles().rated} erfüllen die Mindestbasis`)}
          ${_chronPodestHtml(rang.map(r => ({pid:r.pid, wert:_chronKurz(r.ev), zeit:r.zeit, v:r.wert})))}`
       : emptyState('scroll', leer)}
     ${verfolger.length ? `<div class="rek-verfolger">${verfolger.map((r, i) => {
@@ -579,7 +581,7 @@ function ligaRekordeHtml(weit){
         <span class="hd">${esc(_chronHolderNames(h))}</span>
       </div>`;
     }).join('')}</div>
-    <div class="tnote">Tippen zeigt, wie ein Rekord gezählt wird.</div>`;
+    ${/* Dieselbe Formulierung wie in jeder Erklärkarte [§C27]. */''}<div class="tnote">Ein Tippen zeigt, wie ein Rekord gezählt wird.</div>`;
   // Die große Form: ein Rekord ist ein Besitz, also bekommt er eine Karte
   // mit Halter-Gesicht und Beleg — nicht nur einen Namen am Zeilenende.
   //
@@ -669,14 +671,16 @@ function ligaRekordeHtml(weit){
   // eine Zelle je Satz wie der Kalender eines Monats [§C27], gespielt hell.
   const tor = rekordTor();
   const torHtml = tor.offen ? '' : `<div class="rek-tor">
-      <div class="rek-tor-s">Die Rekorde werden vergeben, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.</div>
+      <div class="rek-tor-s">Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.</div>
       <div class="rek-tor-zellen" style="--n:${CHRON_MIN_GAMES}">${
         Array.from({length:CHRON_MIN_GAMES}, (_, i) => `<i${i < tor.n ? ' class="an"' : ''}></i>`).join('')}</div>
       <div class="rek-tor-z num"><span><b>${tor.n}</b> gespielt</span><span>noch ${CHRON_MIN_GAMES - tor.n}</span></div>
     </div>`;
+  // „55 Rekorde" stand hier direkt über dem Feld „Alle 58": dasselbe Wort
+  // für zwei Zahlen. Rechts steht deshalb, wie viele von allen vergeben sind.
   const leiste = zaehl.length || !tor.offen ? `<div class="rek-besitz">
     <div class="rek-bk"><span class="l">Wer die Tafel hält</span>
-      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} Rekorde` : ''}</span></div>
+      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} von ${CHRONICLES.length} vergeben` : ''}</span></div>
     ${zaehl.length ? `<div class="rek-saeulen">${zaehl.map(z => {
       const p = pmap()[z.pid];
       return `<span class="rek-sl${z.n ? '' : ' null'}" data-tplayer="${esc(z.pid)}">
@@ -731,9 +735,13 @@ function ligaRekordeHtml(weit){
         `<span data-tplayer="${esc(pid)}">${avHtml(pmap()[pid], 'width:16px;height:16px;font-size:7px;border-radius:5px')}<b class="num">${n[pid]}</b></span>`).join('')}</span>` : ''}
     </div>`;
   };
-  // Sie steht auch mit Rekorden, bis sie geschlossen wird [§C27].
+  // Sie steht auch mit Rekorden, bis sie geschlossen wird [§C27]. Der
+  // Aufbau aller Erklärkarten: was hier steht, ab wann es zählt (fett), was
+  // ein Tippen zeigt, höchstens ein Satz mehr — der Stand der leeren Liga
+  // steht deshalb am Ende und nicht vor der Erklärung. Die Schwelle heißt
+  // in Karte, Leiste, Hilfe und Blatt gleich („sobald die Liga …").
   const vorschau = vorschauHtml('rekord', 'Die Liga-Rekorde',
-    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + `Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat; danach zählt für jeden die Bedingung der Karte. Getippt zeigt eine Karte, wie gezählt wird.`);
+    `Ein Rekord ist der Bestwert über alle Saisons; wer ihn übertrifft, nimmt ihn dem Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat; danach gilt die Bedingung jeder Karte. Ein Tippen zeigt, wie gezählt wird.${recs.length ? '' : ' Noch hält niemand einen Rekord.'}`);
   return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }
@@ -772,10 +780,13 @@ function _rekFeldHtml(d, h){
 const CHRONIK_VORSCHAU_JE_KLASSE = 3;
 // Die Erklärung der Chronik steht auch über der Tabelle der Monate, bis
 // sie geschlossen wird [§C27]; nur der letzte Satz hängt davon ab, ob es
-// schon einen gewerteten Monat gibt.
+// schon einen gewerteten Monat gibt. Sie hat den Aufbau aller
+// Erklärkarten (was, ab wann fett, was ein Tippen öffnet, höchstens ein
+// Satz mehr): mit vier langen Sätzen war sie doppelt so lang wie ihre
+// Geschwister und stand auf dem Telefon größer als die Rekorde-Karte.
 function chronikKarteHtml(leer){
   return vorschauHtml('scroll', 'Die Chronik',
-    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Sätze</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt die Monate nebeneinander${leer ? '; bis zum ersten gewerteten Monat stehen hier alle Einträge, die es gibt' : ''}.`);
+    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand im Monat besonders war, nicht wer der Beste war. Gewertet wird ab <b>${CHRONIK_MIN_SPIELE} Sätzen</b> im Monat; ein Eintrag gehört dem, der den Bestwert hält. Ein Tippen öffnet den Monat oder den Eintrag.${leer ? ' Bis zum ersten gewerteten Monat stehen hier alle Einträge.' : ''}`);
 }
 function chronikVorschauHtml(){
   const kopf = chronikKarteHtml(true);

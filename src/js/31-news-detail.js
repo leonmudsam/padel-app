@@ -273,7 +273,7 @@ function _newsRangZeile(pid){
 // beiden Duo-Serien.
 function _ndBeziehung(s, anzahl){
   const t = ((s && s.dataRef) || {}).type || '';
-  if(t === 'rivalry' || t === 'rivalry_milestone') return 'im direkten Duell';
+  if(t === 'rivalry' || t === 'rivalry_milestone') return 'im Direkten Vergleich';
   if(t === 'team_streak' || t === 'team_loss_streak') return 'als Duo';
   if(t === 'top_clash') return 'Sieger und Verlierer dieses Satzes';
   if(t === 'streak_killer') return 'auf beiden Seiten des Satzes';
@@ -1015,7 +1015,7 @@ function _ndRivalBlatt(s){
   if(!l.length) return null;
   const f = l.map(y => _spGew(y, a)), sa = f.filter(Boolean).length, n = l.length;
   const seite = id => `<div class="nd-rv-p" data-pid="${esc(id)}">${avHtml(pm[id], '', {ins:true, px:64, feuer:0})}<b>${esc(_spName(id))}</b></div>`;
-  const kopf = `<div class="nd-buehne nd-rv">${seite(a)}<div class="nd-rv-m"><b class="num">${_spZahl(n)}</b><span>Duelle</span></div>${seite(b)}`
+  const kopf = `<div class="nd-buehne nd-rv">${seite(a)}<div class="nd-rv-m"><b class="num">${_spZahl(n)}</b><span>Sätze</span></div>${seite(b)}`
     + `<div class="nd-rv-tau"><b class="num">${_spZahl(sa)}</b><span class="nd-rv-tb"><i style="width:${(sa / n * 100).toFixed(1)}%"></i></span><b class="num">${_spZahl(n - sa)}</b></div></div>`;
   // Der Verlauf: jede Begegnung schiebt die Linie, über der Null führt a.
   let k = 0;
@@ -1031,9 +1031,10 @@ function _ndRivalBlatt(s){
   const deutlich = w => l.filter(y => _spGew(y, a) === w).sort((p, q) => Math.abs(q.games_a - q.games_b) - Math.abs(p.games_a - p.games_b))[0];
   const dl = [deutlich(true), deutlich(false)].filter(Boolean);
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
-  return {kopf, mitte:(m ? ab('Das ' + n + '. Duell', _ndPartieListe([m], a)) : '')
+  // „Duell" war das Wort der Kicker-Liga; gezählt sind Sätze gegeneinander.
+  return {kopf, mitte:(m ? ab('Der ' + n + '. Satz gegeneinander', _ndPartieListe([m], a)) : '')
     + ab('Wer wann vorn lag', n >= 3 ? linie : '')
-    + ab(letzte.length < n ? 'Die letzten ' + letzte.length : 'Jedes Duell', lauf)
+    + ab(letzte.length < n ? 'Die letzten ' + letzte.length : 'Jeder Satz gegeneinander', lauf)
     + ab('Die deutlichsten', dl.length ? _ndPartieListe(dl, a) : '')};
 }
 
@@ -1729,7 +1730,9 @@ function _ndFaktBlatt(s){
     const b = d.bild || {};
     let mitte = '';
     if(d.type === 'dry_spell') mitte = ab('Der letzte Satz', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
-    else if(b.f === 'duell' && pm[b.a] && pm[b.b]) mitte = ab('Jede Begegnung', h2hBegegnungenHtml(b.a, b.b));
+    // Die Zeichnung trägt ihren Abschnitt selbst („Jeder Satz gegeneinander");
+    // hier stand darüber noch „Jede Begegnung", zwei Köpfe für eine Sache.
+    else if(b.f === 'duell' && pm[b.a] && pm[b.b]) mitte = h2hBegegnungenHtml(b.a, b.b);
     // Die Halbzeit: die Spitze des Monats und seine Chroniken, so wie sie
     // am Tag der Karte standen — nicht die Sätze des Tabellenführers.
     else if(b.f === 'halbzeit') mitte = ab('Die Spitze des Monats', (b.tab || []).some(x => pm[x[0]])
@@ -1826,6 +1829,6 @@ function _ndPartieAbschnitte(s){
   try { vert = zeigt('sp-mo') || zeigt('sp-vt') ? '' : _ndVerteilung(m); } catch(e){}
   return ab('Wer wo stand', feld) + ab('Wie erwartbar war das', skala)
     + ab(buehneFeld ? 'In der Tabelle' : 'Was der Satz bewegt hat', elo)
-    + ab('Die direkten Duelle', duelle) + ab('Der Tag', tag) + ab('Wie oft es so ausgeht', vert);
+    + ab('Der Direkte Vergleich', duelle) + ab('Der Tag', tag) + ab('Wie oft es so ausgeht', vert);
 }
 

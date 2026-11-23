@@ -26,7 +26,7 @@ auf einen Abschnitt des CSS (bis 24, siehe `anker.md`).
 | Gesetz | Regel in einem Satz |
 |---|---|
 | [§C25 Farbgesetz](gesetze/C25-farbgesetz.md) | Status- und Wertfarben haben vier Rollen: Rangfarbe heißt „ich", Gold heißt Titel oder heute gehaltener Rekord, Grün und Rot zeigen ausschließlich eine Richtung, alles Übrige ist Metall. - Der Feed trägt daneben eine … |
-| [§C26 Das Zeichen](gesetze/C26-das-zeichen.md) | Sterne zählen Ligatitel: höchstens fünf, dann die Zahl — unter dem Avatar in der Liste (`_znSterneSvg`) wie über dem Zeichen mit Band (`_insSterne`). |
+| [§C26 Das Zeichen](gesetze/C26-das-zeichen.md) | Sterne zählen Ligatitel: bis fünf ein Stern je Titel, ab sechs die Zahl zwischen zwei Sternen — unter dem Avatar in der Liste (`_znSterneSvg`) wie über dem Zeichen mit Band (`_insSterne`). |
 | [§C27 Ein Bauteil, überall dasselbe](gesetze/C27-ein-bauteil.md) | Derselbe Spieler sieht überall gleich aus, und dieselbe Aussage hat ein Bauteil: Wappen `.rav` (`insAvWrap`), Podest `.podest`/`.pod-karte` (`_chronPodestHtml`, Platz aus dem Wert, `_chronPlatz`), Segmentwähler `.ui-s… |
 | [§C28 Die Nebenwertungen](gesetze/C28-nebenwertungen.md) | Über der Liga-Tabelle steht in jedem Zeitraum an derselben Stelle ein Band der Nebenwertungen: eine breite Karte, dann kleine Kacheln. |
 | [§C29 Zwei Ranglisten über denselben Zeitraum](gesetze/C29-zwei-ranglisten.md) | Spieler und Duos einer Saison sind zwei Ranglisten desselben Zeitraums: ein Reiter (`ligaSicht`) wechselt sie, keine zweite Seite. |

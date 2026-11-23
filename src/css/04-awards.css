@@ -82,8 +82,10 @@
   .aw-shame-divider{margin:32px 4px 14px;display:flex;align-items:center;gap:10px}
   .aw-shame-divider .line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(240,86,106,.4))}
   .aw-shame-divider .line.r{background:linear-gradient(to left,transparent,rgba(240,86,106,.4))}
+  /* Die Schandtafel ist ein Abschnitt wie die anderen des Reiters und
+     unterscheidet sich durch ihre Farbe, nicht durch 11 px und .22em. */
   .aw-shame-divider .lbl{display:flex;align-items:center;gap:7px;font-family:'Sometype Mono',monospace;
-    font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+    font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red)}
   .aw-shame-divider .lbl svg{width:14px;height:14px;fill:none;stroke:currentColor;
     stroke-linecap:round;stroke-linejoin:round}
 
@@ -268,8 +270,10 @@
     border-radius:var(--r-sm);padding:11px 12px 9px;margin-bottom:12px}
   .rek-bk{display:flex;align-items:baseline;justify-content:space-between;
     gap:8px;margin-bottom:9px}
+  /* Eine Abschnittsüberschrift des Reiters wie `.aw-sect` und `.rek-gruppe`
+     daneben: 10 px, fett, .18em [§C27]. */
   .rek-bk .l{font-family:'Sometype Mono',monospace;font-size:10px;font-weight:700;
-    letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+    letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
   .rek-bk .r{font-size:9.5px;color:var(--muted)}
   /* Zahl, Säule und Gesicht brauchen zusammen 84 px; bei 62 lief das
      Gesicht unten aus der Karte. */

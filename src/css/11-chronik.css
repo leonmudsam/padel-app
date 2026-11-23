@@ -34,24 +34,30 @@
   .tplate.hero .tplate-w{justify-content:center;font-size:14px;color:var(--ink)}
   .tplate.hero .tplate-e{font-size:11px}
 
-  .tnote{font-size:11.5px;color:var(--muted);border-left:2px solid var(--line2);
+  /* Eine Notiz im Blatt ist ein Absatz: 13 px statt 11,5 [§C27]. */
+  .tnote{font-size:13px;color:var(--muted);border-left:2px solid var(--line2);
     padding:2px 0 2px 10px;margin:10px 0;line-height:1.45}
   .tempty{background:var(--surface);border:1px solid var(--line);border-radius:12px;
     padding:11px 13px;font-size:13px;color:var(--ink2);margin-top:8px}
   .tempty span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;
     font-family:'Sometype Mono',monospace}
   .tunawarded{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-  /* Drei Spalten fuer Zeichen, Namen und Bedingung, darunter ueber die ganze
-     Breite die Zeile „Am naechsten dran". Sie steht unter der Bedingung und
-     nicht daneben: nebeneinander bleiben von beidem zwei Woerter je Zeile. */
+  /* Zeichen und Name in einer Zeile, darunter die Bedingung und ueber die
+     ganze Breite die Zeile „Am naechsten dran". Die Bedingung stand rechts
+     neben dem Namen in 10 px: neben einem langen Namen blieben ihr 102 px,
+     acht Zeilen zu je zwei Woertern, und lange Absaetze unter 13 px sehen
+     auf dem Telefon kleiner aus, seit der Browser sie nicht mehr selbst
+     vergroessert. Unter dem Namen hat sie 297 px und hoechstens fuenf
+     Zeilen in 12,5 px; die Tafel wird dabei um ein Drittel laenger,
+     gemessen an der Testliga 7260 → 9760 px fuer 76 Eintraege. */
   .tun{display:grid;grid-template-columns:18px auto 1fr;align-items:center;gap:4px 9px;
     padding:7px 11px;border:1px dashed var(--line2);border-radius:11px;opacity:.62}
   .tun .i{color:var(--faint);display:flex}
   .tun .i svg{width:15px;height:15px}
   .tun .n{font-size:12px;font-weight:700;color:var(--ink2);white-space:nowrap}
-  .tun .c{font-size:10px;color:var(--muted);text-align:right;line-height:1.3;
+  .tun .c{grid-column:2 / -1;font-size:12.5px;color:var(--muted);line-height:1.4;
     font-family:'Sometype Mono',monospace}
-  .tun .w{grid-column:1 / -1;font-size:10px;color:var(--faint);cursor:pointer;
+  .tun .w{grid-column:1 / -1;font-size:12.5px;color:var(--faint);cursor:pointer;
     border-top:1px solid var(--line);padding-top:5px;margin-top:1px;
     font-family:'Sometype Mono',monospace}
   .tun .w b{color:var(--ink2);font-weight:700}
@@ -439,7 +445,10 @@
   .chron-hero{display:flex;align-items:center;gap:12px;margin:14px 0;
     background:linear-gradient(120deg,rgba(var(--ttr),.13),transparent 70%),var(--surface);
     border:1px solid rgba(var(--ttr),.22);border-radius:15px;padding:13px 14px}
-  .chron-hero .c{font-size:11.5px;color:var(--ink2);line-height:1.5}
+  /* Die Bedingung ist ein Absatz und steht in 13 px wie jeder lange Text
+     eines Blatts; in 11,5 px wirkte sie auf dem Telefon kleiner als vorher,
+     seit der Browser lange Absaetze nicht mehr selbst vergroessert. */
+  .chron-hero .c{font-size:13px;color:var(--ink2);line-height:1.5}
 
   /* ── Avatar-Status-Ring (§13.7) ───────────────────────────────────── */
   /* Nur im Spielerprofil. In der Rangliste stünde er doppelt: Team of the

@@ -687,7 +687,7 @@ function _spDuellBild(d){
   return `<div class="sp-bg"><div class="sp-bg-k"><span>${_spChip(d.A)}<em class="num">${_spZahl(d.aw)}</em></span>`
     + `<span class="sp-k">Siege</span><span class="re"><em class="num">${_spZahl(d.gesamt - d.aw)}</em>${_spChip(d.B)}</span></div>
     <svg viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><line class="sp-bg-0" x1="0" x2="300" y1="35" y2="35"/>${balken}</svg>
-    ${_spUnter(`${_spNb(d.A)} oben, ${_spNb(d.B)} unten: ${_spZahl(d.gesamt)} ${d.gesamt === 1 ? 'Begegnung' : 'Begegnungen'}${mehr}.`)}</div>`;
+    ${/* Ein Balken ist ein Satz; „Begegnung" heißt in der Oberfläche das Match. */''}${_spUnter(`${_spNb(d.A)} oben, ${_spNb(d.B)} unten, ${_spZahl(d.gesamt)} ${d.gesamt === 1 ? 'Satz' : 'Sätze'} gegeneinander${mehr}.`)}</div>`;
 }
 
 // ── Die Medaille: die Auszeichnung und wer sie in der Liga trägt ─────
@@ -1306,7 +1306,7 @@ const SP_FORM = {
     gewicht:x => 28 + Math.min(10, x.k),
     daten:(F, x) => Object.assign({W:F.W, L:F.L, hoch:F.hoch, tief:F.tief, awA:F.m.winner === 'A'}, x),
     text:(F, x) => ({t:`${_spNl(F.W)} schlagen ${_spNl(F.L)} zum ${x.k}. Mal in Folge`,
-      d:`In diesem Duell steht es ${x.s}:${x.n - x.s}.`})},
+      d:`In den Sätzen gegeneinander steht es ${x.s}:${x.n - x.s}.`})},
   // ── Die Köpfe des Katalogs ────────────────────────────────────────
   // Drei Grundansichten, die für jede Partie wahr sind, und zwei besondere
   // Ausgänge mit festem Bild. Der Elo-Transfer, die Ergebniszeile, der
@@ -1638,10 +1638,10 @@ function _spKipptDaten(a){
 }
 function _spKipptBild(d){
   if(!d || !d.verlauf || d.verlauf.length < 3) return '';
-  return `<div class="sp-fk sp-ln"><div class="sp-k">Bilanz, Duell für Duell</div>`
+  return `<div class="sp-fk sp-ln"><div class="sp-k">Bilanz, Satz für Satz</div>`
     + `<div class="sp-ln-lg">${_spChip(d.w)}<small>darüber ${esc(_spName(d.w))} vorn</small>${_spChip(d.l)}<small>darunter ${esc(_spName(d.l))}</small></div>`
     + _spLinie(d.verlauf, {ref:0, zwei:true, fmt:_spVz, letzt:true, ende:`${_spZahl(d.s)}:${_spZahl(d.n - d.s)}`,
-      x:[d.ab ? `${_spZahl(d.ab)}. Duell` : 'Beginn', `${_spZahl(d.n)}. Duell`]}) + `</div>`;
+      x:[d.ab ? `${_spZahl(d.ab)}. Satz` : 'Beginn', `${_spZahl(d.n)}. Satz`]}) + `</div>`;
 }
 function _spWocheDaten(a){
   const B = _spBasis(), i = B.idx.get(a.m.id), wk = _wochenKey(a.m.created_at), je = {};
@@ -1658,7 +1658,7 @@ function _spWocheBild(d){
   if(!d || !d.liste) return '';
   return `<div class="sp-fk sp-ln"><div class="sp-k">Siegquote der Woche, ab fünf Siegen</div>`
     + _spRangliste(d.liste.map(q => ({id:q.id, wert:q.q, zahl:_spZahl(q.q) + ' %', neben:`${_spZahl(q.s)}/${_spZahl(q.n)}`})),
-      {hervor:d.pid, max:100, kopf:['Quote', 'Siege']}) + `</div>`;
+      {hervor:d.pid, max:100, kopf:['Siegquote', 'Siege']}) + `</div>`;
 }
 function _spTagEloDaten(a, ref){
   const pid = a.x.pid, tag = tagKey(a.m.created_at);
@@ -1716,7 +1716,7 @@ function _spPartnerBild(d){
   if(!d || !d.liste) return '';
   return `<div class="sp-fk sp-ln metall"><div class="sp-k">Siegquote je Partner, ${esc(_spName(d.pid))}</div>`
     + _spRangliste(d.liste.map(q => ({id:q.id, wert:q.q, zahl:_spZahl(q.q) + ' %', neben:_spZahl(q.n)})),
-      {hervor:d.mit, max:100, schnitt:d.allg, kopf:['Quote', 'Sätze']})
+      {hervor:d.mit, max:100, schnitt:d.allg, kopf:['Siegquote', 'Sätze']})
     + `<div class="sp-rl-lg"><i></i>${_spZahl(d.allg)} % mit allen</div></div>`;
 }
 // Welcher Fuß welchen Fakt zeichnet und woraus; das Blatt eines einzeln
@@ -1808,7 +1808,7 @@ function _spDuoserieBild(d){
     // Die Bilanz aller Duelle nur, wenn sie mehr sagt als die Serie: unter
     // „7 in Folge" stand „7:0 in 7 Duellen".
     + (d.s === d.k && d.n === d.k ? '' : `<span class="sp-ds-u">${d.ab ? `${_spZahl(d.n - d.s)}:<b class="num">${_spZahl(d.s)}</b>`
-      : `<b class="num">${_spZahl(d.s)}</b>:${_spZahl(d.n - d.s)}`} in ${_spZahl(d.n)} Duellen</span>`) + `</div>`
+      : `<b class="num">${_spZahl(d.s)}</b>:${_spZahl(d.n - d.s)}`} in ${_spZahl(d.n)} Sätzen</span>`) + `</div>`
     + `<span class="sp-ds-c re">${_spChips(d.L)}</span></div>`
     + (d.nurAnlass ? '' : _spNz(d.W, d.L));
 }

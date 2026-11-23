@@ -761,7 +761,6 @@ function rangTon(pid){
   return titleTone(RANG_TON[(getPlayerRank(pid) || {}).label] || 'blue');
 }
 
-const INS_GOLD = '#E8C25E';
 const INS_GOLD_TIEF = '#6E4A0E';     // die Trennkante zwischen zwei Blättern
 
 // Der Farbsatz eines Zeichens: die Rangfarbe und der dunkle Grund, auf dem
@@ -913,18 +912,10 @@ function _insFuss(pos){
 
 // Die Titel als Sterne über dem Reif — die Aura zeigt, DASS da etwas
 // ist, die Sterne sagen, wie viel. Sie hören nicht auf zu zählen, auch wenn
-// die Aura bei zehn Titeln stehen bleibt: ab sechs stehen fünf Sterne
-// und daneben die Zahl [§C26]. Zwölf nebeneinander sind keine Zahl mehr,
-// die man auf einen Blick liest.
-function _insSternPfad(cx, cy, r){
-  let d = '';
-  for(let i = 0; i < 10; i++){
-    const a = i/10*Math.PI*2 - Math.PI/2;
-    const rr = i % 2 ? r*.44 : r;
-    d += (i ? 'L' : 'M') + _n(cx + Math.cos(a)*rr) + ' ' + _n(cy + Math.sin(a)*rr);
-  }
-  return d + 'Z';
-}
+// die Aura bei zehn Titeln stehen bleibt: ab sechs steht die Zahl zwischen
+// zwei Sternen [§C26]. Zwölf nebeneinander sind keine Zahl mehr, die man
+// auf einen Blick liest. Die Form ist die der Liste (`_znStern`,
+// `_znSternHell`), im Maß des Zeichens.
 // ─── Die Titelsterne über dem Zeichen [§C26] ──────────────────────
 // Sie stehen in einem eigenen Streifen ÜBER dem ganzen Zeichen, auf einem
 // festen Radius um die Reifmitte — und ausdrücklich nicht im verkleinerten
@@ -942,31 +933,37 @@ const INS_STERN_R = 78;
 const INS_STERN_GR = 3.8;
 function _insSterne(n, id){
   if(n <= 0) return '';
-  // Höchstens fünf Sterne, dann die Zahl — genau wie unter dem Avatar in
-  // der Liste (`_znSterneSvg`). Es waren zwei Bögen ab sechs und drei ab
-  // dreizehn; damit sagte dieselbe Zahl in der Zeile und im Profil zweierlei,
-  // und drei Bögen hätten vierzig Einheiten Luft gebraucht, die neunzehn von
-  // zwanzig Spielern nie füllen. Die Ziffer wächst weiter und kostet nichts.
-  const zeig = Math.min(n, 5), gr = INS_STERN_GR, R = INS_STERN_R;
+  // Bis fünf Sterne, dann die Zahl zwischen zwei Sternen — genau wie unter
+  // dem Avatar in der Liste (`_znSterneSvg`). Es waren zwei Bögen ab sechs
+  // und drei ab dreizehn, danach fünf Sterne und die Ziffer daneben; damit
+  // sagte dieselbe Zahl in der Zeile und im Profil zweierlei, und die
+  // Ziffer am Ende des Bogens las sich wie ein Platz.
+  const gr = INS_STERN_GR, R = INS_STERN_R;
   // Ein BOGENschritt, kein Winkelschritt: so haben zwei Sterne denselben
   // Abstand, egal wie weit außen der Bogen liegt.
   const schritt = 2.5 * gr / R;
-  // Die Ziffer bekommt einen eigenen Platz im Bogen, und die ganze Gruppe
-  // wird darum mittig gestellt — sonst stünde ein Zeichen mit Ziffer
-  // sichtbar aus der Achse.
-  const felder = zeig + (n > 5 ? 1.5 : 0);
-  const w = i => (i - (felder - 1) / 2) * schritt;
-  let d = '';
-  for(let i = 0; i < zeig; i++)
-    d += _insSternPfad(50 + Math.sin(w(i))*R, 50 - Math.cos(w(i))*R, gr);
-  let s = `<path d="${d}" fill="url(#${id}gd)" stroke="${INS_GOLD_TIEF}"
-    stroke-width=".55" stroke-linejoin="round"/>`;
-  if(n > 5){
-    const a = w(zeig + .45);
-    s += `<text x="${_n(50 + Math.sin(a)*R)}" y="${_n(50 - Math.cos(a)*R + gr*.92)}"
-      text-anchor="middle" font-size="${_n(gr*2.4)}"
+  const mit = n > 5;
+  // Mit Zahl stehen die Sterne um die Zahl, ihr Abstand wächst mit den
+  // Ziffern; ohne Zahl stehen sie mittig um die Achse.
+  const zahlHalb = String(n).length * gr * .78 + gr * .55;
+  const winkel = mit
+    ? [-(zahlHalb + gr * 1.1) / R, (zahlHalb + gr * 1.1) / R]
+    : Array.from({length:n}, (_, i) => (i - (n - 1) / 2) * schritt);
+  const r = mit ? gr * .9 : gr;
+  let d = '', hell = '';
+  winkel.forEach(w => {
+    const x = 50 + Math.sin(w)*R, y = 50 - Math.cos(w)*R;
+    d += _znStern(x, y, r); hell += _znSternHell(x, y, r, _n);
+  });
+  let s = `<path d="${d}" fill="${ZN_STERN_TIEF}"/><path d="${hell}" fill="${ZN_STERN_HELL}"/>
+    <path d="${d}" fill="none" stroke="${INS_GOLD_TIEF}" stroke-width=".55" stroke-linejoin="round"/>`;
+  if(mit){
+    // Die Zahl steht so hoch wie die Sterne neben ihr und nicht höher: mit
+    // der Schrift der Raute in voller Größe ragte sie oben aus der Bandbox.
+    s += `<text x="50" y="${_n(50 - R + gr*1.05)}"
+      text-anchor="middle" font-size="${_n(gr*2.2)}"
       font-family="'Archivo Black',sans-serif" font-weight="700"
-      fill="${INS_GOLD}" stroke="${INS_GOLD_TIEF}" stroke-width=".5"
+      fill="${ZN_STERN_HELL}" stroke="${INS_GOLD_TIEF}" stroke-width=".5"
       paint-order="stroke">${n}</text>`;
   }
   return s;

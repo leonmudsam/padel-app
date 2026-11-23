@@ -623,6 +623,33 @@ const GERAET = ANSCHLUSS.then(async () => {
   K(`players=__vorher.p;matches=__vorher.m;cfg=__vorher.c;seasons=__vorher.se;sb.from=__vorher.f;invalidateCache();0`);
 });
 
+// ── Das Titelband [§C26] ─────────────────────────────────────────────
+// Bis fünf Titel ein Stern je Titel, ab sechs die Zahl zwischen zwei
+// Sternen. Es standen fünf Sterne und dahinter die Ziffer: „★★★★★25" lief
+// breiter als der Reif, und die Ziffer am Ende las sich wie ein Platz. In
+// der Zeile (`_znSterneSvg`) und über dem Zeichen (`_insSterne`) dieselbe
+// Form, und jeder Stern trägt fünf helle Facetten.
+const band = J(`[1,5,6,9,12,25].map(n => {
+  const s = _znSterneSvg(n);
+  const pfad = k => (s.split('class="' + k + '" d="')[1]||'').split('"')[0].split('M').length - 1;
+  const t = s.match(/<text x="([0-9.]+)"[^>]*>([0-9]+)<[/]text>/);
+  return {n, sterne: pfad('zs'), facetten: pfad('zs-h'), breite: +((s.match(/width="([0-9.]+)"/)||[])[1]||0),
+    zahl: t ? +t[2] : null, mitte: t ? +t[1] : null};
+})`);
+const fuenf = band.find(b => b.n === 5).breite;
+ok(band.filter(b => b.n <= 5).every(b => b.sterne === b.n && b.zahl === null)
+   && band.filter(b => b.n > 5).every(b => b.sterne === 2 && b.zahl === b.n && Math.abs(b.mitte - b.breite/2) < .2 && b.breite < fuenf),
+  'Titelband: bis fünf ein Stern je Titel, ab sechs die Zahl mittig zwischen zwei Sternen, schmaler als fünf Sterne: ' + JSON.stringify(band.map(b => b.n + ':' + b.sterne + '/' + b.zahl)));
+ok(band.every(b => b.facetten === 5 * b.sterne), 'Titelband: jeder Stern trägt fünf helle Facetten');
+const bogen = J(`[3,8,25].map(n => {
+  const s = _insSterne(n, 'b_');
+  const d = (s.match(/<path d="([^"]*)"/)||[])[1] || '';
+  const t = s.match(/<text x="([0-9.]+)"[^>]*>\s*([0-9]+)<[/]text>/);
+  return {n, sterne: d.split('M').length - 1, zahl: t ? +t[2] : null, x: t ? +t[1] : null};
+})`);
+ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => b.sterne === 2 && b.zahl === b.n && b.x === 50),
+  'Über dem Zeichen dieselbe Form: ab sechs die Zahl mittig zwischen zwei Sternen: ' + JSON.stringify(bogen));
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 Promise.all([ANSCHLUSS, GERAET]).catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);

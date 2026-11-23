@@ -64,7 +64,7 @@ const CHRON_KINDS = {
   mark:    {label:'Bestmarke',     pl:'Bestmarken',     kurz:'Marken',   ic:'target',     ord:0,
             satz:'Einzelne Bestleistungen, jede an einem Tag erreicht'},
   koennen: {label:'Können',        pl:'Können',         kurz:'Können',   ic:'trophyStar', ord:1,
-            satz:'Schnitt und Quote über die ganze Laufbahn'},
+            satz:'Schnitt und Anteil über die ganze Laufbahn'},
   form:    {label:'Aktuelle Form', pl:'Aktuelle Form',  kurz:'Form',     ic:'trendUp',    ord:2,
             satz:'Gerechnet über die letzten eigenen Sätze'},
   fuegung: {label:'Fügung',        pl:'Fügungen',       kurz:'Fügungen', ic:'weatherMix', ord:3,

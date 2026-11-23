@@ -14,10 +14,14 @@
     text-align:center;color:var(--muted);flex-shrink:0}
   .aw-li.shame .aw-li-rank{color:var(--red);opacity:.65}
   /* Die Serie brennt auch hier — der Kreis bleibt der Kreis, das Feuer
-     liegt dahinter und ändert an der Zeilenhöhe nichts. */
+     liegt dahinter und ändert an der Zeilenhöhe nichts. Kein eigener Filter
+     hier: Weichzeichner und Schein stehen in einer Kette auf `.zn-fx`
+     (15-zeichen.css). Ein Weichzeichner dieser Zeile über dem Schein der
+     Flammen war ein Filter im Filter, und Safari zeichnete daraus einen
+     violetten Strich neben dem Kreis. */
   .aw-li-zn{flex-shrink:0}
   .aw-li-zn .zn-fx{left:50%;top:50%;width:155%;height:155%;
-    transform:translate(-50%,-60%);filter:blur(.7px)}
+    transform:translate(-50%,-60%)}
   .aw-li-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:18px;
     background:linear-gradient(155deg,#3a4540,#212824);flex-shrink:0}
   .aw-li-av:not(.has-emoji){font-family:'Archivo Black',sans-serif;font-size:12px;color:var(--bg)}

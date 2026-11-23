@@ -197,28 +197,58 @@ const ZN_FEUER_GROSS = _znSatz('zn-fx pp-feuer', ZN_GEO_PROFIL);
 function _znStern(cx, cy, r){
   let d = '';
   for(let i=0;i<10;i++){
-    const rr = i%2 ? r*0.45 : r, a = -90 + i*36;
+    const rr = i%2 ? r*.45 : r, a = -90 + i*36;
     d += (i?'L':'M') + _znF(cx + rr*Math.cos(a*ZN_RAD)) + ' ' + _znF(cy + rr*Math.sin(a*ZN_RAD));
   }
   return d + 'Z';
 }
 
-// Das Titelband: n Sterne in einer Reihe, unterhalb des Avatars.
-// Ab sechs Titeln wird nicht weitergezählt — fünf Sterne plus Ziffer.
+// Die Facetten eines Sterns: je Zacke die helle Hälfte links der Mittel-
+// linie. Unter ihr liegt der Stern ganz im dunklen Gold, so dass jede Zacke
+// eine Licht- und eine Schattenseite hat. Flach gefüllt war ein Stern bei
+// acht Pixeln ein gelber Fleck; mit zwei Tönen liest er sich als Metall.
+// Dieselben Facetten trägt das Band über dem Zeichen (`_insSterne`) [§C27].
+const ZN_STERN_HELL = '#ffe39a';
+const ZN_STERN_TIEF = '#cf961a';
+function _znSternHell(cx, cy, r, f){
+  f = f || _znF;
+  let d = '';
+  for(let i=0;i<5;i++){
+    const a = -90 + i*72;
+    d += 'M' + f(cx) + ' ' + f(cy)
+      + 'L' + f(cx + r*Math.cos(a*ZN_RAD)) + ' ' + f(cy + r*Math.sin(a*ZN_RAD))
+      + 'L' + f(cx + r*.45*Math.cos((a-36)*ZN_RAD)) + ' ' + f(cy + r*.45*Math.sin((a-36)*ZN_RAD)) + 'Z';
+  }
+  return d;
+}
+
+// Das Titelband [§C26]: bis fünf Titel ein Stern je Titel, ab sechs die
+// Zahl zwischen zwei Sternen. Vorher standen ab sechs fünf Sterne und
+// dahinter die Ziffer: „★★★★★25" lief breiter als der Reif, und die
+// Ziffer am Ende las sich wie ein Platz. Zwischen zwei Sternen ist die
+// Zahl die Zahl der Sterne, und das Band bleibt so schmal wie drei Sterne.
 const _ZN_STERNE_CACHE = {};
 function _znSterneSvg(n){
   if(n <= 0) return '';
   if(_ZN_STERNE_CACHE[n]) return _ZN_STERNE_CACHE[n];
-  const zeig = Math.min(n, 5);
-  const w = 9, r = 3.6, h = 10;
-  let d = '';
-  for(let i=0;i<zeig;i++) d += _znStern(w/2 + i*w, h/2, r);
-  const breite = zeig*w + (n>5 ? 11 : 0);
-  const zahl = n>5
-    ? `<text x="${zeig*w+1}" y="${h/2+2.6}" class="zn-ti-n">${n}</text>` : '';
-  const svg = `<span class="zn-ti" aria-hidden="true"><svg viewBox="0 0 ${breite} ${h}"
-    width="${breite}" height="${h}" focusable="false"><path class="zs-k" d="${d}"/>
-    <path class="zs" d="${d}"/>${zahl}</svg></span>`;
+  const h = 10;
+  let d = '', hell = '', breite, zahl = '';
+  const stern = (cx, r) => { d += _znStern(cx, h/2, r); hell += _znSternHell(cx, h/2, r); };
+  if(n <= 5){
+    const w = 9, r = 3.7;
+    for(let i=0;i<n;i++) stern(w/2 + i*w, r);
+    breite = n*w;
+  } else {
+    // Die Zahl steht so hoch wie ein Stern, nicht höher: größer war sie die
+    // Hauptsache des Bandes und nicht mehr die Zahl seiner Sterne.
+    const w = 8, r = 3.3, zw = String(n).length*5.4 + 2.4;
+    stern(w/2, r); stern(w + zw + w/2, r);
+    breite = w + zw + w;
+    zahl = `<text x="${_znF(breite/2)}" y="${h/2+3}" text-anchor="middle" class="zn-ti-n">${n}</text>`;
+  }
+  const svg = `<span class="zn-ti" aria-hidden="true"><svg viewBox="0 0 ${_znF(breite)} ${h}"
+    width="${_znF(breite)}" height="${h}" focusable="false"><path class="zs-k" d="${d}"/>
+    <path class="zs" d="${d}"/><path class="zs-h" d="${hell}"/>${zahl}</svg></span>`;
   _ZN_STERNE_CACHE[n] = svg;
   return svg;
 }

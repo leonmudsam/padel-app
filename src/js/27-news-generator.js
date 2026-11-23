@@ -952,7 +952,7 @@ function _buildStories(){
         // zwei Karten untereinander und nannte keine einzige Zahl.
         desc: (() => { const va = r.aw, vb = r.n - r.aw;
           return va === vb
-            ? `${nameOf(r.a)} und ${nameOf(r.b)} stehen nach ${r.n} Duellen exakt bei ${va}:${vb}.`
+            ? `${nameOf(r.a)} und ${nameOf(r.b)} stehen nach ${r.n} Sätzen gegeneinander exakt bei ${va}:${vb}.`
             : `${nameOf(va > vb ? r.a : r.b)} führt ${Math.max(va, vb)}:${Math.min(va, vb)}. `
               + `Kein anderes Paar der Liga hat öfter gegeneinander gespielt.`;
         })(),
@@ -1182,7 +1182,7 @@ function _buildStories(){
         [w, l].forEach(x => { if((b.s[x] || 0) * 2 > n) b.vorn[x] = n; });
       }));
       if(kippt) neuSt.push({id:'kippt_' + kippt.w + '_' + kippt.l + '_' + m.id, cat:'rivalry', ic:'crossedSwords',
-        title:`${nameOf(kippt.w)} geht im Duell gegen ${nameOf(kippt.l)} in Führung, ${kippt.s}:${kippt.n - kippt.s}`,
+        title:`${nameOf(kippt.w)} geht im Direkten Vergleich gegen ${nameOf(kippt.l)} in Führung, ${kippt.s}:${kippt.n - kippt.s}`,
         // Gezählt sind Sätze gegeneinander; „vor 16 Duellen" las sich wie
         // sechzehn Matches.
         desc:kippt.zuletzt == null ? `Zum ersten Mal in ${kippt.n} Sätzen gegeneinander liegt ${nameOf(kippt.w)} vorn.`
@@ -2093,10 +2093,12 @@ function _buildStories(){
         id: 'rivalry_milestone_'+g.k+'_'+g.n,
         cat: 'rivalry',
         ic: 'crossedSwords',
-        title: `${g.n}. Duell: ${nameOf(a)} vs ${nameOf(b)}`,
+        // Ein Satz ist kein Duell, und ein Titel ist kein Etikett mit
+        // Doppelpunkt: hier stand „100. Duell: A vs B" aus der Kicker-Liga.
+        title: `${nameOf(a)} und ${nameOf(b)} spielen den ${g.n}. Satz gegeneinander`,
         desc: g.wa === g.wb
-          ? `Nach ${g.n} Duellen steht es ${g.wa}:${g.wb}. Keiner liegt vorn.`
-          : `Nach ${g.n} Duellen steht es ${Math.max(g.wa, g.wb)}:${Math.min(g.wa, g.wb)} `
+          ? `Nach ${g.n} Sätzen gegeneinander steht es ${g.wa}:${g.wb}. Keiner liegt vorn.`
+          : `Nach ${g.n} Sätzen gegeneinander steht es ${Math.max(g.wa, g.wb)}:${Math.min(g.wa, g.wb)} `
             + `für ${nameOf(g.wa > g.wb ? a : b)}.`,
         when: new Date(g.ts),
         prio: STORY_PRIO.rivalry_milestone + (g.n >= 200 ? 4 : g.n >= 100 ? 2 : 0),
@@ -2312,7 +2314,7 @@ function _buildStories(){
           art: 'potw', ic: 'weekKing', label: 'Spieler der Woche', held: true,
           pids: res.winners.map(w => w.id), wert: Math.round(main.wr*100) + ' %',
           satz: `${_namenListe(names)} ${names.length > 1 ? 'gewinnen' : 'gewinnt'} `
-              + `${main.wins} von ${main.wins + main.losses} Sätzen und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Quote.`,
+              + `${main.wins} von ${main.wins + main.losses} Sätzen und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Siegquote.`,
           potw: {weekKey: _potwKeyOf(range.start), playerId: main.id,
                  playerIds: res.winners.map(w => w.id), wins: main.wins, wr: main.wr}
         });

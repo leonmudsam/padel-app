@@ -967,7 +967,7 @@ function _breakingHeroText(s){
         // an der Spitze: Tabellenführer … baut den Vorsprung an der Spitze
         // aus" sagte „Spitze" zweimal in einem Satz.
         return b
-          ? `Tabellenführer ${a} schlägt ${b} im direkten Duell und baut den Vorsprung aus.`
+          ? `Tabellenführer ${a} schlägt ${b} im Direkten Vergleich und baut den Vorsprung aus.`
           : `${a} gewinnt das Spitzenspiel und zieht weiter davon.`;
       }
       // Der Countdown hat keinen Nachsatz. Er hiess „Nur noch 6 Tage bis zum
@@ -1359,15 +1359,18 @@ function _newsFeedPlan(o){
 }
 
 // Die Erklärkarte des Feeds, leer wie voll unter demselben Titel: eine
-// geschlossene Karte bleibt zu, gleich ob schon Stories stehen.
+// geschlossene Karte bleibt zu, gleich ob schon Stories stehen. Wie jede
+// Erklärkarte nennt sie, was ein Tippen öffnet, und die Schwellen fett
+// [§C27]; der Wertung des Tages gibt sie ihren Namen, wie Profil und Liga.
 function newsKarteHtml(voll, ersatz){
   return vorschauHtml('newspaper', 'Die Liga-News',
-    voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
+    (voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.')
+      + ' Ein Tippen öffnet die Story.',
     [
       ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu jedes Match mit allen seinen Sätzen.'],
       ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
       ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
-      ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
-      ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
+      ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit dem Player of the Day.'],
+      ['chartBar', 'Liga', `Um <b>${AMBIENT_SLOTS[0]} Uhr</b> ein Fakt über die Liga, solange in den letzten <b>${AMBIENT_RUHE_TAGE} Tagen</b> gespielt wurde.`],
     ], '', ersatz);
 }

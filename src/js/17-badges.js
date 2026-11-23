@@ -183,7 +183,7 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countTeamOfSeason(id,bis)},
   {id:'award_collector',ic:'medalTrio',name:'Award-Sammler',desc:'In einer Saison mindestens '+PERIODE_SAMMLER.tag+'-mal Player of the Day und '+PERIODE_SAMMLER.woche+'-mal Player of the Week',
     multi:true,count:(id,ms,bis)=>countAwardCollector(id,ms,bis)},
-  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche mit mindestens '+WOCHE_MIN_SPIELTAGE+' Spieltagen (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
+  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Siegquote einer Kalenderwoche mit mindestens '+WOCHE_MIN_SPIELTAGE+' Spieltagen (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
     multi:true,count:(id,ms,bis)=>countPeriodWins(id,ms,'week',bis)},
   {id:'potd',ic:'dayKing',name:'Player of the Day',desc:'Die meisten gewonnenen Sätze eines Spieltags (ab '+PERIODE_MIN_SIEGE.tag+')',
     multi:true,count:(id,ms,bis)=>countDayWins(id,ms,bis)},

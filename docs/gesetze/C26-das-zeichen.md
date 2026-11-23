@@ -2,7 +2,7 @@
 
 ## Regel
 
-- Sterne zählen Ligatitel: höchstens fünf, dann die Zahl — unter dem Avatar in der Liste (`_znSterneSvg`) wie über dem Zeichen mit Band (`_insSterne`). Mit Band liegen sie auf einem festen Radius um die Reifmitte.
+- Sterne zählen Ligatitel: bis fünf ein Stern je Titel, ab sechs die Zahl zwischen zwei Sternen — unter dem Avatar in der Liste (`_znSterneSvg`) wie über dem Zeichen mit Band (`_insSterne`). Jeder Stern ist facettiert, eine helle und eine dunkle Hälfte je Zacke (`_znSternHell`). Mit Band liegen sie auf einem festen Radius um die Reifmitte.
 - Feuer hinter dem Avatar heißt laufende Siegesserie in drei Stufen (3–4, 5–6, ab 7), Stop-Motion ohne JS-Timer, und nur dort. Neben dem Namen steht allein die Niederlagenserie (`lossStreakInline`, Tropfen bei 3, 5, 7).
 - Das Feuer trägt überall die Rangfarbe (`insAvWrap` setzt `--zn-c`), mit demselben hellen Kern wie im Profilkopf. Wie weit eine Stufe schlagen darf, sagt `spitze`, je Stufe überschreibbar.
 - Der Profilkopf rückt nur für brennende Stufen nach unten (`--feuerluft`). In den Formpunkten brennt die Serie als zwei Pseudo-Elemente (`.dot.glut`), nicht als SVG.
@@ -14,17 +14,23 @@
 
 ## Prüfung
 
-`tests/umbau/zeichen` misst Feuer, Sterne und die Füllung des Feuers in Zeile und Profil am Knoten; `tests/umbau/blatt` misst die Zeichen am Ring mit zwei bis fünf Zuständen und klappt die Zeile auf; `tests/umbau/rechnen` rechnet Woche und Tag des Rings, auch für den, der danach nicht mehr spielte, und für den, der seinen letzten Zeitraum nicht gewann.
+`tests/padel` zählt Sterne, Facetten und die Zahl zwischen zwei Sternen in Zeile und Bogen; `tests/umbau/zeichen` misst Feuer, Sterne und die Füllung des Feuers in Zeile und Profil am Knoten; `tests/umbau/blatt` misst die Zeichen am Ring mit zwei bis fünf Zuständen und klappt die Zeile auf; `tests/umbau/rechnen` rechnet Woche und Tag des Rings, auch für den, der danach nicht mehr spielte, und für den, der seinen letzten Zeitraum nicht gewann.
 
 ## Herleitung
 
 Wie es dazu kam und was vorher falsch war — der Grund jeder Regel oben.
 
-Sterne = Ligatitel. **Höchstens fünf, dann die
-Zahl** — in beiden Formen gleich: unter dem Avatar in der Liste
-(`_znSterneSvg`, CSS), über dem Zeichen mit Band (`_insSterne`, im SVG).
-Zwei Formen für dieselbe Zahl wären eine zu viel [§C27]; die Stelle ist
-verschieden, weil mit Band der Fuß der Raute gehört [§C30].
+Sterne = Ligatitel. **Bis fünf ein Stern je Titel, ab sechs die Zahl
+zwischen zwei Sternen** — in beiden Formen gleich: unter dem Avatar in der
+Liste (`_znSterneSvg`, CSS), über dem Zeichen mit Band (`_insSterne`, im
+SVG). Zwei Formen für dieselbe Zahl wären eine zu viel [§C27]; die Stelle
+ist verschieden, weil mit Band der Fuß der Raute gehört [§C30]. Ab sechs
+standen fünf Sterne und dahinter die Ziffer: „★★★★★25" lief breiter als der
+Reif, und die Ziffer am Ende las sich neben dem Avatar wie ein Platz in der
+Liste. Zwischen zwei Sternen ist die Zahl die Zahl der Sterne, sie steht so
+hoch wie ein Stern und nicht höher, und das Band bleibt schmaler als fünf
+Sterne. Flach gefüllt war ein Stern bei acht Pixeln ein gelber Fleck; mit
+einer hellen und einer dunklen Hälfte je Zacke liest er sich als Metall.
 Mit Band liegen sie auf einem **festen Radius** um die Reifmitte, nicht auf
 dem Zeichen und nicht je Stufe woanders. Sie standen im verkleinerten
 Kasten der früheren Schwinge und landeten damit auf dem Kopf des Insigniums — Gold

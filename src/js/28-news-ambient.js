@@ -496,7 +496,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     return { cat:'rivalry', ic:'crossedSwords', prio:4,
       // Ganze Sätze statt Etikett und „vs" [§C33]: „Duell der Liga: Leon vs
       // Maxi" und „Siege: Leon 152, Maxi 89." waren Aufschriften.
-      title:`${nameOf(best.pa)} und ${nameOf(best.pb)} sind das Duell der Liga`,
+      // „das Duell der Liga" war ein Wort der Kicker-Liga für dieselbe Zahl.
+      title:`${nameOf(best.pa)} und ${nameOf(best.pb)} stehen sich in der Liga am häufigsten gegenüber`,
       // Gezählt sind Sätze gegeneinander, keine Duelle über mehrere Sätze.
       desc:`${best.total} Sätze gegeneinander, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
       vv: best.total, vl:'Sätze',
@@ -871,7 +872,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'posDrive', prio:5,
       title:`${nameOf(best.pid)} glänzt rechts`,
-      desc:`${Math.round(best.v*100)} % aus ${a.aG} Sätzen auf der Drive-Seite, die beste Quote dort in den letzten 14 Tagen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.aG} Sätzen auf der Drive-Seite, die beste Siegquote dort in den letzten 14 Tagen.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'rechts',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].aW / agg[id].aG, v => Math.round(v * 100) + ' %') } };
   }});
@@ -887,7 +888,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'posReves', prio:5,
       title:`${nameOf(best.pid)} glänzt links`,
-      desc:`${Math.round(best.v*100)} % aus ${a.dG} Sätzen auf der Revés-Seite, die beste Quote dort in den letzten 14 Tagen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.dG} Sätzen auf der Revés-Seite, die beste Siegquote dort in den letzten 14 Tagen.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'links',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].dW / agg[id].dG, v => Math.round(v * 100) + ' %') } };
   }});
@@ -1015,7 +1016,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const bild = _bRennen(rank.map(x => ({p:x.pid, v:x.wert, t:pkt(x)})));
     if(lead.length > 1) return { cat:'personal', ic:def.ic, prio:4,
       title:`Gleichstand beim ${def.name.replace(/^Der /, '')}`,
-      desc:`${_namesOf(lead)} liegen gleichauf, je ${pkt(top)} Prozentpunkte über der eigenen Quote.`,
+      desc:`${_namesOf(lead)} liegen gleichauf, je ${pkt(top)} Prozentpunkte über der eigenen Siegquote.`,
       vv:pkt(top), vl:'%-Punkte',
       dataRef:{ ambientPids: lead.slice(0, 2).map(x => x.pid), pairKind:'duel', bild } };
     return { cat:'personal', ic:def.ic, prio:4,
@@ -1222,8 +1223,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     const c = cands[Math.floor(rng()*cands.length)];
     return { cat:'rivalry', ic:'devilMask', prio:4,
       title:`${nameOf(c.opp)} ist ${nameOf(c.pid)}s Lieblingsgegner`,
-      desc:`${c.w}:${c.l} aus ${c.total} direkten Duellen. Diese Paarung geht fast immer gleich aus.`,
-      vv: c.w + ':' + c.l, vl:'Duelle',
+      desc:`${c.w}:${c.l} aus ${c.total} Sätzen gegeneinander. Diese Paarung geht fast immer gleich aus.`,
+      vv: c.w + ':' + c.l, vl:'Bilanz',
       dataRef:{ ambientPids:[c.pid, c.opp], pairKind:'duel', bild:{f:'duell', a:c.pid, b:c.opp, wa:c.w, wb:c.l} } };
   }});
 

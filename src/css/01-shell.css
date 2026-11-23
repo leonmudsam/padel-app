@@ -116,7 +116,9 @@
   .kopf-info{display:inline-grid;place-items:center;width:26px;height:26px;margin-left:6px;vertical-align:4px;
     border:1px solid var(--line2);border-radius:50%;background:none;color:var(--muted);cursor:pointer}
   .kopf-info .ic,.kopf-info svg{width:14px;height:14px}
-  .pos-info p{font-size:13px;line-height:1.5;color:var(--ink2);margin:0 0 10px}
+  /* Die Hilfe sagt dieselben Fakten wie die Erklärkarte des Reiters und
+     steht in derselben Größe; mit 13 px stand sie kleiner als die Karte. */
+  .pos-info p{font-size:14px;line-height:1.5;color:var(--ink2);margin:0 0 10px}
   .pos-info b{color:var(--ink)}
   /* Die Zahlen hinter der Einstufung im Profil [§C44]: je Zeile Sturm und
      Abwehr nebeneinander, damit der Abstand gegen die Erwartung abzulesen ist. */

@@ -242,26 +242,31 @@ function _processAchToastQueue(){
 // funktioniert und wie man vorgeht — nicht, was Padel ist; das weiß, wer
 // die App öffnet. Die Erklärung steht hinter dem Knopf statt als Absatz
 // über der Liste, die sonst jeder bei jedem Öffnen wegscrollen müsste.
+// Dieselbe Schwelle steht hier wortgleich und fett wie in der Erklärkarte
+// des Reiters, dieselbe Handlung heißt „Ein Tippen …" [§C27]: hier stand
+// „ab dem 40. Satz der Liga", in der Karte „sobald die Liga 40 Sätze
+// gespielt hat", und „getippt zeigt sie die ersten drei" über einem Blatt,
+// das alle Plätze zeigt.
 const HILFE = {
   liga: {titel:'Liga', absaetze:[
-    () => `<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Woche</b> steht da, sobald die Woche ${WOCHE_MIN_SPIELTAGE} Spieltage hat, wie der Player of the Week. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.`,
-    'Die Reiter über der Liste sortieren um: Elo, Quote, Game-Bilanz und mehr. Ein Name öffnet das Profil.',
+    () => `<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Woche</b> ist die Kalenderwoche ab ihrem <b>${WOCHE_MIN_SPIELTAGE}. Spieltag</b>, wie der Player of the Week. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.`,
+    'Die Reiter über der Liste sortieren um: Elo, Siegquote, Game-Bilanz und mehr. Ein Tippen auf einen Namen öffnet das Profil.',
     'Sätze trägt das Plus unten rechts ein. Mehrere Sätze derselben Paare direkt hintereinander zählen außerdem als Match.']},
   seiten: {titel:'Seiten', absaetze:[
-    'Wer auf welcher Seite am stärksten ist. Die Seite kommt aus der Aufstellung jedes Satzes.',
+    'Wer auf welcher Seite am stärksten spielt, über alle Saisons. Die Seite kommt aus der Aufstellung jedes Satzes.',
     'Der Wert verbindet die Siegquote dort, die Leistung gegen die Erwartung (Partner und Gegner), den Anteil der Games und wie oft jemand dort stand. <b>▲</b> heißt über, <b>▼</b> unter der Erwartung.',
     'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
   awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
-    '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage, getippt zeigt sie die ersten drei.',
-    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons, vergeben ab dem ${CHRON_MIN_GAMES}. Satz der Liga. Wer einen übertrifft, nimmt ihn dem Halter ab.`,
-    () => `<b>Chronik</b>: jeder Monat schreibt Einträge für das, worin jemand besonders war, ab ${CHRONIK_MIN_SPIELE} Sätzen im Monat.`,
+    '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage. Ein Tippen zeigt die Rangfolge und wie gewertet wird.',
+    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons; wer einen übertrifft, nimmt ihn dem Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.`,
+    () => `In der <b>Chronik</b> bekommt jeder Monat Einträge für das, worin jemand besonders war. Gewertet wird ab <b>${CHRONIK_MIN_SPIELE} Sätzen</b> im Monat.`,
     'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
   teams: {titel:'Teams', absaetze:[
-    () => `Jedes Duo ab ${DUO_MIN} gemeinsamen Sätzen, sortiert nach Quote, Game-Bilanz oder Elo.`,
-    'Ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
+    () => `Jedes Duo ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, sortiert nach Siegquote, Game-Bilanz oder Elo-Zuwachs.`,
+    'Ein Tippen auf ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
   verlauf: {titel:'Verlauf', absaetze:[
     'Jeder Satz, der neueste zuerst; oben lässt sich nach einem Spieler filtern.',
-    'Ein Satz öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt sie sich bearbeiten oder löschen; die Liga rechnet danach neu.']},
+    'Ein Tippen auf einen Satz öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt er sich bearbeiten oder löschen; die Liga rechnet danach neu.']},
   eingabe: {titel:'Sätze eintragen', absaetze:[
     'Vier Spieler wählen. Links steht Revés, rechts Drive; ⇄ tauscht die Seiten eines Teams.',
     'Die Games je Satz eintragen; „+ Satz" trägt mehrere auf einmal ein, jeder zählt für sich. Ein Satz, der nicht zu Ende kam, zählt mit, wenn er einen Vorsprung hat.',

@@ -16,7 +16,9 @@ function vTeams(nurErgebnis=false){
     // „Noch nicht genug Daten" sagte nicht, wie viel genug ist und was dann
     // kommt.
     const html=duosKarteHtml(emptyState('handshake', `Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.`));
-    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Sätzen`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Sätzen</p></div>${html}`;
+    // Die Unterzeile nennt Zahl und Zeitraum, die Schwelle steht fett in der
+    // Erklärkarte darunter: sie stand sonst dreimal auf einem Bildschirm.
+    return nurErgebnis?{kopf:'Über alle Saisons',html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Über alle Saisons</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
   
@@ -145,8 +147,8 @@ function vTeams(nurErgebnis=false){
   const ruhe=ruheF.length?`<div class="rlist">${ruheF.map((t,i)=>zeile(t,i,true)).join('')}</div>`:'';
 
 
-  const ergebnis={kopf:`${arrF.length} Duo${arrF.length===1?'':'s'}${_tq?' gefunden':` ab ${DUO_MIN} gemeinsamen Sätzen, über alle Saisons`}`,
-    html:arrF.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Teams gefunden'),
+  const ergebnis={kopf:`${arrF.length} Duo${arrF.length===1?'':'s'}${_tq?' gefunden':' über alle Saisons'}`,
+    html:arrF.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Kein Duo gefunden.'),
     ruhe, ruheZahl:ruheF.length};
   // Die Suche zeichnet nur die Ergebnisse. Keine zweite Filter-/Sortierformel
   // und kein Ersetzen des Eingabefelds samt Fokus, Cursor oder IME-Komposition.
@@ -181,18 +183,20 @@ function vTeams(nurErgebnis=false){
 // Die Erklärkarten von Teams und Verlauf stehen auch über einer vollen
 // Liste, bis sie geschlossen werden [§C27]: wer neu dazukommt, findet die
 // Liga voller Sätze vor. Ein Titel, eine Karte — geschlossen bleibt sie zu.
+// Beide haben den Aufbau aller Erklärkarten [§C27]: was, ab wann (fett),
+// was ein Tippen öffnet. Der Verlauf hat keine Schwelle.
 function duosKarteHtml(ersatz){
   return vorschauHtml('handshake','Die Duos der Liga',
-    `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`,
+    `Die Duos der Liga mit Bilanz, Elo und der besseren Aufstellung, über alle Saisons. Ein Duo zählt ab <b>${DUO_MIN} gemeinsamen Sätzen</b>. Ein Tippen öffnet die gemeinsame Bilanz.`,
     null, '', ersatz);
 }
 function verlaufKarteHtml(ersatz){
   return vorschauHtml('verlauf','Der Verlauf',
-    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.',
+    'Jeder Satz mit Aufstellung und Elo, der neueste zuerst. Ein Tippen öffnet den Satz; dort lässt er sich bearbeiten oder löschen.',
     null, '', ersatz);
 }
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${verlaufKarteHtml(emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>0 Sätze</p></div>${verlaufKarteHtml(emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -275,7 +279,7 @@ function vHistory(){
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></svg>
       <select id="histSel" style="padding-left:40px">${opts}</select>
     </div>
-    ${list.length?`<div class="mlist">${rows}</div>${paginationControls}`:emptyState('search','Keine Sätze für diesen Filter')}`;
+    ${list.length?`<div class="mlist">${rows}</div>${paginationControls}`:emptyState('search','Kein Satz mit diesem Spieler.')}`;
 }
 
 
@@ -379,7 +383,9 @@ function vSettings(){
       + sl('cfgLowEloLossDamp','Schutz für Schwächere',c.lowDamp,0,100,' %','','Weniger Verlust unter dem Schnitt der vier.'))}
     <div class="card" style="margin-top:14px;border:1px solid rgba(228,242,74,.18);background:linear-gradient(155deg,rgba(228,242,74,.06),var(--surface) 80%)">
       <div class="mini-label" style="color:var(--acid);display:flex;align-items:center;gap:6px">${svgI('info')}Wirkung der Regler</div>
-      <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:8px">
+      ${/* Die Absätze der Einstellungen stehen in 13 px wie jeder lange Text:
+           in 11 und 12 px wirkten sie auf dem Telefon kleiner als vorher, seit
+           der Browser lange Absätze nicht mehr selbst vergrößert. */''}<p style="font-size:13px;color:var(--ink2);line-height:1.55;margin-top:8px">
         Regler wirken auf <b style="color:var(--acid)">neue Sätze</b>. Neu berechnen wendet sie auf alle an und
         <b style="color:var(--red)">überschreibt die gespeicherte Elo</b>.
       </p>
@@ -394,12 +400,12 @@ function vSettings(){
         <button class="btn ghost" id="expSaveBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('sichern')} Sicherung speichern (.json)</button>
         <button class="btn ghost sm" id="expCsvBtn" style="width:100%;font-size:11px">Stattdessen als CSV</button>
       </div>
-      <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px">
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:12px">
         Excel zum Anschauen, die Sicherung zum Wiederherstellen der ganzen Liga.
       </p>
       <div style="height:1px;background:var(--line);margin:14px 0"></div>
       <button class="btn" id="impBackupBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('hochladen')} Datei einspielen</button>
-      <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px">
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:10px">
         .xlsx, .csv oder .json. Nur fehlende Sätze kommen dazu, nichts wird überschrieben.
       </p>
     </div>
@@ -410,7 +416,7 @@ function vSettings(){
         <div style="font-size:12px;color:var(--ink2);font-family:'Sometype Mono',monospace">${BUILD_VERSION}</div>
         <button class="btn ghost sm" id="forceReloadBtn" style="width:auto;padding:7px 12px;font-size:11px;flex-shrink:0">Neu laden</button>
       </div>
-      <p style="font-size:11px;color:var(--muted);line-height:1.55;margin-top:10px">
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:10px">
         Fehlt etwas Neues, hält das Telefon noch den alten Stand. Der Knopf lädt ihn neu; sonst meldet sich ein neuer Stand von selbst.
       </p>
     </div>

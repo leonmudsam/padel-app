@@ -31,12 +31,19 @@
   .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
     background:rgba(228,242,74,.1);color:var(--acid)}
   .vs-ic svg{width:17px;height:17px}
-  .vs-satz{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.5}
+  /* Der Satz einer Erklärkarte steht in 14 px, ihre Punkte ebenso: alle
+     Karten sind Geschwister und tragen eine Größe [§C27]. In 12,5 px las
+     sich die längere Karte auf dem Telefon größer als die kürzere, weil der
+     Browser lange Absätze von selbst vergrößerte. Eine Schwelle steht fett. */
+  .vs-satz{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
   .vs-satz b{color:var(--ink);font-weight:600}
   .vs-punkte{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
   .vs-punkte li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;
-    font-size:12.5px;line-height:1.45;color:var(--muted)}
-  .vs-punkte li b{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:2px}
+    font-size:14px;line-height:1.5;color:var(--muted)}
+  /* Nur das erste fette Wort eines Punkts ist seine Überschrift. Als
+     `li b` stand jede fette Schwelle im Text als eigene Zeile da. */
+  .vs-punkte li > span > b:first-child{display:block;color:var(--ink);font-weight:700;font-size:14px;margin-bottom:2px}
+  .vs-punkte li b{color:var(--ink);font-weight:600}
   .vs-pi{width:24px;height:24px;display:grid;place-items:center;color:var(--muted)}
   .vs-pi svg{width:16px;height:16px}
   .vorschau > .btn{margin-top:16px}

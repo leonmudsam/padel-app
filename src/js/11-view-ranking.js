@@ -129,10 +129,12 @@ function ligaVorschauHtml(){
   return vorschauHtml('racket', 'So geht es los',
     '',
     [
-      [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
+      [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens <b>vier</b>. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
       ['court', '2. Sätze eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz zählt für sich.'],
-      ['chartBar', '3. Rangliste lesen', `Saison ist der laufende Monat, Woche die Kalenderwoche ab ihrem ${WOCHE_MIN_SPIELTAGE}. Spieltag, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.`],
-      ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
+      ['chartBar', '3. Rangliste lesen', `Saison ist der laufende Monat, Woche die Kalenderwoche ab ihrem <b>${WOCHE_MIN_SPIELTAGE}. Spieltag</b>, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.`],
+      // Awards (der Reiter) und Auszeichnungen (die Abzeichen) sind zwei
+      // Dinge; hier stand nur „Auszeichnungen" und meinte den Reiter.
+      ['shieldStar', '4. Der Rest füllt sich', 'Awards, Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
     ]);
 }
 // ── Die Woche als Zeitraum der Liga ─────────────────────────────────
@@ -322,7 +324,7 @@ function _vRankingCore(){
       // bleibt es beim Reif, weil eine Zeile die Hoehe nicht hat.
       const titelTxt   = period==='day' ? 'Player of the Day' : 'Player of the Week';
       const regelTxt   = period==='day' ? `ab ${PERIODE_MIN_SIEGE.tag} Siegen · die meisten Siege`
-                                        : `ab ${PERIODE_MIN_SIEGE.woche} Siegen · die beste Quote`;
+                                        : `ab ${PERIODE_MIN_SIEGE.woche} Siegen · die beste Siegquote`;
       const eloLabel   = period==='day' ? 'Elo Tag' : 'Elo Woche';
       if(winner){
         const wp=pmap()[winner.id];
@@ -334,7 +336,7 @@ function _vRankingCore(){
               ${avHtml(wp,'',{ins:true,band:true,px:72})}
               <div class="nw-mid">
                 <div class="nw-name">${esc(wp.name)}</div>
-                <div class="nw-meta">${winner.wins}–${winner.losses} · ${wWr}\u00A0% Quote</div>
+                <div class="nw-meta">${winner.wins}–${winner.losses} · ${wWr}\u00A0% Siegquote</div>
               </div>
               <div class="nw-val"><div class="v num${winner.eloNet<0?' minus':''}">${
                 winner.eloNet>=0?'+':''}${winner.eloNet}</div><div class="l">${eloLabel}</div></div>
@@ -372,10 +374,13 @@ function _vRankingCore(){
       const renderHl=(cls,labelTxt,iconKey,nameTxt,detailTxt,clickAttr='')=>{
         const kopf=`<div class="wk-hl-kopf"><span class="wk-hl-ic">${svgI(iconKey)}</span>`
           + `<span class="wk-hl-label">${labelTxt}</span></div>`;
+        // Leer sagt die Kachel dasselbe wie eine leere Award-Kachel [§C27]:
+        // „noch keine Daten" las sich wie ein Fehler, und der Strich war ein
+        // anderer als dort.
         if(!nameTxt) return `<div class="wk-hl empty">
           ${kopf}
-          <div class="wk-hl-val">–</div>
-          <div class="wk-hl-detail">noch keine Daten</div>
+          <div class="wk-hl-val">—</div>
+          <div class="wk-hl-detail">Noch nicht vergeben</div>
         </div>`;
         return `<div class="wk-hl ${cls}" ${clickAttr} style="cursor:pointer">
           ${kopf}
@@ -543,7 +548,7 @@ function _vRankingCore(){
         ${sichtBar}
         ${duos.length
           ? `<div class="rlist">${duos.map(duoZeile).join('')}</div>`
-          : emptyState('handshake','Noch kein Duo mit zwei gemeinsamen Sätzen')}`;
+          : emptyState('handshake','Noch kein Duo mit 2 gemeinsamen Sätzen.')}`;
     }
 
     return `
@@ -559,8 +564,8 @@ function _vRankingCore(){
         // Schritte zum Anfangen; das Gerüst des Zeitraums darüber bleibt,
         // wie es an jedem Tag steht (Fortschritt, Spieler des Tages, Kacheln).
         : !matches.length ? '' : emptyState('calendar', period==='day'
-        ? 'Heute noch kein Satz. Die Tabelle des Tages beginnt mit der ersten.'
-        : 'In dieser Saison noch kein Satz. Die Tabelle beginnt mit der ersten.')}
+        ? 'Heute noch kein Satz. Die Tabelle des Tages beginnt mit dem ersten.'
+        : 'In dieser Saison noch kein Satz. Die Tabelle beginnt mit dem ersten.')}
       ${ligaVorschauHtml()}
       ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
@@ -700,7 +705,7 @@ function _vRankingCore(){
     </div>`}
     ${hofPodsHtml}
     ${metrikLeisteHtml('all')}
-    ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
+    ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Kein Spieler gefunden.')}
     <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>
     ${ligaVorschauHtml()}`;
 

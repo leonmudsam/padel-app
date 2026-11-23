@@ -25,7 +25,7 @@ Hinter Avatar und Insignium steht die
 aus den Entwurf „titel-aura“ der Kicker-Liga: ein weicher Goldschein mit ungleich langen
 Strahlen, ab der vierten Stufe Goldstaub, ab der siebten ein Lichtring, ab
 der neunten einzelne Lichtsterne. Zehn Stufen, je Titel eine; danach
-bleibt sie stehen, und die Zahl neben den fünf Sternen zählt weiter
+bleibt sie stehen, und die Zahl zwischen den zwei Sternen zählt weiter
 [§C26]. Sie ersetzt die Rankenschwinge: die stand golden NEBEN dem Zeichen,
 griff zweieinhalb Reifradien weit aus, musste in einer Zeile auf 78 %
 zurückgenommen werden, und ein dritter goldener Kranz neben dem silbernen

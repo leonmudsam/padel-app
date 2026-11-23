@@ -187,6 +187,77 @@ const ATTR = /(?:style|d|width|height|x|y|cx|cy|r|points|transform|viewBox)="[^"
     ok(!!fOben && !!fUnten && fOben.lang && fOben.sicht && fOben.frei && fUnten.sicht && fUnten.frei && fUnten.ueber,
       `Im Profil stehen Abbrechen und Speichern ohne Scrollen frei am unteren Rand, und am Ende bleibt die letzte Reihe darüber (${JSON.stringify({fOben, fUnten})})`);
     await K(`closeSheet(true);0`);
+    // ── Was zusammengehört, sieht gleich aus ──────────────────────────
+    // Auf dem iPhone stand eine Erklärkarte größer als ihre Nachbarin, obwohl
+    // beide 12,5 px trugen: iOS vergrößert lange Absätze von selbst. Dazu
+    // nannte die eine ihre Schwelle fett, die andere nicht, und sieben
+    // Formulierungen sagten, was ein Tippen tut. Gemessen wird jede Karte
+    // eines Reiters mit Liste.
+    const karten = await K(`(() => {
+      _hinweiseWeg = new Set();
+      const faelle = [['Seiten', "tab='positions';rankMetric='drive'"], ['Awards', "tab='awards';awView='awards'"],
+        ['Rekorde', "tab='awards';awView='rekorde';rekKammer=''"], ['Chronik', "tab='awards';awView='chronik'"],
+        ['Teams', "tab='teams'"], ['Verlauf', "tab='history';histFilter='all'"]];
+      const out = [];
+      for(const [n, c] of faelle){
+        eval(c); render();
+        document.querySelectorAll('#main .vorschau .vs-satz').forEach(p => {
+          const ohneFett = p.innerHTML.replace(/<b>[^<]*<[/]b>/g, '');
+          out.push({n, px: getComputedStyle(p).fontSize,
+            tippen: (p.textContent.match(/(^|[.;] )Ein Tippen (zeigt|öffnet)/g) || []).length,
+            fett: /<b>[^<]*[0-9]/.test(p.innerHTML), ziffer: /[0-9]/.test(ohneFett)});
+        });
+        document.querySelectorAll('#main .view-head p').forEach(p => { if(/tippen/i.test(p.textContent)) out.push({n, kopf: p.textContent}); });
+      }
+      return JSON.stringify({karten: out, anpassen: getComputedStyle(document.documentElement).webkitTextSizeAdjust});
+    })()`).then(JSON.parse);
+    const kk = karten.karten.filter(x => x.px);
+    ok(karten.anpassen === '100%', `Die Schriftgröße bestimmt das CSS, nicht der Browser (text-size-adjust ${karten.anpassen})`);
+    ok(kk.length >= 6 && kk.every(x => x.px === '14px'), `Jede Erklärkarte eines Reiters steht in 14 px (${kk.map(x => x.n + ':' + x.px).join(' ')})`);
+    ok(kk.every(x => x.tippen === 1), `Jede Erklärkarte sagt in genau einem Satz „Ein Tippen zeigt/öffnet …" (${kk.map(x => x.n + ':' + x.tippen).join(' ')})`);
+    ok(kk.every(x => !x.ziffer) && ['Awards','Rekorde','Chronik','Teams'].every(n => kk.some(x => x.n === n && x.fett)), `Jede Schwelle einer Erklärkarte steht fett, und Awards, Rekorde, Chronik und Teams nennen ihre${' (' + kk.filter(x => x.fett).map(x => x.n).join(', ') + ')'}${kk.some(x => x.ziffer) ? ' — nicht in ' + kk.filter(x => x.ziffer).map(x => x.n).join(', ') : ''}`);
+    ok(!karten.karten.some(x => x.kopf), `Die Kopfzeile einer Ansicht sagt nicht, was ein Tippen tut${karten.karten.some(x => x.kopf) ? ' — ' + JSON.stringify(karten.karten.filter(x => x.kopf)) : ''}`);
+    const hilfePx = await K(`(() => { closeSheet(true); zeigeHilfe('awards'); const p = document.querySelector('#sheet .pos-info p');
+      const px = p ? getComputedStyle(p).fontSize : null; closeSheet(true); return px; })()`);
+    ok(hilfePx === '14px', `Das Hilfe-Blatt steht in derselben Größe wie die Erklärkarte (${hilfePx})`);
+    // ── Das Award-Blatt ohne Träger und mit Feuer ─────────────────────
+    // Kein Filter im Filter am Feuer: in den Top-5-Listen der Awards lag ein
+    // Weichzeichner auf dem ganzen Feuer, und jede Flamme trug schon ihren
+    // Schein. Safari zeichnete daraus einen violetten Strich neben dem Kreis.
+    const filterImFilter = await K(`(() => {
+      const _f = znFeuer; znFeuer = () => 3;
+      try {
+        tab='ranking';period='season';rankMetric='elo';render();
+        const zaehle = wo => [...document.querySelectorAll(wo + ' .zn-fx')].map(fx => {
+          const zn = fx.closest('.zn'); let n = 0;
+          for(let e = fx; e && e !== zn.parentElement; e = e.parentElement) if(getComputedStyle(e).filter !== 'none') n++;
+          fx.querySelectorAll('*').forEach(e => { if(getComputedStyle(e).filter !== 'none') n++; });
+          return n;
+        });
+        const liste = zaehle('#main');
+        showAward('wins');
+        const blatt = zaehle('#sheet');
+        return JSON.stringify({flammen: liste.length + blatt.length, out: liste.concat(blatt).filter(n => n > 1).map(n => n + ' Filter')});
+      } finally { znFeuer = _f; closeSheet(true); }
+    })()`).then(JSON.parse);
+    ok(filterImFilter.flammen > 0 && filterImFilter.out.length === 0,
+      `Feuer in Rangliste und Top-5-Liste: höchstens ein Filter je Feuer, kein Filter im Filter (${JSON.stringify(filterImFilter)})`);
+    // Ein Award ohne Träger sagt im Blatt, was noch fehlt, wie seine Kachel
+    // (AW_LEER) [§C27] — dort stand „Keine Daten".
+    const leerBlatt = await K(`(() => {
+      const _m = matches;
+      try {
+        matches = []; invalidateCache();
+        return JSON.stringify(Object.keys(AWARD_META).map(k => {
+          showAward(k);
+          const l = document.querySelector('#sheet .leerstand');
+          return {k, text: l ? l.textContent.trim() : null, kachel: AW_LEER[k] || 'Noch nicht vergeben'};
+        }).filter(x => x.text !== null));
+      } finally { matches = _m; invalidateCache(); closeSheet(true); }
+    })()`).then(JSON.parse);
+    const falsch = leerBlatt.filter(x => x.text !== x.kachel);
+    ok(leerBlatt.length > 0 && falsch.length === 0,
+      `Ein leeres Award-Blatt sagt dasselbe wie seine Kachel, nie „Keine Daten" (${leerBlatt.length} Blätter${falsch.length ? ' — ' + JSON.stringify(falsch.slice(0, 3)) : ''})`);
   } finally { await browser.close(); }
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);
   process.exit(fails ? 1 : 0);

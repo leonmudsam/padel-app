@@ -32,7 +32,7 @@ function showH2H(idA, idB){
         </div>
         <div style="font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:-.02em;line-height:1.1;margin-top:12px">${esc(pA.name)} <span style="color:var(--muted);font-size:14px">vs</span> ${esc(pB.name)}</div>
       </div>
-      ${emptyState('crossedSwords','Noch keine gemeinsamen Sätze')}
+      ${emptyState('crossedSwords','Noch kein gemeinsamer Satz.')}
     `);
     return;
   }
@@ -138,9 +138,12 @@ function showH2H(idA, idB){
     </div>`;
   }).join('');
 
+  // Eine Zeile ist ein Satz; „Begegnung" heißt in der Oberfläche das Match
+  // über mehrere Sätze. Der Abschnitt ist der Abschnitt jedes Blatts
+  // (`blattAbschnittHtml`) statt einer eigenen Form im Inline-Style [§C27].
   const lastBlock = d.lastEncounters.length ? `
     <div style="margin-bottom:14px">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);font-weight:700;margin-bottom:8px;font-family:'Sometype Mono',monospace">Letzte Begegnungen</div>
+      ${blattAbschnittHtml('clock', 'Letzte Sätze')}
       <div class="rlist">${lastRows}</div>
     </div>` : '';
 
@@ -153,7 +156,7 @@ function showH2H(idA, idB){
         <div data-detail="${esc(pB.id)}" style="cursor:pointer">${avBig(pB)}</div>
       </div>
       <div style="font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:-.02em;line-height:1.1;margin-top:12px">${esc(pA.name)} <span style="color:var(--muted);font-size:14px">vs</span> ${esc(pB.name)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:'Sometype Mono',monospace">${d.total} ${d.total===1?'gemeinsame Begegnung':'gemeinsame Begegnungen'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:'Sometype Mono',monospace">${d.total} ${d.total===1?'gemeinsamer Satz':'gemeinsame Sätze'}</div>
     </div>
 
     ${teamBlock}
@@ -200,8 +203,10 @@ function h2hBegegnungenHtml(a, b){
     return `<rect class="${w ? 'w' : 'l'}" style="--i:${i}" x="${x.toFixed(1)}" y="${(w ? mitte - h : mitte).toFixed(1)}" width="${Math.max(1, bw).toFixed(1)}" height="${h.toFixed(1)}" rx="2"/>`;
   }).join('');
   const aw = ms.filter(sieg).length;
-  return `<div class="h2h-bg">${rcpAbschnitt(alle.length > n ? 'Die letzten ' + n + ' Begegnungen' : 'Jede Begegnung',
-      alle.length > n ? alle.length + ' insgesamt' : '')}
+  // Der Abschnitt steht vor dem Kasten: darin träfe ihn die Regel für die
+  // Zeichnung (`.h2h-bg svg`), und sein Zeichen stand bildschirmgroß da.
+  return `${blattAbschnittHtml('chartBar', alle.length > n ? 'Die letzten ' + n + ' Sätze gegeneinander' : 'Jeder Satz gegeneinander',
+      alle.length > n ? alle.length + ' insgesamt' : '')}<div class="h2h-bg">
     <div class="h2h-bg-n"><span>${esc(pname(a))}</span><b class="num">${aw}</b></div>
     <svg viewBox="0 0 ${W} ${H}" aria-hidden="true"><line class="h2h-bg-0" x1="0" x2="${W}" y1="${mitte}" y2="${mitte}"/>${balken}</svg>
     <div class="h2h-bg-n re"><span>${esc(pname(b))}</span><b class="num">${n - aw}</b></div></div>`;

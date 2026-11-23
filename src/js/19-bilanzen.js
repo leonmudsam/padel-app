@@ -42,9 +42,9 @@ function showPlayerH2HList(playerId){
   openSheet(`
     ${blattKopfHtml({ic:'users', titel:'Bilanzen', unter:p.name + ' · ' + h2hList.length + ' Partner'})}
     <div style="font-size:10px;color:var(--muted);font-family:'Sometype Mono',monospace;letter-spacing:.04em;margin-top:14px;margin-bottom:10px">
-      Siege und Niederlagen <span style="color:var(--blue);font-weight:700">mit</span> und <span style="color:var(--purple);font-weight:700">gegen</span> jeden · Antippen für Einzelheiten
+      Siege und Niederlagen <span style="color:var(--blue);font-weight:700">mit</span> und <span style="color:var(--purple);font-weight:700">gegen</span> jeden. Ein Tippen öffnet den Direkten Vergleich.
     </div>
-    ${h2hList.length ? `<div class="rlist">${rows}</div>` : emptyState('crossedSwords','Noch keine Partner ab 3 Begegnungen')}
+    ${h2hList.length ? `<div class="rlist">${rows}</div>` : emptyState('crossedSwords','Noch kein Partner ab 3 Sätzen.')}
     <button class="btn ghost sm" id="backToPlayerH2H" style="margin-top:16px">← Zurück zum Profil</button>
   `);
 

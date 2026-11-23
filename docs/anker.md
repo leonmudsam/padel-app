@@ -227,6 +227,7 @@ Wächter 8 vergleicht. Ein Kürzel `§n.m` ist ein Abschnitt des Codes,
   - §C21 SAISON-POSITIONSVERLAUF
 - **11-chronik.css**
   - §C22 SAISON-TITEL & CHRONIK
+  - §C27 .
 - **12-insignium.css**
   - §C23 INSIGNIUM & TITELBAND
   - §C25 .

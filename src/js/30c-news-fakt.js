@@ -108,7 +108,7 @@ function _ffDuell(b){
   return `<div class="ff-dl"><span class="ff-dl-s${b.wa >= b.wb ? ' vorn' : ''}">${_ffChip(b.a)}<b class="num">${b.wa | 0}</b></span>`
     + `<span class="ff-dl-bar"><i style="width:${pa}%"></i></span>`
     + `<span class="ff-dl-s re${b.wb > b.wa ? ' vorn' : ''}"><b class="num">${b.wb | 0}</b>${_ffChip(b.b)}</span></div>`
-    + `<div class="ff-dl-n">${_ffNm(b.a)}<small class="num">${n} Duelle</small>${_ffNm(b.b)}</div>`;
+    + `<div class="ff-dl-n">${_ffNm(b.a)}<small class="num">${n} Sätze</small>${_ffNm(b.b)}</div>`;
 }
 
 // ── Ein Duo: zwei Gesichter, darunter jede gemeinsame Partie oder der Lauf

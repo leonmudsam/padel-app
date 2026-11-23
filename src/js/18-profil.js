@@ -77,7 +77,7 @@ function zeigeProfilPosInfo(id){
       + ` Je klarer die Einstufung, desto mehr: auf der schwächeren Seite höchstens ${grenze} %, auf der stärkeren höchstens ${daempfer} %.`;
   openSheet(blattKopfHtml({ic:'info', titel:'So entsteht die Einstufung', unter:pname(id)})
     + `<div class="pos-info">
-      <div class="pos-info-tab">${zeile('', '<b>Drive · rechts</b>', '<b>Revés · links</b>')}${
+      <div class="pos-info-tab">${zeile('', `<b>${SEITE_LANG.drive}</b>`, `<b>${SEITE_LANG.reves}</b>`)}${
         zeile('Sätze', t.aG, t.dG)}${zeile('Siegquote', quote(t.aWr), quote(t.dWr))}${
         zeile('Gegner, Elo-Abstand', elo(t.aGegAvg), elo(t.dGegAvg))}${
         zeile('Partner, Elo-Abstand', elo(t.aMitAvg), elo(t.dMitAvg))}${
@@ -595,8 +595,8 @@ const rankProgHtml = rInfo ? `
         return `<div class="pp-pos-combined">
           <div class="head"><div class="t">Revés und Drive</div></div>
           <div class="pp-roles-donuts">
-            ${donut('reves','Revés · links','posReves',revWr,s.revW,s.revG,'der Games',anteil(s.revAnteil),'var(--blue)')}
-            ${donut('drive','Drive · rechts','posDrive',drvWr,s.drvW,s.drvG,'der Games',anteil(s.drvAnteil),'var(--orange)')}
+            ${donut('reves',SEITE_LANG.reves,'posReves',revWr,s.revW,s.revG,'der Games',anteil(s.revAnteil),'var(--blue)')}
+            ${donut('drive',SEITE_LANG.drive,'posDrive',drvWr,s.drvW,s.drvG,'der Games',anteil(s.drvAnteil),'var(--orange)')}
           </div>
         </div>`;
       })()}
@@ -609,7 +609,7 @@ const rankProgHtml = rInfo ? `
       </div>
       <div class="pp-kpi">
         <div class="pp-k"><div class="v">${s.wins}:${s.losses}</div><div class="l">Sätze</div></div>
-        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Satzquote</div></div>
+        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Siegquote</div></div>
         <div class="pp-k ${s.gd>=0?'pos':'neg'}"><div class="v">${s.gd>=0?'+':''}${s.gd}</div><div class="l">Game-Bilanz</div></div>
         <div class="pp-k"><div class="v">${s.matchW}:${s.matchL}</div><div class="l">Matches</div></div>
         <div class="pp-k"><div class="v">${s.matchW + s.matchL ? Math.round(100 * s.matchW / (s.matchW + s.matchL)) : 0}&nbsp;%</div><div class="l">Matchquote</div></div>

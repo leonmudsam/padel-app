@@ -902,13 +902,16 @@ function _vAwardsCore(){
   const seasonPicker=awPeriod==='season'?saisonWaehlerHtml('awSeasonPicker',selSeason):'';
   const periodBar=seasonPicker;
   const R=awardRankings(awPeriod);
-  const pl=awPeriodLabel();
   // Ohne Partie steht die Vitrine trotzdem, jede Kachel noch niemandes:
   // „Keine Partien in diesem Zeitraum" auf leerer Fläche sagte nicht, was
-  // es hier zu holen gibt. Getippt zeigt jede Kachel ihre Frage.
-  // Sie steht auch mit Sätzen, bis sie geschlossen wird [§C27].
-  const vorschau = vorschauHtml('trophy', 'Die Auszeichnungen der Saison',
-    `${R.counts.matches ? '' : `In ${esc(pl)} ist noch kein Satz gespielt. `}Jede Kachel unten gehört dem, der ihre Frage in der Saison am besten beantwortet, und füllt sich mit den Sätzen. Tippen zeigt, wofür es sie gibt und ab wann sie zählt.`);
+  // es hier zu holen gibt. Sie steht auch mit Sätzen, bis sie geschlossen
+  // wird [§C27], und hat den Aufbau aller Erklärkarten: was hier steht, ab
+  // wann es zählt (fett, aus AW_MIN gelesen, nicht abgeschrieben), was ein
+  // Tippen zeigt. Sie hieß „Die Auszeichnungen der Saison" — Auszeichnungen
+  // sind aber die Abzeichen (BG), und der Reiter heißt Awards. Der Zeitraum
+  // stand hier noch einmal („In August 2026 …"), ihn nennt die Kopfzeile.
+  const vorschau = vorschauHtml('trophy', 'Die Awards der Saison',
+    `Jede Kachel stellt eine Frage und gehört dem, der sie in der Saison am besten beantwortet. Wo ein Schnitt zählt, ab <b>${AW_MIN.spieler} Sätzen</b>, bei einem Duo ab <b>${AW_MIN.teamSpiele} gemeinsamen</b>. Ein Tippen zeigt die Rangfolge und wie gewertet wird.${R.counts.matches ? '' : ' Noch kein Satz gespielt.'}`);
   // Wer eine Kachel trägt, wie viel und woraus, sagt AW_WERT [§5.3d];
   // gezeichnet wird sie von awKachelHtml. Hier steht nur noch, welche
   // Kacheln in welchem Abschnitt stehen.
@@ -1049,19 +1052,27 @@ function _vAwardsCore(){
 // Zeitraum, alle Zeit, Monat für Monat. Vorher lag die Chronik hinter einer
 // Zeile, die man erst als Knopf erkennen musste, und die Rekorde noch eine
 // Ebene tiefer darin.
+// Die Unterzeile nennt wie in jedem Reiter den Zeitraum und, wo es eine
+// gibt, eine Zahl — keinen Tipp und keine Erklärung: „tippen für Top 3"
+// stand hier, „Ein Tippen zeigt …" in der Karte darunter und „getippt zeigt
+// sie die ersten drei" in der Hilfe, dreimal dieselbe Handlung in drei
+// Formen, und das Blatt zeigt alle Plätze. „Saison für Saison" über einer
+// Karte, die von Monaten spricht, nannte dieselbe Sache zweimal anders.
 function vAwards(){
   const unter = {
-    awards:  awPeriodLabel() + ' · tippen für Top 3 und Verlauf',
-    rekorde: 'Bestwerte über alle Saisons · tippen zeigt die Bedingung',
-    chronik: 'Saison für Saison · tippen öffnet den Monat'
-  }[awView] || '';
+    awards:  () => awPeriodLabel(),
+    rekorde: () => { const h = chronicleHolders();
+      return `Alle Saisons · ${CHRONICLES.filter(d => h[d.id]).length} von ${CHRONICLES.length} vergeben`; },
+    chronik: () => 'Monat für Monat'
+  }[awView];
+  const unterText = unter ? unter() : '';
   const schalter = `
     <div class="ui-switch">
       <button data-awview="awards"  class="${awView==='awards' ?'on':''}">Awards</button>
       <button data-awview="rekorde" class="${awView==='rekorde'?'on':''}">Rekorde</button>
       <button data-awview="chronik" class="${awView==='chronik'?'on':''}">Chronik</button>
     </div>`;
-  const kopf = `<div class="view-head"><h2>Awards ${hilfeKnopf('awards')}</h2><p>${unter}</p></div>${schalter}`;
+  const kopf = `<div class="view-head"><h2>Awards ${hilfeKnopf('awards')}</h2><p>${unterText}</p></div>${schalter}`;
   if(awView === 'rekorde'){
     // Keine eigene Überschrift mehr: die Liste bringt jetzt ihre drei
     // Gruppenüberschriften mit, und „LIGA-REKORDE" stand dadurch zweimal
@@ -1121,28 +1132,28 @@ const AWARD_META={
   mvt:         {title:'Bestes Team',           cls:'gold',  why:`Das Duo, das in der Saison zusammen die meisten Elo-Punkte geholt hat. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
   streaks:     {title:'Längste Siegesserie',   cls:'acid',  why:`Die meisten gewonnenen Sätze in Folge.`},
   onFire:      {title:'On Fire',               cls:'acid',  why:`Die längste Serie gewonnener Sätze, die gerade noch läuft.`},
-  scorer:      {title:'Tiebreak-König',        cls:'orange',why:`Die höchste Quote gewonnener Tiebreaks, Match-Tiebreaks eingeschlossen. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
+  scorer:      {title:'Tiebreak-König',        cls:'orange',why:`Die höchste Siegquote in Tiebreaks, Match-Tiebreaks eingeschlossen. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
   wall:        {title:'Zu Null',               cls:'blue',  why:`Die meisten Sätze zu Null gewonnen (6:0).`},
   ice:         {title:'Klare Sache',           cls:'blue',  why:`Die meisten deutlich gewonnenen Sätze, 6:2 oder klarer.`},
   endgegner:   {title:'Endgegner',             cls:'purple',why:`Zwei Spieler, die sich am häufigsten als Gegner begegnen, gemessen am Anteil an den Sätzen dessen, der weniger spielt. Ab ${AW_MIN.duell} Sätzen gegeneinander, beide ab ${AW_MIN.spieler} Sätzen.`},
-  clutch:      {title:'Clutch-Player',         cls:'acid',  why:`Die höchste Quote in knappen Sätzen (Tiebreak, 6:4 oder 7:5). Ab ${AW_MIN.enge} knappen Sätzen.`},
+  clutch:      {title:'Clutch-Player',         cls:'acid',  why:`Die höchste Siegquote in knappen Sätzen (Tiebreak, 6:4 oder 7:5). Ab ${AW_MIN.enge} knappen Sätzen.`},
   carryKing:   {title:'Carry-King',            cls:'acid',  why:`Die meisten gewonnenen Sätze mit einem Partner, der vorher der Schwächste der vier war.`},
   bestDuo:     {title:'Unzertrennlich',        cls:'blue',  why:`Das Duo mit den meisten gemeinsamen Sätzen der Saison.`},
   upset:       {title:'Größte Überraschung',   cls:'orange',why:`Der Satz mit der niedrigsten Siegchance für den späteren Sieger.`},
   biggest:     {title:'Höchster Sieg',         cls:'purple',why:`Der Satz mit dem größten Abstand in Games.`},
-  perfect:     {title:'Beste Bilanz',          cls:'gold',  why:`Die höchste Satzquote der Saison. Verlangt sind 15 % der Sätze des fleißigsten Spielers, mindestens ${AW_MIN.spieler} und höchstens 20.`},
+  perfect:     {title:'Beste Bilanz',          cls:'gold',  why:`Die höchste Siegquote der Saison. Verlangt sind 15 % der Sätze des fleißigsten Spielers, mindestens ${AW_MIN.spieler} und höchstens 20.`},
   grinder:     {title:'Vielspieler',           cls:'blue',  why:`Die meisten gespielten Sätze der Saison.`},
-  worstWr:     {title:'Schwächste Bilanz', cls:'red',   why:`Die niedrigste Satzquote der Saison. Ab ${AW_MIN.spieler} Sätzen.`},
+  worstWr:     {title:'Schwächste Bilanz', cls:'red',   why:`Die niedrigste Siegquote der Saison. Ab ${AW_MIN.spieler} Sätzen.`},
   coldStreak:  {title:'Eiskalt erwischt',      cls:'red',   why:`Die längste Serie verlorener Sätze, die gerade noch läuft.`},
   lossStreaks: {title:'Längste Pleitenserie',cls:'red', why:`Die meisten verlorenen Sätze in Folge.`},
-  worstAtk:    {title:'Tiebreak-Pech',         cls:'red',   why:`Die niedrigste Quote gewonnener Tiebreaks. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
+  worstAtk:    {title:'Tiebreak-Pech',         cls:'red',   why:`Die niedrigste Siegquote in Tiebreaks. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
   worstDef:    {title:'Bagel-Opfer',           cls:'red',   why:`Die meisten Sätze 0:6 verloren.`},
-  worstTeam:   {title:'Schlechtestes Team',    cls:'red',   why:`Das Duo mit der niedrigsten Satzquote. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
+  worstTeam:   {title:'Schlechtestes Team',    cls:'red',   why:`Das Duo mit der niedrigsten Siegquote. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
   showmaster:  {title:'Comeback-König',        cls:'gold',  why:`Die meisten Matches, die nach verlorenem ersten Satz noch gewonnen wurden.`},
   // Leitwolf und nicht Einzelkämpfer: so heißt der Liga-Rekord, der den
   // Rückgang der Partnerstärke misst. Eine andere Frage, und zwei
   // Einträge unter einem Namen waren nicht auseinanderzuhalten.
-  solo:        {title:'Leitwolf',              cls:'acid',  why:`Die höchste Quote in Sätzen, in die man als Stärkster der vier ging. Ab ${AW_MIN.staerkster} solchen Sätzen.`},
+  solo:        {title:'Leitwolf',              cls:'acid',  why:`Die höchste Siegquote in Sätzen, in die man als Stärkster der vier ging. Ab ${AW_MIN.staerkster} solchen Sätzen.`},
   formtief:    {title:'Formtief',              cls:'red',   why:`Der größte Abstand zwischen dem höchsten und dem aktuellen Elo-Stand innerhalb einer Saison.`},
   zirkus:      {title:'Zirkus',                cls:'red',   why:`Das Duo, bei dem die meisten verlorenen Sätze deutlich ausfallen (2:6 oder klarer), gemessen an allen verlorenen. Ab ${AW_MIN.teamPleiten} verlorenen Sätzen.`},
   baustelle:   {title:'Baustelle',             cls:'red',   why:`Das Duo mit der längsten gemeinsamen Serie verlorener Sätze.`},
@@ -1150,18 +1161,18 @@ const AWARD_META={
   dayKing:     {title:'Tageskönig',            cls:'gold',  why:`Der größte Anteil der eigenen Spieltage als Player of the Day, ab ${KOENIG_MIN.tag} Spieltagen. Der laufende Tag zählt noch nicht.`},
   // ── AWARDS v3 ──
   plusMinus:   {title:'Plus-Minus',            cls:'orange',why:`Der höchste Game-Saldo je Satz (gewonnene minus abgegebene Games). Ab ${AW_MIN.spielerSaldo} Sätzen.`},
-  underdog:    {title:'Underdog-Held',         cls:'purple',why:`Die höchste Quote als Außenseiter (Siegchance unter 35 %). Ab ${AW_MIN.unter} solchen Sätzen.`},
+  underdog:    {title:'Underdog-Held',         cls:'purple',why:`Die höchste Siegquote als Außenseiter (Siegchance unter 35 %). Ab ${AW_MIN.unter} solchen Sätzen.`},
   pechvogel:   {title:'Pechvogel',             cls:'red',   why:`Der höchste Anteil verlorener knapper Sätze. Ab ${AW_MIN.enge} knappen Sätzen.`},
   // ── TEAM-AWARDS v4 ──
   unstoppable: {title:'Unaufhaltsam',          cls:'acid',  why:`Das Duo mit der längsten Serie gewonnener Sätze. Ein verlorener Satz beendet sie.`},
   concreteWall:{title:'Betonmauer',            cls:'blue',  why:`Das Duo, das den kleinsten Anteil der Games abgibt. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
   luckyCharm:  {title:'Glückspilze',           cls:'acid',  why:`Das Duo, das die meisten knappen Sätze gewinnt, gemessen an allen knappen. Ab ${AW_MIN.teamEnge} davon.`},
-  giantSlayer: {title:'Giant Slayer',          cls:'orange',why:`Die höchste Quote eines Duos gegen ein stärkeres Duo. Ab ${AW_MIN.teamUnter} solchen Sätzen.`},
+  giantSlayer: {title:'Giant Slayer',          cls:'orange',why:`Die höchste Siegquote eines Duos gegen ein stärkeres Duo. Ab ${AW_MIN.teamUnter} solchen Sätzen.`},
   favoritenschreck:{title:'Favoritenschreck',  cls:'red',   why:`Der größte Elo-Unterschied, den ein Duo mit einem gewonnenen Satz überwunden hat.`},
   rivalry:     {title:'Erzfeinde',             cls:'purple',why:`Zwei Duos, die sich am häufigsten gegenüberstehen, gemessen am Anteil an den Sätzen des Duos, das weniger spielt. Ab ${AW_MIN.duell} Sätzen gegeneinander, beide ab ${AW_MIN.teamSpiele} Sätzen.`},
   // ── NEUE NEGATIV-AWARDS v6 ──
   cheesePlatter:{title:'Käseteller',           cls:'red',   why:`Das Duo, das den größten Anteil der Games abgibt. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
-  favoriteLoser:{title:'Favoriten-Versager',   cls:'red',   why:`Die höchste Quote verlorener Sätze als Favorit (Siegchance ab 65 %). Ab ${AW_MIN.favorit} solchen Sätzen.`}
+  favoriteLoser:{title:'Favoriten-Versager',   cls:'red',   why:`Der höchste Anteil verlorener Sätze als Favorit (Siegchance ab 65 %). Ab ${AW_MIN.favorit} solchen Sätzen.`}
 };
 
 // ╔═══ §5.3d ─── EIN WERT JE AUSZEICHNUNG ────────────────────────────╗
@@ -1188,7 +1199,7 @@ const _awSieger = x => x.m.winner === 'A' ? [x.m.a1, x.m.a2] : [x.m.b1, x.m.b2];
 const AW_WERT = {
   wins:        {l:R=>R.winsList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz gewonnen','Sätze gewonnen'), b:x=>'aus '+x.g+' Sätzen'},
   onFire:      {l:R=>R.onFire, s:x=>x.v, z:x=>x.v, e:x=>'Sätze in Folge gewonnen', b:()=>'läuft noch', lauf:true, gilt:x=>x.v>=2},
-  perfect:     {l:R=>R.perfect, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Satzquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
+  perfect:     {l:R=>R.perfect, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
   streaks:     {l:R=>R.streaks, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge gewonnen','Sätze in Folge gewonnen'), lauf:true},
   showmaster:  {l:R=>R.showmasterList, s:x=>x.v, z:x=>x.v+'×', e:()=>'Match nach Satzrückstand gewonnen'},
   weekKing:    {l:R=>R.weekKingList||[], s:x=>Math.round(x.q*1000), z:x=>_awPz(x.q), e:()=>'der eigenen Wochen',
@@ -1200,29 +1211,29 @@ const AW_WERT = {
   unstoppable: {l:R=>R.unstoppableList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge gewonnen','Sätze in Folge gewonnen'), lauf:true},
   concreteWall:{l:R=>R.concreteWallList, s:x=>-Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'der Games abgegeben', b:x=>'aus '+x.g+' Sätzen zusammen', f:x=>x.v},
   luckyCharm:  {l:R=>R.luckyCharmList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'knappe Sätze gewonnen', b:x=>x.wins+' von '+x.games, f:x=>x.v},
-  giantSlayer: {l:R=>R.giantSlayerList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'Satzquote gegen Stärkere', b:x=>x.wins+' von '+x.games+' Sätzen gewonnen', f:x=>x.v},
+  giantSlayer: {l:R=>R.giantSlayerList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'Siegquote gegen Stärkere', b:x=>x.wins+' von '+x.games+' Sätzen gewonnen', f:x=>x.v},
   favoritenschreck:{l:R=>R.favoritenschreckList, s:x=>x.v, z:x=>x.v, e:()=>'Elo überwunden', b:x=>standFuer(x.m)+' am '+dateStr(x.m.created_at)},
-  rivalry:     {l:R=>R.rivalryList, ids:x=>[...x.idsA, ...x.idsB], s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Duelle', f:x=>x.pct},
+  rivalry:     {l:R=>R.rivalryList, ids:x=>[...x.idsA, ...x.idsB], s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Sätze gegeneinander', f:x=>x.pct},
   scorer:      {l:R=>R.scorer, s:x=>Math.round(x.avg*1000), z:x=>_awPz(x.avg), e:()=>'Tiebreaks gewonnen', b:x=>x.v+' von '+x.g+' Tiebreaks', f:x=>x.avg},
   wall:        {l:R=>R.wall, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz zu Null','Sätze zu Null'), b:x=>'in '+x.g+' Sätzen', gilt:x=>x.v>=1},
   ice:         {l:R=>R.iceList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'klarer Satz','klare Sätze'), b:()=>'6:2 oder klarer', gilt:x=>x.v>=1},
   plusMinus:   {l:R=>R.plusMinusList, s:x=>Math.round(x.v*10), z:x=>{ const v=Math.round(x.v*10)/10; return 'Ø '+(v>=0?'+':'')+komma(v,1); }, e:()=>'Game-Bilanz je Satz', b:x=>x.gf+':'+x.ga+' aus '+x.g+' Sätzen', f:x=>x.v},
-  endgegner:   {l:R=>R.endgegner, gegner:true, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Begegnungen', f:x=>x.pct},
-  clutch:      {l:R=>R.clutchList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Quote in knappen Sätzen', b:x=>x.w+' von '+x.g+' knappen Sätzen gewonnen', f:x=>x.wr},
+  endgegner:   {l:R=>R.endgegner, gegner:true, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Sätze gegeneinander', f:x=>x.pct},
+  clutch:      {l:R=>R.clutchList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote in knappen Sätzen', b:x=>x.w+' von '+x.g+' knappen Sätzen gewonnen', f:x=>x.wr},
   carryKing:   {l:R=>R.carryList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz mit dem Schwächsten gewonnen','Sätze mit dem Schwächsten gewonnen'), gilt:x=>x.v>=1},
-  solo:        {l:R=>R.soloList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Satzquote als Stärkster', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
+  solo:        {l:R=>R.soloList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote als Stärkster', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
   upset:       {l:R=>R.upsets, ids:_awSieger, s:x=>Math.round(x.sp*100), z:x=>_awPz(1-x.sp), e:()=>'Siegchance', b:x=>standFuer(x.m)+' am '+dateStr(x.m.created_at), einzeln:true},
   biggest:     {l:R=>R.biggest, ids:_awSieger, s:x=>x.diff, z:x=>standFuer(x.m), e:x=>x.diff+' Games Unterschied', b:x=>'am '+dateStr(x.m.created_at), einzeln:true},
   grinder:     {l:R=>R.grinder, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz','Sätze')},
-  underdog:    {l:R=>R.underdogList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'Satzquote als Außenseiter', b:x=>x.v+' von '+x.g+' Sätzen gewonnen', f:x=>x.pct},
-  worstWr:     {l:R=>R.worstWr, s:x=>-Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Satzquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
+  underdog:    {l:R=>R.underdogList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'Siegquote als Außenseiter', b:x=>x.v+' von '+x.g+' Sätzen gewonnen', f:x=>x.pct},
+  worstWr:     {l:R=>R.worstWr, s:x=>-Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
   coldStreak:  {l:R=>R.coldStreak, s:x=>x.v, z:x=>x.v, e:()=>'Sätze in Folge verloren', b:()=>'läuft noch', lauf:true, gilt:x=>x.v>=2},
   lossStreaks: {l:R=>R.lossStreaks, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge verloren','Sätze in Folge verloren'), lauf:true},
   formtief:    {l:R=>R.formtief, s:x=>Math.round(x.drop), z:x=>'−'+Math.round(x.drop), e:()=>'Elo unter dem Hoch', b:x=>'Hoch '+x.peak+', jetzt '+x.cur},
   worstAtk:    {l:R=>R.worstAtk, s:x=>-Math.round(x.avg*1000), z:x=>_awPz(x.avg), e:()=>'Tiebreaks gewonnen', b:x=>x.v+' von '+x.g+' Tiebreaks', f:x=>x.avg},
   worstDef:    {l:R=>R.worstDef, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz 0:6 verloren','Sätze 0:6 verloren'), b:x=>'in '+x.g+' Sätzen', gilt:x=>x.v>=1},
   zirkus:      {l:R=>R.zirkusList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'der verlorenen Sätze deutlich', b:x=>x.v+' von '+x.g+' verlorenen Sätzen', f:x=>x.pct},
-  worstTeam:   {l:R=>R.worstTeam, s:x=>-Math.round(x.w/x.g*100), z:x=>_awPz(x.w/x.g), e:()=>'Satzquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.w/x.g},
+  worstTeam:   {l:R=>R.worstTeam, s:x=>-Math.round(x.w/x.g*100), z:x=>_awPz(x.w/x.g), e:()=>'Siegquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.w/x.g},
   baustelle:   {l:R=>R.baustelleList, s:x=>x.best, z:x=>x.best, e:x=>_awN(x.best,'Satz in Folge verloren','Sätze in Folge verloren'), b:x=>x.cur===x.best&&x.cur>0?'läuft noch':'', lauf:true},
   pechvogel:   {l:R=>R.pechvogelList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'knappe Sätze verloren', b:x=>x.v+' von '+x.g+' knappen Sätzen', f:x=>x.pct},
   cheesePlatter:{l:R=>R.cheesePlatterList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'der Games abgegeben', b:x=>'aus '+x.g+' Sätzen zusammen', f:x=>x.v},

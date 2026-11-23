@@ -7,9 +7,10 @@
 - Nichts sagt zweimal dasselbe — keine Zahl ein zweites Mal in einer Karte über der Tabelle, keine Rechnung zweimal (wer einen Tag oder eine Woche gewinnt, sagt `_periodeRangliste`).
 - Keine persönliche Ansprache, keine Possessivpronomen über einen Spieler, kein „Abend".
 - Jede `font-family` endet auf einer Familie (`sans-serif`, `monospace`).
-- Dieselbe Sache hat einen Namen (Partie, Siegquote, Partner, Torbilanz, Größte Überraschung, Direkter Vergleich); kein Befehl in Du-Form, kein englisches Wort außer den Namen der Wertungen, kein Kürzel, Einzahl wo eins steht.
+- Dieselbe Sache hat einen Namen (Satz, Siegquote, Partner, Game-Bilanz, Größte Überraschung, Direkter Vergleich, „Sätze gegeneinander“ statt Duell oder Begegnung, Player of the Day, die Seite als „Drive · rechts“ und „Revés · links“); kein Befehl in Du-Form, kein englisches Wort außer den Namen der Wertungen, kein Kürzel, Einzahl wo eins steht.
 - Eine Erklärung sagt, was zählt, und steht für sich: kein „Der Nenner sind …", kein „Dieselbe Rechnung wie beim …", kein „Das Gegenstück zu …", keine Begründung der Rechnung („damit …", „logarithmisch, weil …"). Die Richtung steht im Wort, nicht im Vorzeichen („12 %-Punkte unter der Rechnung", nicht „−12 %-Punkte über"), und eine Zahl über 100 % ist keine Wahrscheinlichkeit.
-- Ein leeres Feld liest sich als Fehler: nicht vergebene Auszeichnungen gestrichelt, eine ungerade Kachel nimmt die ganze Reihe.
+- Ein leeres Feld liest sich als Fehler: nicht vergebene Auszeichnungen gestrichelt, eine ungerade Kachel nimmt die ganze Reihe. Ein leeres Blatt sagt, was noch fehlt, dasselbe wie seine Kachel (`AW_LEER`, `_awLeerHtml`), nie „Keine Daten“; ein leerer Zustand steht als ganzer Satz, eine Schwelle darin als Ziffer aus ihrer Konstante (`AW_MIN`, `DUO_MIN`).
+- Was zusammengehört, sieht gleich aus: Geschwister — die Erklärkarten der Reiter, die Kopfzeilen der Ansichten, die Hilfe-Blätter, die Überschriften der Abschnitte, die leeren Zustände — tragen dieselbe Größe, denselben Satzbau, dieselbe Art Beschriftung und für dieselbe Sache denselben Namen; weicht eines ab, wird es an das klarere angepasst. Die Schriftgröße bestimmt das CSS, nie der Browser (`html{text-size-adjust:100%}`). Der Satz einer Erklärkarte und eines Hilfe-Blatts steht in 14 px; die Karte sagt (1) was der Reiter zeigt, (2) ab wann es zählt, die Schwelle fett, (3) in einem eigenen Satz „Ein Tippen zeigt …“ oder „Ein Tippen öffnet …“, (4) höchstens einen Satz mehr. Die Kopfzeile darunter nennt nur Zeitraum und Zahl. Überschriften der Abschnitte eines Reiters stehen in 10 px Mono, fett, Laufweite .18em; ein langer Absatz steht nicht unter 13 px.
 - Ein Blatt zeigt alles: kein „+1", kein „und 3 weitere", kein „Mehr anzeigen". Jeder Name, jedes Wappen, jeder Grund, jeder Posten steht da; was nicht in eine Reihe passt, bricht um. Ausnahmen, alle mit genauer Zahl und an Ort und Stelle aufklappbar (`_chronMehrKnopf`): die Liga-Rekorde im Profil zeigen zwei („8 weitere anzeigen"), die Laufbahn je Gruppe ihre fünf wertvollsten Posten, die Chronik der Saison je Spieler den Eintrag, der zählt; dazu stehen die Mitspieler unter den Beziehungen in einer Zeile mit „+N weitere" (N mindestens drei), und ihre ganze Liste ist ein Tippen weiter.
 
 ## Stellen
@@ -18,7 +19,7 @@ quer durch `src/`.
 
 ## Prüfung
 
-`tests/umbau/blatt` liest Reiter und Blätter auf Namen und Sprache und zählt in Blatt, Profil, Laufbahn und Auszeichnung nach, dass nichts abgeschnitten ist, `tests/umbau/disziplinen` prüft Belege, Bedingungen und Erklärungen auf Pronomen und Rechensprache, `tests/umbau/tafel` die Schriftangaben.
+`tests/umbau/blatt` liest Reiter und Blätter auf Namen und Sprache und zählt in Blatt, Profil, Laufbahn und Auszeichnung nach, dass nichts abgeschnitten ist, `tests/umbau/disziplinen` prüft Belege, Bedingungen und Erklärungen auf Pronomen und Rechensprache, `tests/umbau/tafel` die Schriftangaben. `tests/blaetter` misst jede Erklärkarte einer Liste (14 px, ein Satz „Ein Tippen …“, Schwelle fett), das Hilfe-Blatt, `text-size-adjust` und das leere Award-Blatt.
 
 ## Herleitung
 
@@ -114,3 +115,18 @@ Wortlaut zitiert, nicht mit einer Nummer.
   die Übersicht und nicht die Stelle, an der man nachsieht. Die Rekorde
   zeigen deshalb zwei und klappen den Rest mit seiner Zahl auf, die
   Mitspieler stehen in einer Zeile, und ihr Blatt zeigt alle.
+
+**Was zusammengehört, sieht gleich aus.** Auf dem iPhone stand die
+Erklärkarte unter „Rekorde“ der Kicker-Liga sichtbar größer als die unter
+„Chronik“, obwohl beide dieselbe Klasse und 12,5 px trugen: iOS vergrößert
+lange Absätze von selbst und kurze nicht, und die eine Karte war die
+längere. Dazu nannte die eine ihre Schwelle fett und die andere nicht, und
+jede sagte anders, was ein Tippen tut — klein in der Kopfzeile, mitten im
+Satz, als „Getippt zeigt …“ oder „Antippen für …“. Eine Abweichung liest
+sich als Bedeutung: wer zwei Karten verschieden sieht, sucht den
+Unterschied, den es nicht gibt. Vorbild war die klarere Karte;
+`text-size-adjust:100%` (nicht `none`) lässt den Zoom des Telefons wirken
+und nimmt dem Browser nur das eigene Vergrößern. Damit standen lange
+Absätze in Einstellungen und Blättern wirklich bei 11 bis 12 px und wurden
+gehoben. Ein leeres Award-Blatt sagte „Keine Daten“, seine Kachel sagte,
+was noch fehlt.

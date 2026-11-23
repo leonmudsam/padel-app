@@ -71,8 +71,8 @@ function showTopList(c){
       titel:c.title || '', unter:c.sub || ''})}
     ${items?`${blattAbschnittHtml('medal', c.listLabel || ('Top ' + rows.length))}
       <div class="aw-list">${items}</div>`
-     :`<div class="leerstand" style="margin-top:24px">Noch keine Daten</div>`}
-    ${c.why?`${blattAbschnittHtml('info', 'So wird gewertet')}<div class="blatt-text">${esc(c.why)}</div>`:''}`);
+     :`<div class="leerstand" style="margin-top:24px">Noch nicht vergeben</div>`}
+    ${c.why?`${blattAbschnittHtml('info', 'So wird gezählt')}<div class="blatt-text">${esc(c.why)}</div>`:''}`);
   // Zeilen weiterverlinken — gleiche Ziele wie vorher die Karte selbst.
   document.querySelectorAll('.aw-li[data-li-player]').forEach(el=>{
     el.onclick=()=>{ sheetNav(()=>showPlayer(el.dataset.liPlayer)); };
@@ -128,6 +128,12 @@ function openTopList(kind){
   }
 }
 
+// Ein Award ohne Träger sagt im Blatt dasselbe wie auf seiner Kachel
+// (`AW_LEER`) [§C27]. Hier stand „Keine Daten", und das klang nach einem
+// Fehler, wo die Kachel nur sagte, was noch fehlt.
+function _awLeerHtml(key){
+  return `<div class="leerstand" style="margin-top:24px">${esc(AW_LEER[key] || 'Noch nicht vergeben')}</div>`;
+}
 function showAward(key){
   const R=awardRankings(awPeriod); const pl=awPeriodLabel(); const meta=AWARD_META[key]; if(!meta)return;
   _sheetSetReopen(()=>showAward(key));
@@ -158,7 +164,7 @@ function showAward(key){
         {label:'Zum Satz', ic:'clock', prim:true, attr:`data-li-match="${esc(m.id)}"`},
         {label:'Zum Duo', ic:'users', attr:`data-li-team="${esc(_awSieger(top).slice().sort().join('|'))}"`}]);
     } else {
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     }
   } else if(FAVS_AWARDS.has(key)){
     // Favoritenschreck: Match-Detail aus dem Top-Eintrag der Liste rendern.
@@ -187,7 +193,7 @@ function showAward(key){
         bodyHtml += `${blattAbschnittHtml('medal', 'Weitere Coups')}<div class="aw-list">${items}</div>`;
       }
     } else {
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     }
   } else if(RIVALRY_AWARDS.has(key)){
     // Erzfeinde: Team-Paar mit zwei Bilanz-Boxen (Team A | Team B) + Game-Verhältnis.
@@ -201,7 +207,7 @@ function showAward(key){
       bodyHtml = buehneHtml({a1:top.idsA[0], a2:top.idsA[1], b1:top.idsB[0], b2:top.idsB[1],
           games_a:top.wA, games_b:top.wB, winner: top.wA > top.wB ? 'A' : top.wB > top.wA ? 'B' : ''},
         {marke:'Führt', gleich: top.wA === top.wB,
-         zeile: Math.round(top.pct*100) + ' % als Gegner · ' + top.g + ' Duelle · ' + top.gfA + ':' + top.gfB + ' Games'});
+         zeile: Math.round(top.pct*100) + ' % als Gegner · ' + top.g + ' Sätze gegeneinander · ' + top.gfA + ':' + top.gfB + ' Games'});
       // Weitere Rivalitäten
       if(arr.length > 1){
         const rest = arr.slice(1, 7);
@@ -225,7 +231,7 @@ function showAward(key){
         bodyHtml += `${blattAbschnittHtml('medal', 'Weitere Rivalitäten')}<div class="aw-list">${items}</div>`;
       }
     } else {
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     }
   } else {
     // Liste, Sortierung, Zahl, Einheit und Stichprobe kommen aus AW_WERT
@@ -240,7 +246,7 @@ function showAward(key){
 
     // Hero (#1) + Liste der weiteren Plätze
     if(!arr.length){
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     } else {
       const isTeamAward = arr[0].ids.length === 2;
       const isNeg = awNeg(key);
@@ -405,7 +411,7 @@ function showAward(key){
   openSheet(`
     ${blattKopfHtml({ic:AW_IC[key] || 'trophy', ton:kopfTon, titel:meta.title, unter:pl + ' · Award'})}
     ${bodyHtml}
-    ${blattAbschnittHtml('info', 'So wird gewertet')}
+    ${blattAbschnittHtml('info', 'So wird gezählt')}
     <div class="blatt-text">${meta.why}</div>
     ${fuss}`);
 

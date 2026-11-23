@@ -151,11 +151,11 @@ function showPotwRecap(opts){
           // Ohne Banner: im Schild stünde die Ligaposition von heute, und die
           // hat mit dieser Woche nichts zu tun. Der Reif bleibt — er ist die
           // Laufbahn und gehört zur Person [§C31].
-          band:false, px:104, marke:'Spieler der Woche', strahl:true,
+          band:false, px:104, marke:'Player of the Week', strahl:true,
           zahlen: rcpZahlenHtml([
             {v:mainPotwStats.wins,   l:'Siege',       ton:'gruen'},
             {v:mainPotwStats.losses, l:'Niederlagen', ton:'rot'},
-            {v:winrate+'\u00A0%',          l:'Quote'},
+            {v:winrate+'\u00A0%',          l:'Siegquote'},
             {v:eloDeltaStr,          l:'Elo', ton:eloDelta>=0 ? 'gruen' : 'rot'}
           ])})
       + serieHtml
@@ -498,11 +498,13 @@ function showPotdRecap(opts){
     openSheet(
       rcpKopfHtml({ic:'trophyDay', marke:'Player of the Day', titel:dayStr,
         meta: rcpMeta([dayMatches.length+' Sätze', uniquePlayers.size+' Spieler'])})
-      + rcpHeldHtml({pid:potdId, band:false, px:104, marke:'Spieler des Tages', strahl:true,
+      // Die Wertung heißt mit ihrem Namen, wie in Profil und Liga, und die
+      // Siegquote heißt Siegquote [allgemeine Regeln: dieselbe Sache hat einen Namen].
+      + rcpHeldHtml({pid:potdId, band:false, px:104, marke:'Player of the Day', strahl:true,
           zahlen: rcpZahlenHtml([
             {v:s.wins,      l:'Siege',       ton:'gruen'},
             {v:s.losses,    l:'Niederlagen', ton:'rot'},
-            {v:winrate+'\u00A0%', l:'Quote'},
+            {v:winrate+'\u00A0%', l:'Siegquote'},
             {v:eloDeltaStr, l:'Elo', ton:eloDelta>=0 ? 'gruen' : 'rot'}
           ])})
       + serieHtml

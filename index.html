@@ -37,6 +37,7 @@
   button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
     outline:2px solid var(--acid2);outline-offset:2px}
   html,body{overscroll-behavior-y:none}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{
     font-family:'Space Grotesk',system-ui,sans-serif;
     background:var(--bg); color:var(--ink);
@@ -139,7 +140,7 @@
   .kopf-info{display:inline-grid;place-items:center;width:26px;height:26px;margin-left:6px;vertical-align:4px;
     border:1px solid var(--line2);border-radius:50%;background:none;color:var(--muted);cursor:pointer}
   .kopf-info .ic,.kopf-info svg{width:14px;height:14px}
-  .pos-info p{font-size:13px;line-height:1.5;color:var(--ink2);margin:0 0 10px}
+  .pos-info p{font-size:14px;line-height:1.5;color:var(--ink2);margin:0 0 10px}
   .pos-info b{color:var(--ink)}
   .pos-info-tab{display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;align-items:baseline;
     margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;
@@ -660,7 +661,7 @@
   .aw-shame-divider .line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(240,86,106,.4))}
   .aw-shame-divider .line.r{background:linear-gradient(to left,transparent,rgba(240,86,106,.4))}
   .aw-shame-divider .lbl{display:flex;align-items:center;gap:7px;font-family:'Sometype Mono',monospace;
-    font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+    font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red)}
   .aw-shame-divider .lbl svg{width:14px;height:14px;fill:none;stroke:currentColor;
     stroke-linecap:round;stroke-linejoin:round}
 
@@ -773,7 +774,7 @@
   .rek-bk{display:flex;align-items:baseline;justify-content:space-between;
     gap:8px;margin-bottom:9px}
   .rek-bk .l{font-family:'Sometype Mono',monospace;font-size:10px;font-weight:700;
-    letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+    letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
   .rek-bk .r{font-size:9.5px;color:var(--muted)}
   .rek-saeulen{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;
     align-items:end;height:84px}
@@ -1100,7 +1101,7 @@
   .buehne-stand .buehne-saetze{display:block;margin-top:6px;font-family:'Sometype Mono',monospace;font-size:11.5px;
     letter-spacing:.02em;color:var(--ink2);text-align:center;white-space:normal}
   .buehne-zeile{grid-column:1 / -1;text-align:center;font-size:10.5px;color:var(--muted);margin-top:4px}
-  .blatt-text{font-size:12.5px;color:var(--ink2);line-height:1.55;padding:0 2px}
+  .blatt-text{font-size:13px;color:var(--ink2);line-height:1.55;padding:0 2px}
   .leerstand{text-align:center;color:var(--muted);padding:48px 20px;font-size:13px}
   .leerstand .ee{font-size:34px;margin-bottom:12px;opacity:.5}
   .vorschau{position:relative;margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);
@@ -1118,12 +1119,13 @@
   .vs-ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
     background:rgba(228,242,74,.1);color:var(--acid)}
   .vs-ic svg{width:17px;height:17px}
-  .vs-satz{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.5}
+  .vs-satz{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
   .vs-satz b{color:var(--ink);font-weight:600}
   .vs-punkte{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
   .vs-punkte li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;
-    font-size:12.5px;line-height:1.45;color:var(--muted)}
-  .vs-punkte li b{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:2px}
+    font-size:14px;line-height:1.5;color:var(--muted)}
+  .vs-punkte li > span > b:first-child{display:block;color:var(--ink);font-weight:700;font-size:14px;margin-bottom:2px}
+  .vs-punkte li b{color:var(--ink);font-weight:600}
   .vs-pi{width:24px;height:24px;display:grid;place-items:center;color:var(--muted)}
   .vs-pi svg{width:16px;height:16px}
   .vorschau > .btn{margin-top:16px}
@@ -3782,7 +3784,7 @@
   .aw-li.shame .aw-li-rank{color:var(--red);opacity:.65}
   .aw-li-zn{flex-shrink:0}
   .aw-li-zn .zn-fx{left:50%;top:50%;width:155%;height:155%;
-    transform:translate(-50%,-60%);filter:blur(.7px)}
+    transform:translate(-50%,-60%)}
   .aw-li-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:18px;
     background:linear-gradient(155deg,#3a4540,#212824);flex-shrink:0}
   .aw-li-av:not(.has-emoji){font-family:'Archivo Black',sans-serif;font-size:12px;color:var(--bg)}
@@ -4038,7 +4040,7 @@
   .tplate.hero .tplate-w{justify-content:center;font-size:14px;color:var(--ink)}
   .tplate.hero .tplate-e{font-size:11px}
 
-  .tnote{font-size:11.5px;color:var(--muted);border-left:2px solid var(--line2);
+  .tnote{font-size:13px;color:var(--muted);border-left:2px solid var(--line2);
     padding:2px 0 2px 10px;margin:10px 0;line-height:1.45}
   .tempty{background:var(--surface);border:1px solid var(--line);border-radius:12px;
     padding:11px 13px;font-size:13px;color:var(--ink2);margin-top:8px}
@@ -4050,9 +4052,9 @@
   .tun .i{color:var(--faint);display:flex}
   .tun .i svg{width:15px;height:15px}
   .tun .n{font-size:12px;font-weight:700;color:var(--ink2);white-space:nowrap}
-  .tun .c{font-size:10px;color:var(--muted);text-align:right;line-height:1.3;
+  .tun .c{grid-column:2 / -1;font-size:12.5px;color:var(--muted);line-height:1.4;
     font-family:'Sometype Mono',monospace}
-  .tun .w{grid-column:1 / -1;font-size:10px;color:var(--faint);cursor:pointer;
+  .tun .w{grid-column:1 / -1;font-size:12.5px;color:var(--faint);cursor:pointer;
     border-top:1px solid var(--line);padding-top:5px;margin-top:1px;
     font-family:'Sometype Mono',monospace}
   .tun .w b{color:var(--ink2);font-weight:700}
@@ -4343,7 +4345,7 @@
   .chron-hero{display:flex;align-items:center;gap:12px;margin:14px 0;
     background:linear-gradient(120deg,rgba(var(--ttr),.13),transparent 70%),var(--surface);
     border:1px solid rgba(var(--ttr),.22);border-radius:15px;padding:13px 14px}
-  .chron-hero .c{font-size:11.5px;color:var(--ink2);line-height:1.5}
+  .chron-hero .c{font-size:13px;color:var(--ink2);line-height:1.5}
 
   .av.avring{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3.5px var(--tt),
     0 0 12px rgba(var(--ttr),.45)}
@@ -4419,14 +4421,14 @@
   .rav .zn-fx{left:50%;top:50%;
     width:calc(var(--rav) * .930);height:calc(var(--rav) * .930);
     transform:translate(-50%,-60%);
-    filter:blur(calc(var(--rav) * .021))}
+    --zn-blur:calc(var(--rav) * .021)}
   .rav.zn-l1 .zn-fx{opacity:.82}
   .rav.zn-l2 .zn-fx{opacity:.92}
   .rav.zn-l3 .zn-fx{opacity:1}
-  .rav.zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 3px rgba(var(--zn-rgb,255,143,74),.6))}
-  .rav.zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 4px rgba(var(--zn-rgb,255,143,74),.7))}
-  .rav.zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 5px rgba(var(--zn-rgb,255,143,74),.8))}
-  .rav .zn-fx .zk{fill:#fff;opacity:.38;filter:none}
+  .rav.zn-l1 .zn-fx{--zn-sr:3px;--zn-sc:rgba(var(--zn-rgb,255,143,74),.6)}
+  .rav.zn-l2 .zn-fx{--zn-sr:4px;--zn-sc:rgba(var(--zn-rgb,255,143,74),.7)}
+  .rav.zn-l3 .zn-fx{--zn-sr:5px;--zn-sc:rgba(var(--zn-rgb,255,143,74),.8)}
+  .rav .zn-fx .zk{fill:#fff;opacity:.38}
   .rav.zn::after{content:"";position:absolute;left:50%;top:45%;
     width:88%;height:88%;transform:translate(-50%,-50%);
     border-radius:50%;z-index:-1;pointer-events:none;opacity:0;
@@ -4751,7 +4753,7 @@
       #000 0 80%,rgba(0,0,0,.88) 89%,rgba(0,0,0,.5) 95%,transparent 100%);
     mask-image:radial-gradient(ellipse 52% 52% at 50% 60%,
       #000 0 80%,rgba(0,0,0,.88) 89%,rgba(0,0,0,.5) 95%,transparent 100%);
-    filter:blur(.9px)}
+    filter:blur(var(--zn-blur,.9px)) drop-shadow(0 0 var(--zn-sr,0px) var(--zn-sc,transparent))}
   .zn-fx .zf{fill:var(--zn-c,#ff8f4a);opacity:0}
   .zn-fx .zk{fill:#ffdca8}
   .zn-fx .zf.f1{opacity:1}
@@ -4759,12 +4761,12 @@
   .zn-l1 .zn-fx{opacity:.85}
   .zn-l2 .zn-fx{opacity:.92}
   .zn-l3 .zn-fx{opacity:1}
-  .zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 2.5px rgba(255,143,74,.55))}
-  .zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 3.5px rgba(255,143,74,.65))}
-  .zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 4.5px rgba(255,120,73,.75))}
-  .zn-rang.zn-l1 .zn-fx .zf{filter:drop-shadow(0 0 2.5px rgba(var(--ak-rgb),.45))}
-  .zn-rang.zn-l2 .zn-fx .zf{filter:drop-shadow(0 0 3.5px rgba(var(--ak-rgb),.55))}
-  .zn-rang.zn-l3 .zn-fx .zf{filter:drop-shadow(0 0 4.5px rgba(var(--ak-rgb),.65))}
+  .zn-l1 .zn-fx{--zn-sr:2.5px;--zn-sc:rgba(255,143,74,.55)}
+  .zn-l2 .zn-fx{--zn-sr:3.5px;--zn-sc:rgba(255,143,74,.65)}
+  .zn-l3 .zn-fx{--zn-sr:4.5px;--zn-sc:rgba(255,120,73,.75)}
+  .zn-rang.zn-l1 .zn-fx{--zn-sc:rgba(var(--ak-rgb),.45)}
+  .zn-rang.zn-l2 .zn-fx{--zn-sc:rgba(var(--ak-rgb),.55)}
+  .zn-rang.zn-l3 .zn-fx{--zn-sc:rgba(var(--ak-rgb),.65)}
 
   @media (prefers-reduced-motion: no-preference){
     .zn-l1 .zn-fx .zf.f1{animation:zn-a2 1.6s steps(1,end) infinite}
@@ -4784,9 +4786,11 @@
   .zn-ti{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);
     z-index:2;line-height:0;pointer-events:none}
   .zn-ti .zs-k{fill:none;stroke:var(--bg);stroke-width:3.2;stroke-linejoin:round}
-  .zn-ti .zs{fill:var(--gold)}
-  .zn-ti .zn-ti-n{fill:var(--gold);font-family:'Sometype Mono',monospace;
-    font-size:8px;font-weight:700}
+  .zn-ti .zs{fill:#cf961a}
+  .zn-ti .zs-h{fill:#ffe39a}
+  .zn-ti .zn-ti-n{fill:#ffe39a;font-family:'Archivo Black',sans-serif;
+    font-size:8.5px;font-weight:700;stroke:var(--bg);stroke-width:2.4px;
+    stroke-linejoin:round;paint-order:stroke}
 
   .zn-rang{--zn-c:var(--ak)}
   .zn-rang.zn-l1 .zn-fx{opacity:.30}
@@ -4815,7 +4819,7 @@
     left:50%; top:50%;
     width:calc(var(--ins-w) * .6020); height:calc(var(--ins-w) * .9030);
     transform:translate(-50%,-73.333%);
-    filter:blur(calc(var(--ins-w) * .0058));
+    --zn-blur:calc(var(--ins-w) * .0058);
     -webkit-mask-image:none; mask-image:none}
   .pp-av-wrap.zn-l2{--feuerluft:6px}
   .pp-av-wrap.zn-l3{--feuerluft:20px}
@@ -4823,8 +4827,8 @@
   .pp-av-wrap.zn-l1 .zn-fx{opacity:.80}
   .pp-av-wrap.zn-l2 .zn-fx{opacity:.90}
   .pp-av-wrap.zn-l3 .zn-fx{opacity:1}
-  .pp-av-wrap .zn-fx .zf{filter:drop-shadow(0 0 6px rgba(var(--ak-rgb),.5))}
-  .pp-av-wrap .zn-fx .zk{fill:#fff;opacity:.30;filter:none}
+  .pp-av-wrap .zn-fx{--zn-sr:6px;--zn-sc:rgba(var(--ak-rgb),.5)}
+  .pp-av-wrap .zn-fx .zk{fill:#fff;opacity:.30}
 
 .sp-k{font:600 9px 'Sometype Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);line-height:1.4}
 .sp-lg{margin-top:6px;font-size:10.5px;line-height:1.45;color:var(--muted)}
@@ -6751,7 +6755,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.20.f352bd8a';
+const BUILD_VERSION='2026.11.23.8fe3963d';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -8214,7 +8218,7 @@ function posClassify(autoDrive){
   if(a >  0.22) return {label:'Revés',          icon:'posReves',     tone:'reves'};
   return                {label:'Reiner Revés',   icon:'posReinReves', tone:'reves'};
 }
-const SEITE_LANG = {drive:'Drive (rechts)', reves:'Revés (links)'};
+const SEITE_LANG = {drive:'Drive · rechts', reves:'Revés · links'};
 const SEITE_NAME = {drive:'Drive', reves:'Revés'};
 
 function movMult(m){
@@ -8405,8 +8409,8 @@ function rcpKachelHtml(o){
     <div class="rcp-aw-ic">${svgI(o.ic || 'trophy')}</div>
     <div class="rcp-aw-info">
       <div class="rcp-aw-label">${esc(o.label)}</div>
-      <div class="rcp-aw-name">–</div>
-      <div class="rcp-aw-val">keine Daten</div>
+      <div class="rcp-aw-name">—</div>
+      <div class="rcp-aw-val">Noch nicht vergeben</div>
     </div>
   </div>`;
   return `<div class="rcp-aw ${o.ton || 'gold'}${o.attr ? ' klick' : ''}" ${o.attr || ''}>
@@ -10197,11 +10201,11 @@ function showPotwRecap(opts){
       + rcpHeldHtml({
           pid: mainPotwPlayerId,
           pids: geteilt ? potwWinners.map(w => w[0]) : null,
-          band:false, px:104, marke:'Spieler der Woche', strahl:true,
+          band:false, px:104, marke:'Player of the Week', strahl:true,
           zahlen: rcpZahlenHtml([
             {v:mainPotwStats.wins,   l:'Siege',       ton:'gruen'},
             {v:mainPotwStats.losses, l:'Niederlagen', ton:'rot'},
-            {v:winrate+'\u00A0%',          l:'Quote'},
+            {v:winrate+'\u00A0%',          l:'Siegquote'},
             {v:eloDeltaStr,          l:'Elo', ton:eloDelta>=0 ? 'gruen' : 'rot'}
           ])})
       + serieHtml
@@ -10455,11 +10459,11 @@ function showPotdRecap(opts){
     openSheet(
       rcpKopfHtml({ic:'trophyDay', marke:'Player of the Day', titel:dayStr,
         meta: rcpMeta([dayMatches.length+' Sätze', uniquePlayers.size+' Spieler'])})
-      + rcpHeldHtml({pid:potdId, band:false, px:104, marke:'Spieler des Tages', strahl:true,
+      + rcpHeldHtml({pid:potdId, band:false, px:104, marke:'Player of the Day', strahl:true,
           zahlen: rcpZahlenHtml([
             {v:s.wins,      l:'Siege',       ton:'gruen'},
             {v:s.losses,    l:'Niederlagen', ton:'rot'},
-            {v:winrate+'\u00A0%', l:'Quote'},
+            {v:winrate+'\u00A0%', l:'Siegquote'},
             {v:eloDeltaStr, l:'Elo', ton:eloDelta>=0 ? 'gruen' : 'rot'}
           ])})
       + serieHtml
@@ -11303,26 +11307,46 @@ const ZN_FEUER_GROSS = _znSatz('zn-fx pp-feuer', ZN_GEO_PROFIL);
 function _znStern(cx, cy, r){
   let d = '';
   for(let i=0;i<10;i++){
-    const rr = i%2 ? r*0.45 : r, a = -90 + i*36;
+    const rr = i%2 ? r*.45 : r, a = -90 + i*36;
     d += (i?'L':'M') + _znF(cx + rr*Math.cos(a*ZN_RAD)) + ' ' + _znF(cy + rr*Math.sin(a*ZN_RAD));
   }
   return d + 'Z';
+}
+
+const ZN_STERN_HELL = '#ffe39a';
+const ZN_STERN_TIEF = '#cf961a';
+function _znSternHell(cx, cy, r, f){
+  f = f || _znF;
+  let d = '';
+  for(let i=0;i<5;i++){
+    const a = -90 + i*72;
+    d += 'M' + f(cx) + ' ' + f(cy)
+      + 'L' + f(cx + r*Math.cos(a*ZN_RAD)) + ' ' + f(cy + r*Math.sin(a*ZN_RAD))
+      + 'L' + f(cx + r*.45*Math.cos((a-36)*ZN_RAD)) + ' ' + f(cy + r*.45*Math.sin((a-36)*ZN_RAD)) + 'Z';
+  }
+  return d;
 }
 
 const _ZN_STERNE_CACHE = {};
 function _znSterneSvg(n){
   if(n <= 0) return '';
   if(_ZN_STERNE_CACHE[n]) return _ZN_STERNE_CACHE[n];
-  const zeig = Math.min(n, 5);
-  const w = 9, r = 3.6, h = 10;
-  let d = '';
-  for(let i=0;i<zeig;i++) d += _znStern(w/2 + i*w, h/2, r);
-  const breite = zeig*w + (n>5 ? 11 : 0);
-  const zahl = n>5
-    ? `<text x="${zeig*w+1}" y="${h/2+2.6}" class="zn-ti-n">${n}</text>` : '';
-  const svg = `<span class="zn-ti" aria-hidden="true"><svg viewBox="0 0 ${breite} ${h}"
-    width="${breite}" height="${h}" focusable="false"><path class="zs-k" d="${d}"/>
-    <path class="zs" d="${d}"/>${zahl}</svg></span>`;
+  const h = 10;
+  let d = '', hell = '', breite, zahl = '';
+  const stern = (cx, r) => { d += _znStern(cx, h/2, r); hell += _znSternHell(cx, h/2, r); };
+  if(n <= 5){
+    const w = 9, r = 3.7;
+    for(let i=0;i<n;i++) stern(w/2 + i*w, r);
+    breite = n*w;
+  } else {
+    const w = 8, r = 3.3, zw = String(n).length*5.4 + 2.4;
+    stern(w/2, r); stern(w + zw + w/2, r);
+    breite = w + zw + w;
+    zahl = `<text x="${_znF(breite/2)}" y="${h/2+3}" text-anchor="middle" class="zn-ti-n">${n}</text>`;
+  }
+  const svg = `<span class="zn-ti" aria-hidden="true"><svg viewBox="0 0 ${_znF(breite)} ${h}"
+    width="${_znF(breite)}" height="${h}" focusable="false"><path class="zs-k" d="${d}"/>
+    <path class="zs" d="${d}"/><path class="zs-h" d="${hell}"/>${zahl}</svg></span>`;
   _ZN_STERNE_CACHE[n] = svg;
   return svg;
 }
@@ -12423,10 +12447,10 @@ function ligaVorschauHtml(){
   return vorschauHtml('racket', 'So geht es los',
     '',
     [
-      [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens vier. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
+      [haken(!fehlt), '1. Spieler anlegen', `Jeder, der mitspielt, bekommt einen Namen, mindestens <b>vier</b>. Angelegt sind ${n}; sie stehen unter „Gesamt".`],
       ['court', '2. Sätze eintragen', 'Das Plus unten rechts: vier Spieler aufstellen, links Revés, rechts Drive, dann die Games je Satz und speichern. Jeder Satz zählt für sich.'],
-      ['chartBar', '3. Rangliste lesen', `Saison ist der laufende Monat, Woche die Kalenderwoche ab ihrem ${WOCHE_MIN_SPIELTAGE}. Spieltag, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.`],
-      ['shieldStar', '4. Der Rest füllt sich', 'Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
+      ['chartBar', '3. Rangliste lesen', `Saison ist der laufende Monat, Woche die Kalenderwoche ab ihrem <b>${WOCHE_MIN_SPIELTAGE}. Spieltag</b>, Tag der Spieltag, Gesamt die Laufbahn. Jeder Satz bringt oder kostet Elo.`],
+      ['shieldStar', '4. Der Rest füllt sich', 'Awards, Auszeichnungen, Rekorde, Chronik und News entstehen aus den Sätzen. Das „?" an jeder Überschrift erklärt den Reiter.'],
     ]);
 }
 function ligaWocheOffen(){
@@ -12541,7 +12565,7 @@ function _vRankingCore(){
     if(period==='week'||period==='day'){
       const titelTxt   = period==='day' ? 'Player of the Day' : 'Player of the Week';
       const regelTxt   = period==='day' ? `ab ${PERIODE_MIN_SIEGE.tag} Siegen · die meisten Siege`
-                                        : `ab ${PERIODE_MIN_SIEGE.woche} Siegen · die beste Quote`;
+                                        : `ab ${PERIODE_MIN_SIEGE.woche} Siegen · die beste Siegquote`;
       const eloLabel   = period==='day' ? 'Elo Tag' : 'Elo Woche';
       if(winner){
         const wp=pmap()[winner.id];
@@ -12553,7 +12577,7 @@ function _vRankingCore(){
               ${avHtml(wp,'',{ins:true,band:true,px:72})}
               <div class="nw-mid">
                 <div class="nw-name">${esc(wp.name)}</div>
-                <div class="nw-meta">${winner.wins}–${winner.losses} · ${wWr}\u00A0% Quote</div>
+                <div class="nw-meta">${winner.wins}–${winner.losses} · ${wWr}\u00A0% Siegquote</div>
               </div>
               <div class="nw-val"><div class="v num${winner.eloNet<0?' minus':''}">${
                 winner.eloNet>=0?'+':''}${winner.eloNet}</div><div class="l">${eloLabel}</div></div>
@@ -12575,8 +12599,8 @@ function _vRankingCore(){
           + `<span class="wk-hl-label">${labelTxt}</span></div>`;
         if(!nameTxt) return `<div class="wk-hl empty">
           ${kopf}
-          <div class="wk-hl-val">–</div>
-          <div class="wk-hl-detail">noch keine Daten</div>
+          <div class="wk-hl-val">—</div>
+          <div class="wk-hl-detail">Noch nicht vergeben</div>
         </div>`;
         return `<div class="wk-hl ${cls}" ${clickAttr} style="cursor:pointer">
           ${kopf}
@@ -12693,7 +12717,7 @@ function _vRankingCore(){
         ${sichtBar}
         ${duos.length
           ? `<div class="rlist">${duos.map(duoZeile).join('')}</div>`
-          : emptyState('handshake','Noch kein Duo mit zwei gemeinsamen Sätzen')}`;
+          : emptyState('handshake','Noch kein Duo mit 2 gemeinsamen Sätzen.')}`;
     }
 
     return `
@@ -12706,8 +12730,8 @@ function _vRankingCore(){
       ${metrikLeisteHtml(period)}
       ${ps.length||leerZeile?`<div class="rlist">${leerZeile}${rows}</div>`
         : !matches.length ? '' : emptyState('calendar', period==='day'
-        ? 'Heute noch kein Satz. Die Tabelle des Tages beginnt mit der ersten.'
-        : 'In dieser Saison noch kein Satz. Die Tabelle beginnt mit der ersten.')}
+        ? 'Heute noch kein Satz. Die Tabelle des Tages beginnt mit dem ersten.'
+        : 'In dieser Saison noch kein Satz. Die Tabelle beginnt mit dem ersten.')}
       ${ligaVorschauHtml()}
       ${activePlayers().length<4?`<button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>`:''}`;
   }
@@ -12784,7 +12808,7 @@ function _vRankingCore(){
     </div>`}
     ${hofPodsHtml}
     ${metrikLeisteHtml('all')}
-    ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Spieler gefunden')}
+    ${list.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Kein Spieler gefunden.')}
     <button class="btn ghost sm knopf-wort" id="addPlayerBtn">+ Spieler anlegen</button>
     ${ligaVorschauHtml()}`;
 
@@ -12854,8 +12878,8 @@ function positionsListe(pos, spieler){
 
 function positionsBlockHtml(arr, pos, ohneRang){
   const karte = ersatz => ohneRang ? (ersatz || '') : vorschauHtml(pos==='drive'?'posDrive':'posReves',
-    pos==='drive' ? 'Drive · rechts' : 'Revés · links',
-    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`,
+    'Die Seiten',
+    `Wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern, über alle Saisons. Ein Tippen öffnet das Profil. Die Seite kommt aus der Aufstellung jedes Satzes.`,
     null, '', ersatz);
   if(!arr.length) return karte(emptyState(pos==='drive'?'posDrive':'posReves', 'Noch niemand auf dieser Seite gewertet.'));
   return karte('') + `<div class="rlist">${arr.map((x,i)=>{
@@ -12888,11 +12912,12 @@ function vPositions(){
   const arr = positionsListe(which);
   const ruhe = positionsListe(which, ruhestandSpieler()).length;
   return `
-    <div class="view-head"><h2>Seiten ${hilfeKnopf('seiten')}</h2><p>Wer auf welcher Seite am stärksten ist</p></div>
+    ${
+''}<div class="view-head"><h2>Seiten ${hilfeKnopf('seiten')}</h2><p>Über alle Saisons</p></div>
     ${einblickHtml('rollen')}
     <div class="ui-switch">
-      <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}Revés · links</span></button>
-      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
+      <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}${SEITE_LANG.reves}</span></button>
+      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}${SEITE_LANG.drive}</span></button>
     </div>
     <div class="mini-label">▲ über · ▼ unter der Erwartung</div>
     ${positionsBlockHtml(arr, which)}
@@ -13599,9 +13624,8 @@ function _vAwardsCore(){
   const seasonPicker=awPeriod==='season'?saisonWaehlerHtml('awSeasonPicker',selSeason):'';
   const periodBar=seasonPicker;
   const R=awardRankings(awPeriod);
-  const pl=awPeriodLabel();
-  const vorschau = vorschauHtml('trophy', 'Die Auszeichnungen der Saison',
-    `${R.counts.matches ? '' : `In ${esc(pl)} ist noch kein Satz gespielt. `}Jede Kachel unten gehört dem, der ihre Frage in der Saison am besten beantwortet, und füllt sich mit den Sätzen. Tippen zeigt, wofür es sie gibt und ab wann sie zählt.`);
+  const vorschau = vorschauHtml('trophy', 'Die Awards der Saison',
+    `Jede Kachel stellt eine Frage und gehört dem, der sie in der Saison am besten beantwortet. Wo ein Schnitt zählt, ab <b>${AW_MIN.spieler} Sätzen</b>, bei einem Duo ab <b>${AW_MIN.teamSpiele} gemeinsamen</b>. Ein Tippen zeigt die Rangfolge und wie gewertet wird.${R.counts.matches ? '' : ' Noch kein Satz gespielt.'}`);
   const zeigen = key => !(awPeriod === 'week' && (key === 'weekKing' || key === 'dayKing'));
   let html='';
   const _coll = {};
@@ -13685,17 +13709,19 @@ function _vAwardsCore(){
 
 function vAwards(){
   const unter = {
-    awards:  awPeriodLabel() + ' · tippen für Top 3 und Verlauf',
-    rekorde: 'Bestwerte über alle Saisons · tippen zeigt die Bedingung',
-    chronik: 'Saison für Saison · tippen öffnet den Monat'
-  }[awView] || '';
+    awards:  () => awPeriodLabel(),
+    rekorde: () => { const h = chronicleHolders();
+      return `Alle Saisons · ${CHRONICLES.filter(d => h[d.id]).length} von ${CHRONICLES.length} vergeben`; },
+    chronik: () => 'Monat für Monat'
+  }[awView];
+  const unterText = unter ? unter() : '';
   const schalter = `
     <div class="ui-switch">
       <button data-awview="awards"  class="${awView==='awards' ?'on':''}">Awards</button>
       <button data-awview="rekorde" class="${awView==='rekorde'?'on':''}">Rekorde</button>
       <button data-awview="chronik" class="${awView==='chronik'?'on':''}">Chronik</button>
     </div>`;
-  const kopf = `<div class="view-head"><h2>Awards ${hilfeKnopf('awards')}</h2><p>${unter}</p></div>${schalter}`;
+  const kopf = `<div class="view-head"><h2>Awards ${hilfeKnopf('awards')}</h2><p>${unterText}</p></div>${schalter}`;
   if(awView === 'rekorde'){
     return kopf + ligaRekordeHtml(true);
   }
@@ -13734,41 +13760,41 @@ const AWARD_META={
   mvt:         {title:'Bestes Team',           cls:'gold',  why:`Das Duo, das in der Saison zusammen die meisten Elo-Punkte geholt hat. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
   streaks:     {title:'Längste Siegesserie',   cls:'acid',  why:`Die meisten gewonnenen Sätze in Folge.`},
   onFire:      {title:'On Fire',               cls:'acid',  why:`Die längste Serie gewonnener Sätze, die gerade noch läuft.`},
-  scorer:      {title:'Tiebreak-König',        cls:'orange',why:`Die höchste Quote gewonnener Tiebreaks, Match-Tiebreaks eingeschlossen. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
+  scorer:      {title:'Tiebreak-König',        cls:'orange',why:`Die höchste Siegquote in Tiebreaks, Match-Tiebreaks eingeschlossen. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
   wall:        {title:'Zu Null',               cls:'blue',  why:`Die meisten Sätze zu Null gewonnen (6:0).`},
   ice:         {title:'Klare Sache',           cls:'blue',  why:`Die meisten deutlich gewonnenen Sätze, 6:2 oder klarer.`},
   endgegner:   {title:'Endgegner',             cls:'purple',why:`Zwei Spieler, die sich am häufigsten als Gegner begegnen, gemessen am Anteil an den Sätzen dessen, der weniger spielt. Ab ${AW_MIN.duell} Sätzen gegeneinander, beide ab ${AW_MIN.spieler} Sätzen.`},
-  clutch:      {title:'Clutch-Player',         cls:'acid',  why:`Die höchste Quote in knappen Sätzen (Tiebreak, 6:4 oder 7:5). Ab ${AW_MIN.enge} knappen Sätzen.`},
+  clutch:      {title:'Clutch-Player',         cls:'acid',  why:`Die höchste Siegquote in knappen Sätzen (Tiebreak, 6:4 oder 7:5). Ab ${AW_MIN.enge} knappen Sätzen.`},
   carryKing:   {title:'Carry-King',            cls:'acid',  why:`Die meisten gewonnenen Sätze mit einem Partner, der vorher der Schwächste der vier war.`},
   bestDuo:     {title:'Unzertrennlich',        cls:'blue',  why:`Das Duo mit den meisten gemeinsamen Sätzen der Saison.`},
   upset:       {title:'Größte Überraschung',   cls:'orange',why:`Der Satz mit der niedrigsten Siegchance für den späteren Sieger.`},
   biggest:     {title:'Höchster Sieg',         cls:'purple',why:`Der Satz mit dem größten Abstand in Games.`},
-  perfect:     {title:'Beste Bilanz',          cls:'gold',  why:`Die höchste Satzquote der Saison. Verlangt sind 15 % der Sätze des fleißigsten Spielers, mindestens ${AW_MIN.spieler} und höchstens 20.`},
+  perfect:     {title:'Beste Bilanz',          cls:'gold',  why:`Die höchste Siegquote der Saison. Verlangt sind 15 % der Sätze des fleißigsten Spielers, mindestens ${AW_MIN.spieler} und höchstens 20.`},
   grinder:     {title:'Vielspieler',           cls:'blue',  why:`Die meisten gespielten Sätze der Saison.`},
-  worstWr:     {title:'Schwächste Bilanz', cls:'red',   why:`Die niedrigste Satzquote der Saison. Ab ${AW_MIN.spieler} Sätzen.`},
+  worstWr:     {title:'Schwächste Bilanz', cls:'red',   why:`Die niedrigste Siegquote der Saison. Ab ${AW_MIN.spieler} Sätzen.`},
   coldStreak:  {title:'Eiskalt erwischt',      cls:'red',   why:`Die längste Serie verlorener Sätze, die gerade noch läuft.`},
   lossStreaks: {title:'Längste Pleitenserie',cls:'red', why:`Die meisten verlorenen Sätze in Folge.`},
-  worstAtk:    {title:'Tiebreak-Pech',         cls:'red',   why:`Die niedrigste Quote gewonnener Tiebreaks. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
+  worstAtk:    {title:'Tiebreak-Pech',         cls:'red',   why:`Die niedrigste Siegquote in Tiebreaks. Ab ${AW_MIN.tiebreaks} Tiebreaks.`},
   worstDef:    {title:'Bagel-Opfer',           cls:'red',   why:`Die meisten Sätze 0:6 verloren.`},
-  worstTeam:   {title:'Schlechtestes Team',    cls:'red',   why:`Das Duo mit der niedrigsten Satzquote. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
+  worstTeam:   {title:'Schlechtestes Team',    cls:'red',   why:`Das Duo mit der niedrigsten Siegquote. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
   showmaster:  {title:'Comeback-König',        cls:'gold',  why:`Die meisten Matches, die nach verlorenem ersten Satz noch gewonnen wurden.`},
-  solo:        {title:'Leitwolf',              cls:'acid',  why:`Die höchste Quote in Sätzen, in die man als Stärkster der vier ging. Ab ${AW_MIN.staerkster} solchen Sätzen.`},
+  solo:        {title:'Leitwolf',              cls:'acid',  why:`Die höchste Siegquote in Sätzen, in die man als Stärkster der vier ging. Ab ${AW_MIN.staerkster} solchen Sätzen.`},
   formtief:    {title:'Formtief',              cls:'red',   why:`Der größte Abstand zwischen dem höchsten und dem aktuellen Elo-Stand innerhalb einer Saison.`},
   zirkus:      {title:'Zirkus',                cls:'red',   why:`Das Duo, bei dem die meisten verlorenen Sätze deutlich ausfallen (2:6 oder klarer), gemessen an allen verlorenen. Ab ${AW_MIN.teamPleiten} verlorenen Sätzen.`},
   baustelle:   {title:'Baustelle',             cls:'red',   why:`Das Duo mit der längsten gemeinsamen Serie verlorener Sätze.`},
   weekKing:    {title:'Wochenkönig',           cls:'gold',  why:`Der größte Anteil der eigenen Wochen als Player of the Week, ab ${KOENIG_MIN.woche} Wochen. Die laufende Woche zählt noch nicht.`},
   dayKing:     {title:'Tageskönig',            cls:'gold',  why:`Der größte Anteil der eigenen Spieltage als Player of the Day, ab ${KOENIG_MIN.tag} Spieltagen. Der laufende Tag zählt noch nicht.`},
   plusMinus:   {title:'Plus-Minus',            cls:'orange',why:`Der höchste Game-Saldo je Satz (gewonnene minus abgegebene Games). Ab ${AW_MIN.spielerSaldo} Sätzen.`},
-  underdog:    {title:'Underdog-Held',         cls:'purple',why:`Die höchste Quote als Außenseiter (Siegchance unter 35 %). Ab ${AW_MIN.unter} solchen Sätzen.`},
+  underdog:    {title:'Underdog-Held',         cls:'purple',why:`Die höchste Siegquote als Außenseiter (Siegchance unter 35 %). Ab ${AW_MIN.unter} solchen Sätzen.`},
   pechvogel:   {title:'Pechvogel',             cls:'red',   why:`Der höchste Anteil verlorener knapper Sätze. Ab ${AW_MIN.enge} knappen Sätzen.`},
   unstoppable: {title:'Unaufhaltsam',          cls:'acid',  why:`Das Duo mit der längsten Serie gewonnener Sätze. Ein verlorener Satz beendet sie.`},
   concreteWall:{title:'Betonmauer',            cls:'blue',  why:`Das Duo, das den kleinsten Anteil der Games abgibt. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
   luckyCharm:  {title:'Glückspilze',           cls:'acid',  why:`Das Duo, das die meisten knappen Sätze gewinnt, gemessen an allen knappen. Ab ${AW_MIN.teamEnge} davon.`},
-  giantSlayer: {title:'Giant Slayer',          cls:'orange',why:`Die höchste Quote eines Duos gegen ein stärkeres Duo. Ab ${AW_MIN.teamUnter} solchen Sätzen.`},
+  giantSlayer: {title:'Giant Slayer',          cls:'orange',why:`Die höchste Siegquote eines Duos gegen ein stärkeres Duo. Ab ${AW_MIN.teamUnter} solchen Sätzen.`},
   favoritenschreck:{title:'Favoritenschreck',  cls:'red',   why:`Der größte Elo-Unterschied, den ein Duo mit einem gewonnenen Satz überwunden hat.`},
   rivalry:     {title:'Erzfeinde',             cls:'purple',why:`Zwei Duos, die sich am häufigsten gegenüberstehen, gemessen am Anteil an den Sätzen des Duos, das weniger spielt. Ab ${AW_MIN.duell} Sätzen gegeneinander, beide ab ${AW_MIN.teamSpiele} Sätzen.`},
   cheesePlatter:{title:'Käseteller',           cls:'red',   why:`Das Duo, das den größten Anteil der Games abgibt. Ab ${AW_MIN.teamSpiele} gemeinsamen Sätzen.`},
-  favoriteLoser:{title:'Favoriten-Versager',   cls:'red',   why:`Die höchste Quote verlorener Sätze als Favorit (Siegchance ab 65 %). Ab ${AW_MIN.favorit} solchen Sätzen.`}
+  favoriteLoser:{title:'Favoriten-Versager',   cls:'red',   why:`Der höchste Anteil verlorener Sätze als Favorit (Siegchance ab 65 %). Ab ${AW_MIN.favorit} solchen Sätzen.`}
 };
 
 const _awPz = v => Math.round(v * 100) + '\u00A0%';
@@ -13777,7 +13803,7 @@ const _awSieger = x => x.m.winner === 'A' ? [x.m.a1, x.m.a2] : [x.m.b1, x.m.b2];
 const AW_WERT = {
   wins:        {l:R=>R.winsList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz gewonnen','Sätze gewonnen'), b:x=>'aus '+x.g+' Sätzen'},
   onFire:      {l:R=>R.onFire, s:x=>x.v, z:x=>x.v, e:x=>'Sätze in Folge gewonnen', b:()=>'läuft noch', lauf:true, gilt:x=>x.v>=2},
-  perfect:     {l:R=>R.perfect, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Satzquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
+  perfect:     {l:R=>R.perfect, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
   streaks:     {l:R=>R.streaks, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge gewonnen','Sätze in Folge gewonnen'), lauf:true},
   showmaster:  {l:R=>R.showmasterList, s:x=>x.v, z:x=>x.v+'×', e:()=>'Match nach Satzrückstand gewonnen'},
   weekKing:    {l:R=>R.weekKingList||[], s:x=>Math.round(x.q*1000), z:x=>_awPz(x.q), e:()=>'der eigenen Wochen',
@@ -13789,29 +13815,29 @@ const AW_WERT = {
   unstoppable: {l:R=>R.unstoppableList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge gewonnen','Sätze in Folge gewonnen'), lauf:true},
   concreteWall:{l:R=>R.concreteWallList, s:x=>-Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'der Games abgegeben', b:x=>'aus '+x.g+' Sätzen zusammen', f:x=>x.v},
   luckyCharm:  {l:R=>R.luckyCharmList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'knappe Sätze gewonnen', b:x=>x.wins+' von '+x.games, f:x=>x.v},
-  giantSlayer: {l:R=>R.giantSlayerList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'Satzquote gegen Stärkere', b:x=>x.wins+' von '+x.games+' Sätzen gewonnen', f:x=>x.v},
+  giantSlayer: {l:R=>R.giantSlayerList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'Siegquote gegen Stärkere', b:x=>x.wins+' von '+x.games+' Sätzen gewonnen', f:x=>x.v},
   favoritenschreck:{l:R=>R.favoritenschreckList, s:x=>x.v, z:x=>x.v, e:()=>'Elo überwunden', b:x=>standFuer(x.m)+' am '+dateStr(x.m.created_at)},
-  rivalry:     {l:R=>R.rivalryList, ids:x=>[...x.idsA, ...x.idsB], s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Duelle', f:x=>x.pct},
+  rivalry:     {l:R=>R.rivalryList, ids:x=>[...x.idsA, ...x.idsB], s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Sätze gegeneinander', f:x=>x.pct},
   scorer:      {l:R=>R.scorer, s:x=>Math.round(x.avg*1000), z:x=>_awPz(x.avg), e:()=>'Tiebreaks gewonnen', b:x=>x.v+' von '+x.g+' Tiebreaks', f:x=>x.avg},
   wall:        {l:R=>R.wall, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz zu Null','Sätze zu Null'), b:x=>'in '+x.g+' Sätzen', gilt:x=>x.v>=1},
   ice:         {l:R=>R.iceList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'klarer Satz','klare Sätze'), b:()=>'6:2 oder klarer', gilt:x=>x.v>=1},
   plusMinus:   {l:R=>R.plusMinusList, s:x=>Math.round(x.v*10), z:x=>{ const v=Math.round(x.v*10)/10; return 'Ø '+(v>=0?'+':'')+komma(v,1); }, e:()=>'Game-Bilanz je Satz', b:x=>x.gf+':'+x.ga+' aus '+x.g+' Sätzen', f:x=>x.v},
-  endgegner:   {l:R=>R.endgegner, gegner:true, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Begegnungen', f:x=>x.pct},
-  clutch:      {l:R=>R.clutchList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Quote in knappen Sätzen', b:x=>x.w+' von '+x.g+' knappen Sätzen gewonnen', f:x=>x.wr},
+  endgegner:   {l:R=>R.endgegner, gegner:true, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'als Gegner', b:x=>x.g+' Sätze gegeneinander', f:x=>x.pct},
+  clutch:      {l:R=>R.clutchList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote in knappen Sätzen', b:x=>x.w+' von '+x.g+' knappen Sätzen gewonnen', f:x=>x.wr},
   carryKing:   {l:R=>R.carryList, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz mit dem Schwächsten gewonnen','Sätze mit dem Schwächsten gewonnen'), gilt:x=>x.v>=1},
-  solo:        {l:R=>R.soloList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Satzquote als Stärkster', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
+  solo:        {l:R=>R.soloList, s:x=>Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote als Stärkster', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
   upset:       {l:R=>R.upsets, ids:_awSieger, s:x=>Math.round(x.sp*100), z:x=>_awPz(1-x.sp), e:()=>'Siegchance', b:x=>standFuer(x.m)+' am '+dateStr(x.m.created_at), einzeln:true},
   biggest:     {l:R=>R.biggest, ids:_awSieger, s:x=>x.diff, z:x=>standFuer(x.m), e:x=>x.diff+' Games Unterschied', b:x=>'am '+dateStr(x.m.created_at), einzeln:true},
   grinder:     {l:R=>R.grinder, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz','Sätze')},
-  underdog:    {l:R=>R.underdogList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'Satzquote als Außenseiter', b:x=>x.v+' von '+x.g+' Sätzen gewonnen', f:x=>x.pct},
-  worstWr:     {l:R=>R.worstWr, s:x=>-Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Satzquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
+  underdog:    {l:R=>R.underdogList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'Siegquote als Außenseiter', b:x=>x.v+' von '+x.g+' Sätzen gewonnen', f:x=>x.pct},
+  worstWr:     {l:R=>R.worstWr, s:x=>-Math.round(x.wr*100), z:x=>_awPz(x.wr), e:()=>'Siegquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.wr},
   coldStreak:  {l:R=>R.coldStreak, s:x=>x.v, z:x=>x.v, e:()=>'Sätze in Folge verloren', b:()=>'läuft noch', lauf:true, gilt:x=>x.v>=2},
   lossStreaks: {l:R=>R.lossStreaks, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz in Folge verloren','Sätze in Folge verloren'), lauf:true},
   formtief:    {l:R=>R.formtief, s:x=>Math.round(x.drop), z:x=>'−'+Math.round(x.drop), e:()=>'Elo unter dem Hoch', b:x=>'Hoch '+x.peak+', jetzt '+x.cur},
   worstAtk:    {l:R=>R.worstAtk, s:x=>-Math.round(x.avg*1000), z:x=>_awPz(x.avg), e:()=>'Tiebreaks gewonnen', b:x=>x.v+' von '+x.g+' Tiebreaks', f:x=>x.avg},
   worstDef:    {l:R=>R.worstDef, s:x=>x.v, z:x=>x.v, e:x=>_awN(x.v,'Satz 0:6 verloren','Sätze 0:6 verloren'), b:x=>'in '+x.g+' Sätzen', gilt:x=>x.v>=1},
   zirkus:      {l:R=>R.zirkusList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'der verlorenen Sätze deutlich', b:x=>x.v+' von '+x.g+' verlorenen Sätzen', f:x=>x.pct},
-  worstTeam:   {l:R=>R.worstTeam, s:x=>-Math.round(x.w/x.g*100), z:x=>_awPz(x.w/x.g), e:()=>'Satzquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.w/x.g},
+  worstTeam:   {l:R=>R.worstTeam, s:x=>-Math.round(x.w/x.g*100), z:x=>_awPz(x.w/x.g), e:()=>'Siegquote', b:x=>x.w+' von '+x.g+' Sätzen gewonnen', f:x=>x.w/x.g},
   baustelle:   {l:R=>R.baustelleList, s:x=>x.best, z:x=>x.best, e:x=>_awN(x.best,'Satz in Folge verloren','Sätze in Folge verloren'), b:x=>x.cur===x.best&&x.cur>0?'läuft noch':'', lauf:true},
   pechvogel:   {l:R=>R.pechvogelList, s:x=>Math.round(x.pct*1000), z:x=>_awPz(x.pct), e:()=>'knappe Sätze verloren', b:x=>x.v+' von '+x.g+' knappen Sätzen', f:x=>x.pct},
   cheesePlatter:{l:R=>R.cheesePlatterList, s:x=>Math.round(x.v*1000), z:x=>_awPz(x.v), e:()=>'der Games abgegeben', b:x=>'aus '+x.g+' Sätzen zusammen', f:x=>x.v},
@@ -13989,8 +14015,8 @@ function showTopList(c){
       titel:c.title || '', unter:c.sub || ''})}
     ${items?`${blattAbschnittHtml('medal', c.listLabel || ('Top ' + rows.length))}
       <div class="aw-list">${items}</div>`
-     :`<div class="leerstand" style="margin-top:24px">Noch keine Daten</div>`}
-    ${c.why?`${blattAbschnittHtml('info', 'So wird gewertet')}<div class="blatt-text">${esc(c.why)}</div>`:''}`);
+     :`<div class="leerstand" style="margin-top:24px">Noch nicht vergeben</div>`}
+    ${c.why?`${blattAbschnittHtml('info', 'So wird gezählt')}<div class="blatt-text">${esc(c.why)}</div>`:''}`);
   document.querySelectorAll('.aw-li[data-li-player]').forEach(el=>{
     el.onclick=()=>{ sheetNav(()=>showPlayer(el.dataset.liPlayer)); };
   });
@@ -14039,6 +14065,9 @@ function openTopList(kind){
   }
 }
 
+function _awLeerHtml(key){
+  return `<div class="leerstand" style="margin-top:24px">${esc(AW_LEER[key] || 'Noch nicht vergeben')}</div>`;
+}
 function showAward(key){
   const R=awardRankings(awPeriod); const pl=awPeriodLabel(); const meta=AWARD_META[key]; if(!meta)return;
   _sheetSetReopen(()=>showAward(key));
@@ -14064,7 +14093,7 @@ function showAward(key){
         {label:'Zum Satz', ic:'clock', prim:true, attr:`data-li-match="${esc(m.id)}"`},
         {label:'Zum Duo', ic:'users', attr:`data-li-team="${esc(_awSieger(top).slice().sort().join('|'))}"`}]);
     } else {
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     }
   } else if(FAVS_AWARDS.has(key)){
     const arr = R.favoritenschreckList;
@@ -14089,7 +14118,7 @@ function showAward(key){
         bodyHtml += `${blattAbschnittHtml('medal', 'Weitere Coups')}<div class="aw-list">${items}</div>`;
       }
     } else {
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     }
   } else if(RIVALRY_AWARDS.has(key)){
     const arr = R.rivalryList;
@@ -14100,7 +14129,7 @@ function showAward(key){
       bodyHtml = buehneHtml({a1:top.idsA[0], a2:top.idsA[1], b1:top.idsB[0], b2:top.idsB[1],
           games_a:top.wA, games_b:top.wB, winner: top.wA > top.wB ? 'A' : top.wB > top.wA ? 'B' : ''},
         {marke:'Führt', gleich: top.wA === top.wB,
-         zeile: Math.round(top.pct*100) + ' % als Gegner · ' + top.g + ' Duelle · ' + top.gfA + ':' + top.gfB + ' Games'});
+         zeile: Math.round(top.pct*100) + ' % als Gegner · ' + top.g + ' Sätze gegeneinander · ' + top.gfA + ':' + top.gfB + ' Games'});
       if(arr.length > 1){
         const rest = arr.slice(1, 7);
         const q = x => Math.round(x.pct*1000);
@@ -14120,7 +14149,7 @@ function showAward(key){
         bodyHtml += `${blattAbschnittHtml('medal', 'Weitere Rivalitäten')}<div class="aw-list">${items}</div>`;
       }
     } else {
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     }
   } else {
     const arr = awListe(key, R).map(x => {
@@ -14130,7 +14159,7 @@ function showAward(key){
     });
 
     if(!arr.length){
-      bodyHtml = `<div class="leerstand" style="margin-top:24px">Keine Daten</div>`;
+      bodyHtml = _awLeerHtml(key);
     } else {
       const isTeamAward = arr[0].ids.length === 2;
       const isNeg = awNeg(key);
@@ -14281,7 +14310,7 @@ function showAward(key){
   openSheet(`
     ${blattKopfHtml({ic:AW_IC[key] || 'trophy', ton:kopfTon, titel:meta.title, unter:pl + ' · Award'})}
     ${bodyHtml}
-    ${blattAbschnittHtml('info', 'So wird gewertet')}
+    ${blattAbschnittHtml('info', 'So wird gezählt')}
     <div class="blatt-text">${meta.why}</div>
     ${fuss}`);
 
@@ -14313,7 +14342,7 @@ function vTeams(nurErgebnis=false){
   const ruheT=T0.filter(t=>t.ids.every(id=>sichtbar(id))&&t.ids.some(id=>imRuhestand(id)));
   if(!T.length&&!ruheT.length){
     const html=duosKarteHtml(emptyState('handshake', `Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.`));
-    return nurErgebnis?{kopf:`Ab ${DUO_MIN} gemeinsamen Sätzen`,html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Ab ${DUO_MIN} gemeinsamen Sätzen</p></div>${html}`;
+    return nurErgebnis?{kopf:'Über alle Saisons',html,ruhe:''}:`<div class="view-head"><h2>Teams ${hilfeKnopf('teams')}</h2><p>Über alle Saisons</p></div>${html}`;
   }
   const showBest=teamView!=='worst';
   
@@ -14417,8 +14446,8 @@ function vTeams(nurErgebnis=false){
   const ruhe=ruheF.length?`<div class="rlist">${ruheF.map((t,i)=>zeile(t,i,true)).join('')}</div>`:'';
 
 
-  const ergebnis={kopf:`${arrF.length} Duo${arrF.length===1?'':'s'}${_tq?' gefunden':` ab ${DUO_MIN} gemeinsamen Sätzen, über alle Saisons`}`,
-    html:arrF.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Keine Teams gefunden'),
+  const ergebnis={kopf:`${arrF.length} Duo${arrF.length===1?'':'s'}${_tq?' gefunden':' über alle Saisons'}`,
+    html:arrF.length ? `<div class="rlist">${rows}</div>` : emptyState('search','Kein Duo gefunden.'),
     ruhe, ruheZahl:ruheF.length};
   if(nurErgebnis) return ergebnis;
   return `
@@ -14447,16 +14476,16 @@ function vTeams(nurErgebnis=false){
 
 function duosKarteHtml(ersatz){
   return vorschauHtml('handshake','Die Duos der Liga',
-    `Ein Duo steht hier ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, mit Bilanz, Elo und der besseren Aufstellung.`,
+    `Die Duos der Liga mit Bilanz, Elo und der besseren Aufstellung, über alle Saisons. Ein Duo zählt ab <b>${DUO_MIN} gemeinsamen Sätzen</b>. Ein Tippen öffnet die gemeinsame Bilanz.`,
     null, '', ersatz);
 }
 function verlaufKarteHtml(ersatz){
   return vorschauHtml('verlauf','Der Verlauf',
-    'Jeder Satz steht hier mit Aufstellung und Elo. Getippt lässt er sich bearbeiten oder löschen.',
+    'Jeder Satz mit Aufstellung und Elo, der neueste zuerst. Ein Tippen öffnet den Satz; dort lässt er sich bearbeiten oder löschen.',
     null, '', ersatz);
 }
 function vHistory(){
-  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>Jeder Satz, der neueste zuerst</p></div>${verlaufKarteHtml(emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
+  if(!matches.length)return `<div class="view-head"><h2>Verlauf ${hilfeKnopf('verlauf')}</h2><p>0 Sätze</p></div>${verlaufKarteHtml(emptyState('verlauf', 'Noch kein Satz eingetragen.'))}`;
   let list=[...matches].reverse();
   if(histFilter!=='all')
     list=list.filter(m=>[m.a1,m.a2,m.b1,m.b2].includes(histFilter));
@@ -14521,7 +14550,7 @@ function vHistory(){
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></svg>
       <select id="histSel" style="padding-left:40px">${opts}</select>
     </div>
-    ${list.length?`<div class="mlist">${rows}</div>${paginationControls}`:emptyState('search','Keine Sätze für diesen Filter')}`;
+    ${list.length?`<div class="mlist">${rows}</div>${paginationControls}`:emptyState('search','Kein Satz mit diesem Spieler.')}`;
 }
 
 
@@ -14610,7 +14639,8 @@ function vSettings(){
       + sl('cfgLowEloLossDamp','Schutz für Schwächere',c.lowDamp,0,100,' %','','Weniger Verlust unter dem Schnitt der vier.'))}
     <div class="card" style="margin-top:14px;border:1px solid rgba(228,242,74,.18);background:linear-gradient(155deg,rgba(228,242,74,.06),var(--surface) 80%)">
       <div class="mini-label" style="color:var(--acid);display:flex;align-items:center;gap:6px">${svgI('info')}Wirkung der Regler</div>
-      <p style="font-size:12px;color:var(--ink2);line-height:1.55;margin-top:8px">
+      ${
+''}<p style="font-size:13px;color:var(--ink2);line-height:1.55;margin-top:8px">
         Regler wirken auf <b style="color:var(--acid)">neue Sätze</b>. Neu berechnen wendet sie auf alle an und
         <b style="color:var(--red)">überschreibt die gespeicherte Elo</b>.
       </p>
@@ -14625,12 +14655,12 @@ function vSettings(){
         <button class="btn ghost" id="expSaveBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('sichern')} Sicherung speichern (.json)</button>
         <button class="btn ghost sm" id="expCsvBtn" style="width:100%;font-size:11px">Stattdessen als CSV</button>
       </div>
-      <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px">
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:12px">
         Excel zum Anschauen, die Sicherung zum Wiederherstellen der ganzen Liga.
       </p>
       <div style="height:1px;background:var(--line);margin:14px 0"></div>
       <button class="btn" id="impBackupBtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px">${svgI('hochladen')} Datei einspielen</button>
-      <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px">
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:10px">
         .xlsx, .csv oder .json. Nur fehlende Sätze kommen dazu, nichts wird überschrieben.
       </p>
     </div>
@@ -14641,7 +14671,7 @@ function vSettings(){
         <div style="font-size:12px;color:var(--ink2);font-family:'Sometype Mono',monospace">${BUILD_VERSION}</div>
         <button class="btn ghost sm" id="forceReloadBtn" style="width:auto;padding:7px 12px;font-size:11px;flex-shrink:0">Neu laden</button>
       </div>
-      <p style="font-size:11px;color:var(--muted);line-height:1.55;margin-top:10px">
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:10px">
         Fehlt etwas Neues, hält das Telefon noch den alten Stand. Der Knopf lädt ihn neu; sonst meldet sich ein neuer Stand von selbst.
       </p>
     </div>
@@ -15597,7 +15627,7 @@ const BADGES=[
     multi:true,count:(id,ms,bis)=>countTeamOfSeason(id,bis)},
   {id:'award_collector',ic:'medalTrio',name:'Award-Sammler',desc:'In einer Saison mindestens '+PERIODE_SAMMLER.tag+'-mal Player of the Day und '+PERIODE_SAMMLER.woche+'-mal Player of the Week',
     multi:true,count:(id,ms,bis)=>countAwardCollector(id,ms,bis)},
-  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Satzquote einer Kalenderwoche mit mindestens '+WOCHE_MIN_SPIELTAGE+' Spieltagen (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
+  {id:'potw',ic:'weekKing',name:'Player of the Week',desc:'Höchste Siegquote einer Kalenderwoche mit mindestens '+WOCHE_MIN_SPIELTAGE+' Spieltagen (ab '+PERIODE_MIN_SIEGE.woche+' gewonnenen Sätzen)',
     multi:true,count:(id,ms,bis)=>countPeriodWins(id,ms,'week',bis)},
   {id:'potd',ic:'dayKing',name:'Player of the Day',desc:'Die meisten gewonnenen Sätze eines Spieltags (ab '+PERIODE_MIN_SIEGE.tag+')',
     multi:true,count:(id,ms,bis)=>countDayWins(id,ms,bis)},
@@ -16843,7 +16873,7 @@ function zeigeProfilPosInfo(id){
       + ` Je klarer die Einstufung, desto mehr: auf der schwächeren Seite höchstens ${grenze} %, auf der stärkeren höchstens ${daempfer} %.`;
   openSheet(blattKopfHtml({ic:'info', titel:'So entsteht die Einstufung', unter:pname(id)})
     + `<div class="pos-info">
-      <div class="pos-info-tab">${zeile('', '<b>Drive · rechts</b>', '<b>Revés · links</b>')}${
+      <div class="pos-info-tab">${zeile('', `<b>${SEITE_LANG.drive}</b>`, `<b>${SEITE_LANG.reves}</b>`)}${
         zeile('Sätze', t.aG, t.dG)}${zeile('Siegquote', quote(t.aWr), quote(t.dWr))}${
         zeile('Gegner, Elo-Abstand', elo(t.aGegAvg), elo(t.dGegAvg))}${
         zeile('Partner, Elo-Abstand', elo(t.aMitAvg), elo(t.dMitAvg))}${
@@ -17251,8 +17281,8 @@ const rankProgHtml = rInfo ? `
         return `<div class="pp-pos-combined">
           <div class="head"><div class="t">Revés und Drive</div></div>
           <div class="pp-roles-donuts">
-            ${donut('reves','Revés · links','posReves',revWr,s.revW,s.revG,'der Games',anteil(s.revAnteil),'var(--blue)')}
-            ${donut('drive','Drive · rechts','posDrive',drvWr,s.drvW,s.drvG,'der Games',anteil(s.drvAnteil),'var(--orange)')}
+            ${donut('reves',SEITE_LANG.reves,'posReves',revWr,s.revW,s.revG,'der Games',anteil(s.revAnteil),'var(--blue)')}
+            ${donut('drive',SEITE_LANG.drive,'posDrive',drvWr,s.drvW,s.drvG,'der Games',anteil(s.drvAnteil),'var(--orange)')}
           </div>
         </div>`;
       })()}
@@ -17265,7 +17295,7 @@ const rankProgHtml = rInfo ? `
       </div>
       <div class="pp-kpi">
         <div class="pp-k"><div class="v">${s.wins}:${s.losses}</div><div class="l">Sätze</div></div>
-        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Satzquote</div></div>
+        <div class="pp-k f" style="--q:${(wr / 100).toFixed(2)}"><div class="v">${wr}\u00A0%</div><div class="l">Siegquote</div></div>
         <div class="pp-k ${s.gd>=0?'pos':'neg'}"><div class="v">${s.gd>=0?'+':''}${s.gd}</div><div class="l">Game-Bilanz</div></div>
         <div class="pp-k"><div class="v">${s.matchW}:${s.matchL}</div><div class="l">Matches</div></div>
         <div class="pp-k"><div class="v">${s.matchW + s.matchL ? Math.round(100 * s.matchW / (s.matchW + s.matchL)) : 0}&nbsp;%</div><div class="l">Matchquote</div></div>
@@ -18439,9 +18469,9 @@ function showPlayerH2HList(playerId){
   openSheet(`
     ${blattKopfHtml({ic:'users', titel:'Bilanzen', unter:p.name + ' · ' + h2hList.length + ' Partner'})}
     <div style="font-size:10px;color:var(--muted);font-family:'Sometype Mono',monospace;letter-spacing:.04em;margin-top:14px;margin-bottom:10px">
-      Siege und Niederlagen <span style="color:var(--blue);font-weight:700">mit</span> und <span style="color:var(--purple);font-weight:700">gegen</span> jeden · Antippen für Einzelheiten
+      Siege und Niederlagen <span style="color:var(--blue);font-weight:700">mit</span> und <span style="color:var(--purple);font-weight:700">gegen</span> jeden. Ein Tippen öffnet den Direkten Vergleich.
     </div>
-    ${h2hList.length ? `<div class="rlist">${rows}</div>` : emptyState('crossedSwords','Noch keine Partner ab 3 Begegnungen')}
+    ${h2hList.length ? `<div class="rlist">${rows}</div>` : emptyState('crossedSwords','Noch kein Partner ab 3 Sätzen.')}
     <button class="btn ghost sm" id="backToPlayerH2H" style="margin-top:16px">← Zurück zum Profil</button>
   `);
 
@@ -18826,7 +18856,7 @@ function showH2H(idA, idB){
         </div>
         <div style="font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:-.02em;line-height:1.1;margin-top:12px">${esc(pA.name)} <span style="color:var(--muted);font-size:14px">vs</span> ${esc(pB.name)}</div>
       </div>
-      ${emptyState('crossedSwords','Noch keine gemeinsamen Sätze')}
+      ${emptyState('crossedSwords','Noch kein gemeinsamer Satz.')}
     `);
     return;
   }
@@ -18931,7 +18961,7 @@ function showH2H(idA, idB){
 
   const lastBlock = d.lastEncounters.length ? `
     <div style="margin-bottom:14px">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);font-weight:700;margin-bottom:8px;font-family:'Sometype Mono',monospace">Letzte Begegnungen</div>
+      ${blattAbschnittHtml('clock', 'Letzte Sätze')}
       <div class="rlist">${lastRows}</div>
     </div>` : '';
 
@@ -18944,7 +18974,7 @@ function showH2H(idA, idB){
         <div data-detail="${esc(pB.id)}" style="cursor:pointer">${avBig(pB)}</div>
       </div>
       <div style="font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:-.02em;line-height:1.1;margin-top:12px">${esc(pA.name)} <span style="color:var(--muted);font-size:14px">vs</span> ${esc(pB.name)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:'Sometype Mono',monospace">${d.total} ${d.total===1?'gemeinsame Begegnung':'gemeinsame Begegnungen'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:'Sometype Mono',monospace">${d.total} ${d.total===1?'gemeinsamer Satz':'gemeinsame Sätze'}</div>
     </div>
 
     ${teamBlock}
@@ -18982,8 +19012,8 @@ function h2hBegegnungenHtml(a, b){
     return `<rect class="${w ? 'w' : 'l'}" style="--i:${i}" x="${x.toFixed(1)}" y="${(w ? mitte - h : mitte).toFixed(1)}" width="${Math.max(1, bw).toFixed(1)}" height="${h.toFixed(1)}" rx="2"/>`;
   }).join('');
   const aw = ms.filter(sieg).length;
-  return `<div class="h2h-bg">${rcpAbschnitt(alle.length > n ? 'Die letzten ' + n + ' Begegnungen' : 'Jede Begegnung',
-      alle.length > n ? alle.length + ' insgesamt' : '')}
+  return `${blattAbschnittHtml('chartBar', alle.length > n ? 'Die letzten ' + n + ' Sätze gegeneinander' : 'Jeder Satz gegeneinander',
+      alle.length > n ? alle.length + ' insgesamt' : '')}<div class="h2h-bg">
     <div class="h2h-bg-n"><span>${esc(pname(a))}</span><b class="num">${aw}</b></div>
     <svg viewBox="0 0 ${W} ${H}" aria-hidden="true"><line class="h2h-bg-0" x1="0" x2="${W}" y1="${mitte}" y2="${mitte}"/>${balken}</svg>
     <div class="h2h-bg-n re"><span>${esc(pname(b))}</span><b class="num">${n - aw}</b></div></div>`;
@@ -19000,7 +19030,7 @@ function showTeam(p1Id,p2Id){
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:var(--muted);font-weight:700;font-family:'Sometype Mono',monospace">Team</div>
         <h3 style="margin-top:8px">${esc(pA.name)} &amp; ${esc(pB.name)}</h3>
       </div>
-      ${emptyState('handshake','Noch keine gemeinsamen Sätze')}
+      ${emptyState('handshake','Noch kein gemeinsamer Satz.')}
     `);
     return;
   }
@@ -19026,7 +19056,7 @@ function showTeam(p1Id,p2Id){
         ${avSm(op,false)}
         <div class="rmid" style="margin-left:11px">
           <div class="rname" style="font-size:13px">${esc(op.name)}</div>
-          <div class="rmeta"><span class="num">${opp.g} Begegnungen</span></div>
+          <div class="rmeta"><span class="num">${opp.g} ${opp.g===1?'Satz':'Sätze'} gegeneinander</span></div>
         </div>
         <div class="num" style="font-size:13px;font-weight:600;flex-shrink:0">
           <span style="color:var(--acid)">${opp.w}</span><span style="color:var(--faint)"> · </span><span style="color:var(--red)">${opp.g-opp.w}</span>
@@ -19107,7 +19137,7 @@ function showTeam(p1Id,p2Id){
     </div>`;
   }
 
-  const POS_LABEL = {drive:'Drive · rechts', reves:'Revés · links'};
+  const POS_LABEL = SEITE_LANG;
   const POS_ICON  = {drive:svgI('posDrive'), reves:svgI('posReves')};
   const POS_COLOR = {drive:'var(--orange)', reves:'var(--blue)'};
   const pA_side = d.posStats[pA.id].dom;
@@ -19152,7 +19182,7 @@ function showTeam(p1Id,p2Id){
         ${blattAbschnittHtml('users', 'Aufstellungs-Vergleich')}
         <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
           ${buildLineupCard('Typisch', typWr+'\u00A0% aus '+typGames, d.posStats[d.ids[0]].dom, 48)}
-          ${buildLineupCard('Beste Quote', bestWr+'\u00A0% aus '+d.bestLineup.games, d.bestLineup.p0, 48)}
+          ${buildLineupCard('Beste Siegquote', bestWr+'\u00A0% aus '+d.bestLineup.games, d.bestLineup.p0, 48)}
         </div>
       </div>`;
   } else {
@@ -19228,7 +19258,8 @@ function showTeam(p1Id,p2Id){
         <div style="display:grid;grid-template-columns:${cols};gap:8px">
           ${facts.map(f => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center">
             <div class="num" style="font-family:'Archivo Black',sans-serif;font-size:15px;color:${f.color};line-height:1">${f.value}</div>
-            <div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px">${f.label}</div>
+            ${
+''}<div style="font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px">${f.label}</div>
             ${f.sub?`<div style="font-size:8px;color:var(--muted);margin-top:2px;font-family:'Sometype Mono',monospace">${f.sub}</div>`:''}
           </div>`).join('')}
         </div>
@@ -19317,7 +19348,7 @@ function showMatchDetail(mid){
   };
   const earned=badgesEarnedInMatch(mid);
   const earnedHtml=earned.length?`
-    <div class="mini-label" style="margin-top:14px">Auszeichnungen in diesem Satz</div>
+    ${blattAbschnittHtml('medal', 'Auszeichnungen in diesem Satz')}
     <div style="display:flex;flex-direction:column;gap:5px">
       ${(()=>{
         const jeSpieler = new Map();
@@ -19361,7 +19392,7 @@ function showMatchDetail(mid){
     document.getElementById('showBreakdownBtn').onclick=()=>{
     const bd=matchBreakdown(mid);
     const slot=document.getElementById('breakdownSlot');
-    if(!bd||!Object.keys(bd).length){slot.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center">Keine Daten verfügbar</p>';return;}
+    if(!bd||!Object.keys(bd).length){slot.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center">Für diesen Satz gibt es keine Aufschlüsselung.</p>';return;}
     const histById=getHistoryByMatchId();
     const hist=histById.get(mid);
     const dbDeltas=(hist&&hist.deltas)||{};
@@ -19833,24 +19864,24 @@ function _processAchToastQueue(){
 
 const HILFE = {
   liga: {titel:'Liga', absaetze:[
-    () => `<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Woche</b> steht da, sobald die Woche ${WOCHE_MIN_SPIELTAGE} Spieltage hat, wie der Player of the Week. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.`,
-    'Die Reiter über der Liste sortieren um: Elo, Quote, Game-Bilanz und mehr. Ein Name öffnet das Profil.',
+    () => `<b>Saison</b> ist der laufende Monat; jeder beginnt ihn mit der Start-Elo. <b>Woche</b> ist die Kalenderwoche ab ihrem <b>${WOCHE_MIN_SPIELTAGE}. Spieltag</b>, wie der Player of the Week. <b>Tag</b> zeigt den Spieltag, <b>Gesamt</b> die Laufbahn über alle Saisons.`,
+    'Die Reiter über der Liste sortieren um: Elo, Siegquote, Game-Bilanz und mehr. Ein Tippen auf einen Namen öffnet das Profil.',
     'Sätze trägt das Plus unten rechts ein. Mehrere Sätze derselben Paare direkt hintereinander zählen außerdem als Match.']},
   seiten: {titel:'Seiten', absaetze:[
-    'Wer auf welcher Seite am stärksten ist. Die Seite kommt aus der Aufstellung jedes Satzes.',
+    'Wer auf welcher Seite am stärksten spielt, über alle Saisons. Die Seite kommt aus der Aufstellung jedes Satzes.',
     'Der Wert verbindet die Siegquote dort, die Leistung gegen die Erwartung (Partner und Gegner), den Anteil der Games und wie oft jemand dort stand. <b>▲</b> heißt über, <b>▼</b> unter der Erwartung.',
     'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
   awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
-    '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage, getippt zeigt sie die ersten drei.',
-    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons, vergeben ab dem ${CHRON_MIN_GAMES}. Satz der Liga. Wer einen übertrifft, nimmt ihn dem Halter ab.`,
-    () => `<b>Chronik</b>: jeder Monat schreibt Einträge für das, worin jemand besonders war, ab ${CHRONIK_MIN_SPIELE} Sätzen im Monat.`,
+    '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage. Ein Tippen zeigt die Rangfolge und wie gewertet wird.',
+    () => `<b>Rekorde</b> sind Bestwerte über alle Saisons; wer einen übertrifft, nimmt ihn dem Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.`,
+    () => `In der <b>Chronik</b> bekommt jeder Monat Einträge für das, worin jemand besonders war. Gewertet wird ab <b>${CHRONIK_MIN_SPIELE} Sätzen</b> im Monat.`,
     'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
   teams: {titel:'Teams', absaetze:[
-    () => `Jedes Duo ab ${DUO_MIN} gemeinsamen Sätzen, sortiert nach Quote, Game-Bilanz oder Elo.`,
-    'Ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
+    () => `Jedes Duo ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, sortiert nach Siegquote, Game-Bilanz oder Elo-Zuwachs.`,
+    'Ein Tippen auf ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
   verlauf: {titel:'Verlauf', absaetze:[
     'Jeder Satz, der neueste zuerst; oben lässt sich nach einem Spieler filtern.',
-    'Ein Satz öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt sie sich bearbeiten oder löschen; die Liga rechnet danach neu.']},
+    'Ein Tippen auf einen Satz öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt er sich bearbeiten oder löschen; die Liga rechnet danach neu.']},
   eingabe: {titel:'Sätze eintragen', absaetze:[
     'Vier Spieler wählen. Links steht Revés, rechts Drive; ⇄ tauscht die Seiten eines Teams.',
     'Die Games je Satz eintragen; „+ Satz" trägt mehrere auf einmal ein, jeder zählt für sich. Ein Satz, der nicht zu Ende kam, zählt mit, wenn er einen Vorsprung hat.',
@@ -21085,7 +21116,7 @@ function _buildStories(){
         title: `${nameOf(r.a)} und ${nameOf(r.b)} treffen zum ${r.n}. Mal aufeinander`,
         desc: (() => { const va = r.aw, vb = r.n - r.aw;
           return va === vb
-            ? `${nameOf(r.a)} und ${nameOf(r.b)} stehen nach ${r.n} Duellen exakt bei ${va}:${vb}.`
+            ? `${nameOf(r.a)} und ${nameOf(r.b)} stehen nach ${r.n} Sätzen gegeneinander exakt bei ${va}:${vb}.`
             : `${nameOf(va > vb ? r.a : r.b)} führt ${Math.max(va, vb)}:${Math.min(va, vb)}. `
               + `Kein anderes Paar der Liga hat öfter gegeneinander gespielt.`;
         })(),
@@ -21241,7 +21272,7 @@ function _buildStories(){
         [w, l].forEach(x => { if((b.s[x] || 0) * 2 > n) b.vorn[x] = n; });
       }));
       if(kippt) neuSt.push({id:'kippt_' + kippt.w + '_' + kippt.l + '_' + m.id, cat:'rivalry', ic:'crossedSwords',
-        title:`${nameOf(kippt.w)} geht im Duell gegen ${nameOf(kippt.l)} in Führung, ${kippt.s}:${kippt.n - kippt.s}`,
+        title:`${nameOf(kippt.w)} geht im Direkten Vergleich gegen ${nameOf(kippt.l)} in Führung, ${kippt.s}:${kippt.n - kippt.s}`,
         desc:kippt.zuletzt == null ? `Zum ersten Mal in ${kippt.n} Sätzen gegeneinander liegt ${nameOf(kippt.w)} vorn.`
           : `Zuletzt lag ${nameOf(kippt.w)} vor ${kippt.n - kippt.zuletzt} Sätzen gegeneinander vorn.`,
         when:zeit, prio:STORY_PRIO.duell_kippt,
@@ -21910,10 +21941,10 @@ function _buildStories(){
         id: 'rivalry_milestone_'+g.k+'_'+g.n,
         cat: 'rivalry',
         ic: 'crossedSwords',
-        title: `${g.n}. Duell: ${nameOf(a)} vs ${nameOf(b)}`,
+        title: `${nameOf(a)} und ${nameOf(b)} spielen den ${g.n}. Satz gegeneinander`,
         desc: g.wa === g.wb
-          ? `Nach ${g.n} Duellen steht es ${g.wa}:${g.wb}. Keiner liegt vorn.`
-          : `Nach ${g.n} Duellen steht es ${Math.max(g.wa, g.wb)}:${Math.min(g.wa, g.wb)} `
+          ? `Nach ${g.n} Sätzen gegeneinander steht es ${g.wa}:${g.wb}. Keiner liegt vorn.`
+          : `Nach ${g.n} Sätzen gegeneinander steht es ${Math.max(g.wa, g.wb)}:${Math.min(g.wa, g.wb)} `
             + `für ${nameOf(g.wa > g.wb ? a : b)}.`,
         when: new Date(g.ts),
         prio: STORY_PRIO.rivalry_milestone + (g.n >= 200 ? 4 : g.n >= 100 ? 2 : 0),
@@ -22059,7 +22090,7 @@ function _buildStories(){
           art: 'potw', ic: 'weekKing', label: 'Spieler der Woche', held: true,
           pids: res.winners.map(w => w.id), wert: Math.round(main.wr*100) + ' %',
           satz: `${_namenListe(names)} ${names.length > 1 ? 'gewinnen' : 'gewinnt'} `
-              + `${main.wins} von ${main.wins + main.losses} Sätzen und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Quote.`,
+              + `${main.wins} von ${main.wins + main.losses} Sätzen und ${names.length > 1 ? 'haben' : 'hat'} damit die beste Siegquote.`,
           potw: {weekKey: _potwKeyOf(range.start), playerId: main.id,
                  playerIds: res.winners.map(w => w.id), wins: main.wins, wr: main.wr}
         });
@@ -22922,7 +22953,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     }
     if(!best) return null;
     return { cat:'rivalry', ic:'crossedSwords', prio:4,
-      title:`${nameOf(best.pa)} und ${nameOf(best.pb)} sind das Duell der Liga`,
+      title:`${nameOf(best.pa)} und ${nameOf(best.pb)} stehen sich in der Liga am häufigsten gegenüber`,
       desc:`${best.total} Sätze gegeneinander, ${nameOf(best.pa)} gewinnt ${best.wa}, ${nameOf(best.pb)} ${best.wb}.`,
       vv: best.total, vl:'Sätze',
       dataRef:{ ambientPids:[best.pa, best.pb], pairKind:'duel', bild:{f:'duell', a:best.pa, b:best.pb, wa:best.wa, wb:best.wb} } };
@@ -23205,7 +23236,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'posDrive', prio:5,
       title:`${nameOf(best.pid)} glänzt rechts`,
-      desc:`${Math.round(best.v*100)} % aus ${a.aG} Sätzen auf der Drive-Seite, die beste Quote dort in den letzten 14 Tagen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.aG} Sätzen auf der Drive-Seite, die beste Siegquote dort in den letzten 14 Tagen.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'rechts',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].aW / agg[id].aG, v => Math.round(v * 100) + ' %') } };
   }});
@@ -23219,7 +23250,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const a = agg[best.pid];
     return { cat:'personal', ic:'posReves', prio:5,
       title:`${nameOf(best.pid)} glänzt links`,
-      desc:`${Math.round(best.v*100)} % aus ${a.dG} Sätzen auf der Revés-Seite, die beste Quote dort in den letzten 14 Tagen.`,
+      desc:`${Math.round(best.v*100)} % aus ${a.dG} Sätzen auf der Revés-Seite, die beste Siegquote dort in den letzten 14 Tagen.`,
       vv: Math.round(best.v*100)+'\u00A0%', vl:'links',
       dataRef:{ ambientPid: best.pid, bild:_bReihe(elig, id => agg[id].dW / agg[id].dG, v => Math.round(v * 100) + ' %') } };
   }});
@@ -23295,7 +23326,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const bild = _bRennen(rank.map(x => ({p:x.pid, v:x.wert, t:pkt(x)})));
     if(lead.length > 1) return { cat:'personal', ic:def.ic, prio:4,
       title:`Gleichstand beim ${def.name.replace(/^Der /, '')}`,
-      desc:`${_namesOf(lead)} liegen gleichauf, je ${pkt(top)} Prozentpunkte über der eigenen Quote.`,
+      desc:`${_namesOf(lead)} liegen gleichauf, je ${pkt(top)} Prozentpunkte über der eigenen Siegquote.`,
       vv:pkt(top), vl:'%-Punkte',
       dataRef:{ ambientPids: lead.slice(0, 2).map(x => x.pid), pairKind:'duel', bild } };
     return { cat:'personal', ic:def.ic, prio:4,
@@ -23458,8 +23489,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     const c = cands[Math.floor(rng()*cands.length)];
     return { cat:'rivalry', ic:'devilMask', prio:4,
       title:`${nameOf(c.opp)} ist ${nameOf(c.pid)}s Lieblingsgegner`,
-      desc:`${c.w}:${c.l} aus ${c.total} direkten Duellen. Diese Paarung geht fast immer gleich aus.`,
-      vv: c.w + ':' + c.l, vl:'Duelle',
+      desc:`${c.w}:${c.l} aus ${c.total} Sätzen gegeneinander. Diese Paarung geht fast immer gleich aus.`,
+      vv: c.w + ':' + c.l, vl:'Bilanz',
       dataRef:{ ambientPids:[c.pid, c.opp], pairKind:'duel', bild:{f:'duell', a:c.pid, b:c.opp, wa:c.w, wb:c.l} } };
   }});
 
@@ -25677,7 +25708,7 @@ function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
       + `<b>${esc(t.wert || '')}</b></div>`).join('')}</div>`;
   } else if(sorte === 'duell'){
     kopf = `<div class="nf-duell-band">${av(d.a, 34)}`
-      + `<span class="nf-duell-vs"><b>${esc(String(d.n || ''))}</b><i>Duelle</i></span>`
+      + `<span class="nf-duell-vs"><b>${esc(String(d.n || ''))}</b><i>Sätze</i></span>`
       + `${av(d.b, 34)}</div>`;
     let h = null; try { h = _newsH2HRecord(d.a, d.b); } catch(e){}
     fuss = (h && (h.aWins + h.bWins))
@@ -26345,7 +26376,7 @@ function _breakingHeroText(s){
         const a = d.p1 ? nm(d.p1) : (Array.isArray(d.winners) ? d.winners.map(nm).join(' & ') : '');
         const b = d.p2 ? nm(d.p2) : null;
         return b
-          ? `Tabellenführer ${a} schlägt ${b} im direkten Duell und baut den Vorsprung aus.`
+          ? `Tabellenführer ${a} schlägt ${b} im Direkten Vergleich und baut den Vorsprung aus.`
           : `${a} gewinnt das Spitzenspiel und zieht weiter davon.`;
       }
       case 'potd':
@@ -26607,13 +26638,14 @@ function _newsFeedPlan(o){
 
 function newsKarteHtml(voll, ersatz){
   return vorschauHtml('newspaper', 'Die Liga-News',
-    voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.',
+    (voll ? 'Aus jedem Satz entstehen Stories.' : 'Aus jedem Satz entstehen Stories, die erste mit dem ersten eingetragenen Satz.')
+      + ' Ein Tippen öffnet die Story.',
     [
       ['spielfeld', 'Spieltag', 'Jeder Satz als Karte mit Satzstand und Aufstellung, dazu jedes Match mit allen seinen Sätzen.'],
       ['sirene', 'Breaking', 'Was die Liga verschiebt: ein neuer Erster, ein Rekord, ein Aufstieg auf die obersten Stufen des Insigniums.'],
       ['tafelStein', 'Tafel', 'Rekorde und Bewegungen in der Ewigen Tafel.'],
-      ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit Spieler des Tages.'],
-      ['chartBar', 'Liga', `Um ${AMBIENT_SLOTS[0]} Uhr ein Fakt über die Liga, solange in den letzten ${AMBIENT_RUHE_TAGE} Tagen gespielt wurde.`],
+      ['medal', 'Ehrung', 'Auszeichnungen eines Tages, einer Woche und eines Monats, mit dem Player of the Day.'],
+      ['chartBar', 'Liga', `Um <b>${AMBIENT_SLOTS[0]} Uhr</b> ein Fakt über die Liga, solange in den letzten <b>${AMBIENT_RUHE_TAGE} Tagen</b> gespielt wurde.`],
     ], '', ersatz);
 }
 
@@ -27084,7 +27116,7 @@ function _spDuellBild(d){
   return `<div class="sp-bg"><div class="sp-bg-k"><span>${_spChip(d.A)}<em class="num">${_spZahl(d.aw)}</em></span>`
     + `<span class="sp-k">Siege</span><span class="re"><em class="num">${_spZahl(d.gesamt - d.aw)}</em>${_spChip(d.B)}</span></div>
     <svg viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><line class="sp-bg-0" x1="0" x2="300" y1="35" y2="35"/>${balken}</svg>
-    ${_spUnter(`${_spNb(d.A)} oben, ${_spNb(d.B)} unten: ${_spZahl(d.gesamt)} ${d.gesamt === 1 ? 'Begegnung' : 'Begegnungen'}${mehr}.`)}</div>`;
+    ${''}${_spUnter(`${_spNb(d.A)} oben, ${_spNb(d.B)} unten, ${_spZahl(d.gesamt)} ${d.gesamt === 1 ? 'Satz' : 'Sätze'} gegeneinander${mehr}.`)}</div>`;
 }
 
 function _spNoch(id, m){
@@ -27531,7 +27563,7 @@ const SP_FORM = {
     gewicht:x => 28 + Math.min(10, x.k),
     daten:(F, x) => Object.assign({W:F.W, L:F.L, hoch:F.hoch, tief:F.tief, awA:F.m.winner === 'A'}, x),
     text:(F, x) => ({t:`${_spNl(F.W)} schlagen ${_spNl(F.L)} zum ${x.k}. Mal in Folge`,
-      d:`In diesem Duell steht es ${x.s}:${x.n - x.s}.`})},
+      d:`In den Sätzen gegeneinander steht es ${x.s}:${x.n - x.s}.`})},
   tafel:{rang:10, ic:'court', v2:true,
     wann:() => ({}),
     daten:F => _spKopfDaten(F),
@@ -27785,10 +27817,10 @@ function _spKipptDaten(a){
 }
 function _spKipptBild(d){
   if(!d || !d.verlauf || d.verlauf.length < 3) return '';
-  return `<div class="sp-fk sp-ln"><div class="sp-k">Bilanz, Duell für Duell</div>`
+  return `<div class="sp-fk sp-ln"><div class="sp-k">Bilanz, Satz für Satz</div>`
     + `<div class="sp-ln-lg">${_spChip(d.w)}<small>darüber ${esc(_spName(d.w))} vorn</small>${_spChip(d.l)}<small>darunter ${esc(_spName(d.l))}</small></div>`
     + _spLinie(d.verlauf, {ref:0, zwei:true, fmt:_spVz, letzt:true, ende:`${_spZahl(d.s)}:${_spZahl(d.n - d.s)}`,
-      x:[d.ab ? `${_spZahl(d.ab)}. Duell` : 'Beginn', `${_spZahl(d.n)}. Duell`]}) + `</div>`;
+      x:[d.ab ? `${_spZahl(d.ab)}. Satz` : 'Beginn', `${_spZahl(d.n)}. Satz`]}) + `</div>`;
 }
 function _spWocheDaten(a){
   const B = _spBasis(), i = B.idx.get(a.m.id), wk = _wochenKey(a.m.created_at), je = {};
@@ -27805,7 +27837,7 @@ function _spWocheBild(d){
   if(!d || !d.liste) return '';
   return `<div class="sp-fk sp-ln"><div class="sp-k">Siegquote der Woche, ab fünf Siegen</div>`
     + _spRangliste(d.liste.map(q => ({id:q.id, wert:q.q, zahl:_spZahl(q.q) + ' %', neben:`${_spZahl(q.s)}/${_spZahl(q.n)}`})),
-      {hervor:d.pid, max:100, kopf:['Quote', 'Siege']}) + `</div>`;
+      {hervor:d.pid, max:100, kopf:['Siegquote', 'Siege']}) + `</div>`;
 }
 function _spTagEloDaten(a, ref){
   const pid = a.x.pid, tag = tagKey(a.m.created_at);
@@ -27862,7 +27894,7 @@ function _spPartnerBild(d){
   if(!d || !d.liste) return '';
   return `<div class="sp-fk sp-ln metall"><div class="sp-k">Siegquote je Partner, ${esc(_spName(d.pid))}</div>`
     + _spRangliste(d.liste.map(q => ({id:q.id, wert:q.q, zahl:_spZahl(q.q) + ' %', neben:_spZahl(q.n)})),
-      {hervor:d.mit, max:100, schnitt:d.allg, kopf:['Quote', 'Sätze']})
+      {hervor:d.mit, max:100, schnitt:d.allg, kopf:['Siegquote', 'Sätze']})
     + `<div class="sp-rl-lg"><i></i>${_spZahl(d.allg)} % mit allen</div></div>`;
 }
 const SP_FAKT_FUSS = {duell_kippt:'kippt', woche_spitze:'woche', tag_plus:'plus', tag_hoehe:'hoehe',
@@ -27942,7 +27974,7 @@ function _spDuoserieBild(d){
     + `<span class="sp-ds-k"><b class="num">${_spZahl(d.k)}</b> in Folge</span>`
     + `<span class="sp-ds-r">${d.folge.map((w, k) => `<i class="${w ? 'w' : 'l'}${k === d.folge.length - 1 ? ' jetzt' : ''}" style="--i:${k}"></i>`).join('')}</span>`
     + (d.s === d.k && d.n === d.k ? '' : `<span class="sp-ds-u">${d.ab ? `${_spZahl(d.n - d.s)}:<b class="num">${_spZahl(d.s)}</b>`
-      : `<b class="num">${_spZahl(d.s)}</b>:${_spZahl(d.n - d.s)}`} in ${_spZahl(d.n)} Duellen</span>`) + `</div>`
+      : `<b class="num">${_spZahl(d.s)}</b>:${_spZahl(d.n - d.s)}`} in ${_spZahl(d.n)} Sätzen</span>`) + `</div>`
     + `<span class="sp-ds-c re">${_spChips(d.L)}</span></div>`
     + (d.nurAnlass ? '' : _spNz(d.W, d.L));
 }
@@ -28681,7 +28713,7 @@ function _ffDuell(b){
   return `<div class="ff-dl"><span class="ff-dl-s${b.wa >= b.wb ? ' vorn' : ''}">${_ffChip(b.a)}<b class="num">${b.wa | 0}</b></span>`
     + `<span class="ff-dl-bar"><i style="width:${pa}%"></i></span>`
     + `<span class="ff-dl-s re${b.wb > b.wa ? ' vorn' : ''}"><b class="num">${b.wb | 0}</b>${_ffChip(b.b)}</span></div>`
-    + `<div class="ff-dl-n">${_ffNm(b.a)}<small class="num">${n} Duelle</small>${_ffNm(b.b)}</div>`;
+    + `<div class="ff-dl-n">${_ffNm(b.a)}<small class="num">${n} Sätze</small>${_ffNm(b.b)}</div>`;
 }
 
 function _ffDuo(b){
@@ -29577,7 +29609,7 @@ function _newsRangZeile(pid){
 
 function _ndBeziehung(s, anzahl){
   const t = ((s && s.dataRef) || {}).type || '';
-  if(t === 'rivalry' || t === 'rivalry_milestone') return 'im direkten Duell';
+  if(t === 'rivalry' || t === 'rivalry_milestone') return 'im Direkten Vergleich';
   if(t === 'team_streak' || t === 'team_loss_streak') return 'als Duo';
   if(t === 'top_clash') return 'Sieger und Verlierer dieses Satzes';
   if(t === 'streak_killer') return 'auf beiden Seiten des Satzes';
@@ -30101,7 +30133,7 @@ function _ndRivalBlatt(s){
   if(!l.length) return null;
   const f = l.map(y => _spGew(y, a)), sa = f.filter(Boolean).length, n = l.length;
   const seite = id => `<div class="nd-rv-p" data-pid="${esc(id)}">${avHtml(pm[id], '', {ins:true, px:64, feuer:0})}<b>${esc(_spName(id))}</b></div>`;
-  const kopf = `<div class="nd-buehne nd-rv">${seite(a)}<div class="nd-rv-m"><b class="num">${_spZahl(n)}</b><span>Duelle</span></div>${seite(b)}`
+  const kopf = `<div class="nd-buehne nd-rv">${seite(a)}<div class="nd-rv-m"><b class="num">${_spZahl(n)}</b><span>Sätze</span></div>${seite(b)}`
     + `<div class="nd-rv-tau"><b class="num">${_spZahl(sa)}</b><span class="nd-rv-tb"><i style="width:${(sa / n * 100).toFixed(1)}%"></i></span><b class="num">${_spZahl(n - sa)}</b></div></div>`;
   let k = 0;
   const v = [0].concat(f.map(w => (k += w ? 1 : -1)));
@@ -30116,9 +30148,9 @@ function _ndRivalBlatt(s){
   const deutlich = w => l.filter(y => _spGew(y, a) === w).sort((p, q) => Math.abs(q.games_a - q.games_b) - Math.abs(p.games_a - p.games_b))[0];
   const dl = [deutlich(true), deutlich(false)].filter(Boolean);
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
-  return {kopf, mitte:(m ? ab('Das ' + n + '. Duell', _ndPartieListe([m], a)) : '')
+  return {kopf, mitte:(m ? ab('Der ' + n + '. Satz gegeneinander', _ndPartieListe([m], a)) : '')
     + ab('Wer wann vorn lag', n >= 3 ? linie : '')
-    + ab(letzte.length < n ? 'Die letzten ' + letzte.length : 'Jedes Duell', lauf)
+    + ab(letzte.length < n ? 'Die letzten ' + letzte.length : 'Jeder Satz gegeneinander', lauf)
     + ab('Die deutlichsten', dl.length ? _ndPartieListe(dl, a) : '')};
 }
 
@@ -30632,7 +30664,7 @@ function _ndFaktBlatt(s){
     const b = d.bild || {};
     let mitte = '';
     if(d.type === 'dry_spell') mitte = ab('Der letzte Satz', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
-    else if(b.f === 'duell' && pm[b.a] && pm[b.b]) mitte = ab('Jede Begegnung', h2hBegegnungenHtml(b.a, b.b));
+    else if(b.f === 'duell' && pm[b.a] && pm[b.b]) mitte = h2hBegegnungenHtml(b.a, b.b);
     else if(b.f === 'halbzeit') mitte = ab('Die Spitze des Monats', (b.tab || []).some(x => pm[x[0]])
         ? `<div class="ff ff-rennen gross">${_ffRennen({r:(b.tab || []).filter(x => pm[x[0]]).map(x => ({p:x[0],
           w:Math.max(0, x[1]) / Math.max(1, ...(b.tab || []).map(y => y[1])), t:x[1] + ' Elo'}))})}</div>` : '')
@@ -30706,7 +30738,7 @@ function _ndPartieAbschnitte(s){
   try { vert = zeigt('sp-mo') || zeigt('sp-vt') ? '' : _ndVerteilung(m); } catch(e){}
   return ab('Wer wo stand', feld) + ab('Wie erwartbar war das', skala)
     + ab(buehneFeld ? 'In der Tabelle' : 'Was der Satz bewegt hat', elo)
-    + ab('Die direkten Duelle', duelle) + ab('Der Tag', tag) + ab('Wie oft es so ausgeht', vert);
+    + ab('Der Direkte Vergleich', duelle) + ab('Der Tag', tag) + ab('Wie oft es so ausgeht', vert);
 }
 
 function _ndOhneLeere(html){
@@ -30836,7 +30868,7 @@ function _ndMitteRoh(s){
           <div class="nd-stat-row" data-pid="${esc(d.p1)}" style="cursor:pointer"><div class="nd-stat-label">Platz 1</div><div class="nd-stat-val acid">${esc(nameOf(d.p1))} ›</div></div>
           <div class="nd-stat-row" data-pid="${esc(d.p2)}" style="cursor:pointer"><div class="nd-stat-label">Platz 2</div><div class="nd-stat-val">${esc(nameOf(d.p2))} ›</div></div>` : '';
         const matchHtml = d.matchId ? _newsMatchVsBlock(d.matchId) : '';
-        return (rankRows ? `<div class="nd-section">Duell an der Spitze</div>${rankRows}` : '')
+        return (rankRows ? `<div class="nd-section">Die Spitze</div>${rankRows}` : '')
              + (matchHtml ? `<div class="nd-section">Das Spitzenspiel</div>${matchHtml}` : '');
       }
       case 'elo_record': {
@@ -31083,7 +31115,7 @@ function _ndMitteRoh(s){
         if(Array.isArray(d.ambientPids) && d.ambientPids.length === 2 && pm[d.ambientPids[0]] && pm[d.ambientPids[1]]){
           const [pa, pb] = d.ambientPids;
           const isTeam = d.pairKind === 'team' || (!d.pairKind && s.cat === 'team');
-          return `<div class="nd-section">${isTeam ? 'Das Duo' : 'Duell'}</div>
+          return `<div class="nd-section">${isTeam ? 'Das Duo' : 'Der Direkte Vergleich'}</div>
             <div class="nd-vs">
               <div class="nd-vs-p" data-pid="${esc(pa)}">${avM(pa)}<div class="nd-vs-name">${esc(nameOf(pa))}</div></div>
               <div class="nd-vs-mid">${isTeam ? '&amp;' : 'vs'}</div>
@@ -31215,7 +31247,7 @@ function _ndMitteRoh(s){
               <div class="nd-vs-name">${esc(nameOf(d.a))}</div>
               <div class="nd-vs-elo">${esc(_newsRangKurz(d.a) || '')}</div>
             </div>
-            <div class="nd-vs-mid">VS<div class="nd-vs-mid-sub">${d.n} Duelle</div></div>
+            <div class="nd-vs-mid">VS<div class="nd-vs-mid-sub">${d.n} Sätze</div></div>
             <div class="nd-vs-p" data-pid="${esc(d.b)}">
               ${avM(d.b)}
               <div class="nd-vs-name">${esc(nameOf(d.b))}</div>
@@ -31223,7 +31255,7 @@ function _ndMitteRoh(s){
             </div>
           </div>
           ${_newsBilanzBalken(d.a, d.b, h2h.aWins, h2h.bWins)}
-          ${h2h.lastMatchId ? `<div class="nd-section">Letztes Duell</div>${_newsMatchVsBlock(h2h.lastMatchId)}` : ''}`;
+          ${h2h.lastMatchId ? `<div class="nd-section">Letzter Satz</div>${_newsMatchVsBlock(h2h.lastMatchId)}` : ''}`;
       }
       case 'team_streak':
       case 'team_loss_streak': {
@@ -31335,14 +31367,14 @@ function _ndMitteRoh(s){
               <div class="nd-vs-name">${esc(nameOf(d.a))}</div>
               <div class="nd-vs-elo">${h2h.aWins} Siege</div>
             </div>
-            <div class="nd-vs-mid">${d.n}<div class="nd-vs-mid-sub">Duelle</div></div>
+            <div class="nd-vs-mid">${d.n}<div class="nd-vs-mid-sub">Sätze</div></div>
             <div class="nd-vs-p" data-pid="${esc(d.b)}">
               ${avM(d.b)}
               <div class="nd-vs-name">${esc(nameOf(d.b))}</div>
               <div class="nd-vs-elo">${h2h.bWins} Siege</div>
             </div>
           </div>
-          ${d.matchId ? `<div class="nd-section">Das Jubiläumsduell</div>${_newsMatchVsBlock(d.matchId)}` : ''}`;
+          ${d.matchId ? `<div class="nd-section">Der Satz des Jubiläums</div>${_newsMatchVsBlock(d.matchId)}` : ''}`;
       }
       case 'fluch': {
         const h2h = _newsH2HRecord(d.pid, d.gegen);
@@ -31361,7 +31393,7 @@ function _ndMitteRoh(s){
       }
       case 'revanche': {
         return d.vorherId && d.vorherId !== _ndKopfMatch
-          ? `<div class="nd-section">Das Duell davor</div>${_newsMatchVsBlock(d.vorherId)}`
+          ? `<div class="nd-section">Der Satz davor</div>${_newsMatchVsBlock(d.vorherId)}`
           : `<div class="nd-section">Die Revanche</div>`;
       }
       case 'tagesmarathon': {
@@ -32036,7 +32068,7 @@ const DISZIPLINEN = [
       beiname:'Der Entscheider',
       art:'koennen',
       klasse:'besonders', aus:2.02, streu:0.096, mitte:0.0111, n0:15, echt:0,
-      wie:'Offen heißt: die Rechnung gab beiden Teams zwischen 45 und 55 Prozent. Verglichen wird die Quote darin mit der eigenen Gesamtquote.',
+      wie:'Offen heißt: die Rechnung gab beiden Teams zwischen 45 und 55 Prozent. Verglichen wird die Siegquote darin mit der eigenen Gesamtquote.',
       stichprobe:p => p.partien.filter(_stAugenhoehe).length,
       cond:`In offenen Sätzen mindestens 20 Prozentpunkte stärker als sonst, ab ${ST_TEIL} offenen Sätzen`,
       ...(_stWertung(
@@ -32074,7 +32106,7 @@ const DISZIPLINEN = [
       beiname:'Der Standhafte',
       art:'koennen',
       klasse:'selten', aus:1.76, streu:0.274, mitte:0.517, n0:9, echt:0,
-      wie:`Regelmäßig heißt mindestens ${ST_TEIL} Duelle im Monat. Gegen jeden davon zählt, ob es mindestens so viele Siege wurden, wie die Siegchancen vor den Sätzen zusammen erwarten ließen. Gegen einen starken Gegner reichen weniger als gegen einen schwachen.`,
+      wie:`Regelmäßig heißt mindestens ${ST_TEIL} Sätze gegeneinander im Monat. Gegen jeden davon zählt, ob es mindestens so viele Siege wurden, wie die Siegchancen vor den Sätzen zusammen erwarten ließen. Gegen einen starken Gegner reichen weniger als gegen einen schwachen.`,
       stichprobe:p => Object.values(p.gegnerGrp).filter(d => d.length >= ST_TEIL).length,
       cond:'Gegen JEDEN regelmäßigen Gegner mindestens so viele Siege, wie die Elo-Rechnung erwartet hat, ab 4 solchen Gegnern',
       ...(_stWertung(
@@ -32218,7 +32250,7 @@ const DISZIPLINEN = [
       zeitraum:'Ganze Laufbahn, alle Sätze rechts',
       mind:'10 Sätze rechts',
       wie:'Die Elo-Rechnung gibt jedem Satz vorab eine Siegchance. Über alle Sätze rechts gemittelt ergibt das die dort erwartete Siegquote. Gewertet wird, wie weit die tatsächliche darüber liegt, in Prozentpunkten.',
-      cond:'Größter Vorsprung der Quote rechts auf die dort erwartete Siegquote, ab 10 Sätzen rechts',
+      cond:'Größter Vorsprung der Siegquote rechts auf die dort erwartete Siegquote, ab 10 Sätzen rechts',
       val:p => p.drvG >= 10 ? p.drvPerf / p.drvG : null,
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte · ${pct(p.drvW/p.drvG)} statt ${_ppGegen(p.drvW/p.drvG, v)} % erwartet in ${p.drvG} Sätzen rechts`
     }},
@@ -32229,7 +32261,7 @@ const DISZIPLINEN = [
       zeitraum:'Ganze Laufbahn, alle Sätze links',
       mind:'10 Sätze links',
       wie:'Die Elo-Rechnung gibt jedem Satz vorab eine Siegchance. Über alle Sätze links gemittelt ergibt das die dort erwartete Siegquote. Gewertet wird, wie weit die tatsächliche darüber liegt, in Prozentpunkten.',
-      cond:'Größter Vorsprung der Quote links auf die dort erwartete Siegquote, ab 10 Sätzen links',
+      cond:'Größter Vorsprung der Siegquote links auf die dort erwartete Siegquote, ab 10 Sätzen links',
       val:p => p.revG >= 10 ? p.revPerf / p.revG : null,
       ev:(p,v) => `${_ppZeichen(v)} %-Punkte · ${pct(p.revW/p.revG)} statt ${_ppGegen(p.revW/p.revG, v)} % erwartet in ${p.revG} Sätzen links`
     }},
@@ -32239,7 +32271,7 @@ const DISZIPLINEN = [
       beiname:'Der Überbieter',
       art:'koennen',
       klasse:'selten', aus:1.6, streu:0.0956, mitte:-0.00529, n0:42, echt:0.4,
-      wie:'Vor jedem Satz gibt die Elo-Rechnung dem eigenen Team eine Siegchance. Ihr Mittel über den Monat ist die erwartete Siegquote. Gewertet wird, wie weit die tatsächliche Quote darüber liegt.',
+      wie:'Vor jedem Satz gibt die Elo-Rechnung dem eigenen Team eine Siegchance. Ihr Mittel über den Monat ist die erwartete Siegquote. Gewertet wird, wie weit die tatsächliche Siegquote darüber liegt.',
       stichprobe:p => p.games,
       cond:'Mindestens 15 Prozentpunkte über der eigenen Elo-Erwartung',
       ...(_stWertung(
@@ -32269,7 +32301,7 @@ const DISZIPLINEN = [
       klasse:'selten', wende:true, aus:1.73, streu:0.187, mitte:0.0295, n0:8, echt:0.55,
       wie:'Die letzten zehn Sätze des Monats gegen alle davor in diesem Monat.',
       stichprobe:p => (f => f ? _stH(10, f.vor) : 0)(_stLetzteZehn(p)),
-      cond:`In den letzten 10 Sätzen mindestens 35 Prozentpunkte über der eigenen Quote davor, ab ${10 + ST_TEIL} Sätzen im Monat`,
+      cond:`In den letzten 10 Sätzen mindestens 35 Prozentpunkte über der eigenen Siegquote davor, ab ${10 + ST_TEIL} Sätzen im Monat`,
       ...(_stWertung(
         p=>_stLetzteZehn(p)!=null,
         p=>{const f=_stLetzteZehn(p);return f?f.d:null;},
@@ -32651,7 +32683,7 @@ const DISZIPLINEN = [
       klasse:'selten', wende:true, aus:2.14, streu:3.88,
       wie:'Gegen manche läuft es über Monate nicht. Gezählt wird die längste Pleitenserie gegen einen Gegner, die in diesem Monat gebrochen wurde.',
       stichprobe:false,
-      cond:'Einen Gegner besiegt, gegen den zuvor 15 Duelle in Folge verloren gingen',
+      cond:'Einen Gegner besiegt, gegen den zuvor 15 Sätze in Folge verloren gingen',
       ...(_stWertung(
         p=>true,
         (p,c)=>p.bannLauf,
@@ -32817,9 +32849,9 @@ const DISZIPLINEN = [
       beiname:'Der Geplagte',
       art:'schatten',
       klasse:'schatten', aus:1.96, streu:0.183, mitte:-0.358, n0:16, echt:0,
-      wie:'Der Gegner, gegen den im Monat am wenigsten zu holen war, ab zehn Duellen.',
+      wie:'Der Gegner, gegen den im Monat am wenigsten zu holen war, ab zehn Sätzen gegeneinander.',
       stichprobe:p => p._ag ? p._ag.n : 0,
-      cond:'Gegen einen Gegner mit mindestens 10 Duellen keinen einzigen Sieg',
+      cond:'Gegen einen Gegner in mindestens 10 Sätzen keinen einzigen Sieg',
       ...(_stWertung(
         p=>Object.values(p.gegnerGrp).some(a=>a.length>=10),
         p=>{let b=null;Object.keys(p.gegnerGrp).forEach(g=>{const d=p.gegnerGrp[g];if(d.length<10)return;
@@ -32830,11 +32862,11 @@ const DISZIPLINEN = [
     allzeit:{
       kammer:'shame', basis:REKORD_GRUNDWERT.schatten,
       zeitraum:'Ganze Laufbahn, je Gegner',
-      mind:`${RF.teil} Duelle gegen denselben Gegner`,
-      wie:`Für jeden Gegner mit mindestens ${RF.teil} Duellen steht der eigene Niederlagenanteil gegen genau diesen Gegner. Gewertet wird der höchste davon.`,
-      cond:`Höchster Niederlagenanteil gegen einen einzelnen regelmäßigen Gegner, ab ${RF.teil} Duellen`,
+      mind:`${RF.teil} Sätze gegen denselben Gegner`,
+      wie:`Für jeden Gegner mit mindestens ${RF.teil} Sätzen gegeneinander steht der eigene Niederlagenanteil gegen genau diesen Gegner. Gewertet wird der höchste davon.`,
+      cond:`Höchster Niederlagenanteil gegen einen einzelnen regelmäßigen Gegner, ab ${RF.teil} Sätzen gegeneinander`,
       val:p => p.angstQ != null ? 1 - p.angstQ : null,
-      ev:p => `${Math.round((1-p.angstQ)*100)} % der ${p.angstN} Duelle gegen einen einzelnen Gegner verloren · ${p.angstN - p.angstW} Pleiten`
+      ev:p => `${Math.round((1-p.angstQ)*100)} % der ${p.angstN} Sätze gegen einen einzelnen Gegner verloren · ${p.angstN - p.angstW} Pleiten`
     }},
 
   {id:'stammkunde', name:'Der Stammkunde', short:'Stammkunde', ic:'stammkunde', tone:'red', art:'schatten',
@@ -32854,37 +32886,37 @@ const DISZIPLINEN = [
       beiname:'Der Entzauberte',
       art:'schatten',
       klasse:'schatten', aus:1.85, streu:0.139, mitte:0.0936, n0:6, echt:1,
-      wie:`Gewertet wird der Gegner, gegen den die eigene Laufbahn vor diesem Monat am besten aussah, unter denen mit mindestens ${2 * ST_TEIL} Duellen davor, ${ST_TEIL} Duellen im Monat und einer Quote über der eigenen Laufbahnquote. Verglichen wird die Quote gegen diesen Gegner in diesem Monat mit der Quote gegen denselben Gegner davor.`,
+      wie:`Gewertet wird der Gegner, gegen den die eigene Laufbahn vor diesem Monat am besten aussah, unter denen mit mindestens ${2 * ST_TEIL} Sätzen gegeneinander davor, ${ST_TEIL} im Monat und einer Siegquote über der eigenen Laufbahnquote. Verglichen wird die Siegquote gegen diesen Gegner in diesem Monat mit der Siegquote gegen denselben Gegner davor.`,
       stichprobe:(p, C) => (x => x ? _stH(x.mn, x.kn) : 0)(_stDuellWende(p, C, 1)),
-      cond:`Gegen den liebsten Gegner der Laufbahn mindestens 35 Prozentpunkte schwächer als davor, ab ${2 * ST_TEIL} Duellen davor, ${ST_TEIL} im Monat und ${CHRONIK_MIN_SPIELE} Sätzen in der Laufbahn`,
+      cond:`Gegen den liebsten Gegner der Laufbahn mindestens 35 Prozentpunkte schwächer als davor, ab ${2 * ST_TEIL} Sätzen gegeneinander davor, ${ST_TEIL} im Monat und ${CHRONIK_MIN_SPIELE} Sätzen in der Laufbahn`,
       ...(_stWertung(
         (p, C) => _stDuellWende(p, C, 1) != null,
         (p, C) => { const x = _stDuellWende(p, C, 1); return x.kq - x.mq; },
         0.35,
         (p, v, C) => { const x = _stDuellWende(p, C, 1);
-          return `${_ppLage(v, 'unter', 'über')} der Laufbahn gegen ${pname(x.fid)} · ${x.mw} von ${x.mn} Duellen, davor ${pct(x.kq)} % in ${x.kn}`; }))}},
+          return `${_ppLage(v, 'unter', 'über')} der Laufbahn gegen ${pname(x.fid)} · ${x.mw} von ${x.mn} Sätzen, davor ${pct(x.kq)} % in ${x.kn}`; }))}},
 
   {id:'uebermacht', name:'Die Übermacht', short:'Übermacht', ic:'uebermacht', tone:'red', art:'schatten',
     monat:{
       beiname:'Der Unterlegene',
       art:'schatten',
       klasse:'schatten', aus:3.47, streu:0.408,
-      wie:'Gewertet wird der Gegner mit den meisten Duellen im Monat. Aus den Siegchancen aller Duelle gegen diesen Gegner folgt, wie wahrscheinlich höchstens so wenige Siege waren.',
+      wie:'Gewertet wird der Gegner mit den meisten Sätzen gegeneinander im Monat. Aus den Siegchancen aller Sätze gegen diesen Gegner folgt, wie wahrscheinlich höchstens so wenige Siege waren.',
       stichprobe:false,
-      cond:'Gegen den häufigsten Gegner des Monats so selten gewonnen, wie es die Rechnung mit höchstens 2 % erwartet hat, ab 10 Duellen',
+      cond:'Gegen den häufigsten Gegner des Monats so selten gewonnen, wie es die Rechnung mit höchstens 2 % erwartet hat, ab 10 Sätzen gegeneinander',
       ...(_stWertung(
         p => { const r = _stRivale(p); return !!r && r.a.length >= 10; },
         p => _stUnwahr(_stRivale(p).a, true),
         1.6989700043360187,
         (p, v) => { const r = _stRivale(p);
-          return `${_stSiege(r.a)} von ${r.a.length} Duellen gegen ${pname(r.fid)} · so wenige gab die Rechnung zu ${komma(Math.pow(10, -v) * 100, 1)} %`; }))}},
+          return `${_stSiege(r.a)} von ${r.a.length} Sätzen gegen ${pname(r.fid)} · so wenige gab die Rechnung zu ${komma(Math.pow(10, -v) * 100, 1)} %`; }))}},
 
   {id:'untersoll', name:'Das Untersoll', short:'Untersoll', ic:'sollMinus', tone:'red', art:'schatten',
     monat:{
       beiname:'Der Gehemmte',
       art:'schatten',
       klasse:'schatten', aus:2.07, streu:0.0956, mitte:0.00529, n0:42, echt:0.4,
-      wie:'Vor jedem Satz gibt die Elo-Rechnung dem eigenen Team eine Siegchance. Ihr Mittel über den Monat ist die erwartete Siegquote. Gewertet wird, wie weit die tatsächliche Quote darunter liegt.',
+      wie:'Vor jedem Satz gibt die Elo-Rechnung dem eigenen Team eine Siegchance. Ihr Mittel über den Monat ist die erwartete Siegquote. Gewertet wird, wie weit die tatsächliche Siegquote darunter liegt.',
       stichprobe:p => p.games,
       cond:'Mindestens 20 Prozentpunkte unter der eigenen Elo-Erwartung',
       ...(_stWertung(
@@ -32896,7 +32928,7 @@ const DISZIPLINEN = [
       kammer:'shame', basis:REKORD_GRUNDWERT.schatten,
       zeitraum:'Ganze Laufbahn',
       mind:'20 Sätze',
-      wie:'Vor jedem Satz gibt die Elo-Rechnung dem eigenen Team eine Siegchance. Ihr Mittel über die Laufbahn ist die erwartete Siegquote. Gewertet wird, wie weit die tatsächliche Quote darunter liegt.',
+      wie:'Vor jedem Satz gibt die Elo-Rechnung dem eigenen Team eine Siegchance. Ihr Mittel über die Laufbahn ist die erwartete Siegquote. Gewertet wird, wie weit die tatsächliche Siegquote darunter liegt.',
       cond:'Größter Rückstand der Siegquote auf die eigene Elo-Erwartung, ab 20 Sätzen',
       val:p => {
         if(p.games < 20) return null;
@@ -33057,7 +33089,7 @@ const DISZIPLINEN = [
       klasse:'legendaer', aus:2.96, streu:0.158, mitte:0.282, n0:5, echt:1,
       wie:'Nicht der Lieblingsgegner zählt, sondern der unangenehmste. Gegen wen läuft es am schlechtesten, und wie schlecht ist das noch.',
       stichprobe:p => Math.min(...Object.values(p.gegnerGrp).filter(a => a.length >= ST_TEIL).map(a => a.length)),
-      cond:`Gegen JEDEN regelmäßigen Gegner mindestens 75 %, ab 3 Gegnern mit je ${ST_TEIL} Duellen`,
+      cond:`Gegen JEDEN regelmäßigen Gegner mindestens 75 %, ab 3 Gegnern mit je ${ST_TEIL} Sätzen gegeneinander`,
       ...(_stWertung(
         p=>Object.values(p.gegnerGrp).filter(a=>a.length>=ST_TEIL).length>=3,
         p=>Math.min(...Object.values(p.gegnerGrp).filter(a=>a.length>=ST_TEIL).map(a=>_stQuoteRoh(a))),
@@ -33112,7 +33144,7 @@ const DISZIPLINEN = [
       beiname:'Der Wegbereiter',
       art:'koennen',
       klasse:'besonders', aus:1.82, streu:0.267, mitte:0.111, n0:8, echt:0.5,
-      wie:'Für jeden Partner wird die gemeinsame Quote mit dessen Quote ohne diesen Spieler verglichen.',
+      wie:'Für jeden Partner wird die gemeinsame Siegquote mit dessen Siegquote ohne diesen Spieler verglichen.',
       stichprobe:p => p._sm ? p.partnerGrp[p._sm.mid].length : 0,
       cond:`Ein Partner gewinnt an dieser Seite mindestens 60 Prozentpunkte häufiger als ohne, ab ${ST_TEIL} gemeinsamen Sätzen`,
       ...(_stWertung(
@@ -33255,7 +33287,7 @@ const DISZIPLINEN = [
       beiname:'Der Mutmacher',
       art:'koennen',
       klasse:'besonders', aus:1.86, streu:0.153, mitte:0.0112, n0:12, echt:0.3,
-      wie:'Nur die Sätze neben einem Partner, der die zwei Sätze davor verloren hatte, auch an einem früheren Tag. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze neben einem Partner, der die zwei Sätze davor verloren hatte, auch an einem früheren Tag. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:(p, C) => _stPartnerTief(p, C).length,
       cond:`Neben einem Partner nach zwei Pleiten am Stück mindestens 30 Prozentpunkte über der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -33376,7 +33408,7 @@ const DISZIPLINEN = [
       klasse:'besonders', aus:1.33, streu:0.372,
       wie:'Der Abstand zwischen der eigenen Siegquote und der, die die Elo-Rechnung vorher erwartet hat, umgerechnet auf 40 Sätze. Je näher an null, desto besser.',
       stichprobe:false,
-      cond:'Die eigene Quote liegt am Monatsende höchstens 2 Prozentpunkte neben der Elo-Erwartung, auf 40 Sätze gerechnet',
+      cond:'Die eigene Siegquote liegt am Monatsende höchstens 2 Prozentpunkte neben der Elo-Erwartung, auf 40 Sätze gerechnet',
       ...(_stWertung(
         p=>true,
         p=>-Math.log10(Math.max(Math.abs(p.q-p.expQ)*Math.sqrt(p.games/40),0.0005)),
@@ -33405,7 +33437,7 @@ const DISZIPLINEN = [
       beiname:'Der Vielseitige',
       art:'konstanz',
       klasse:'besonders', aus:0.82, streu:0.429,
-      wie:'Die Quote rechts und die links, beide gegen die eigene Gesamtquote, umgerechnet auf 15 Sätze auf der selteneren Seite. Je näher an null, desto besser.',
+      wie:'Die Siegquote rechts und die links, beide gegen die eigene Gesamtquote, umgerechnet auf 15 Sätze auf der selteneren Seite. Je näher an null, desto besser.',
       stichprobe:false,
       cond:`Auf beiden Seiten höchstens 3 Prozentpunkte neben der eigenen Gesamtquote, auf 15 Sätze gerechnet, ab ${ST_TEIL} Sätzen je Seite`,
       ...(_stWertung(
@@ -33689,7 +33721,7 @@ const DISZIPLINEN = [
       beiname:'Der Kontrastreiche',
       art:'fuegung',
       klasse:'besonders', aus:1.29, streu:0.196,
-      wie:'Die Spanne zwischen der Quote neben dem stärksten und der neben dem schwächsten Partner.',
+      wie:'Die Spanne zwischen der Siegquote neben dem stärksten und der neben dem schwächsten Partner.',
       stichprobe:false,
       cond:`Zwischen bestem und schwächstem Partner mindestens 80 Prozentpunkte, ab 3 Partnern mit je ${ST_TEIL} Sätzen`,
       ...(_stWertung(
@@ -33809,7 +33841,7 @@ const DISZIPLINEN = [
       beiname:'Der Brückenbauer',
       art:'koennen',
       klasse:'besonders', aus:1.51, streu:0.138, mitte:-0.0336, n0:16, echt:0.3,
-      wie:'Nur die Sätze neben einem Partner, mit dem es vor diesem Monat keine einzige gab. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze neben einem Partner, mit dem es vor diesem Monat keine einzige gab. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:(p, C) => _stNeuland(p, C).length,
       cond:`Neben neuen Partnern mindestens 20 Prozentpunkte über der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -33824,7 +33856,7 @@ const DISZIPLINEN = [
       beiname:'Der Revanchist',
       art:'koennen',
       klasse:'selten', wende:true, aus:1.81, streu:0.219, mitte:0.059, n0:5, echt:0,
-      wie:'Eine Revanche ist der nächste eigene Satz am selben Tag gegen dieselben zwei Gegner, direkt nach einer Niederlage gegen sie. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Eine Revanche ist der nächste eigene Satz am selben Tag gegen dieselben zwei Gegner, direkt nach einer Niederlage gegen sie. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:p => _stRevanchen(p).length,
       cond:'Revanchen mindestens 45 Prozentpunkte häufiger gewonnen, als die Elo-Rechnung erwartet hat, ab 3 Revanchen',
       ...(_stWertung(
@@ -33838,7 +33870,7 @@ const DISZIPLINEN = [
       beiname:'Der Nachtragende',
       art:'koennen',
       klasse:'selten', wende:true, aus:1.7, streu:0.139, mitte:-0.0344, n0:12, echt:0.6,
-      wie:'Nur der erste Satz gegen dieselben zwei Gegner an einem späteren Tag, wenn der letzte gegen sie verloren ging. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur der erste Satz gegen dieselben zwei Gegner an einem späteren Tag, wenn der letzte gegen sie verloren ging. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:p => _stSpaeteRevanchen(p).length,
       cond:`Im ersten Wiedersehen mit denselben zwei Gegnern an einem späteren Tag nach einer Niederlage gegen sie mindestens 20 Prozentpunkte über der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -33853,7 +33885,7 @@ const DISZIPLINEN = [
       beiname:'Der Gipfelstürmer',
       art:'koennen',
       klasse:'selten', aus:1.92, streu:0.114, mitte:-0.0711, n0:21, echt:0.55,
-      wie:'Nur die Sätze gegen die beiden Ersten der Monatstabelle. Der Erste selbst wird nicht gewertet. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze gegen die beiden Ersten der Monatstabelle. Der Erste selbst wird nicht gewertet. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:(p, C) => _stSpitzeGegen(p, C).length,
       cond:`Gegen die beiden Ersten der Monatstabelle mindestens 15 Prozentpunkte über der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -33868,9 +33900,9 @@ const DISZIPLINEN = [
       beiname:'Der Lernfähige',
       art:'koennen',
       klasse:'selten', wende:true, aus:2.21, streu:0.155, mitte:0.00901, n0:81, echt:0.6,
-      wie:`Gegen jeden Gegner mit mindestens ${ST_TEIL} Duellen im Monat zählt, um wie viel die zweite Hälfte der Duelle über der Rechnung lag, verglichen mit der ersten. Gemittelt wird über alle solchen Gegner.`,
+      wie:`Gegen jeden Gegner mit mindestens ${ST_TEIL} Sätzen gegeneinander im Monat zählt, um wie viel die zweite Hälfte dieser Sätze über der Rechnung lag, verglichen mit der ersten. Gemittelt wird über alle solchen Gegner.`,
       stichprobe:p => Object.values(p.gegnerGrp).filter(a => a.length >= ST_TEIL).reduce((n, a) => n + a.length, 0),
-      cond:`Gegen bekannte Gegner im Mittel mindestens 35 Prozentpunkte stärker als zu Beginn, ab 3 Gegnern mit je ${ST_TEIL} Duellen`,
+      cond:`Gegen bekannte Gegner im Mittel mindestens 35 Prozentpunkte stärker als zu Beginn, ab 3 Gegnern mit je ${ST_TEIL} Sätzen gegeneinander`,
       ...(_stWertung(
         p => _stLernkurve(p) != null,
         p => _stLernkurve(p).v,
@@ -33882,37 +33914,37 @@ const DISZIPLINEN = [
       beiname:'Der Überwinder',
       art:'koennen',
       klasse:'selten', wende:true, aus:1.41, streu:0.128, mitte:0.069, n0:7.6, echt:1,
-      wie:`Gewertet wird der Gegner, gegen den die eigene Laufbahn vor diesem Monat am schlechtesten aussah, unter denen mit mindestens ${2 * ST_TEIL} Duellen davor, ${ST_TEIL} Duellen im Monat und einer Quote unter der eigenen Laufbahnquote. Verglichen wird die Quote gegen diesen Gegner in diesem Monat mit der Quote gegen denselben Gegner davor.`,
+      wie:`Gewertet wird der Gegner, gegen den die eigene Laufbahn vor diesem Monat am schlechtesten aussah, unter denen mit mindestens ${2 * ST_TEIL} Sätzen gegeneinander davor, ${ST_TEIL} im Monat und einer Siegquote unter der eigenen Laufbahnquote. Verglichen wird die Siegquote gegen diesen Gegner in diesem Monat mit der Siegquote gegen denselben Gegner davor.`,
       stichprobe:(p, C) => (x => x ? _stH(x.mn, x.kn) : 0)(_stDuellWende(p, C, -1)),
-      cond:`Gegen den schwierigsten Gegner der Laufbahn mindestens 25 Prozentpunkte besser als davor, ab ${2 * ST_TEIL} Duellen davor, ${ST_TEIL} im Monat und ${CHRONIK_MIN_SPIELE} Sätzen in der Laufbahn`,
+      cond:`Gegen den schwierigsten Gegner der Laufbahn mindestens 25 Prozentpunkte besser als davor, ab ${2 * ST_TEIL} Sätzen gegeneinander davor, ${ST_TEIL} im Monat und ${CHRONIK_MIN_SPIELE} Sätzen in der Laufbahn`,
       ...(_stWertung(
         (p, C) => _stDuellWende(p, C, -1) != null,
         (p, C) => { const x = _stDuellWende(p, C, -1); return x.mq - x.kq; },
         0.25,
         (p, v, C) => { const x = _stDuellWende(p, C, -1);
-          return `${_ppZeichen(v)} %-Punkte gegen ${pname(x.fid)} · ${x.mw} von ${x.mn} Duellen, davor ${pct(x.kq)} % in ${x.kn}`; }))}},
+          return `${_ppZeichen(v)} %-Punkte gegen ${pname(x.fid)} · ${x.mw} von ${x.mn} Sätzen, davor ${pct(x.kq)} % in ${x.kn}`; }))}},
 
   {id:'stammduell', name:'Das Stammduell', short:'Duell', ic:'stammduell', tone:'gold', art:'leistung',
     monat:{
       beiname:'Der Duellsieger',
       art:'koennen',
       klasse:'selten', aus:2.32, streu:0.298,
-      wie:'Gewertet wird der Gegner mit den meisten Duellen im Monat. Aus den Siegchancen aller Duelle gegen diesen Gegner folgt, wie wahrscheinlich mindestens so viele Siege waren.',
+      wie:'Gewertet wird der Gegner mit den meisten Sätzen gegeneinander im Monat. Aus den Siegchancen aller Sätze gegen diesen Gegner folgt, wie wahrscheinlich mindestens so viele Siege waren.',
       stichprobe:false,
-      cond:'Gegen den häufigsten Gegner des Monats so oft gewonnen, wie es die Rechnung mit höchstens 10 % erwartet hat, ab 10 Duellen',
+      cond:'Gegen den häufigsten Gegner des Monats so oft gewonnen, wie es die Rechnung mit höchstens 10 % erwartet hat, ab 10 Sätzen gegeneinander',
       ...(_stWertung(
         p => { const r = _stRivale(p); return !!r && r.a.length >= 10; },
         p => _stUnwahr(_stRivale(p).a),
         1,
         (p, v) => { const r = _stRivale(p);
-          return `${_stSiege(r.a)} von ${r.a.length} Duellen gegen ${pname(r.fid)} · die Rechnung gab dafür ${komma(Math.pow(10, -v) * 100, 1)} %`; }))}},
+          return `${_stSiege(r.a)} von ${r.a.length} Sätzen gegen ${pname(r.fid)} · die Rechnung gab dafür ${komma(Math.pow(10, -v) * 100, 1)} %`; }))}},
 
   {id:'nachlegen', name:'Das Nachlegen', short:'Nachlegen', ic:'nachlegen', tone:'gold', art:'leistung',
     monat:{
       beiname:'Der Nachleger',
       art:'koennen',
       klasse:'besonders', aus:1.81, streu:0.0999, mitte:-0.0357, n0:18, echt:0.55,
-      wie:'Nur die Sätze am selben Tag direkt nach einem Sieg. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze am selben Tag direkt nach einem Sieg. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:p => _stNachSieg(p).length,
       cond:`Nach einem Sieg mindestens 15 Prozentpunkte über der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -34056,7 +34088,7 @@ const DISZIPLINEN = [
       beiname:'Der Satte',
       art:'schatten',
       klasse:'schatten', aus:2.2, streu:0.0999, mitte:0.0357, n0:18, echt:0.55,
-      wie:'Nur die Sätze am selben Tag direkt nach einem Sieg. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze am selben Tag direkt nach einem Sieg. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:p => _stNachSieg(p).length,
       cond:`Nach einem Sieg mindestens 25 Prozentpunkte unter der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -34071,7 +34103,7 @@ const DISZIPLINEN = [
       beiname:'Der Ehrfürchtige',
       art:'schatten',
       klasse:'schatten', aus:2.02, streu:0.114, mitte:0.0711, n0:21, echt:0.55,
-      wie:'Nur die Sätze gegen die beiden Ersten der Monatstabelle. Der Erste selbst wird nicht gewertet. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze gegen die beiden Ersten der Monatstabelle. Der Erste selbst wird nicht gewertet. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:(p, C) => _stSpitzeGegen(p, C).length,
       cond:`Gegen die beiden Ersten der Monatstabelle mindestens 30 Prozentpunkte unter der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -34086,9 +34118,9 @@ const DISZIPLINEN = [
       beiname:'Der Vergessliche',
       art:'schatten',
       klasse:'schatten', aus:1.66, streu:0.155, mitte:-0.00901, n0:81, echt:0.6,
-      wie:`Gegen jeden Gegner mit mindestens ${ST_TEIL} Duellen im Monat zählt, um wie viel die zweite Hälfte der Duelle unter der Rechnung lag, verglichen mit der ersten. Gemittelt wird über alle solchen Gegner.`,
+      wie:`Gegen jeden Gegner mit mindestens ${ST_TEIL} Sätzen gegeneinander im Monat zählt, um wie viel die zweite Hälfte dieser Sätze unter der Rechnung lag, verglichen mit der ersten. Gemittelt wird über alle solchen Gegner.`,
       stichprobe:p => Object.values(p.gegnerGrp).filter(a => a.length >= ST_TEIL).reduce((n, a) => n + a.length, 0),
-      cond:`Gegen bekannte Gegner im Mittel mindestens 25 Prozentpunkte schwächer als zu Beginn, ab 3 Gegnern mit je ${ST_TEIL} Duellen`,
+      cond:`Gegen bekannte Gegner im Mittel mindestens 25 Prozentpunkte schwächer als zu Beginn, ab 3 Gegnern mit je ${ST_TEIL} Sätzen gegeneinander`,
       ...(_stWertung(
         p => _stLernkurve(p) != null,
         p => -_stLernkurve(p).v,
@@ -34100,7 +34132,7 @@ const DISZIPLINEN = [
       beiname:'Der Fremdelnde',
       art:'schatten',
       klasse:'schatten', aus:2.1, streu:0.138, mitte:0.0336, n0:16, echt:0.3,
-      wie:'Nur die Sätze neben einem Partner, mit dem es vor diesem Monat keine einzige gab. Verglichen wird die Quote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
+      wie:'Nur die Sätze neben einem Partner, mit dem es vor diesem Monat keine einzige gab. Verglichen wird die Siegquote darin mit der Siegchance, die die Elo-Rechnung diesen Sätzen gab.',
       stichprobe:(p, C) => _stNeuland(p, C).length,
       cond:`Neben neuen Partnern mindestens 30 Prozentpunkte unter der Rechnung, ab ${ST_TEIL} solchen Sätzen`,
       ...(_stWertung(
@@ -34131,7 +34163,7 @@ const DISZIPLINEN = [
       beiname:'Der Gebeutelte',
       art:'schatten',
       klasse:'schatten', aus:1.83, streu:0.123, mitte:0.13, n0:45, echt:0.4,
-      wie:'Eine Woche zählt ab fünf eigenen Sätzen. Verglichen wird die Quote dieser Woche mit der Siegchance, die die Elo-Rechnung den Sätzen darin gab; gewertet wird die schwächste solche Woche des Monats.',
+      wie:'Eine Woche zählt ab fünf eigenen Sätzen. Verglichen wird die Siegquote dieser Woche mit der Siegchance, die die Elo-Rechnung den Sätzen darin gab; gewertet wird die schwächste solche Woche des Monats.',
       stichprobe:p => p.games,
       cond:`Eine Woche mindestens 35 Prozentpunkte unter der Rechnung, ab 2 Wochen mit je ${ST_TEIL} Sätzen`,
       ...(_stWertung(
@@ -34933,7 +34965,7 @@ const CHRON_KINDS = {
   mark:    {label:'Bestmarke',     pl:'Bestmarken',     kurz:'Marken',   ic:'target',     ord:0,
             satz:'Einzelne Bestleistungen, jede an einem Tag erreicht'},
   koennen: {label:'Können',        pl:'Können',         kurz:'Können',   ic:'trophyStar', ord:1,
-            satz:'Schnitt und Quote über die ganze Laufbahn'},
+            satz:'Schnitt und Anteil über die ganze Laufbahn'},
   form:    {label:'Aktuelle Form', pl:'Aktuelle Form',  kurz:'Form',     ic:'trendUp',    ord:2,
             satz:'Gerechnet über die letzten eigenen Sätze'},
   fuegung: {label:'Fügung',        pl:'Fügungen',       kurz:'Fügungen', ic:'weatherMix', ord:3,
@@ -35796,11 +35828,12 @@ function showSeasonTable(sid){
     <div class="tplates">${offen.map(a => _titlePlateHtml(a, {sid, schatten:chronikUeberschattet(T, a)})).join('')}</div>
     ${weitere.length ? `<div class="tplates chron-rest">${weitere.map(a => _titlePlateHtml(a, {sid, schatten:chronikUeberschattet(T, a)})).join('')}</div>
     ${_chronMehrKnopf(weitere.length)}` : ''}
-    ${emptyNames.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Ohne Eintrag</h4></div></div>
+    ${
+''}${emptyNames.length ? `${blattAbschnittHtml('', 'Ohne Eintrag')}
       <div class="tempty">${esc(emptyNames.join(', '))}<span>Keine Bedingung erfüllt, die Saison zählt trotzdem.</span></div>` : ''}
-    ${zuWenigNames.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Nicht gewertet</h4></div></div>
+    ${zuWenigNames.length ? `${blattAbschnittHtml('', 'Nicht gewertet')}
       <div class="tempty">${esc(zuWenigNames.join(', '))}<span>Eine Monatschronik gibt es ab ${CHRONIK_MIN_SPIELE} eigenen Sätzen im Monat.</span></div>` : ''}
-    ${unawarded.length ? `<div class="pp-sec-title" style="margin-top:16px"><div class="l"><h4>Nicht vergeben</h4></div><div class="m">${unawarded.length}</div></div>
+    ${unawarded.length ? `${blattAbschnittHtml('', 'Nicht vergeben', unawarded.length)}
       <div class="tunawarded">${unawarded.map(t => {
         const n = _stNahDef(sid, t.id);
         return `<div class="tun"><span class="i">${svgI(t.ic)}</span>`
@@ -35989,11 +36022,11 @@ function showDisziplin(tid, sid){
     ${schattenM ? `<div class="tnote">„${esc(schattenM.name)}“ wiegt in diesem Monat schwerer. Diese Chronik bleibt in der Tafel, bringt aber kein Prestige.</div>` : ''}
     ${loescht.length ? `<div class="tnote">Wiegt in diesem Monat schwerer als ${esc(_namenListe(loescht.map(a => '„' + a.name + '“')))}. ${
       loescht.length === 1 ? 'Sie bleibt' : loescht.length === 2 ? 'Beide bleiben' : 'Alle bleiben'} in der Tafel, ${esc(pname(eigene[0].pid))} bekommt dafür aber kein Prestige.</div>` : ''}
-    ${def.wie ? `<div class="tnote">${esc(def.wie)}</div>` : ''}
+    ${
+''}${def.wie ? `${blattAbschnittHtml('info', 'So wird gezählt')}<div class="blatt-text">${esc(def.wie)}</div>` : ''}
     ${beleg}
     ${rang.length
-      ? `<div class="pp-sec-title" style="margin-top:14px"><div class="l"><h4>Dieser Monat</h4></div>
-           <div class="m num">${rang.length} erfüllt${rang.length === 1 ? '' : 'en'} die Bedingung</div></div>
+      ? `${blattAbschnittHtml('trophy', 'Dieser Monat', `${rang.length} erfüllt${rang.length === 1 ? '' : 'en'} die Bedingung`)}
          ${podest}`
       : (eigene.length
           ? `<div class="tplates">${eigene.map(a => _titlePlateHtml(a, {keinDetail:true})).join('')}</div>`
@@ -36056,11 +36089,10 @@ function showChronicle(cid){
     ).join('')}</div>
     ${halterN > 1 ? `<div class="tnote">${halterN} Spieler halten diesen Rekord gemeinsam und teilen sich sein Prestige,
       bis einer ihn überbietet.</div>` : ''}
-    ${def.wie ? `<div class="tnote">${esc(def.wie)}</div>` : ''}
+    ${def.wie ? `${blattAbschnittHtml('info', 'So wird gezählt')}<div class="blatt-text">${esc(def.wie)}</div>` : ''}
     ${beleg}
     ${rang.length
-      ? `<div class="pp-sec-title" style="margin-top:14px"><div class="l"><h4>Die Tafel</h4></div>
-           <div class="m num">${rang.length} von ${allChronicles().rated} erfüllen die Mindestbasis</div></div>
+      ? `${blattAbschnittHtml('trophy', 'Die Tafel', `${rang.length} von ${allChronicles().rated} erfüllen die Mindestbasis`)}
          ${_chronPodestHtml(rang.map(r => ({pid:r.pid, wert:_chronKurz(r.ev), zeit:r.zeit, v:r.wert})))}`
       : emptyState('scroll', leer)}
     ${verfolger.length ? `<div class="rek-verfolger">${verfolger.map((r, i) => {
@@ -36123,7 +36155,7 @@ function ligaRekordeHtml(weit){
         <span class="hd">${esc(_chronHolderNames(h))}</span>
       </div>`;
     }).join('')}</div>
-    <div class="tnote">Tippen zeigt, wie ein Rekord gezählt wird.</div>`;
+    ${''}<div class="tnote">Ein Tippen zeigt, wie ein Rekord gezählt wird.</div>`;
   const karte = (d) => {
     const h = holders[d.id];
     if(!h) return `<div class="rek offen" data-chron="${esc(d.id)}" data-kammer="${esc(d.kind)}">
@@ -36163,14 +36195,14 @@ function ligaRekordeHtml(weit){
   const haltungen = zaehl.reduce((a, z) => a + z.n, 0);
   const tor = rekordTor();
   const torHtml = tor.offen ? '' : `<div class="rek-tor">
-      <div class="rek-tor-s">Die Rekorde werden vergeben, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.</div>
+      <div class="rek-tor-s">Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.</div>
       <div class="rek-tor-zellen" style="--n:${CHRON_MIN_GAMES}">${
         Array.from({length:CHRON_MIN_GAMES}, (_, i) => `<i${i < tor.n ? ' class="an"' : ''}></i>`).join('')}</div>
       <div class="rek-tor-z num"><span><b>${tor.n}</b> gespielt</span><span>noch ${CHRON_MIN_GAMES - tor.n}</span></div>
     </div>`;
   const leiste = zaehl.length || !tor.offen ? `<div class="rek-besitz">
     <div class="rek-bk"><span class="l">Wer die Tafel hält</span>
-      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} Rekorde` : ''}</span></div>
+      <span class="r num">${zaehl.length ? `${haltungen} Haltungen · ${recs.length} von ${CHRONICLES.length} vergeben` : ''}</span></div>
     ${zaehl.length ? `<div class="rek-saeulen">${zaehl.map(z => {
       const p = pmap()[z.pid];
       return `<span class="rek-sl${z.n ? '' : ' null'}" data-tplayer="${esc(z.pid)}">
@@ -36214,7 +36246,7 @@ function ligaRekordeHtml(weit){
     </div>`;
   };
   const vorschau = vorschauHtml('rekord', 'Die Liga-Rekorde',
-    (recs.length ? '' : 'Noch hält niemand einen Rekord. ') + `Ein Rekord ist der Bestwert über alle Saisons: wer ihn übertrifft, nimmt ihn dem bisherigen Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat; danach zählt für jeden die Bedingung der Karte. Getippt zeigt eine Karte, wie gezählt wird.`);
+    `Ein Rekord ist der Bestwert über alle Saisons; wer ihn übertrifft, nimmt ihn dem Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat; danach gilt die Bedingung jeder Karte. Ein Tippen zeigt, wie gezählt wird.${recs.length ? '' : ' Noch hält niemand einen Rekord.'}`);
   return vorschau + leiste + filter + sicht.map(g => kopfVon(g)
     + `<div class="rek-liste">${g.liste.map(karte).join('')}</div>`).join('');
 }
@@ -36236,7 +36268,7 @@ function _rekFeldHtml(d, h){
 const CHRONIK_VORSCHAU_JE_KLASSE = 3;
 function chronikKarteHtml(leer){
   return vorschauHtml('scroll', 'Die Chronik',
-    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand in diesem Monat besonders war, gegen die Erwartung, über jeden Spieltag, gegen einen bestimmten Gegner. Gefragt wird nicht, wer der Beste war. Gewertet wird, wer im Monat mindestens <b>${CHRONIK_MIN_SPIELE} Sätze</b> hat, und jeder Eintrag gehört dem, der den Bestwert hält. Die Tabelle stellt die Monate nebeneinander${leer ? '; bis zum ersten gewerteten Monat stehen hier alle Einträge, die es gibt' : ''}.`);
+    `Jeder Monat bekommt seine Chronik: Einträge für das, worin jemand im Monat besonders war, nicht wer der Beste war. Gewertet wird ab <b>${CHRONIK_MIN_SPIELE} Sätzen</b> im Monat; ein Eintrag gehört dem, der den Bestwert hält. Ein Tippen öffnet den Monat oder den Eintrag.${leer ? ' Bis zum ersten gewerteten Monat stehen hier alle Einträge.' : ''}`);
 }
 function chronikVorschauHtml(){
   const kopf = chronikKarteHtml(true);
@@ -37772,7 +37804,6 @@ function rangTon(pid){
   return titleTone(RANG_TON[(getPlayerRank(pid) || {}).label] || 'blue');
 }
 
-const INS_GOLD = '#E8C25E';
 const INS_GOLD_TIEF = '#6E4A0E';
 
 function _insSatz(rang){
@@ -37861,34 +37892,30 @@ function _insFuss(pos){
       font-family="'Archivo Black',sans-serif" font-weight="700" fill="#EEF2F5">${pos}</text>`;
 }
 
-function _insSternPfad(cx, cy, r){
-  let d = '';
-  for(let i = 0; i < 10; i++){
-    const a = i/10*Math.PI*2 - Math.PI/2;
-    const rr = i % 2 ? r*.44 : r;
-    d += (i ? 'L' : 'M') + _n(cx + Math.cos(a)*rr) + ' ' + _n(cy + Math.sin(a)*rr);
-  }
-  return d + 'Z';
-}
 const INS_STERN_R = 78;
 const INS_STERN_GR = 3.8;
 function _insSterne(n, id){
   if(n <= 0) return '';
-  const zeig = Math.min(n, 5), gr = INS_STERN_GR, R = INS_STERN_R;
+  const gr = INS_STERN_GR, R = INS_STERN_R;
   const schritt = 2.5 * gr / R;
-  const felder = zeig + (n > 5 ? 1.5 : 0);
-  const w = i => (i - (felder - 1) / 2) * schritt;
-  let d = '';
-  for(let i = 0; i < zeig; i++)
-    d += _insSternPfad(50 + Math.sin(w(i))*R, 50 - Math.cos(w(i))*R, gr);
-  let s = `<path d="${d}" fill="url(#${id}gd)" stroke="${INS_GOLD_TIEF}"
-    stroke-width=".55" stroke-linejoin="round"/>`;
-  if(n > 5){
-    const a = w(zeig + .45);
-    s += `<text x="${_n(50 + Math.sin(a)*R)}" y="${_n(50 - Math.cos(a)*R + gr*.92)}"
-      text-anchor="middle" font-size="${_n(gr*2.4)}"
+  const mit = n > 5;
+  const zahlHalb = String(n).length * gr * .78 + gr * .55;
+  const winkel = mit
+    ? [-(zahlHalb + gr * 1.1) / R, (zahlHalb + gr * 1.1) / R]
+    : Array.from({length:n}, (_, i) => (i - (n - 1) / 2) * schritt);
+  const r = mit ? gr * .9 : gr;
+  let d = '', hell = '';
+  winkel.forEach(w => {
+    const x = 50 + Math.sin(w)*R, y = 50 - Math.cos(w)*R;
+    d += _znStern(x, y, r); hell += _znSternHell(x, y, r, _n);
+  });
+  let s = `<path d="${d}" fill="${ZN_STERN_TIEF}"/><path d="${hell}" fill="${ZN_STERN_HELL}"/>
+    <path d="${d}" fill="none" stroke="${INS_GOLD_TIEF}" stroke-width=".55" stroke-linejoin="round"/>`;
+  if(mit){
+    s += `<text x="50" y="${_n(50 - R + gr*1.05)}"
+      text-anchor="middle" font-size="${_n(gr*2.2)}"
       font-family="'Archivo Black',sans-serif" font-weight="700"
-      fill="${INS_GOLD}" stroke="${INS_GOLD_TIEF}" stroke-width=".5"
+      fill="${ZN_STERN_HELL}" stroke="${INS_GOLD_TIEF}" stroke-width=".5"
       paint-order="stroke">${n}</text>`;
   }
   return s;

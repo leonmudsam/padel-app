@@ -184,7 +184,7 @@ function _ndMitteRoh(s){
           <div class="nd-stat-row" data-pid="${esc(d.p1)}" style="cursor:pointer"><div class="nd-stat-label">Platz 1</div><div class="nd-stat-val acid">${esc(nameOf(d.p1))} ›</div></div>
           <div class="nd-stat-row" data-pid="${esc(d.p2)}" style="cursor:pointer"><div class="nd-stat-label">Platz 2</div><div class="nd-stat-val">${esc(nameOf(d.p2))} ›</div></div>` : '';
         const matchHtml = d.matchId ? _newsMatchVsBlock(d.matchId) : '';
-        return (rankRows ? `<div class="nd-section">Duell an der Spitze</div>${rankRows}` : '')
+        return (rankRows ? `<div class="nd-section">Die Spitze</div>${rankRows}` : '')
              + (matchHtml ? `<div class="nd-section">Das Spitzenspiel</div>${matchHtml}` : '');
       }
       case 'elo_record': {
@@ -573,7 +573,7 @@ function _ndMitteRoh(s){
           // Template; für bereits persistierte Rows ohne Feld entscheidet die
           // Kategorie ('team' → Team, sonst Duell).
           const isTeam = d.pairKind === 'team' || (!d.pairKind && s.cat === 'team');
-          return `<div class="nd-section">${isTeam ? 'Das Duo' : 'Duell'}</div>
+          return `<div class="nd-section">${isTeam ? 'Das Duo' : 'Der Direkte Vergleich'}</div>
             <div class="nd-vs">
               <div class="nd-vs-p" data-pid="${esc(pa)}">${avM(pa)}<div class="nd-vs-name">${esc(nameOf(pa))}</div></div>
               <div class="nd-vs-mid">${isTeam ? '&amp;' : 'vs'}</div>
@@ -733,7 +733,7 @@ function _ndMitteRoh(s){
               <div class="nd-vs-name">${esc(nameOf(d.a))}</div>
               <div class="nd-vs-elo">${esc(_newsRangKurz(d.a) || '')}</div>
             </div>
-            <div class="nd-vs-mid">VS<div class="nd-vs-mid-sub">${d.n} Duelle</div></div>
+            <div class="nd-vs-mid">VS<div class="nd-vs-mid-sub">${d.n} Sätze</div></div>
             <div class="nd-vs-p" data-pid="${esc(d.b)}">
               ${avM(d.b)}
               <div class="nd-vs-name">${esc(nameOf(d.b))}</div>
@@ -741,7 +741,7 @@ function _ndMitteRoh(s){
             </div>
           </div>
           ${_newsBilanzBalken(d.a, d.b, h2h.aWins, h2h.bWins)}
-          ${h2h.lastMatchId ? `<div class="nd-section">Letztes Duell</div>${_newsMatchVsBlock(h2h.lastMatchId)}` : ''}`;
+          ${h2h.lastMatchId ? `<div class="nd-section">Letzter Satz</div>${_newsMatchVsBlock(h2h.lastMatchId)}` : ''}`;
       }
       // Zwei, die zusammen spielen, hatten im Blatt gar keinen Fall: das
       // Duo-Blatt zeigte den Kopf und den Satz von der Karte. Jetzt steht die
@@ -882,14 +882,14 @@ function _ndMitteRoh(s){
               <div class="nd-vs-name">${esc(nameOf(d.a))}</div>
               <div class="nd-vs-elo">${h2h.aWins} Siege</div>
             </div>
-            <div class="nd-vs-mid">${d.n}<div class="nd-vs-mid-sub">Duelle</div></div>
+            <div class="nd-vs-mid">${d.n}<div class="nd-vs-mid-sub">Sätze</div></div>
             <div class="nd-vs-p" data-pid="${esc(d.b)}">
               ${avM(d.b)}
               <div class="nd-vs-name">${esc(nameOf(d.b))}</div>
               <div class="nd-vs-elo">${h2h.bWins} Siege</div>
             </div>
           </div>
-          ${d.matchId ? `<div class="nd-section">Das Jubiläumsduell</div>${_newsMatchVsBlock(d.matchId)}` : ''}`;
+          ${d.matchId ? `<div class="nd-section">Der Satz des Jubiläums</div>${_newsMatchVsBlock(d.matchId)}` : ''}`;
       }
       // ── Was in einer Partie sonst noch passiert [§C33] ─────────────
       // Die sechs Ereignisse hängen an ihrer Partie-Karte und öffnen sich dort
@@ -913,7 +913,7 @@ function _ndMitteRoh(s){
       }
       case 'revanche': {
         return d.vorherId && d.vorherId !== _ndKopfMatch
-          ? `<div class="nd-section">Das Duell davor</div>${_newsMatchVsBlock(d.vorherId)}`
+          ? `<div class="nd-section">Der Satz davor</div>${_newsMatchVsBlock(d.vorherId)}`
           : `<div class="nd-section">Die Revanche</div>`;
       }
       case 'tagesmarathon': {

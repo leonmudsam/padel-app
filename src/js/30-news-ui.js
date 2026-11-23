@@ -754,7 +754,7 @@ function _newsCardHtmlM2(s, isRead, istTagesKarte, fadenHtml){
     // jetzt als BAND ueber dem Text, einander gegenueber wie im
     // Ergebnisband des Spieltags [§C27].
     kopf = `<div class="nf-duell-band">${av(d.a, 34)}`
-      + `<span class="nf-duell-vs"><b>${esc(String(d.n || ''))}</b><i>Duelle</i></span>`
+      + `<span class="nf-duell-vs"><b>${esc(String(d.n || ''))}</b><i>Sätze</i></span>`
       + `${av(d.b, 34)}</div>`;
     let h = null; try { h = _newsH2HRecord(d.a, d.b); } catch(e){}
     fuss = (h && (h.aWins + h.bWins))

@@ -353,8 +353,10 @@ function posClassify(autoDrive){
   if(a >  0.22) return {label:'Revés',          icon:'posReves',     tone:'reves'};
   return                {label:'Reiner Revés',   icon:'posReinReves', tone:'reves'};
 }
-// Die Seite in Worten, an einer Stelle [§C27]: kurz für Chips, lang für Sätze.
-const SEITE_LANG = {drive:'Drive (rechts)', reves:'Revés (links)'};
+// Die Seite in Worten, an einer Stelle [§C27]: kurz für Chips, lang für
+// Schalter, Überschriften und Eingabe. Die Eingabe schrieb „Revés (links)",
+// Seiten, Profil und Duo schrieben „Revés · links" von Hand.
+const SEITE_LANG = {drive:'Drive · rechts', reves:'Revés · links'};
 const SEITE_NAME = {drive:'Drive', reves:'Revés'};
 
 // Margin-of-Victory: ein deutliches Ergebnis zählt mehr, ein knappes

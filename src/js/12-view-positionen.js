@@ -33,10 +33,14 @@ function positionsBlockHtml(arr, pos, ohneRang){
   // Ohne Partie auf dieser Seite sagt die Ansicht, was hier stehen wird —
   // und nicht, was Drive und Revés im Padel sind: das weiß, wer spielt.
   // Die Erklärung steht auch über einer vollen Liste, bis sie geschlossen
-  // wird: wer neu in die Liga kommt, sieht sonst nur Zahlen.
+  // wird: wer neu in die Liga kommt, sieht sonst nur Zahlen. Ein Titel für
+  // beide Seiten: als „Drive · rechts" und „Revés · links" wiederholte er
+  // den Schalter darüber und musste zweimal geschlossen werden. Eine
+  // Schwelle hat die Seite nicht, der erste Satz dort zählt; der Satz (2)
+  // der Erklärkarten [§C27] fällt deshalb weg.
   const karte = ersatz => ohneRang ? (ersatz || '') : vorschauHtml(pos==='drive'?'posDrive':'posReves',
-    pos==='drive' ? 'Drive · rechts' : 'Revés · links',
-    `Hier steht, wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern. Die Seite kommt aus der Aufstellung jedes Satzes.`,
+    'Die Seiten',
+    `Wer ${pos==='drive'?'rechts':'links'} am stärksten spielt, gemessen an Partner und Gegnern, über alle Saisons. Ein Tippen öffnet das Profil. Die Seite kommt aus der Aufstellung jedes Satzes.`,
     null, '', ersatz);
   if(!arr.length) return karte(emptyState(pos==='drive'?'posDrive':'posReves', 'Noch niemand auf dieser Seite gewertet.'));
   return karte('') + `<div class="rlist">${arr.map((x,i)=>{
@@ -75,11 +79,12 @@ function vPositions(){
   const arr = positionsListe(which);
   const ruhe = positionsListe(which, ruhestandSpieler()).length;
   return `
-    <div class="view-head"><h2>Seiten ${hilfeKnopf('seiten')}</h2><p>Wer auf welcher Seite am stärksten ist</p></div>
+    ${/* Die Unterzeile nennt den Zeitraum wie in jedem Reiter. „Wer auf welcher
+         Seite am stärksten ist" stand hier, in der Erklärkarte und in der Hilfe. */''}<div class="view-head"><h2>Seiten ${hilfeKnopf('seiten')}</h2><p>Über alle Saisons</p></div>
     ${einblickHtml('rollen')}
     <div class="ui-switch">
-      <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}Revés · links</span></button>
-      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}Drive · rechts</span></button>
+      <button data-postoggle="reves" class="${which==='reves'?'on':''}"><span class="pos-chip reves">${svgI('posReves')}${SEITE_LANG.reves}</span></button>
+      <button data-postoggle="drive" class="${which==='drive'?'on':''}"><span class="pos-chip drive">${svgI('posDrive')}${SEITE_LANG.drive}</span></button>
     </div>
     <div class="mini-label">▲ über · ▼ unter der Erwartung</div>
     ${positionsBlockHtml(arr, which)}
