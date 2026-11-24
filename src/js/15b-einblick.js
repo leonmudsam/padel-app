@@ -77,82 +77,204 @@ function bindDetailLinks(el){
   });
 }
 
-// Die Seiten-Landkarte: jeder Spieler steht dort, wo sich sein Wert rechts
-// (Drive) und links (Revés) kreuzen — derselbe Wert wie in der Liste darunter
-// (`positionsListe`). Die Achsen laufen vom schwächsten zum stärksten Wert
-// der Liga, die Linien teilen am Median. Zwei Gesichter, die auf denselben
-// Punkt fielen, werden auseinandergeschoben: übereinander war eines davon
-// nicht mehr zu sehen. Die Namen stehen darunter nach Feldern, weil
-// Initialen allein nicht reichen (Leo und Leon).
+
+// Die Seiten-Landkarte [§C44]: jeder Spieler steht nach dem Seitenprofil,
+// derselben Rechnung wie im Profil (`positionsLage`). Waagerecht, wo jemand
+// meist steht (Anteil der Sätze rechts; Revés links wie auf dem Platz und im
+// Umschalter darunter), senkrecht, auf welcher Seite jemand besser spielt:
+// die Leistung je Satz rechts gegen links, beide am eigenen Schnitt gemessen
+// und mit POS_SCHRUMPF Sätzen zu ihm gezogen.
+// Vorher kreuzten sich hier die Werte der Seiten-Rangliste (`positionsListe`).
+// Die fragen, wer auf einer Seite der Beste der Liga ist, und das Bild wurde
+// eine Diagonale der Gesamtstärke: die Starken oben rechts, die Schwächeren
+// unten links „auf beiden unter der Mitte" — über die Seite sagte es nichts,
+// und wer weniger gewann, stand immer schlecht da. Jetzt misst jeder gegen
+// sich selbst, und ein schwächerer Spieler, der rechts besser spielt als
+// links, steht genauso oben wie ein starker.
+// Das Band um die Mitte ist `staerker` 'beide' (bis drei Prozentpunkte,
+// oder ohne Satz auf einer Seite) — dieselbe Grenze wie die hell gezeichnete
+// Rolle im Profil. Die Skala ist symmetrisch, mindestens zehn
+// Prozentpunkte: sonst bliese eine Liga, in der alle fast gleich spielen,
+// zwei Prozentpunkte über die ganze Höhe auf.
+// Keine Mindestzahl: wenige Sätze zieht die Rechnung schon zum Schnitt. Wer
+// noch weniger als POS_SCHRUMPF Sätze hat, steht blass, weil der Punkt dann
+// mehr vom Ziehen als vom Spielen kommt. Nur wer gar keinen Satz hat, fehlt:
+// der Punkt stünde in der Mitte, ohne dass dort etwas gemessen wäre.
+// Unter jedem Gesicht steht der Name, wie im Netz daneben [§C27]: nur
+// Initialen und die Namen in einer Liste darunter verlangten, Kürzel
+// abzugleichen, und zwei mit denselben Initialen waren nicht zu trennen.
+// Auseinandergeschoben wird deshalb nach Kästen aus Gesicht und Name, nicht
+// nach Kreisen: mit Kreisen lag der Name des einen unter dem Gesicht des
+// anderen. Geschoben wird nur innerhalb des eigenen Felds — die Mitte eines
+// Gesichts bleibt auf ihrer Seite der Mitte und über, in oder unter dem
+// Band, sonst stünde jemand im Bild in einem anderen Feld als in der Liste.
+// Das Band ist deshalb mindestens zwei Reihen hoch gezeichnet (`BAND`), auch
+// wenn ein einzelner Spieler die Skala weit aufzieht: in ihm stehen meist
+// die meisten, und eine Reihe ließ ihnen nur das Nebeneinander.
 function _einblickRollen(){
-  const atk = {}, def = {};
-  positionsListe('drive').forEach(x => { atk[x.p.id] = x.score; });
-  positionsListe('reves').forEach(x => { def[x.p.id] = x.score; });
-  const pkt = Object.keys(atk).filter(id => def[id] != null).map(id => ({id, a:atk[id], d:def[id]}));
-  if(pkt.length < 3) return '';
-  const W = 300, H = 230, R = 13;
-  const span = (arr) => { const lo = Math.min(...arr), hi = Math.max(...arr); return {lo, hi, d:(hi - lo) || 1}; };
-  const sa = span(pkt.map(x => x.a)), sd = span(pkt.map(x => x.d));
-  const med = arr => { const s = arr.slice().sort((a, b) => a - b); return s[s.length >> 1]; };
-  const ma = med(pkt.map(x => x.a)), md = med(pkt.map(x => x.d));
-  const X = v => 30 + (v - sa.lo) / sa.d * (W - 50), Y = v => H - 28 - (v - sd.lo) / sd.d * (H - 50);
-  const lage = pkt.map(x => ({id:x.id, x:X(x.a), y:Y(x.d)}));
-  for(let n = 0; n < 40; n++){
+  const MIN = 3;
+  const pkt = activePlayers().map(p => ({id:p.id, l:positionsLage(posPerfFrom(p.id, matches))}))
+    .filter(x => x.l.aG + x.l.dG > 0)
+    .map(x => ({id:x.id, n:x.l.aG + x.l.dG, anteil:x.l.anteil, v:x.l.rA - x.l.rD, st:x.l.staerker}));
+  if(pkt.length < MIN) return `<p class="einblick-leer">Die Seiten-Landkarte steht ab ${MIN} Spielern mit Sätzen.</p>`;
+  // Gerechnet wird in Einheiten der Zeichnung, ein Pixel je Einheit: so
+  // breit ist die Karte ab 360 px Bildschirm (302 px), breiter wird alles
+  // nur luftiger. Oben und unten bleibt je ein Streifen für die Namen der
+  // Felder frei: ganz am Rand der Skala stand sonst ein Gesicht darauf.
+  const W = 300, H = 262, P = 16, R = 13, RAND = 15, NAME_H = 15, BAND = 24, GLEICH = .03;
+  const S = Math.max(.10, ...pkt.map(x => Math.abs(x.v)));
+  const yo0 = RAND + R + 2, yu0 = H - RAND - R - NAME_H, mitte = (yo0 + yu0) / 2, halb = (yu0 - yo0) / 2;
+  const X = a => P + a * (W - 2 * P);
+  const Y = v => Math.abs(v) <= GLEICH ? mitte - v / GLEICH * BAND
+    : mitte - Math.sign(v) * (BAND + (Math.abs(v) - GLEICH) / (S - GLEICH) * (halb - BAND));
+  // Die Breite des Namens aus der Schrift, die ihn zeichnet; ohne Leinwand
+  // (Rechentests ohne Browser) geschätzt.
+  let ctx = null;
+  try { ctx = document.createElement('canvas').getContext('2d'); ctx.font = `600 10px ${getComputedStyle(document.body).fontFamily}`; } catch(e){ ctx = null; }
+  const breite = t => Math.ceil((ctx ? ctx.measureText(t).width : t.length * 6.2) * 1.08) + 6;
+  // Ein Gesicht hält Abstand zur Kante des Bands: genau auf ihr geschoben
+  // stand es im Bild halb im Nachbarfeld.
+  const yo = Y(GLEICH), yu = Y(-GLEICH), m = W / 2, KANTE = 5;
+  const lage = pkt.map(x => {
+    const hw = Math.max(R, breite(pname(x.id)) / 2) + 1;
+    const rechts = x.anteil >= .5, f = x.st === 'beide' ? 0 : x.v > 0 ? 1 : -1;
+    return {id:x.id, x:X(x.anteil), y:Y(x.v), hw, wenig:x.n < POS_SCHRUMPF,
+      x0:rechts ? Math.max(m + .5, hw + 2) : hw + 2, x1:rechts ? W - hw - 2 : Math.min(m - .5, W - hw - 2),
+      y0:f > 0 ? yo0 : f < 0 ? yu + KANTE : yo + KANTE, y1:f > 0 ? yo - KANTE : f < 0 ? yu0 : yu - KANTE};
+  });
+  const halten = p => { p.x = Math.max(p.x0, Math.min(p.x1, p.x)); p.y = Math.max(p.y0, Math.min(p.y1, p.y)); };
+  lage.forEach(halten);
+  const ueber = (p, q) => ({ox:Math.min(p.x + p.hw, q.x + q.hw) - Math.max(p.x - p.hw, q.x - q.hw) + 2,
+    oy:Math.min(p.y + R + NAME_H, q.y + R + NAME_H) - Math.max(p.y - R, q.y - R) + 2});
+  for(let n = 0; n < 160; n++){
+    let bewegt = false;
     for(let i = 0; i < lage.length; i++) for(let j = i + 1; j < lage.length; j++){
-      const p = lage[i], q = lage[j], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || .01;
-      if(d < 2 * R + 2){
-        const k = (2 * R + 2 - d) / 2, ux = dx / d, uy = dy / d;
-        p.x -= ux * k; p.y -= uy * k; q.x += ux * k; q.y += uy * k;
-      }
+      const p = lage[i], q = lage[j];
+      let {ox, oy} = ueber(p, q);
+      if(ox <= 0 || oy <= 0) continue;
+      bewegt = true;
+      // Zuerst die kürzere Richtung; hält das eigene Feld dort dagegen,
+      // dann die andere. Auf genau demselben Punkt entscheidet die
+      // Reihenfolge, sonst gab es keine Richtung.
+      const schieben = (achse, um) => {
+        const d = achse === 'x' ? (q.x - p.x || (j - i)) : (q.y - p.y || (j - i)), s = d > 0 ? 1 : -1;
+        p[achse] -= s * um / 2; q[achse] += s * um / 2; halten(p); halten(q);
+      };
+      schieben(oy < ox ? 'y' : 'x', Math.min(ox, oy));
+      ({ox, oy} = ueber(p, q));
+      if(ox > 0 && oy > 0) schieben(oy < ox ? 'x' : 'y', oy < ox ? ox : oy);
     }
-    lage.forEach(p => { p.x = Math.max(R + 2, Math.min(W - R - 2, p.x)); p.y = Math.max(R + 2, Math.min(H - R - 2, p.y)); });
+    if(!bewegt) break;
   }
-  const feld = (x) => (x.a >= ma ? 'v' : '') + (x.d >= md ? 'h' : '');
-  const gruppen = {vh:[], v:[], h:[], '':[]};
-  pkt.slice().sort((p, q) => (q.a + q.d) - (p.a + p.d)).forEach(x => gruppen[feld(x)].push(x.id));
-  const NAME = {vh:'Auf beiden Seiten stark', v:'Stärker rechts (Drive)', h:'Stärker links (Revés)', '':'Auf beiden unter der Mitte'};
-  const liste = ['vh', 'v', 'h', ''].filter(k => gruppen[k].length)
-    .map(k => `<span><i class="f-${k || 'n'}"></i><b>${esc(NAME[k])}:</b> ${esc(_namenListe(gruppen[k].map(pname)))}</span>`).join('');
-  return `<div class="rk"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">
-      <rect class="rk-q" x="${X(ma)}" y="0" width="${W - X(ma)}" height="${Y(md)}"/>
-      <line class="rk-m" x1="${X(ma)}" x2="${X(ma)}" y1="0" y2="${H - 20}"/>
-      <line class="rk-m" x1="20" x2="${W}" y1="${Y(md)}" y2="${Y(md)}"/>
-      <line class="rk-a" x1="20" x2="${W}" y1="${H - 20}" y2="${H - 20}"/>
-      <line class="rk-a" x1="20" x2="20" y1="0" y2="${H - 20}"/>
-    </svg>${lage.map((p, i) => `<span class="rk-p" data-detail="${esc(p.id)}" style="left:${(p.x / W * 100).toFixed(1)}%;top:${(p.y / H * 100).toFixed(1)}%;--i:${i}">${rcpAvHtml(p.id, 26, {})}</span>`).join('')}</div>
-    <div class="rk-ax"><span>↑ Revés</span><span>Drive →</span></div>
-    <div class="rk-l">${liste}</div>`;
+  // Der Name des Bands steht dort, wo kein Gesicht und kein Name ist, am
+  // liebsten rechts: fest am rechten Rand lag er unter einem Gesicht. Ist
+  // das Band voll, fehlt er im Bild; die Liste darunter nennt das Feld mit
+  // demselben Zeichen.
+  const BAND_B = 96, ym = Y(0);
+  let bandX = null;
+  for(let x0 = W - BAND_B - 6; x0 >= 6 && bandX == null; x0 -= 6)
+    if(!lage.some(p => p.x + p.hw > x0 && p.x - p.hw < x0 + BAND_B && p.y - R < ym + 7 && p.y + R + NAME_H > ym - 7)) bandX = x0;
+  // Besser heißt: die Seite, auf der jemand meist steht, ist die, auf der
+  // jemand besser spielt. Bei genau halb und halb zählt rechts.
+  const feld = x => x.st === 'beide' ? 'g' : (x.st === 'drive') === (x.anteil >= .5) ? 'b' : 's';
+  const NAME = {b:'Auf der besseren Seite', s:'Auf der schwächeren Seite', g:'Auf beiden gleich'};
+  const gruppen = {b:[], s:[], g:[]};
+  pkt.slice().sort((p, q) => Math.abs(q.v) - Math.abs(p.v)).forEach(x => gruppen[feld(x)].push(x.id));
+  const liste = ['b', 's', 'g'].filter(k => gruppen[k].length)
+    .map(k => `<div class="rk-g-${k}"><i></i><b>${NAME[k]}</b><span>${esc(_namenListe(gruppen[k].map(pname)))}</span></div>`).join('');
+  const blass = lage.some(p => p.wenig)
+    ? `<p class="rk-n">Blass steht, wer weniger als ${POS_SCHRUMPF} Sätze hat.</p>` : '';
+  const r = 8, f1 = v => v.toFixed(1);
+  const pc = v => (v * 100).toFixed(1) + '%';
+  return `<div class="rk-ax rk-ax-o"><span>↑ Drive besser</span></div>
+    <div class="rk"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <path class="rk-q" d="M${m} 0H${W - r}A${r} ${r} 0 0 1 ${W} ${r}V${f1(yo)}H${m}Z"/>
+      <path class="rk-q" d="M0 ${f1(yu)}H${m}V${H}H${r}A${r} ${r} 0 0 1 0 ${H - r}Z"/>
+      <rect class="rk-b" x="0" y="${f1(yo)}" width="${W}" height="${f1(yu - yo)}"/>
+      <line class="rk-m" x1="${m}" x2="${m}" y1="0" y2="${H}"/>
+      <line class="rk-m" x1="0" x2="${W}" y1="${f1(ym)}" y2="${f1(ym)}"/>
+      <rect class="rk-r" x="0" y="0" width="${W}" height="${H}" rx="${r}"/>
+    </svg>
+    <span class="rk-f rk-f-ol">${NAME.s}</span><span class="rk-f rk-f-or b">${NAME.b}</span>
+    <span class="rk-f rk-f-ul b">${NAME.b}</span><span class="rk-f rk-f-ur">${NAME.s}</span>
+    ${bandX == null ? '' : `<span class="rk-f rk-f-g" style="left:${pc(bandX / W)};top:${pc(ym / H)}">${NAME.g}</span>`}
+    ${lage.map((p, i) => `<span class="rk-p${p.wenig ? ' wenig' : ''}" data-detail="${esc(p.id)}" style="left:${pc(p.x / W)};top:${pc(p.y / H)};--i:${i}">${rcpAvHtml(p.id, 26, {})}<b>${esc(pname(p.id))}</b></span>`).join('')}</div>
+    <div class="rk-ax"><span>← meist Revés</span><span>↓ Revés besser</span><span>meist Drive →</span></div>
+    <div class="rk-l">${liste}</div>${blass}`;
 }
 
-// Das Netz der Duos: jede Linie ein Duo ab DUO_MIN Partien, so dick, wie es
-// oft gespielt hat, grün, wo es mehr gewinnt, rot, wo es mehr verliert
-// [§C25]. Nur die achtzehn meistgespielten: alle Duos waren ein Knäuel, in
-// dem keine Linie mehr zu verfolgen war. Dieselbe Schwelle wie die Liste
-// darunter.
+// Das Netz der Duos: jede Linie ein Duo ab DUO_MIN gemeinsamen Sätzen, so
+// dick, wie oft es zusammen gespielt hat; die Farbe sagt, ob es zusammen
+// besser oder schlechter spielt, als die Elo der vier erwarten lässt [§C25].
+// Gemessen wird wie im Seitenprofil [§C44]: je Satz Sieg und Games gegen die
+// Erwartung, je zur Hälfte (`posGameLeistung`), aufsummiert und mit
+// POS_SCHRUMPF Sätzen zu null gezogen, damit fünf Sätze wenig sagen.
+// Vorher färbte die rohe Siegquote (ab 60 % grün, bis 40 % rot): zwei
+// schwächere Spieler standen zusammen immer rot da, auch wenn sie zusammen
+// weit besser spielten, als ihre Elo erwarten ließ, und zwei starke immer
+// grün. Bis drei Prozentpunkte ist ein Duo „wie erwartet", dieselbe Grenze
+// wie `staerker` im Profil.
+// Ein Satz zählt hier einmal, gleich wie lang er war, und nicht nach
+// `partieGewicht`: die Landkarte daneben misst mit demselben Profil, und
+// das wiegt jeden Satz gleich. Zwei Rechnungen für „besser als erwartet"
+// färbten ein Duo grün, dessen beide Spieler im Profil auf keiner Seite
+// über ihrem Schnitt stehen.
+// Nur die achtzehn meistgespielten: alle Duos waren ein Knäuel, in dem keine
+// Linie mehr zu verfolgen war.
+// Die Reihenfolge auf dem Kreis setzt häufige Partner nebeneinander (gierig,
+// ab dem Spieler mit den meisten Sätzen, dann je der mit den meisten
+// gemeinsamen Sätzen mit dem zuletzt gesetzten), und die Linien biegen sich
+// zur Mitte: in der Reihenfolge der Spielerliste kreuzten sich die Linien
+// quer über den Kreis, und gerade Linien zwischen Nachbarn liefen unter den
+// Gesichtern entlang. Der Name steht an jedem Gesicht; die Liste „Im
+// Uhrzeigersinn ab oben" darunter verlangte, Gesichter abzuzählen.
 function _einblickNetz(){
-  const ids = activePlayers().map(p => p.id);
-  const n = ids.length;
-  if(n < 3) return '';
-  const W = 300, H = 280, R = 112, cx = 150, cy = 140;
+  const ids = activePlayers().map(p => p.id), da = new Set(ids);
+  const duo = {}, gesamt = {};
+  matches.forEach(m => {
+    const p = partie(m);
+    if(p.winner !== 'A' && p.winner !== 'B') return;
+    const e = m.exp_a != null ? m.exp_a : .5;
+    [[m.a1, m.a2, p.winner === 'A', e, p.gamesA, p.gamesB], [m.b1, m.b2, p.winner === 'B', 1 - e, p.gamesB, p.gamesA]]
+      .forEach(([x, y, w, exp, gf, ga]) => {
+        if(!da.has(x) || !da.has(y)) return;
+        const k = paarKey(x, y), d = duo[k] = duo[k] || {g:0, s:0};
+        d.g++; d.s += ((w ? 1 : 0) - exp + posGameLeistung(gf, ga, exp)) / 2;
+        gesamt[x] = (gesamt[x] || 0) + 1; gesamt[y] = (gesamt[y] || 0) + 1;
+      });
+  });
+  const ks = Object.keys(duo).filter(k => duo[k].g >= DUO_MIN).sort((a, b) => duo[b].g - duo[a].g).slice(0, 18);
+  if(ids.length < 2 || !ks.length) return `<p class="einblick-leer">Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.</p>`;
+  const gem = (a, b) => (duo[paarKey(a, b)] || {g:0}).g;
+  const rest = ids.slice().sort((a, b) => (gesamt[b] || 0) - (gesamt[a] || 0));
+  const kreis = [rest.shift()];
+  while(rest.length){
+    const z = kreis[kreis.length - 1];
+    let best = 0;
+    rest.forEach((id, i) => { if(gem(z, id) > gem(z, rest[best])) best = i; });
+    kreis.push(rest.splice(best, 1)[0]);
+  }
+  const W = 300, H = 304, R = 112, cx = 150, cy = 152, n = kreis.length, GLEICH = .03;
   const lage = {};
-  ids.forEach((id, i) => { const a = -Math.PI / 2 + i / n * Math.PI * 2; lage[id] = [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; });
-  const duo = {};
-  matches.forEach(m => [[m.a1, m.a2, m.winner === 'A'], [m.b1, m.b2, m.winner === 'B']].forEach(([x, y, w]) => {
-    if(!lage[x] || !lage[y]) return;
-    const k = paarKey(x, y);
-    duo[k] = duo[k] || {g:0, w:0}; duo[k].g++; if(w) duo[k].w++;
-  }));
-  const ks = Object.keys(duo).filter(k => duo[k].g >= DUO_MIN).sort((a, b) => duo[b].g - duo[a].g).slice(0, 18).reverse();
-  if(!ks.length) return '';
+  kreis.forEach((id, i) => { const a = -Math.PI / 2 + i / n * Math.PI * 2; lage[id] = [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; });
   const gmax = Math.max(1, ...ks.map(k => duo[k].g));
-  const linien = ks.map((k, i) => {
-    const [x, y] = k.split('|'), q = duo[k].w / duo[k].g;
-    const cls = q >= .6 ? 'w' : q <= .4 ? 'l' : 'm';
-    return `<line class="netz-l ${cls}" style="--i:${i}" x1="${lage[x][0].toFixed(1)}" y1="${lage[x][1].toFixed(1)}" x2="${lage[y][0].toFixed(1)}" y2="${lage[y][1].toFixed(1)}" stroke-width="${(1 + duo[k].g / gmax * 7).toFixed(1)}"/>`;
-  }).join('');
-  const gesichter = ids.map(id => `<span class="netz-p" data-detail="${esc(id)}" style="left:${(lage[id][0] / W * 100).toFixed(1)}%;top:${(lage[id][1] / H * 100).toFixed(1)}%">${rcpAvHtml(id, 30, {})}</span>`).join('');
-  // Die Namen im Uhrzeigersinn, oben beginnend: so sind die Gesichter zuzuordnen.
-  return `<div class="netz"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">${linien}</svg>${gesichter}</div>
-    <div class="rk-l"><span>Im Uhrzeigersinn ab oben: ${esc(_namenListe(ids.map(pname)))}.</span></div>
-    <div class="netz-leg"><span class="w">gewinnt öfter</span><span class="m">ausgeglichen</span><span class="l">verliert öfter</span><span class="d">Dicke: Zahl der Sätze</span></div>`;
+  const mitLinie = new Set();
+  // Die meistgespielten zuletzt: sie liegen oben und nehmen das Tippen.
+  const bahnen = ks.slice().reverse().map((k, i) => {
+    const [x, y] = k.split('|'), [x1, y1] = lage[x], [x2, y2] = lage[y];
+    mitLinie.add(x); mitLinie.add(y);
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    const d = `M${x1.toFixed(1)} ${y1.toFixed(1)}Q${(mx + (cx - mx) * .4).toFixed(1)} ${(my + (cy - my) * .4).toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+    const v = duo[k].s / (duo[k].g + POS_SCHRUMPF), b = Math.abs(v);
+    const cls = v > GLEICH ? 'w' : v < -GLEICH ? 'l' : 'm';
+    const deck = cls === 'm' ? .4 : .45 + .5 * Math.min(1, (b - GLEICH) / .12);
+    return {x, y, d, linie:`<path class="netz-l ${cls}" style="--i:${i};--o:${deck.toFixed(2)}" d="${d}" stroke-width="${(1.5 + duo[k].g / gmax * 6).toFixed(1)}"/>`};
+  });
+  // Der Name steht unter dem Gesicht, in der oberen Hälfte des Kreises
+  // darüber: dort liefen die Linien zur Mitte mitten durch ihn.
+  const oben = id => lage[id][1] < cy - R * .5;
+  const gesichter = kreis.map((id, i) => `<span class="netz-p${mitLinie.has(id) ? '' : ' still'}${oben(id) ? ' oben' : ''}" data-detail="${esc(id)}" style="left:${(lage[id][0] / W * 100).toFixed(1)}%;top:${(lage[id][1] / H * 100).toFixed(1)}%;--i:${i}">${rcpAvHtml(id, 28, {})}<b>${esc(pname(id))}</b></span>`).join('');
+  return `<div class="netz"><svg viewBox="0 0 ${W} ${H}"><g aria-hidden="true">${bahnen.map(b => b.linie).join('')}</g>${
+      bahnen.map(b => `<path class="netz-t" d="${b.d}" data-team="${esc(b.x)}|${esc(b.y)}" role="button" aria-label="${esc(pname(b.x))} und ${esc(pname(b.y))}"/>`).join('')}</svg>${gesichter}</div>
+    <div class="netz-leg"><span class="w">besser als erwartet</span><span class="m">wie erwartet</span><span class="l">schlechter als erwartet</span><span class="d">Dicke nach gemeinsamen Sätzen</span></div>`;
 }

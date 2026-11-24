@@ -588,29 +588,63 @@
   .einblick.auf .einblick-pf{transform:rotate(90deg)}
   .einblick-i{display:none;padding:2px 12px 12px}
   .einblick.auf .einblick-i{display:block}
-  /* Die Rollen-Landkarte */
-  .rk{position:relative;aspect-ratio:300/230}
-  .rk svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-  .rk-q{fill:rgba(228,242,74,.05)}
-  .rk-m{stroke:var(--line2);stroke-dasharray:3 4}
-  .rk-a{stroke:var(--line2)}
+  /* Ein Einblick ohne Bild sagt in einem Satz, was noch fehlt: offen und
+     leer las er sich als Fehler. */
+  .einblick-leer{margin:4px 0 2px;font-size:13px;line-height:1.45;color:var(--muted)}
+  /* Die Seiten-Landkarte [§C44]. Die zwei Felder, in denen jemand meist
+     auf der besseren Seite steht, sind hell getönt, nicht grün: sie sind
+     eine Lage, keine Richtung [§C25]. Die Seiten selbst tragen Metall wie
+     überall außerhalb des Profils. */
+  .rk{position:relative;aspect-ratio:300/262}
+  .rk svg{position:absolute;inset:0;width:100%;height:100%}
+  .rk-q{fill:rgba(238,242,247,.045)}
+  .rk-b{fill:rgba(238,242,247,.025)}
+  .rk-m{stroke:var(--line2);stroke-width:1;stroke-dasharray:2 4;vector-effect:non-scaling-stroke}
+  .rk-r{fill:none;stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+  .rk-f{position:absolute;font-family:'Sometype Mono',monospace;font-size:8.5px;line-height:1;letter-spacing:.02em;
+    color:var(--muted);white-space:nowrap;pointer-events:none}
+  .rk-f.b{color:var(--ink2);opacity:.8}
+  .rk-f-ol,.rk-f-or{top:6px} .rk-f-ul,.rk-f-ur{bottom:6px}
+  .rk-f-ol,.rk-f-ul{left:7px} .rk-f-or,.rk-f-ur{right:7px}
+  .rk-f-g{transform:translateY(-50%);padding:1px 3px;background:var(--surface);border-radius:3px}
   .rk-p{position:absolute;transform:translate(-50%,-50%);line-height:0;cursor:pointer}
   .rk-p .rcp-av,.netz-p .rcp-av{box-shadow:0 0 0 2px var(--surface);border-radius:50%}
-  .rk-ax{display:flex;justify-content:space-between;font-family:'Sometype Mono',monospace;font-size:9.5px;color:var(--faint);margin-top:2px}
-  .rk-l{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:11px;line-height:1.4;color:var(--muted)}
-  .rk-l b{font-weight:600;color:var(--ink2)}
-  .rk-l i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;background:var(--line2)}
-  .rk-l i.f-vh{background:rgba(228,242,74,.45)}
-  /* Das Netz der Duos */
-  .netz{position:relative;aspect-ratio:300/280}
-  .netz svg{position:absolute;inset:0;width:100%;height:100%}
-  .netz-l{stroke-linecap:round;opacity:.55}
-  .netz-l.w{stroke:var(--acid)}.netz-l.l{stroke:var(--red)}.netz-l.m{stroke:var(--ink2);opacity:.28}
+  .rk-p.wenig .rcp-av,.rk-p.wenig b{opacity:.45}
+  .rk-ax{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;margin-top:5px;
+    font-family:'Sometype Mono',monospace;font-size:9.5px;line-height:1.2;color:var(--muted);white-space:nowrap}
+  .rk-ax span:last-child{text-align:right}
+  .rk-ax-o{display:flex;justify-content:center;margin:0 0 5px}
+  .rk-l{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+  .rk-l > div{display:grid;grid-template-columns:8px 1fr;column-gap:8px;row-gap:1px;align-items:center}
+  .rk-l i{width:8px;height:8px;border-radius:2px;border:1px solid var(--line2)}
+  .rk-l b{font-size:11.5px;font-weight:600;line-height:1.3;color:var(--ink2)}
+  .rk-l span{grid-column:2;font-size:12px;line-height:1.4;color:var(--muted)}
+  .rk-l .rk-g-b i{background:rgba(238,242,247,.22);border-color:transparent}
+  .rk-l .rk-g-g i{background:rgba(238,242,247,.07)}
+  .rk-n{margin-top:8px;font-size:11px;line-height:1.4;color:var(--faint)}
+  /* Das Netz der Duos. Grün und Rot zeigen nur die Richtung gegen die
+     Erwartung [§C25], die Deckkraft ihr Maß (`--o`). Die unsichtbare,
+     breite Bahn über jeder Linie nimmt das Tippen: die Linie selbst ist
+     oft nur zwei Pixel breit. */
+  .netz{position:relative;aspect-ratio:300/304;margin-top:2px}
+  .netz svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .netz-l{fill:none;stroke-linecap:round;opacity:var(--o,.5)}
+  .netz-l.w{stroke:var(--acid)}.netz-l.l{stroke:var(--red)}.netz-l.m{stroke:var(--ink2)}
+  .netz-t{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke;cursor:pointer}
   .netz-p{position:absolute;transform:translate(-50%,-50%);line-height:0;cursor:pointer}
-  .netz-leg{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:10.5px;color:var(--muted)}
-  .netz-leg span::before{content:"";display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:5px;vertical-align:middle;background:var(--line2)}
-  .netz-leg .w::before{background:var(--acid)}.netz-leg .l::before{background:var(--red)}
-  .netz-leg .m::before{background:var(--ink2);opacity:.45}.netz-leg .d::before{height:8px;width:3px;background:var(--muted)}
+  /* Der Name unter dem Gesicht: ein Bauteil für Landkarte und Netz [§C27]. */
+  .rk-p b,.netz-p b{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:3px;
+    font-size:10px;font-weight:600;line-height:1.1;color:var(--ink2);white-space:nowrap;
+    text-shadow:0 0 3px var(--surface),0 0 3px var(--surface),0 0 2px var(--surface)}
+  .netz-p.oben b{top:auto;bottom:100%;margin:0 0 3px}
+  .netz-p.still .rcp-av,.netz-p.still b{opacity:.4}
+  .netz-leg{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:10px;font-size:11px;line-height:1.3;color:var(--muted)}
+  .netz-leg span::before{content:"";display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--line2)}
+  .netz-leg .w::before{background:var(--acid);opacity:.85}.netz-leg .l::before{background:var(--red);opacity:.85}
+  .netz-leg .m::before{background:var(--ink2);opacity:.4}
+  .netz-leg .d::before{width:16px;height:6px;border-radius:1px;background:
+    linear-gradient(var(--muted),var(--muted)) left center/5px 2px no-repeat,
+    linear-gradient(var(--muted),var(--muted)) right center/8px 6px no-repeat}
   @media (prefers-reduced-motion:no-preference){
     .rk-p,.netz-p{animation:einblickDa .45s ease-out both;animation-delay:calc(var(--i,0) * 40ms)}
     .netz-l{animation:einblickL .6s ease-out both;animation-delay:calc(var(--i,0) * 18ms)}

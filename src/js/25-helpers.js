@@ -262,7 +262,7 @@ const HILFE = {
   seiten: {titel:'Seiten', absaetze:[
     'Wer auf welcher Seite am stärksten spielt, über alle Saisons. Die Seite kommt aus der Aufstellung jedes Satzes.',
     'Der Wert verbindet die Siegquote dort, die Leistung gegen die Erwartung (Partner und Gegner), den Anteil der Games und wie oft jemand dort stand. <b>▲</b> heißt über, <b>▼</b> unter der Erwartung.',
-    'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
+    'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil. Die Seiten-Landkarte stellt alle nebeneinander, nach der Seite, auf der jemand meist steht, und der Seite, auf der jemand gemessen am eigenen Schnitt besser spielt.']},
   awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
     '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage. Ein Tippen zeigt die Rangfolge und wie gewertet wird.',
     () => `<b>Rekorde</b> sind Bestwerte über alle Saisons; wer einen übertrifft, nimmt ihn dem Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.`,
@@ -270,7 +270,8 @@ const HILFE = {
     'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
   teams: {titel:'Teams', absaetze:[
     () => `Jedes Duo ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, sortiert nach Siegquote, Game-Bilanz oder Elo-Zuwachs.`,
-    'Ein Tippen auf ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
+    'Ein Tippen auf ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.',
+    'Das Netz der Duos zeigt die meistgespielten Duos als Linien. Die Farbe sagt, ob ein Duo zusammen besser oder schlechter spielt, als die Elo der vier erwarten lässt, nach Sieg und Games je zur Hälfte.']},
   verlauf: {titel:'Verlauf', absaetze:[
     'Jeder Satz, der neueste zuerst; oben lässt sich nach einem Spieler filtern.',
     'Ein Tippen auf einen Satz öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt er sich bearbeiten oder löschen; die Liga rechnet danach neu.']},

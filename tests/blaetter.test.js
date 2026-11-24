@@ -220,6 +220,35 @@ const ATTR = /(?:style|d|width|height|x|y|cx|cy|r|points|transform|viewBox)="[^"
     const hilfePx = await K(`(() => { closeSheet(true); zeigeHilfe('awards'); const p = document.querySelector('#sheet .pos-info p');
       const px = p ? getComputedStyle(p).fontSize : null; closeSheet(true); return px; })()`);
     ok(hilfePx === '14px', `Das Hilfe-Blatt steht in derselben Größe wie die Erklärkarte (${hilfePx})`);
+    // ── Die Einblicke messen jeden gegen sich selbst [§C44] ───────────
+    // Die Seiten-Landkarte trug den Wert der Seiten-Rangliste Drive gegen
+    // Revés auf und war eine Diagonale der Stärke; das Netz der Duos färbte
+    // nach der rohen Siegquote. Jetzt steht jeder rechts, wenn er meist Drive
+    // spielt, und über der Nulllinie, wenn er dort gegen den eigenen Schnitt
+    // besser ist; jede Linie trägt die Farbe aus Sieg und Games gegen die
+    // Erwartung, zum Schnitt gezogen. Gerechnet wird hier unabhängig.
+    const einblick = await K(`(() => {
+      const html = _einblickRollen();
+      const vb = (html.match(/viewBox="0 0 ([0-9.]+) ([0-9.]+)"/) || []).slice(1).map(Number);
+      const null_ = [...html.matchAll(/class="rk-m" x1="0" x2="[0-9.]+" y1="([0-9.]+)"/g)].map(m => +m[1])[0];
+      const faces = [...html.matchAll(/class="rk-p[^"]*" data-detail="([^"]+)" style="left:([0-9.]+)%;top:([0-9.]+)%/g)].map(m => ({id:m[1], x:+m[2], y:+m[3] / 100 * vb[1]}));
+      const falsch = faces.filter(f => { const l = positionsLage(posPerfFrom(f.id, matches));
+        return (f.x >= 50) !== (l.anteil >= .5) || (l.staerker === 'atk' && f.y >= null_) || (l.staerker === 'def' && f.y <= null_); }).map(f => pname(f.id));
+      const net = _einblickNetz();
+      const cls = [...net.matchAll(/class="netz-l ([a-z])"/g)].map(m => m[1]);
+      const teams = [...net.matchAll(/class="netz-t" d="[^"]*" data-team="([^"]+)"/g)].map(m => m[1]);
+      const soll = teams.map(k => { const [x, y] = k.split('|'); let s = 0, g = 0;
+        matches.forEach(m => { const p = partie(m); if(p.winner !== 'A' && p.winner !== 'B') return;
+          const onA = [m.a1, m.a2].includes(x) && [m.a1, m.a2].includes(y), onB = [m.b1, m.b2].includes(x) && [m.b1, m.b2].includes(y);
+          if(!onA && !onB) return; const e = m.exp_a != null ? m.exp_a : .5, exp = onA ? e : 1 - e, won = p.winner === (onA ? 'A' : 'B');
+          s += ((won ? 1 : 0) - exp + posGameLeistung(onA ? p.gamesA : p.gamesB, onA ? p.gamesB : p.gamesA, exp)) / 2; g++; });
+        const v = s / (g + POS_SCHRUMPF); return v > .03 ? 'w' : v < -.03 ? 'l' : 'm'; });
+      return JSON.stringify({gesichter:faces.length, falsch, netz:cls.join(''), soll:soll.join(''), uhr:/Uhrzeigersinn/.test(net)});
+    })()`).then(JSON.parse);
+    ok(einblick.gesichter >= 8 && einblick.falsch.length === 0,
+      `Die Seiten-Landkarte setzt jeden nach dem Positionsprofil: rechts, wer meist Drive spielt, oben, wer dort besser ist (${einblick.gesichter} Gesichter${einblick.falsch.length ? ' — falsch: ' + einblick.falsch.join(', ') : ''})`);
+    ok(einblick.netz.length > 0 && einblick.netz === einblick.soll && !einblick.uhr,
+      `Das Netz der Duos färbt nach Sieg und Games gegen die Erwartung, nicht nach der Siegquote (${einblick.netz} / ${einblick.soll})`);
     // ── Das Award-Blatt ohne Träger und mit Feuer ─────────────────────
     // Kein Filter im Filter am Feuer: in den Top-5-Listen der Awards lag ein
     // Weichzeichner auf dem ganzen Feuer, und jede Flamme trug schon ihren

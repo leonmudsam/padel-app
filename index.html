@@ -1595,27 +1595,52 @@
   .einblick.auf .einblick-pf{transform:rotate(90deg)}
   .einblick-i{display:none;padding:2px 12px 12px}
   .einblick.auf .einblick-i{display:block}
-  .rk{position:relative;aspect-ratio:300/230}
-  .rk svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-  .rk-q{fill:rgba(228,242,74,.05)}
-  .rk-m{stroke:var(--line2);stroke-dasharray:3 4}
-  .rk-a{stroke:var(--line2)}
+  .einblick-leer{margin:4px 0 2px;font-size:13px;line-height:1.45;color:var(--muted)}
+  .rk{position:relative;aspect-ratio:300/262}
+  .rk svg{position:absolute;inset:0;width:100%;height:100%}
+  .rk-q{fill:rgba(238,242,247,.045)}
+  .rk-b{fill:rgba(238,242,247,.025)}
+  .rk-m{stroke:var(--line2);stroke-width:1;stroke-dasharray:2 4;vector-effect:non-scaling-stroke}
+  .rk-r{fill:none;stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+  .rk-f{position:absolute;font-family:'Sometype Mono',monospace;font-size:8.5px;line-height:1;letter-spacing:.02em;
+    color:var(--muted);white-space:nowrap;pointer-events:none}
+  .rk-f.b{color:var(--ink2);opacity:.8}
+  .rk-f-ol,.rk-f-or{top:6px} .rk-f-ul,.rk-f-ur{bottom:6px}
+  .rk-f-ol,.rk-f-ul{left:7px} .rk-f-or,.rk-f-ur{right:7px}
+  .rk-f-g{transform:translateY(-50%);padding:1px 3px;background:var(--surface);border-radius:3px}
   .rk-p{position:absolute;transform:translate(-50%,-50%);line-height:0;cursor:pointer}
   .rk-p .rcp-av,.netz-p .rcp-av{box-shadow:0 0 0 2px var(--surface);border-radius:50%}
-  .rk-ax{display:flex;justify-content:space-between;font-family:'Sometype Mono',monospace;font-size:9.5px;color:var(--faint);margin-top:2px}
-  .rk-l{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:11px;line-height:1.4;color:var(--muted)}
-  .rk-l b{font-weight:600;color:var(--ink2)}
-  .rk-l i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;background:var(--line2)}
-  .rk-l i.f-vh{background:rgba(228,242,74,.45)}
-  .netz{position:relative;aspect-ratio:300/280}
-  .netz svg{position:absolute;inset:0;width:100%;height:100%}
-  .netz-l{stroke-linecap:round;opacity:.55}
-  .netz-l.w{stroke:var(--acid)}.netz-l.l{stroke:var(--red)}.netz-l.m{stroke:var(--ink2);opacity:.28}
+  .rk-p.wenig .rcp-av,.rk-p.wenig b{opacity:.45}
+  .rk-ax{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;margin-top:5px;
+    font-family:'Sometype Mono',monospace;font-size:9.5px;line-height:1.2;color:var(--muted);white-space:nowrap}
+  .rk-ax span:last-child{text-align:right}
+  .rk-ax-o{display:flex;justify-content:center;margin:0 0 5px}
+  .rk-l{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+  .rk-l > div{display:grid;grid-template-columns:8px 1fr;column-gap:8px;row-gap:1px;align-items:center}
+  .rk-l i{width:8px;height:8px;border-radius:2px;border:1px solid var(--line2)}
+  .rk-l b{font-size:11.5px;font-weight:600;line-height:1.3;color:var(--ink2)}
+  .rk-l span{grid-column:2;font-size:12px;line-height:1.4;color:var(--muted)}
+  .rk-l .rk-g-b i{background:rgba(238,242,247,.22);border-color:transparent}
+  .rk-l .rk-g-g i{background:rgba(238,242,247,.07)}
+  .rk-n{margin-top:8px;font-size:11px;line-height:1.4;color:var(--faint)}
+  .netz{position:relative;aspect-ratio:300/304;margin-top:2px}
+  .netz svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .netz-l{fill:none;stroke-linecap:round;opacity:var(--o,.5)}
+  .netz-l.w{stroke:var(--acid)}.netz-l.l{stroke:var(--red)}.netz-l.m{stroke:var(--ink2)}
+  .netz-t{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke;cursor:pointer}
   .netz-p{position:absolute;transform:translate(-50%,-50%);line-height:0;cursor:pointer}
-  .netz-leg{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:10.5px;color:var(--muted)}
-  .netz-leg span::before{content:"";display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:5px;vertical-align:middle;background:var(--line2)}
-  .netz-leg .w::before{background:var(--acid)}.netz-leg .l::before{background:var(--red)}
-  .netz-leg .m::before{background:var(--ink2);opacity:.45}.netz-leg .d::before{height:8px;width:3px;background:var(--muted)}
+  .rk-p b,.netz-p b{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:3px;
+    font-size:10px;font-weight:600;line-height:1.1;color:var(--ink2);white-space:nowrap;
+    text-shadow:0 0 3px var(--surface),0 0 3px var(--surface),0 0 2px var(--surface)}
+  .netz-p.oben b{top:auto;bottom:100%;margin:0 0 3px}
+  .netz-p.still .rcp-av,.netz-p.still b{opacity:.4}
+  .netz-leg{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:10px;font-size:11px;line-height:1.3;color:var(--muted)}
+  .netz-leg span::before{content:"";display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--line2)}
+  .netz-leg .w::before{background:var(--acid);opacity:.85}.netz-leg .l::before{background:var(--red);opacity:.85}
+  .netz-leg .m::before{background:var(--ink2);opacity:.4}
+  .netz-leg .d::before{width:16px;height:6px;border-radius:1px;background:
+    linear-gradient(var(--muted),var(--muted)) left center/5px 2px no-repeat,
+    linear-gradient(var(--muted),var(--muted)) right center/8px 6px no-repeat}
   @media (prefers-reduced-motion:no-preference){
     .rk-p,.netz-p{animation:einblickDa .45s ease-out both;animation-delay:calc(var(--i,0) * 40ms)}
     .netz-l{animation:einblickL .6s ease-out both;animation-delay:calc(var(--i,0) * 18ms)}
@@ -6755,7 +6780,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.24.dae0c634';
+const BUILD_VERSION='2026.11.24.5cc7cbfd';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -14920,71 +14945,128 @@ function bindDetailLinks(el){
   });
 }
 
+
 function _einblickRollen(){
-  const atk = {}, def = {};
-  positionsListe('drive').forEach(x => { atk[x.p.id] = x.score; });
-  positionsListe('reves').forEach(x => { def[x.p.id] = x.score; });
-  const pkt = Object.keys(atk).filter(id => def[id] != null).map(id => ({id, a:atk[id], d:def[id]}));
-  if(pkt.length < 3) return '';
-  const W = 300, H = 230, R = 13;
-  const span = (arr) => { const lo = Math.min(...arr), hi = Math.max(...arr); return {lo, hi, d:(hi - lo) || 1}; };
-  const sa = span(pkt.map(x => x.a)), sd = span(pkt.map(x => x.d));
-  const med = arr => { const s = arr.slice().sort((a, b) => a - b); return s[s.length >> 1]; };
-  const ma = med(pkt.map(x => x.a)), md = med(pkt.map(x => x.d));
-  const X = v => 30 + (v - sa.lo) / sa.d * (W - 50), Y = v => H - 28 - (v - sd.lo) / sd.d * (H - 50);
-  const lage = pkt.map(x => ({id:x.id, x:X(x.a), y:Y(x.d)}));
-  for(let n = 0; n < 40; n++){
+  const MIN = 3;
+  const pkt = activePlayers().map(p => ({id:p.id, l:positionsLage(posPerfFrom(p.id, matches))}))
+    .filter(x => x.l.aG + x.l.dG > 0)
+    .map(x => ({id:x.id, n:x.l.aG + x.l.dG, anteil:x.l.anteil, v:x.l.rA - x.l.rD, st:x.l.staerker}));
+  if(pkt.length < MIN) return `<p class="einblick-leer">Die Seiten-Landkarte steht ab ${MIN} Spielern mit Sätzen.</p>`;
+  const W = 300, H = 262, P = 16, R = 13, RAND = 15, NAME_H = 15, BAND = 24, GLEICH = .03;
+  const S = Math.max(.10, ...pkt.map(x => Math.abs(x.v)));
+  const yo0 = RAND + R + 2, yu0 = H - RAND - R - NAME_H, mitte = (yo0 + yu0) / 2, halb = (yu0 - yo0) / 2;
+  const X = a => P + a * (W - 2 * P);
+  const Y = v => Math.abs(v) <= GLEICH ? mitte - v / GLEICH * BAND
+    : mitte - Math.sign(v) * (BAND + (Math.abs(v) - GLEICH) / (S - GLEICH) * (halb - BAND));
+  let ctx = null;
+  try { ctx = document.createElement('canvas').getContext('2d'); ctx.font = `600 10px ${getComputedStyle(document.body).fontFamily}`; } catch(e){ ctx = null; }
+  const breite = t => Math.ceil((ctx ? ctx.measureText(t).width : t.length * 6.2) * 1.08) + 6;
+  const yo = Y(GLEICH), yu = Y(-GLEICH), m = W / 2, KANTE = 5;
+  const lage = pkt.map(x => {
+    const hw = Math.max(R, breite(pname(x.id)) / 2) + 1;
+    const rechts = x.anteil >= .5, f = x.st === 'beide' ? 0 : x.v > 0 ? 1 : -1;
+    return {id:x.id, x:X(x.anteil), y:Y(x.v), hw, wenig:x.n < POS_SCHRUMPF,
+      x0:rechts ? Math.max(m + .5, hw + 2) : hw + 2, x1:rechts ? W - hw - 2 : Math.min(m - .5, W - hw - 2),
+      y0:f > 0 ? yo0 : f < 0 ? yu + KANTE : yo + KANTE, y1:f > 0 ? yo - KANTE : f < 0 ? yu0 : yu - KANTE};
+  });
+  const halten = p => { p.x = Math.max(p.x0, Math.min(p.x1, p.x)); p.y = Math.max(p.y0, Math.min(p.y1, p.y)); };
+  lage.forEach(halten);
+  const ueber = (p, q) => ({ox:Math.min(p.x + p.hw, q.x + q.hw) - Math.max(p.x - p.hw, q.x - q.hw) + 2,
+    oy:Math.min(p.y + R + NAME_H, q.y + R + NAME_H) - Math.max(p.y - R, q.y - R) + 2});
+  for(let n = 0; n < 160; n++){
+    let bewegt = false;
     for(let i = 0; i < lage.length; i++) for(let j = i + 1; j < lage.length; j++){
-      const p = lage[i], q = lage[j], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || .01;
-      if(d < 2 * R + 2){
-        const k = (2 * R + 2 - d) / 2, ux = dx / d, uy = dy / d;
-        p.x -= ux * k; p.y -= uy * k; q.x += ux * k; q.y += uy * k;
-      }
+      const p = lage[i], q = lage[j];
+      let {ox, oy} = ueber(p, q);
+      if(ox <= 0 || oy <= 0) continue;
+      bewegt = true;
+      const schieben = (achse, um) => {
+        const d = achse === 'x' ? (q.x - p.x || (j - i)) : (q.y - p.y || (j - i)), s = d > 0 ? 1 : -1;
+        p[achse] -= s * um / 2; q[achse] += s * um / 2; halten(p); halten(q);
+      };
+      schieben(oy < ox ? 'y' : 'x', Math.min(ox, oy));
+      ({ox, oy} = ueber(p, q));
+      if(ox > 0 && oy > 0) schieben(oy < ox ? 'x' : 'y', oy < ox ? ox : oy);
     }
-    lage.forEach(p => { p.x = Math.max(R + 2, Math.min(W - R - 2, p.x)); p.y = Math.max(R + 2, Math.min(H - R - 2, p.y)); });
+    if(!bewegt) break;
   }
-  const feld = (x) => (x.a >= ma ? 'v' : '') + (x.d >= md ? 'h' : '');
-  const gruppen = {vh:[], v:[], h:[], '':[]};
-  pkt.slice().sort((p, q) => (q.a + q.d) - (p.a + p.d)).forEach(x => gruppen[feld(x)].push(x.id));
-  const NAME = {vh:'Auf beiden Seiten stark', v:'Stärker rechts (Drive)', h:'Stärker links (Revés)', '':'Auf beiden unter der Mitte'};
-  const liste = ['vh', 'v', 'h', ''].filter(k => gruppen[k].length)
-    .map(k => `<span><i class="f-${k || 'n'}"></i><b>${esc(NAME[k])}:</b> ${esc(_namenListe(gruppen[k].map(pname)))}</span>`).join('');
-  return `<div class="rk"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">
-      <rect class="rk-q" x="${X(ma)}" y="0" width="${W - X(ma)}" height="${Y(md)}"/>
-      <line class="rk-m" x1="${X(ma)}" x2="${X(ma)}" y1="0" y2="${H - 20}"/>
-      <line class="rk-m" x1="20" x2="${W}" y1="${Y(md)}" y2="${Y(md)}"/>
-      <line class="rk-a" x1="20" x2="${W}" y1="${H - 20}" y2="${H - 20}"/>
-      <line class="rk-a" x1="20" x2="20" y1="0" y2="${H - 20}"/>
-    </svg>${lage.map((p, i) => `<span class="rk-p" data-detail="${esc(p.id)}" style="left:${(p.x / W * 100).toFixed(1)}%;top:${(p.y / H * 100).toFixed(1)}%;--i:${i}">${rcpAvHtml(p.id, 26, {})}</span>`).join('')}</div>
-    <div class="rk-ax"><span>↑ Revés</span><span>Drive →</span></div>
-    <div class="rk-l">${liste}</div>`;
+  const BAND_B = 96, ym = Y(0);
+  let bandX = null;
+  for(let x0 = W - BAND_B - 6; x0 >= 6 && bandX == null; x0 -= 6)
+    if(!lage.some(p => p.x + p.hw > x0 && p.x - p.hw < x0 + BAND_B && p.y - R < ym + 7 && p.y + R + NAME_H > ym - 7)) bandX = x0;
+  const feld = x => x.st === 'beide' ? 'g' : (x.st === 'drive') === (x.anteil >= .5) ? 'b' : 's';
+  const NAME = {b:'Auf der besseren Seite', s:'Auf der schwächeren Seite', g:'Auf beiden gleich'};
+  const gruppen = {b:[], s:[], g:[]};
+  pkt.slice().sort((p, q) => Math.abs(q.v) - Math.abs(p.v)).forEach(x => gruppen[feld(x)].push(x.id));
+  const liste = ['b', 's', 'g'].filter(k => gruppen[k].length)
+    .map(k => `<div class="rk-g-${k}"><i></i><b>${NAME[k]}</b><span>${esc(_namenListe(gruppen[k].map(pname)))}</span></div>`).join('');
+  const blass = lage.some(p => p.wenig)
+    ? `<p class="rk-n">Blass steht, wer weniger als ${POS_SCHRUMPF} Sätze hat.</p>` : '';
+  const r = 8, f1 = v => v.toFixed(1);
+  const pc = v => (v * 100).toFixed(1) + '%';
+  return `<div class="rk-ax rk-ax-o"><span>↑ Drive besser</span></div>
+    <div class="rk"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <path class="rk-q" d="M${m} 0H${W - r}A${r} ${r} 0 0 1 ${W} ${r}V${f1(yo)}H${m}Z"/>
+      <path class="rk-q" d="M0 ${f1(yu)}H${m}V${H}H${r}A${r} ${r} 0 0 1 0 ${H - r}Z"/>
+      <rect class="rk-b" x="0" y="${f1(yo)}" width="${W}" height="${f1(yu - yo)}"/>
+      <line class="rk-m" x1="${m}" x2="${m}" y1="0" y2="${H}"/>
+      <line class="rk-m" x1="0" x2="${W}" y1="${f1(ym)}" y2="${f1(ym)}"/>
+      <rect class="rk-r" x="0" y="0" width="${W}" height="${H}" rx="${r}"/>
+    </svg>
+    <span class="rk-f rk-f-ol">${NAME.s}</span><span class="rk-f rk-f-or b">${NAME.b}</span>
+    <span class="rk-f rk-f-ul b">${NAME.b}</span><span class="rk-f rk-f-ur">${NAME.s}</span>
+    ${bandX == null ? '' : `<span class="rk-f rk-f-g" style="left:${pc(bandX / W)};top:${pc(ym / H)}">${NAME.g}</span>`}
+    ${lage.map((p, i) => `<span class="rk-p${p.wenig ? ' wenig' : ''}" data-detail="${esc(p.id)}" style="left:${pc(p.x / W)};top:${pc(p.y / H)};--i:${i}">${rcpAvHtml(p.id, 26, {})}<b>${esc(pname(p.id))}</b></span>`).join('')}</div>
+    <div class="rk-ax"><span>← meist Revés</span><span>↓ Revés besser</span><span>meist Drive →</span></div>
+    <div class="rk-l">${liste}</div>${blass}`;
 }
 
 function _einblickNetz(){
-  const ids = activePlayers().map(p => p.id);
-  const n = ids.length;
-  if(n < 3) return '';
-  const W = 300, H = 280, R = 112, cx = 150, cy = 140;
+  const ids = activePlayers().map(p => p.id), da = new Set(ids);
+  const duo = {}, gesamt = {};
+  matches.forEach(m => {
+    const p = partie(m);
+    if(p.winner !== 'A' && p.winner !== 'B') return;
+    const e = m.exp_a != null ? m.exp_a : .5;
+    [[m.a1, m.a2, p.winner === 'A', e, p.gamesA, p.gamesB], [m.b1, m.b2, p.winner === 'B', 1 - e, p.gamesB, p.gamesA]]
+      .forEach(([x, y, w, exp, gf, ga]) => {
+        if(!da.has(x) || !da.has(y)) return;
+        const k = paarKey(x, y), d = duo[k] = duo[k] || {g:0, s:0};
+        d.g++; d.s += ((w ? 1 : 0) - exp + posGameLeistung(gf, ga, exp)) / 2;
+        gesamt[x] = (gesamt[x] || 0) + 1; gesamt[y] = (gesamt[y] || 0) + 1;
+      });
+  });
+  const ks = Object.keys(duo).filter(k => duo[k].g >= DUO_MIN).sort((a, b) => duo[b].g - duo[a].g).slice(0, 18);
+  if(ids.length < 2 || !ks.length) return `<p class="einblick-leer">Noch kein Duo mit ${DUO_MIN} gemeinsamen Sätzen.</p>`;
+  const gem = (a, b) => (duo[paarKey(a, b)] || {g:0}).g;
+  const rest = ids.slice().sort((a, b) => (gesamt[b] || 0) - (gesamt[a] || 0));
+  const kreis = [rest.shift()];
+  while(rest.length){
+    const z = kreis[kreis.length - 1];
+    let best = 0;
+    rest.forEach((id, i) => { if(gem(z, id) > gem(z, rest[best])) best = i; });
+    kreis.push(rest.splice(best, 1)[0]);
+  }
+  const W = 300, H = 304, R = 112, cx = 150, cy = 152, n = kreis.length, GLEICH = .03;
   const lage = {};
-  ids.forEach((id, i) => { const a = -Math.PI / 2 + i / n * Math.PI * 2; lage[id] = [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; });
-  const duo = {};
-  matches.forEach(m => [[m.a1, m.a2, m.winner === 'A'], [m.b1, m.b2, m.winner === 'B']].forEach(([x, y, w]) => {
-    if(!lage[x] || !lage[y]) return;
-    const k = paarKey(x, y);
-    duo[k] = duo[k] || {g:0, w:0}; duo[k].g++; if(w) duo[k].w++;
-  }));
-  const ks = Object.keys(duo).filter(k => duo[k].g >= DUO_MIN).sort((a, b) => duo[b].g - duo[a].g).slice(0, 18).reverse();
-  if(!ks.length) return '';
+  kreis.forEach((id, i) => { const a = -Math.PI / 2 + i / n * Math.PI * 2; lage[id] = [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; });
   const gmax = Math.max(1, ...ks.map(k => duo[k].g));
-  const linien = ks.map((k, i) => {
-    const [x, y] = k.split('|'), q = duo[k].w / duo[k].g;
-    const cls = q >= .6 ? 'w' : q <= .4 ? 'l' : 'm';
-    return `<line class="netz-l ${cls}" style="--i:${i}" x1="${lage[x][0].toFixed(1)}" y1="${lage[x][1].toFixed(1)}" x2="${lage[y][0].toFixed(1)}" y2="${lage[y][1].toFixed(1)}" stroke-width="${(1 + duo[k].g / gmax * 7).toFixed(1)}"/>`;
-  }).join('');
-  const gesichter = ids.map(id => `<span class="netz-p" data-detail="${esc(id)}" style="left:${(lage[id][0] / W * 100).toFixed(1)}%;top:${(lage[id][1] / H * 100).toFixed(1)}%">${rcpAvHtml(id, 30, {})}</span>`).join('');
-  return `<div class="netz"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">${linien}</svg>${gesichter}</div>
-    <div class="rk-l"><span>Im Uhrzeigersinn ab oben: ${esc(_namenListe(ids.map(pname)))}.</span></div>
-    <div class="netz-leg"><span class="w">gewinnt öfter</span><span class="m">ausgeglichen</span><span class="l">verliert öfter</span><span class="d">Dicke: Zahl der Sätze</span></div>`;
+  const mitLinie = new Set();
+  const bahnen = ks.slice().reverse().map((k, i) => {
+    const [x, y] = k.split('|'), [x1, y1] = lage[x], [x2, y2] = lage[y];
+    mitLinie.add(x); mitLinie.add(y);
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    const d = `M${x1.toFixed(1)} ${y1.toFixed(1)}Q${(mx + (cx - mx) * .4).toFixed(1)} ${(my + (cy - my) * .4).toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+    const v = duo[k].s / (duo[k].g + POS_SCHRUMPF), b = Math.abs(v);
+    const cls = v > GLEICH ? 'w' : v < -GLEICH ? 'l' : 'm';
+    const deck = cls === 'm' ? .4 : .45 + .5 * Math.min(1, (b - GLEICH) / .12);
+    return {x, y, d, linie:`<path class="netz-l ${cls}" style="--i:${i};--o:${deck.toFixed(2)}" d="${d}" stroke-width="${(1.5 + duo[k].g / gmax * 6).toFixed(1)}"/>`};
+  });
+  const oben = id => lage[id][1] < cy - R * .5;
+  const gesichter = kreis.map((id, i) => `<span class="netz-p${mitLinie.has(id) ? '' : ' still'}${oben(id) ? ' oben' : ''}" data-detail="${esc(id)}" style="left:${(lage[id][0] / W * 100).toFixed(1)}%;top:${(lage[id][1] / H * 100).toFixed(1)}%;--i:${i}">${rcpAvHtml(id, 28, {})}<b>${esc(pname(id))}</b></span>`).join('');
+  return `<div class="netz"><svg viewBox="0 0 ${W} ${H}"><g aria-hidden="true">${bahnen.map(b => b.linie).join('')}</g>${
+      bahnen.map(b => `<path class="netz-t" d="${b.d}" data-team="${esc(b.x)}|${esc(b.y)}" role="button" aria-label="${esc(pname(b.x))} und ${esc(pname(b.y))}"/>`).join('')}</svg>${gesichter}</div>
+    <div class="netz-leg"><span class="w">besser als erwartet</span><span class="m">wie erwartet</span><span class="l">schlechter als erwartet</span><span class="d">Dicke nach gemeinsamen Sätzen</span></div>`;
 }
 const SATZ_MAX = 5;
 const SATZ_ZAHL_MAX = 99;
@@ -19872,7 +19954,7 @@ const HILFE = {
   seiten: {titel:'Seiten', absaetze:[
     'Wer auf welcher Seite am stärksten spielt, über alle Saisons. Die Seite kommt aus der Aufstellung jedes Satzes.',
     'Der Wert verbindet die Siegquote dort, die Leistung gegen die Erwartung (Partner und Gegner), den Anteil der Games und wie oft jemand dort stand. <b>▲</b> heißt über, <b>▼</b> unter der Erwartung.',
-    'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil; die Seiten-Landkarte stellt alle nebeneinander.']},
+    'Auf welcher Seite jemand selbst besser ist, zeigt das Seitenprofil im Profil. Die Seiten-Landkarte stellt alle nebeneinander, nach der Seite, auf der jemand meist steht, und der Seite, auf der jemand gemessen am eigenen Schnitt besser spielt.']},
   awards: {titel:'Awards, Rekorde, Chronik', absaetze:[
     '<b>Awards</b> gelten der Saison: jede Kachel stellt eine Frage. Ein Tippen zeigt die Rangfolge und wie gewertet wird.',
     () => `<b>Rekorde</b> sind Bestwerte über alle Saisons; wer einen übertrifft, nimmt ihn dem Halter ab. Vergeben werden die Rekorde, sobald die Liga <b>${CHRON_MIN_GAMES} Sätze</b> gespielt hat.`,
@@ -19880,7 +19962,8 @@ const HILFE = {
     'Alles zusammen ergibt das Prestige und damit das Insignium am Wappen.']},
   teams: {titel:'Teams', absaetze:[
     () => `Jedes Duo ab <b>${DUO_MIN} gemeinsamen Sätzen</b>, sortiert nach Siegquote, Game-Bilanz oder Elo-Zuwachs.`,
-    'Ein Tippen auf ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.']},
+    'Ein Tippen auf ein Duo öffnet die gemeinsame Bilanz: Sätze, Tiebreaks und welche Aufstellung besser läuft.',
+    'Das Netz der Duos zeigt die meistgespielten Duos als Linien. Die Farbe sagt, ob ein Duo zusammen besser oder schlechter spielt, als die Elo der vier erwarten lässt, nach Sieg und Games je zur Hälfte.']},
   verlauf: {titel:'Verlauf', absaetze:[
     'Jeder Satz, der neueste zuerst; oben lässt sich nach einem Spieler filtern.',
     'Ein Tippen auf einen Satz öffnet die Elo jedes Spielers und die Elo-Analyse. Dort lässt er sich bearbeiten oder löschen; die Liga rechnet danach neu.']},

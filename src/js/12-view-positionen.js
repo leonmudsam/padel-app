@@ -1,9 +1,10 @@
 // ╔═══ §5.2 ─── VIEW: SEITEN-RANGLISTE ─────────────────────────────────╗
 //     Wer ist rechts (Drive) und wer links (Revés) der Beste der Liga.
 // ╚═════════════════════════════════════════════════════════════════════════╝
-// Die Rangliste einer Seite: eine Rechnung für die Liste und die
-// Seiten-Landkarte darüber — zwei Rechnungen über dieselbe Frage nennten
-// irgendwann zwei Beste [§C27].
+// Die Rangliste einer Seite: wer dort der Beste der Liga ist. Die
+// Seiten-Landkarte darüber fragt etwas anderes — wo jemand spielt und wo er
+// gegen den eigenen Schnitt besser ist — und liest das Positionsprofil
+// [§C44]; mit diesem Wert war sie eine Diagonale der Stärke.
 // `spieler` nimmt eine andere Liste als die aktive Liga — die Ruheständler,
 // mit derselben Rechnung [§C40].
 function positionsListe(pos, spieler){
