@@ -5,7 +5,13 @@
 
   .zn{position:relative;display:inline-grid;place-items:center;flex-shrink:0;
     isolation:isolate}
-  .zn > .av{position:relative;z-index:1}
+  /* Das Gesicht liegt VOR seinem Feuer, in jeder Form: in den Top-5-Listen
+     trägt es `.aw-li-av` statt `.av`, blieb ohne Position, und das Feuer
+     (absolut, Ebene 0) lag samt Maske und Unschärfe über dem Emoji. Safari
+     zeichnete daraus einen violetten Strich rechts neben dem Kreis, bei
+     jedem, der eine Serie hatte; in der Rangliste, wo das Gesicht oben lag,
+     nie. */
+  .zn > .av,.zn > .aw-li-av{position:relative;z-index:1}
 
   /* ── Das Feuer ────────────────────────────────────────────────────
      Der Maßstab ist fest verdrahtet: 30 Zeichen-Einheiten sind eine halbe
@@ -43,10 +49,10 @@
        Kante statt als Schein — der Rest der Weichzeichnung rechnet sich
        je Bauteil aus dessen Größe (`--zn-blur`).
        Weichzeichner und Schein stehen in EINER Kette auf dem Feuer, nie ein
-       Filter auf einer Flamme darunter. Der Schein saß auf jedem Pfad und der
-       Weichzeichner auf dem SVG darüber: ein Filter im Filter. Safari zeichnete
-       daraus auf dem Telefon einen violetten Strich neben dem Kreis, in jeder
-       Liste, sobald jemand eine Serie hatte. Der Schein bleibt unter der
+       Filter auf einer Flamme darunter: der Schein saß auf jedem Pfad und der
+       Weichzeichner auf dem SVG darüber, und jede Flamme wurde so zu einer
+       eigenen Ebene, die das Telefon für jedes Bild der Stop-Motion neu
+       rechnete. Der Schein bleibt unter der
        Maske: ein Filter wird vor der Maske gerechnet, nichts blüht über den
        Rand. Die Stufen setzen nur `--zn-sr` (Weite) und `--zn-sc` (Farbe). */
     filter:blur(var(--zn-blur,.9px)) drop-shadow(0 0 var(--zn-sr,0px) var(--zn-sc,transparent))}
