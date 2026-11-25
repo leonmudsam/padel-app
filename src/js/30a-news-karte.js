@@ -15,7 +15,9 @@ function _newsRubrik(sorte, s){
     case 'spiel':  return 'AM SPIELTAG';
     case 'tafel':  return 'EWIGE TAFEL';
     case 'ins':    return 'DAS ZEICHEN';
-    case 'held':   return d.type === 'potw' ? 'SPIELER DER WOCHE' : 'SPIELER DES TAGES';
+    // Derselbe Name wie überall, in Großbuchstaben: das Band sagte noch
+    // „SPIELER DES TAGES", als der Titel darunter schon „Player of the Day" hieß.
+    case 'held':   return d.type === 'potw' ? 'PLAYER OF THE WEEK' : 'PLAYER OF THE DAY';
     case 'woche':  return 'DIE WOCHE';
     case 'duell':  return 'DAS DUELL';
     case 'serie':  return d.type === 'team_loss_streak' || d.type === 'loss_streak'

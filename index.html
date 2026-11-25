@@ -6780,7 +6780,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.24.5cc7cbfd';
+const BUILD_VERSION='2026.11.25.da3330bd';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -25870,7 +25870,7 @@ function _newsRubrik(sorte, s){
     case 'spiel':  return 'AM SPIELTAG';
     case 'tafel':  return 'EWIGE TAFEL';
     case 'ins':    return 'DAS ZEICHEN';
-    case 'held':   return d.type === 'potw' ? 'SPIELER DER WOCHE' : 'SPIELER DES TAGES';
+    case 'held':   return d.type === 'potw' ? 'PLAYER OF THE WEEK' : 'PLAYER OF THE DAY';
     case 'woche':  return 'DIE WOCHE';
     case 'duell':  return 'DAS DUELL';
     case 'serie':  return d.type === 'team_loss_streak' || d.type === 'loss_streak'

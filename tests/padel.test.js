@@ -673,7 +673,7 @@ ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => 
 // the Day", kein „Duell" für Sätze gegeneinander — in keinem Text der App.
 {
   const html = require('fs').readFileSync(require('./ziel.js'), 'utf8');
-  const fund = (html.match(/Spieler des Tages|Spieler der Woche|\bDuell\w*|\bBegegnung\w*|Satzquote/g) || []);
+  const fund = (html.match(/Spieler des Tages|Spieler der Woche/gi) || []).concat(html.match(/\bDuell\w*|\bBegegnung\w*|Satzquote/g) || []);
   ok(fund.length === 0, 'Kein „Spieler des Tages", „Duell", „Begegnung" oder „Satzquote" in der App: ' + JSON.stringify([...new Set(fund)]));
 }
 

@@ -1,4 +1,4 @@
-const SW_FASSUNG = '2026.11.24.5cc7cbfd';
+const SW_FASSUNG = '2026.11.25.da3330bd';
 const SEITE = 'padel-seite-' + SW_FASSUNG;
 const FREMD = 'padel-fremd';
 const FREMDE_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
