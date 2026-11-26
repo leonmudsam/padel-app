@@ -3799,19 +3799,18 @@
 .rcp-tab-bezug{margin:-10px 0 18px}
   .aw-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
   .aw-li{display:flex;align-items:center;gap:12px;background:var(--surface);
-    border:1px solid var(--line);border-radius:14px;padding:10px 14px;position:relative;overflow:hidden;
+    border:1px solid var(--line);border-radius:14px;padding:10px 14px;position:relative;
     cursor:pointer;transition:.16s}
   .aw-li:active{transform:scale(.99);background:var(--surface2)}
   .aw-li.top{border-color:rgba(247,207,74,.28);
     background:linear-gradient(180deg,rgba(247,207,74,.05),transparent 70%),var(--surface)}
   .aw-li.top .aw-li-rank{color:var(--gold)}
-  .aw-li.shame::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);opacity:.45}
+  .aw-li.shame{box-shadow:inset 2px 0 0 rgba(240,86,106,.45)}
   .aw-li .aw-li-rank{font-family:'Archivo Black',sans-serif;font-size:14px;width:22px;
     text-align:center;color:var(--muted);flex-shrink:0}
   .aw-li.shame .aw-li-rank{color:var(--red);opacity:.65}
   .aw-li-zn{flex-shrink:0}
-  .aw-li-zn .zn-fx{left:50%;top:50%;width:155%;height:155%;
-    transform:translate(-50%,-60%)}
+  .aw-li-zn .zn-fx{left:-27.5%;top:-43%;width:155%;height:155%}
   .aw-li-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:18px;
     background:linear-gradient(155deg,#3a4540,#212824);flex-shrink:0}
   .aw-li-av:not(.has-emoji){font-family:'Archivo Black',sans-serif;font-size:12px;color:var(--bg)}
@@ -6475,7 +6474,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-ch-gl{fill:none;stroke:rgba(228,242,74,.16);stroke-width:9;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .ff-ch-m b{position:relative;font-family:'Archivo Black',sans-serif;font-size:19px;line-height:1;color:var(--acid);margin-top:12px}
   .ff-ch-m small{position:relative;font-size:8.5px;margin-top:3px;line-height:1.2;max-width:100%}
-  .ff-ch-u{margin-top:8px;text-align:center;font-family:'Sometype Mono',monospace;font-size:10px;color:var(--muted)}
+  .ff-ch-ew{margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
   .ff.gross .ff-ch-p .rcp-av{--rav:44px}
 
   .ff-lk{position:relative}
@@ -7027,7 +7026,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.26.b0583b89';
+const BUILD_VERSION='2026.11.26.2935af10';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -23466,13 +23465,13 @@ function _ambientTemplatePool(now, pm, nameOf){
     const x = gut[0];
     if(!x) return null;
     const spitze = l.filter(y => y.z.g >= FF_MIN.duoSaetze).every(y => y === x || (y.z.w - y.z.e) < (x.z.w - x.z.e));
-    const A = nameOf(x.a), Bn = nameOf(x.b), z2 = gut[1];
+    const A = nameOf(x.a), Bn = nameOf(x.b);
     return {cat:'team', ic:'duo', prio:5,
       title:`${A} und ${Bn} gewinnen zusammen ${mehr(x)} Sätze mehr als erwartet`,
-      desc:`${x.z.w} Siege aus ${x.z.g} gemeinsamen Sätzen, nach Elo waren ${Math.round(x.z.e)} zu erwarten.`
+      desc:`Erwartet ist, was die Elo beider Duos vor jedem Satz voraussagt.`
         + (spitze ? ' Kein anderes Duo liegt so weit vorn.' : ''),
       dataRef:{ambientPids:[x.a, x.b], pairKind:'team', bild:{f:'chemie', a:x.a, b:x.b, g:x.z.g, w:x.z.w,
-        e:+x.z.e.toFixed(1), v:Math.round(x.v * 100), ...(z2 ? {z2:[z2.a, z2.b, mehr(z2)]} : {})}}};
+        e:+x.z.e.toFixed(1), v:Math.round(x.v * 100)}}};
   }});
 
   T.push({key:'rolle_seite', make: () => {
@@ -29059,6 +29058,15 @@ function _ffLauf(b){
   return `<div class="ff-lf">${_ffChip(b.p)}${_ffNm(b.p)}</div>${_newsSerienBand(b.n | 0, false, true)}`;
 }
 
+function _ffErwartungReihe(wort, ist, erw, von){
+  const a = Math.max(0, Math.min(100, ist / von * 100)), e = Math.max(0, Math.min(100, erw / von * 100));
+  const lo = Math.min(a, e), hi = Math.max(a, e), mehr = a >= e;
+  return `<span class="ff-ew-k">${wort}</span>`
+    + `<span class="ff-ew-b"><i class="ist" style="width:${lo.toFixed(1)}%"></i>`
+    + `<i class="${mehr ? 'mehr' : 'weniger'}" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i>`
+    + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${_ffZl(erw)}</em></span>`
+    + `<b class="num">${_ffZl(ist)}<small> von ${_ffZl(von)}</small></b>`;
+}
 const _FF_FORM = {
   rennen:_ffRennen, podest:_ffPodest, sammlung:_ffSammlung, sterne:_ffSterne, zahl:_ffZahl, duell:_ffDuell, duo:_ffDuo, vitrine:_ffVitrine, medaille:_ffMedaille,
   stufe:_ffStufe, ziel:_ffZiel, rolle:_ffRolle, verteilung:_ffVerteilung, saeulen:_ffSaeulen,
@@ -29088,15 +29096,7 @@ const _FF_FORM = {
 
   erwartung(b){
     if(!pmap()[b.p] || !(b.n > 0) || !(b.g > 0)) return '';
-    const reihe = (wort, ist, erw, von) => {
-      const a = Math.max(0, Math.min(100, ist / von * 100)), e = Math.max(0, Math.min(100, erw / von * 100));
-      const lo = Math.min(a, e), hi = Math.max(a, e), mehr = a >= e;
-      return `<span class="ff-ew-k">${wort}</span>`
-        + `<span class="ff-ew-b"><i class="ist" style="width:${lo.toFixed(1)}%"></i>`
-        + `<i class="${mehr ? 'mehr' : 'weniger'}" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i>`
-        + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${_ffZl(erw)}</em></span>`
-        + `<b class="num">${_ffZl(ist)}<small> von ${_ffZl(von)}</small></b>`;
-    };
+    const reihe = _ffErwartungReihe;
     const plus = Math.round((b.s | 0) - Number(b.e || 0));
     return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
       + `<span class="ff-wert${plus >= 0 ? ' hoch' : ' tief'}"><b class="num">${esc(_spVz(plus))}</b><small>Siege mehr als erwartet</small></span></div>`
@@ -29168,8 +29168,7 @@ const _FF_FORM = {
       + `<svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="ff-ch-gl" d="M2 38Q60 -8 118 38"/>`
       + `<path class="ff-ch-l" d="M2 38Q60 -8 118 38" style="stroke-width:${dick}"/></svg>`
       + `<b class="num">${esc(_spVz(Math.round((b.w | 0) - Number(b.e || 0))))}</b><small>Siege mehr als erwartet</small></span>${seite(b.b)}</div>`
-      + `<div class="ff-ch-u num">${_ffZl(b.g)} Sätze zusammen`
-      + (b.z2 && pmap()[b.z2[0]] && pmap()[b.z2[1]] ? ` · dahinter ${esc(_spName(b.z2[0]))} und ${esc(_spName(b.z2[1]))} mit ${esc(_spVz(b.z2[2] | 0))}` : '') + `</div>`;
+      + (b.g > 0 ? `<div class="ff-ew ff-ch-ew">${_ffErwartungReihe('Siege', b.w | 0, Number(b.e) || 0, b.g | 0)}</div>` : '');
   },
 
   landkarte(b){

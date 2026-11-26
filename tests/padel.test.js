@@ -731,6 +731,17 @@ ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => 
     'Halbzeit nur am 15., Jahresblick nur am 1. Januar, an jedem anderen Tag tritt die Karte zurück: ' + t.join());
 }
 
+// Eine Karte über ein Duo zeigt ein Duo: darunter stand „dahinter X und Y
+// mit +2", und was das zweite Duo mit der Aussage zu tun hatte, sagte
+// nichts. Auch eine gespeicherte Karte mit Nachbarn (`z2`) zeichnet nur die
+// beiden und die Bahn der Erwartung.
+{
+  const c = J(`(()=>{const _p=players;players=['p1','p2','p3','p4'].map(id=>({id,name:'N'+id,hidden:false,elo:0,drive:.5}));invalidateCache();
+    const h=_faktBild({dataRef:{type:'ambient',sub:'duo_chemie',bild:{f:'chemie',a:'p1',b:'p2',g:19,w:13,e:10.1,v:12,z2:['p3','p4',2]}}})||'';
+    players=_p;invalidateCache();return {fremd:/Np3|Np4|dahinter/.test(h), bahn:/ff-ew-b/.test(h)};})()`);
+  ok(!c.fremd && c.bahn, 'Die Duo-Chemie zeigt nur ihr Duo und die Bahn der Erwartung: ' + JSON.stringify(c));
+}
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 Promise.all([ANSCHLUSS, GERAET]).catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);

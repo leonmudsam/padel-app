@@ -1901,7 +1901,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-ch-gl{fill:none;stroke:rgba(228,242,74,.16);stroke-width:9;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .ff-ch-m b{position:relative;font-family:'Archivo Black',sans-serif;font-size:19px;line-height:1;color:var(--acid);margin-top:12px}
   .ff-ch-m small{position:relative;font-size:8.5px;margin-top:3px;line-height:1.2;max-width:100%}
-  .ff-ch-u{margin-top:8px;text-align:center;font-family:'Sometype Mono',monospace;font-size:10px;color:var(--muted)}
+  .ff-ch-ew{margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
   .ff.gross .ff-ch-p .rcp-av{--rav:44px}
 
   .ff-lk{position:relative}

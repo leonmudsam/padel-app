@@ -298,6 +298,18 @@ function _ffLauf(b){
 // Die Formen stehen als Einträge der Tafel und nicht als eigene Funktionen:
 // sie werden nur von hier aus gerufen, und jede Funktion auf oberster Ebene
 // teilt sich ihren Namen mit der ganzen App.
+// Eine Bahn der Erwartung: der Balken die geholten, der Strich die
+// erwarteten, die Zahl rechts. Dieselbe für „mehr Siege als erwartet" und
+// die Duo-Chemie [§C27].
+function _ffErwartungReihe(wort, ist, erw, von){
+  const a = Math.max(0, Math.min(100, ist / von * 100)), e = Math.max(0, Math.min(100, erw / von * 100));
+  const lo = Math.min(a, e), hi = Math.max(a, e), mehr = a >= e;
+  return `<span class="ff-ew-k">${wort}</span>`
+    + `<span class="ff-ew-b"><i class="ist" style="width:${lo.toFixed(1)}%"></i>`
+    + `<i class="${mehr ? 'mehr' : 'weniger'}" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i>`
+    + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${_ffZl(erw)}</em></span>`
+    + `<b class="num">${_ffZl(ist)}<small> von ${_ffZl(von)}</small></b>`;
+}
 const _FF_FORM = {
   rennen:_ffRennen, podest:_ffPodest, sammlung:_ffSammlung, sterne:_ffSterne, zahl:_ffZahl, duell:_ffDuell, duo:_ffDuo, vitrine:_ffVitrine, medaille:_ffMedaille,
   stufe:_ffStufe, ziel:_ffZiel, rolle:_ffRolle, verteilung:_ffVerteilung, saeulen:_ffSaeulen,
@@ -336,15 +348,7 @@ const _FF_FORM = {
   // vier. Liegt der Balken über der Marke, ist das Stück darüber grün.
   erwartung(b){
     if(!pmap()[b.p] || !(b.n > 0) || !(b.g > 0)) return '';
-    const reihe = (wort, ist, erw, von) => {
-      const a = Math.max(0, Math.min(100, ist / von * 100)), e = Math.max(0, Math.min(100, erw / von * 100));
-      const lo = Math.min(a, e), hi = Math.max(a, e), mehr = a >= e;
-      return `<span class="ff-ew-k">${wort}</span>`
-        + `<span class="ff-ew-b"><i class="ist" style="width:${lo.toFixed(1)}%"></i>`
-        + `<i class="${mehr ? 'mehr' : 'weniger'}" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i>`
-        + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${_ffZl(erw)}</em></span>`
-        + `<b class="num">${_ffZl(ist)}<small> von ${_ffZl(von)}</small></b>`;
-    };
+    const reihe = _ffErwartungReihe;
     // Ganze Siege und eine Beschriftung, die zur Zahl passt: „+3,7 · Siege
     // über der Erwartung" las sich wie eine Formel [§C33].
     const plus = Math.round((b.s | 0) - Number(b.e || 0));
@@ -424,7 +428,10 @@ const _FF_FORM = {
 
   // ── 6. Duo-Chemie: zwei Gesichter, ein Bogen, die Leistung darüber ───
   // Der Bogen ist so dick, wie oft die beiden zusammen gespielt haben, und
-  // grün, weil sie zusammen über der Erwartung liegen.
+  // grün, weil sie zusammen mehr gewinnen als erwartet. Darunter dieselbe
+  // Bahn wie bei „mehr Siege als erwartet" (`_ffErwartungReihe`). Hier stand
+  // „dahinter X und Y mit +2": eine Karte über ein Duo zeigte zwei, und was
+  // das zweite mit der Aussage zu tun hatte, sagte nichts.
   chemie(b){
     const pm = pmap();
     if(!pm[b.a] || !pm[b.b]) return '';
@@ -434,8 +441,7 @@ const _FF_FORM = {
       + `<svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="ff-ch-gl" d="M2 38Q60 -8 118 38"/>`
       + `<path class="ff-ch-l" d="M2 38Q60 -8 118 38" style="stroke-width:${dick}"/></svg>`
       + `<b class="num">${esc(_spVz(Math.round((b.w | 0) - Number(b.e || 0))))}</b><small>Siege mehr als erwartet</small></span>${seite(b.b)}</div>`
-      + `<div class="ff-ch-u num">${_ffZl(b.g)} Sätze zusammen`
-      + (b.z2 && pmap()[b.z2[0]] && pmap()[b.z2[1]] ? ` · dahinter ${esc(_spName(b.z2[0]))} und ${esc(_spName(b.z2[1]))} mit ${esc(_spVz(b.z2[2] | 0))}` : '') + `</div>`;
+      + (b.g > 0 ? `<div class="ff-ew ff-ch-ew">${_ffErwartungReihe('Siege', b.w | 0, Number(b.e) || 0, b.g | 0)}</div>` : '');
   },
 
   // ── 7. Rolle: ein Ausschnitt der Seiten-Landkarte [§C44] ─────────────

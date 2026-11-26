@@ -273,14 +273,25 @@ const ATTR = /(?:style|d|width|height|x|y|cx|cy|r|points|transform|viewBox)="[^"
       `Feuer in Rangliste und Top-5-Liste: höchstens ein Filter je Feuer, kein Filter im Filter (${JSON.stringify(filterImFilter)})`);
     // Das Gesicht liegt vor seinem Feuer [§C26]. In den Top-5-Listen trug es
     // `.aw-li-av` statt `.av`, blieb ohne Position, und das Feuer lag samt
-    // Maske und Unschärfe über dem Emoji; Safari zeichnete daraus einen
-    // violetten Strich neben dem Kreis, bei jedem mit einer Serie.
+    // Maske und Unschärfe über dem Emoji.
     const vorn = await K(`(() => { const _f = znFeuer; znFeuer = () => 3;
       try { showAward('wins'); return JSON.stringify([...document.querySelectorAll('#sheet .aw-li-zn')].map(z => {
         const a = getComputedStyle(z.querySelector('.aw-li-av')), f = getComputedStyle(z.querySelector('.zn-fx'));
         return a.position !== 'static' && (parseInt(a.zIndex) || 0) > (parseInt(f.zIndex) || 0); })); }
       finally { znFeuer = _f; closeSheet(true); } })()`).then(JSON.parse);
     ok(vorn.length > 0 && vorn.every(Boolean), `In der Top-5-Liste liegt jedes Gesicht vor seinem Feuer (${vorn.filter(Boolean).length} von ${vorn.length})`);
+    // Das Feuer der Top-5-Liste liegt wie in der Rangliste: ohne `transform`
+    // und unter keinem Zuschnitt mit runden Ecken. Verschoben und unter dem
+    // Zuschnitt der Zeile zeichnete Safari an der Kante seiner Ebene einen
+    // violetten Strich rechts neben dem Kreis, in jeder Top-5-Liste.
+    const ebene = await K(`(() => { const _f = znFeuer; znFeuer = () => 3;
+      try { showAward('wins'); return JSON.stringify([...document.querySelectorAll('#sheet .aw-li-zn .zn-fx')].map(fx => {
+        const zu = []; if(getComputedStyle(fx).transform !== 'none') zu.push('transform');
+        for(let e = fx.parentElement; e && e.id !== 'sheet'; e = e.parentElement){ const c = getComputedStyle(e);
+          if(c.overflow !== 'visible' && parseFloat(c.borderTopLeftRadius) > 0) zu.push('Zuschnitt ' + e.className); }
+        return zu.join(', '); })); }
+      finally { znFeuer = _f; closeSheet(true); } })()`).then(JSON.parse);
+    ok(ebene.length > 0 && ebene.every(x => !x), `In der Top-5-Liste liegt das Feuer ohne Verschiebung und ohne runden Zuschnitt (${[...new Set(ebene.filter(Boolean))].join(' | ') || ebene.length + ' Feuer'})`);
     // Ein Award ohne Träger sagt im Blatt, was noch fehlt, wie seine Kachel
     // (AW_LEER) [§C27] — dort stand „Keine Daten".
     const leerBlatt = await K(`(() => {

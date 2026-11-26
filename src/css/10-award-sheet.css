@@ -1,15 +1,21 @@
   /* ============ [§C21] AWARD SHEET REDESIGN (Winner Hero + Liste) ============ */
   /* Saubere Award-Liste statt Podium */
   .aw-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  /* Die Zeile schneidet nichts ab. Mit `overflow:hidden` an den runden
+     Ecken rechnete Safari das Feuer einer Serie (Maske, Unschärfe, Schein)
+     in eine eigene Ebene unter einem Zuschnitt und zog an deren Rand einen
+     violetten Strich rechts neben dem Kreis, in jeder Top-5-Liste. */
   .aw-li{display:flex;align-items:center;gap:12px;background:var(--surface);
-    border:1px solid var(--line);border-radius:14px;padding:10px 14px;position:relative;overflow:hidden;
+    border:1px solid var(--line);border-radius:14px;padding:10px 14px;position:relative;
     cursor:pointer;transition:.16s}
   .aw-li:active{transform:scale(.99);background:var(--surface2)}
   /* v9.16: Platz 1 in den Top-Listen der Statistik-Karten hervorheben */
   .aw-li.top{border-color:rgba(247,207,74,.28);
     background:linear-gradient(180deg,rgba(247,207,74,.05),transparent 70%),var(--surface)}
   .aw-li.top .aw-li-rank{color:var(--gold)}
-  .aw-li.shame::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);opacity:.45}
+  /* Der rote Rand der Schandtafel als innerer Schatten: er folgt der
+     Rundung selbst und braucht keinen Zuschnitt der Zeile. */
+  .aw-li.shame{box-shadow:inset 2px 0 0 rgba(240,86,106,.45)}
   .aw-li .aw-li-rank{font-family:'Archivo Black',sans-serif;font-size:14px;width:22px;
     text-align:center;color:var(--muted);flex-shrink:0}
   .aw-li.shame .aw-li-rank{color:var(--red);opacity:.65}
@@ -18,8 +24,11 @@
      hier: Weichzeichner und Schein stehen in einer Kette auf `.zn-fx`
      (15-zeichen.css), und das Gesicht liegt davor (`.zn > .aw-li-av`). */
   .aw-li-zn{flex-shrink:0}
-  .aw-li-zn .zn-fx{left:50%;top:50%;width:155%;height:155%;
-    transform:translate(-50%,-60%)}
+  /* Gesetzt wie in der Rangliste, ohne `transform`: verschoben lag das
+     Feuer auf einer eigenen Ebene, und Safari zeichnete an ihrer Kante den
+     violetten Strich. -27,5 % und -43 % sind dieselbe Lage wie vorher
+     (Mitte waagerecht, Avatarmitte auf 60 % der Höhe). */
+  .aw-li-zn .zn-fx{left:-27.5%;top:-43%;width:155%;height:155%}
   .aw-li-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:18px;
     background:linear-gradient(155deg,#3a4540,#212824);flex-shrink:0}
   .aw-li-av:not(.has-emoji){font-family:'Archivo Black',sans-serif;font-size:12px;color:var(--bg)}

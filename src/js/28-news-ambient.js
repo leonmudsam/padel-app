@@ -751,13 +751,16 @@ function _ambientTemplatePool(now, pm, nameOf){
     const x = gut[0];
     if(!x) return null;
     const spitze = l.filter(y => y.z.g >= FF_MIN.duoSaetze).every(y => y === x || (y.z.w - y.z.e) < (x.z.w - x.z.e));
-    const A = nameOf(x.a), Bn = nameOf(x.b), z2 = gut[1];
+    const A = nameOf(x.a), Bn = nameOf(x.b);
     return {cat:'team', ic:'duo', prio:5,
       title:`${A} und ${Bn} gewinnen zusammen ${mehr(x)} Sätze mehr als erwartet`,
-      desc:`${x.z.w} Siege aus ${x.z.g} gemeinsamen Sätzen, nach Elo waren ${Math.round(x.z.e)} zu erwarten.`
+      // Die Zahlen stehen in der Bahn darunter; der Satz sagt, woher die
+      // Erwartung kommt. „Die Elo der vier ließ 43,7 erwarten" warf die
+      // Frage auf, was die Gegner damit zu tun haben.
+      desc:`Erwartet ist, was die Elo beider Duos vor jedem Satz voraussagt.`
         + (spitze ? ' Kein anderes Duo liegt so weit vorn.' : ''),
       dataRef:{ambientPids:[x.a, x.b], pairKind:'team', bild:{f:'chemie', a:x.a, b:x.b, g:x.z.g, w:x.z.w,
-        e:+x.z.e.toFixed(1), v:Math.round(x.v * 100), ...(z2 ? {z2:[z2.a, z2.b, mehr(z2)]} : {})}}};
+        e:+x.z.e.toFixed(1), v:Math.round(x.v * 100)}}};
   }});
 
   // ── 7. Rolle: wer meist auf der schwächeren Seite steht oder wechselt

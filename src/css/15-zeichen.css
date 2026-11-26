@@ -7,10 +7,9 @@
     isolation:isolate}
   /* Das Gesicht liegt VOR seinem Feuer, in jeder Form: in den Top-5-Listen
      trägt es `.aw-li-av` statt `.av`, blieb ohne Position, und das Feuer
-     (absolut, Ebene 0) lag samt Maske und Unschärfe über dem Emoji. Safari
-     zeichnete daraus einen violetten Strich rechts neben dem Kreis, bei
-     jedem, der eine Serie hatte; in der Rangliste, wo das Gesicht oben lag,
-     nie. */
+     (absolut, Ebene 0) lag samt Maske und Unschärfe über dem Emoji. Den
+     violetten Strich neben dem Kreis behob das nicht; seine Ursache steht
+     an `.aw-li` (10-award-sheet.css). */
   .zn > .av,.zn > .aw-li-av{position:relative;z-index:1}
 
   /* ── Das Feuer ────────────────────────────────────────────────────
