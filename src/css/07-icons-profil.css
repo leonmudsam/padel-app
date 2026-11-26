@@ -1177,6 +1177,11 @@
   .nf-fakt-auszeichnung,.nd-fakt-auszeichnung{--story:#9b96a3;--story-rgb:155,150,163}
   .nf-fakt-form,.nd-fakt-form{--story:#94a08e;--story-rgb:148,160,142}
   .nf-fakt-duell,.nd-fakt-duell{--story:#a19990;--story-rgb:161,153,144}
+  /* Das Duo ein kühles Blaugrau neben dem warmen Ton der Gegner, die
+     Saison ein Hauch Gold im Metall: nahe Töne wie die übrigen, keine
+     Signalfarbe. */
+  .nf-fakt-duo,.nd-fakt-duo{--story:#8e9cad;--story-rgb:142,156,173}
+  .nf-fakt-saison,.nd-fakt-saison{--story:#a59f88;--story-rgb:165,159,136}
 
   /* ── Motiv, Winkel und fette Akzente ──────────────────────────────
      Die Karte war ein dunkles Rechteck mit Text darin, und zehn davon

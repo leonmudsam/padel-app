@@ -202,11 +202,20 @@ function openNewsDetail(sid){
       const [art, x, y] = String(el.dataset.ffWeg).split('|');
       closeNewsDetail();
       if(art === 'duo'){ sheetNav(() => { try { showTeam(x, y); } catch(e){} }); return; }
+      if(art === 'h2h'){ sheetNav(() => { try { showH2H(x, y); } catch(e){} }); return; }
+      if(art === 'recap'){
+        const se = (seasons || []).find(z => z.id === x);
+        if(se) sheetNav(() => { try { showSeasonRecap(se); } catch(e){} });
+        return;
+      }
       try {
         closeSheet(true);
         _reiterSetzen(x);
-        if(x === 'ranking') period = 'season';
-        if(x === 'awards') awView = y || 'awards';
+        // Die Ewige Tafel ist der Zeitraum „Gesamt" der Rangliste, die
+        // Seite der Schalter der Seiten-Rangliste.
+        if(x === 'ranking') period = y === 'gesamt' ? 'all' : 'season';
+        else if(x === 'positions' && (y === 'drive' || y === 'reves')) rankMetric = y;
+        else if(x === 'awards') awView = y || 'awards';
         else if(y) einblickOffen = y;
       } catch(e){}
     };
@@ -243,7 +252,26 @@ const _ND_FF_WEGE = {
   // Zeilen um, und das Gesicht im Bild öffnet das Profil ohnehin.
   chemie:b => [['duo', b.a + '|' + b.b]],
   landkarte:() => [['reiter', 'positions', 'rollen']],
-  ligaband:() => [['reiter', 'ranking']]
+  ligaband:() => [['reiter', 'ranking']],
+  // Die zweite Reihe [§C33]: jede zum Teil der App, aus dem ihre Zahl kommt.
+  serie:b => [['profil', b.p]],
+  wende:b => [['profil', b.p]],
+  knapp:b => [['profil', b.p]],
+  seite:b => [['reiter', 'positions', b.s]],
+  duos:b => [['duo', ((b.r || [])[0] || []).slice(0, 2).join('|')]],
+  duoneu:b => [['duo', b.a + '|' + b.b]],
+  rivalen:b => [['h2h', b.a + '|' + b.b]],
+  ewig:() => [['reiter', 'ranking', 'gesamt']],
+  // Ein Knopf, wo der Weg ein langes Wort trägt: „Zur Ewigen Tafel" und
+  // „Zum Rückblick" brachen neben einem zweiten auf 360 px um.
+  wettlauf:() => [['reiter', 'ranking', 'gesamt']],
+  prestige:b => [['laufbahn', ((b.r || [])[0] || [])[0]]],
+  monat:() => [['reiter', 'ranking']],
+  vormonat:b => [['recap', b.v]],
+  ergebnisse:() => [['reiter', 'history']],
+  tempo:() => [['reiter', 'history']],
+  awmonat:() => [['reiter', 'awards', 'awards']],
+  rekordziel:b => [['chron', b.id], ['profil', b.p]]
 };
 function _newsRueckblickKnopf(s){
   const d = (s && s.dataRef) || {};
@@ -256,8 +284,14 @@ function _newsRueckblickKnopf(s){
       if(w[0] === 'profil') return pm[w[1]] ? {label:'Zum Profil', ic:'user', prim, attr:`data-pid="${esc(w[1])}"`} : null;
       if(w[0] === 'laufbahn') return pm[w[1]] ? {label:'Zur Laufbahn', ic:'leiterAuf', prim, attr:`data-laufbahn="${esc(w[1])}"`} : null;
       if(w[0] === 'duo') return w[1].split('|').every(id => pm[id]) ? {label:'Zum Duo', ic:'duo', prim, attr:`data-ff-weg="${esc('duo|' + w[1])}"`} : null;
+      if(w[0] === 'h2h') return w[1].split('|').every(id => pm[id]) ? {label:'Zum Vergleich', ic:'swords', prim, attr:`data-ff-weg="${esc('h2h|' + w[1])}"`} : null;
+      if(w[0] === 'recap') return (seasons || []).some(z => z.id === w[1])
+        ? {label:'Zum Rückblick', ic:'calendar', prim, attr:`data-ff-weg="${esc('recap|' + w[1])}"`} : null;
+      if(w[0] === 'chron') return CHRONICLE_BY_ID[w[1]] ? {label:'Zum Rekord', ic:'trophy', prim, attr:`data-chron="${esc(w[1])}"`} : null;
       const ziel = {ranking:['Zur Rangliste', 'chartBar'], chronik:['Zur Chronik', 'scroll'],
-        rollen:['Zur Seiten-Landkarte', 'sideSwap']}[w[2] || w[1]];
+        rollen:['Zur Seiten-Landkarte', 'sideSwap'], gesamt:['Zur Ewigen Tafel', 'crown'],
+        drive:['Zur Seite', 'posDrive'], reves:['Zur Seite', 'posReves'], teams:['Zu den Teams', 'duo'],
+        history:['Zum Verlauf', 'verlauf'], awards:['Zu den Awards', 'trophy']}[w[2] || w[1]];
       return ziel ? {label:ziel[0], ic:ziel[1], prim, attr:`data-ff-weg="${esc(['reiter', w[1], w[2] || ''].join('|'))}"`} : null;
     };
     return blattFussHtml(f(b).map(knopf));

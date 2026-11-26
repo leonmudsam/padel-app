@@ -61,6 +61,11 @@ const NEWS_AMBIENT_STIL = {
   laufbahn:     {label:'AUS DER LAUFBAHN',  ton:'laufbahn'},
   chronik:      {label:'AUS DER CHRONIK',   ton:'chronik'},
   auszeichnung: {label:'AUSZEICHNUNGEN',    ton:'auszeichnung'},
+  // Ein Duo ist kein Spieler: unter „Spieler im Fokus" las sich ein Paar wie
+  // einer, und die Sperre der Rubrik hielt Duo und Seite auseinander. Die
+  // Saison trägt, was nur im laufenden Monat gilt: Tabelle und Vormonat.
+  duo:          {label:'DUO IM FOKUS',      ton:'duo'},
+  saison:       {label:'DIE SAISON',        ton:'saison'},
 };
 
 const NEWS_LS_SEEN  = 'padel_news_seen_v1';

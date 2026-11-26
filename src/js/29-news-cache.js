@@ -193,7 +193,7 @@ const AMBIENT_ABGEMELDET = ['personal_umsteiger', 'personal_aufschwung'];
 // Losverfahren, und am 26.11. stand „Der November 2026 ist zur Hälfte
 // gespielt" im Feed. Abgemeldet an seiner Sorte und am Tag seines Slots,
 // wie eine gestrichene Karte: der Slot wird frei und bekommt einen anderen
-// Fun Fact.
+// Fun Fact. Der Generator liest dieselbe Tabelle für `pflicht`.
 const AMBIENT_TERMIN = {
   rueckblick_halbzeit: tag => tag.slice(8, 10) === '15',
   rueckblick_jahr:     tag => tag.slice(5, 10) === '01-01',

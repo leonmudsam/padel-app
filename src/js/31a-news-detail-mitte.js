@@ -554,17 +554,70 @@ function _ndMitteRoh(s){
           aufwind:b => { const je = (x, n) => n ? (x >= 0 ? '+' : '−') + komma(Math.abs(x / n)) : '–';
             return ['Die Elo je Satz', [{v:je(b.plus, b.n), l:'in 14 Tagen'}, {v:je(b.vor, b.nVor), l:'davor'},
               {v:pz(b.w, b.n), l:'Siegquote in 14 Tagen'}]]; },
-          erwartung:b => ['Gegen die Erwartung', [{v:pz(b.e, b.n), l:'Siegchance im Schnitt'},
-            {v:pz(b.s, b.n), l:'Siegquote'}, {v:(b.l >= 0 ? '+' : '−') + komma(Math.abs(b.l)), l:'Prozentpunkte je Satz über der Erwartung'}]],
+          erwartung:b => ['Die 14 Tage', [{v:pz(b.s, b.n), l:'Siegquote'}, {v:pz(b.e, b.n), l:'erwartete Siegquote'},
+            {v:`${b.gf | 0} von ${b.g | 0}`, l:'Games gewonnen'}]],
           marke:b => b.art === 'prestige' ? null : ['Die Laufbahn', [{v:_ffZl(b.s), l:'Sätze'},
             {v:_ffZl(b.w), l:'Siege'}, {v:_ffZl(b.g), l:'gewonnene Games'}].filter((z, i) => ['saetze', 'siege', 'games'][i] !== b.art)],
-          chemie:b => ['Woraus die Erwartung entsteht', [{v:pz(b.w, b.g), l:'Siegquote zusammen'}, {v:pz(b.e, b.g), l:'Siegchance im Schnitt'}]],
+          chemie:b => ['Zusammen', [{v:pz(b.w, b.g), l:'Siegquote zusammen'}, {v:pz(b.e, b.g), l:'erwartete Siegquote'}]],
           landkarte:b => b.art === 'wechsel'
             ? ['Die Sätze dahinter', [{v:pz(b.x14, 1), l:'Drive in 14 Tagen'}, {v:pz(b.xv, 1), l:'Drive davor'}, {v:String(b.n14 | 0), l:'Sätze in 14 Tagen'}]]
             : ['Die Sätze dahinter', [{v:String(b.dG | 0), l:'Sätze Revés'}, {v:String(b.aG | 0), l:'Sätze Drive'}]],
           ligaband:b => b.jeMonat ? ['Die Monate', [{v:_ffZl(b.jeMonat), l:b.art === 'saetze' ? 'Sätze je Monat' : 'Games je Monat'},
-            {v:_ffZl(b.n), l:b.art === 'saetze' ? 'Sätze insgesamt' : 'Games insgesamt'}]] : null
+            {v:_ffZl(b.n), l:b.art === 'saetze' ? 'Sätze insgesamt' : 'Games insgesamt'}]] : null,
+          // Die zweite Reihe [§C33].
+          serie:b => ['Die Laufbahn', [{v:String(b.best | 0), l:'längste Serie davor'}, {v:String(b.liga | 0), l:'längste Serie der Liga'},
+            {v:pz(b.w, b.n), l:'Siegquote der Laufbahn'}]],
+          wende:b => ['Die letzten 30 Tage', [{v:`${b.begW | 0} von ${b.beg | 0}`, l:'Matches gewonnen'}, {v:pz(b.begW, b.beg), l:'Siegquote in Matches'}]],
+          knapp:b => ['Die Sätze dahinter', [{v:String(b.kn | 0), l:'knappe Sätze'}, {v:String(b.on | 0), l:'übrige Sätze'},
+            {v:pz((b.kw | 0) + (b.ow | 0), (b.kn | 0) + (b.on | 0)), l:'Siegquote insgesamt'}]],
+          duoneu:b => ['Die 14 Tage', [{v:String(b.n | 0), l:'Sätze zusammen'}, {v:pz(b.w, b.n), l:'Siegquote zusammen'}]],
+          ergebnisse:b => { const n = (b.je || []).reduce((a, x) => a + (x | 0), 0), i = b.hl | 0;
+            return ['Der Monat', [{v:String((b.je || [])[i] | 0), l:`Sätze ${FF_SAETZE[i] || ''}`}, {v:String(n), l:'Sätze im Monat'},
+              {v:komma((b.vor || [])[i] / 10, 0) + '\u00a0%', l:'in den Monaten davor'}]]; },
+          tempo:b => { const m = (b.mon || [])[b.hl | 0] || [];
+            return ['Die Monate', [{v:komma((m[1] | 0) / 10), l:'Sätze je Spieltag'}, {v:String((b.mon || []).length), l:'Monate gezeigt'}]]; }
         }[ff.f];
+        // Die Spitzen und Tabellen der zweiten Reihe nennen ihre Zahlen je
+        // Spieler (`_spRangliste` [§C27]), die Sätze gegeneinander als Liste
+        // (`h2hBegegnungenHtml`).
+        const liste = (kopf, l, o) => l.length ? `<div class="nd-section">${esc(kopf)}</div>` + _spRangliste(l, o) : '';
+        if(ff.f === 'seite'){
+          const r = (ff.r || []).filter(x => pm[x[0]]);
+          return liste('Die Rangliste der Seite', r.map(x => ({id:x[0], wert:x[1], zahl:String(x[1]), neben:`${x[2]} von ${x[3]}`})),
+            {kopf:['Wertung', 'Siege'], max:Math.max(1, ...r.map(x => x[1])), hervor:(r[0] || [])[0]});
+        }
+        if(ff.f === 'ewig'){
+          const r = (ff.r || []).filter(x => pm[x[0]]);
+          return liste('Das Podest', r.map(x => ({id:x[0], wert:x[1], zahl:String(x[1]), neben:x[2] ? x[2] + '.' : 'neu'})),
+            {kopf:['Karriere-Elo', 'vor 14 Tagen'], max:Math.max(1, ...r.map(x => x[1])), hervor:(r[0] || [])[0]});
+        }
+        if(ff.f === 'wettlauf'){
+          const r = (ff.r || []).filter(x => pm[x[0]] && Array.isArray(x[1]));
+          const v = x => x[1][x[1].length - 1] | 0, w = x => x[1].length > 1 ? x[1][x[1].length - 2] | 0 : 0;
+          return liste({siege:'Die Siege', saetze:'Die Sätze', games:'Die gewonnenen Games'}[ff.art] || 'Der Stand',
+            r.map(x => ({id:x[0], wert:v(x), zahl:_ffZl(v(x)), neben:_ffZl(w(x))})),
+            {kopf:['jetzt', 'Monat davor'], max:Math.max(1, ...r.map(v)), hervor:(r[0] || [])[0]});
+        }
+        if(ff.f === 'awmonat'){
+          const r = (ff.r || []).filter(x => pm[x[0]]);
+          return liste('Die Auszeichnungen des Monats', r.map(x => ({id:x[0], wert:x[1], zahl:String(x[1]), neben:String(x[2] | 0)})),
+            {kopf:['geholt', 'legendär'], max:Math.max(1, ...r.map(x => x[1])), hervor:(r[0] || [])[0]});
+        }
+        if(ff.f === 'duos'){
+          const r = (ff.r || []).filter(x => pm[x[0]] && pm[x[1]]);
+          return r.length ? `<div class="nd-section">Die Duos</div>` + r.map(x => rcpZeileHtml({ic:'duo', name:`${nameOf(x[0])} und ${nameOf(x[1])}`,
+            sub:`${x[3]} von ${x[4]} Sätzen`, rechts:x[2] + '\u00a0%', attr:`data-ff-weg="${esc('duo|' + x[0] + '|' + x[1])}"`})).join('') : '';
+        }
+        if(ff.f === 'rivalen') return pm[ff.a] && pm[ff.b] ? h2hBegegnungenHtml(ff.a, ff.b) : '';
+        if(ff.f === 'rekordziel'){
+          const def = CHRONICLE_BY_ID[ff.id];
+          return def ? `<div class="nd-section">Der Rekord</div>` + rcpZeileHtml({ic:def.ic || 'trophy', name:def.name,
+            sub:def.cond || '', rechts:ff.stand || '', attr:`data-chron="${esc(ff.id)}"`}) : '';
+        }
+        // Tabelle, Plätze und Podest des Prestiges stehen ganz im Bild. Das
+        // Zeichen darunter zeigte den Stand des Lesers neben den Punkten des
+        // Tages, an dem die Karte stand; die Laufbahn ist einen Knopf weiter.
+        if(ff.f === 'monat' || ff.f === 'vormonat' || ff.f === 'prestige') return '';
         // Die Hantel zeigt die Quoten nur als Punkte; ihr Blatt nennt sie je
         // Spieler als Rangliste der vierzehn Tage, die Laufbahn daneben
         // (`_spRangliste` [§C27]).

@@ -145,13 +145,17 @@ ok(voll != null && rand === voll,
 stand(Infinity, ms('2026-08-26', 21, 0));
 K(`(()=>{const h=new Map(simulateEloWithSliders(matches).history.map(x=>[x.matchId,x]));
   matches.forEach(m=>{const x=h.get(m.id);m.deltas=x?x.deltas:{};m.exp_a=x?x.expA:.5;});invalidateCache();})();0`);
-const FF_FRAGEN = ['form_aufwind','form_erwartung','form_laufbahn','laufbahn_marke','chronik_reihe','duo_chemie','rolle_seite','liga_marke'];
+const FF_FRAGEN = ['form_aufwind','form_erwartung','form_laufbahn','laufbahn_marke','chronik_reihe','duo_chemie','rolle_seite','liga_marke',
+  'form_serie','form_wende','spieler_knapp','seite_spitze','duo_spitze','duo_neu','duell_gleichauf','duell_wende','gesamt_tafel',
+  'gesamt_wettlauf','gesamt_prestige','saison_stand','saison_vormonat','liga_ergebnisse','liga_tempo','auszeichnung_monat','rekord_reichweite'];
 const ffs = J(`(()=>{const pm=pmap(), nameOf=pid=>(pm[pid]||{}).name||'?';
   const falsch=[], gesehen=new Set(), pool=new Set();
   // Über die ganze Testliga, März bis August: „Über der Erwartung“ zieht
   // nur an gut jedem sechsten Tag, die letzten zwei Monate allein trafen keinen.
-  for(let t=1;t<=90;t++){
-    const now=new Date(${ms('2026-08-15', 15, 30)} - t*1.7*86400000); now.setHours(15,30,0,0);
+  // Der Tag nach dem letzten Satz dazu: Prestige und Rekord in Reichweite
+  // stehen nur, wenn nach dem Slot noch kein Satz gespielt ist.
+  for(let t=0;t<=90;t++){
+    const now=new Date(t ? ${ms('2026-08-15', 15, 30)} - t*1.7*86400000 : ${ms('2026-08-26', 15, 30)}); now.setHours(15,30,0,0);
     _ambientTemplatePool(now, pm, nameOf).forEach(x=>{ pool.add(x.key); let c=null; try{ c=x.make(_ambientRng(t)); }catch(e){ c=null; }
       if(!c) return; gesehen.add(x.key);
       const ti=String(c.title||''), de=String(c.desc||'');
@@ -160,15 +164,24 @@ const ffs = J(`(()=>{const pm=pmap(), nameOf=pid=>(pm[pid]||{}).name||'?';
       if(/ vs\\.? /i.test(ti+' '+de)) falsch.push(x.key+' mit vs: '+ti);
       if(/\\bmit \\d+ (Siege|Niederlagen)\\b/.test(de)) falsch.push(x.key+' Dativ: '+de);
       if(de && !/[.)“]$/.test(de.trim())) falsch.push(x.key+' ohne Punkt: '+de);
+      // Ein Fun Fact liest sich beim ersten Mal: ein einfacher Hauptsatz als
+      // Titel, höchstens zwei kurze Sätze darunter, Alltagswörter. „Kein Duo
+      // spielt deutlicher über der Erwartung als …" und „die Elo der vier
+      // ließ 43,7 erwarten" musste man zweimal lesen.
+      if(/^(Kein|Keine|Niemand)\\b/.test(ti) || /\\b(Kein|Keine|Niemand)\\b[^.]*\\b(deutlicher|öfter|mehr|besser) als\\b/.test(ti)) falsch.push(x.key+' verneinte Steigerung: '+ti);
+      if(/über der Erwartung|ließ[^.]*erwarten|Prozentpunkt|Überleistung/.test(ti+' '+de)) falsch.push(x.key+' Rechenwort: '+ti+' | '+de);
+      if(/\\d,\\d+ (zu )?erwart/.test(de)) falsch.push(x.key+' erwartete Siege mit Komma: '+de);
+      if(ti.split(/\\s+/).length > 12) falsch.push(x.key+' Titel zu lang: '+ti);
+      if((de.replace(/\\d\\.\\d|\\d{2}\\.\\d{2}\\.(\\d{2,4}\\.?)?/g, '').match(/[.]( |$)/g) || []).length > 2) falsch.push(x.key+' mehr als zwei Sätze: '+de);
     });
   }
   return {falsch:[...new Set(falsch)], n:gesehen.size, gesehen:[...gesehen], pool:[...pool]};})()`);
 ok(Array.isArray(ffs.pool) && ffs.pool.filter(k => !/^rueckblick_/.test(k)).sort().join() === FF_FRAGEN.slice().sort().join(),
-  `Der Pool der Fun Facts trägt genau die acht Fragen, dazu Halbzeit und Jahresrückblick (${(ffs.pool || []).join(', ')})`);
+  `Der Pool der Fun Facts trägt genau die ${FF_FRAGEN.length} Fragen, dazu Halbzeit und Jahresrückblick (${(ffs.pool || []).join(', ')})`);
 ok(FF_FRAGEN.every(k => (ffs.gesehen || []).includes(k)),
-  `Jede der acht Fragen zieht an der Testliga (${FF_FRAGEN.filter(k => !(ffs.gesehen || []).includes(k)).join(', ') || 'alle'})`);
-ok(ffs.n >= 8 && Array.isArray(ffs.falsch) && !ffs.falsch.length,
-  `Jeder Fun Fact spricht in ganzen Sätzen und nennt einen Platz nur auf dem Podest: ${(ffs.falsch || []).slice(0, 3).join(' · ') || ffs.fehler || ffs.n + ' Vorlagen'}`);
+  `Jede der ${FF_FRAGEN.length} Fragen zieht an der Testliga (${FF_FRAGEN.filter(k => !(ffs.gesehen || []).includes(k)).join(', ') || 'alle'})`);
+ok(ffs.n >= FF_FRAGEN.length && Array.isArray(ffs.falsch) && !ffs.falsch.length,
+  `Jeder Fun Fact spricht in ganzen, einfachen Sätzen (Hauptsatz als Titel, höchstens zwei Sätze, keine Rechenwörter) und nennt einen Platz nur auf dem Podest: ${(ffs.falsch || []).slice(0, 3).join(' · ') || ffs.fehler || ffs.n + ' Vorlagen'}`);
 
 // ── Keine These über dieselbe Person zweimal in 30 Tagen ────────────
 // Mit acht Fragen kommt dieselbe These eher wieder, und der letzte
@@ -184,6 +197,11 @@ const thesen = J(`(()=>{const pm=pmap(), nameOf=id=>(pm[id]||{}).name||'?';
       if(bestand.some(b=>b.id===x.id)) return;
       karten++;
       const d=x.dataRef||{}, pids=d.ambientPids||(d.ambientPid?[d.ambientPid]:['']), tag=Math.round(new Date(x.when).getTime()/864e5);
+      // Halbzeit und Jahresblick haben ihren Tag (AMBIENT_TERMIN): sie lagen
+      // auch im gewöhnlichen Losverfahren, und „Der November ist zur Hälfte
+      // gespielt" stand am 26.11. im Feed.
+      const tagKey=String(x.id).slice(8, 18);
+      if((d.sub==='rueckblick_halbzeit' && tagKey.slice(8)!=='15') || (d.sub==='rueckblick_jahr' && tagKey.slice(5)!=='01-01')) falsch.push(d.sub+' am '+tagKey);
       if(!/^rueckblick_/.test(d.sub)) pids.forEach(pid=>{ const k=d.sub+'|'+pid;
         if(wann[k]!=null && tag-wann[k]<30) falsch.push(k.split('|')[0]+' '+((pm[pid]||{}).name||'')+' nach '+(tag-wann[k])+' Tagen'); wann[k]=tag; });
       bestand.push({id:x.id, when:x.when, title:x.title, desc:x.desc, prio:20, cat:x.cat, ic:x.ic, dataRef:d});
@@ -191,7 +209,7 @@ const thesen = J(`(()=>{const pm=pmap(), nameOf=id=>(pm[id]||{}).name||'?';
   }
   _cache._stories=[];
   return {karten, falsch};})()`);
-ok(thesen.karten >= 10 && Array.isArray(thesen.falsch) && !thesen.falsch.length,
+ok(thesen.karten >= 55 && Array.isArray(thesen.falsch) && !thesen.falsch.length,
   `Keine These über dieselbe Person zweimal in 30 Tagen, auch wenn ein Slot dafür leer bleibt (${thesen.karten} Karten${(thesen.falsch || []).length ? ' — ' + thesen.falsch.slice(0, 3).join(' · ') : ''})`);
 
 // ── Die Halbzeit zeigt die beiden Seiten ────────────────────────────

@@ -342,12 +342,14 @@ const _FF_FORM = {
       return `<span class="ff-ew-k">${wort}</span>`
         + `<span class="ff-ew-b"><i class="ist" style="width:${lo.toFixed(1)}%"></i>`
         + `<i class="${mehr ? 'mehr' : 'weniger'}" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i>`
-        + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${esc(komma(erw))}</em></span>`
+        + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${_ffZl(erw)}</em></span>`
         + `<b class="num">${_ffZl(ist)}<small> von ${_ffZl(von)}</small></b>`;
     };
-    const plus = (b.s | 0) - Number(b.e || 0);
+    // Ganze Siege und eine Beschriftung, die zur Zahl passt: „+3,7 · Siege
+    // über der Erwartung" las sich wie eine Formel [§C33].
+    const plus = Math.round((b.s | 0) - Number(b.e || 0));
     return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
-      + `<span class="ff-wert${plus >= 0 ? ' hoch' : ' tief'}"><b class="num">${plus >= 0 ? '+' : '−'}${esc(komma(Math.abs(plus)))}</b><small>Siege über der Erwartung</small></span></div>`
+      + `<span class="ff-wert${plus >= 0 ? ' hoch' : ' tief'}"><b class="num">${esc(_spVz(plus))}</b><small>Siege mehr als erwartet</small></span></div>`
       + `<div class="ff-ew">${reihe('Siege', b.s | 0, Number(b.e) || 0, b.n | 0)}${reihe('Games', b.gf | 0, Number(b.ge) || 0, b.g | 0)}</div>`;
   },
 
@@ -431,8 +433,9 @@ const _FF_FORM = {
     return `<div class="ff-ch">${seite(b.a)}<span class="ff-ch-m">`
       + `<svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="ff-ch-gl" d="M2 38Q60 -8 118 38"/>`
       + `<path class="ff-ch-l" d="M2 38Q60 -8 118 38" style="stroke-width:${dick}"/></svg>`
-      + `<b class="num">${esc(_spVz(b.v | 0))}</b><small>Prozentpunkte über der Erwartung</small></span>${seite(b.b)}</div>`
-      + `<div class="ff-ch-u num">${_ffZl(b.g)} Sätze zusammen</div>`;
+      + `<b class="num">${esc(_spVz(Math.round((b.w | 0) - Number(b.e || 0))))}</b><small>Siege mehr als erwartet</small></span>${seite(b.b)}</div>`
+      + `<div class="ff-ch-u num">${_ffZl(b.g)} Sätze zusammen`
+      + (b.z2 && pmap()[b.z2[0]] && pmap()[b.z2[1]] ? ` · dahinter ${esc(_spName(b.z2[0]))} und ${esc(_spName(b.z2[1]))} mit ${esc(_spVz(b.z2[2] | 0))}` : '') + `</div>`;
   },
 
   // ── 7. Rolle: ein Ausschnitt der Seiten-Landkarte [§C44] ─────────────
@@ -484,5 +487,226 @@ const _FF_FORM = {
       + mon.map((x, i) => `<span class="ff-lb-c${i === b.hl ? ' hl' : ''}${(x[1] | 0) >= b.m ? ' drueber' : ''}" style="--k:${i}">`
         + `<i style="height:${hoehe(x[1] | 0)}%"></i><small>${esc(kurz ? MON[Number(x[0].slice(5, 7)) - 1].charAt(0) : MON[Number(x[0].slice(5, 7)) - 1])}</small></span>`).join('')
       + `</div>`;
+  },
+
+  // ═══ Die zweite Reihe der Fragen [§C33] ═════════════════════════════
+  // Wo eine Frage ein Bauteil der ersten Reihe teilt (Podest, Säulen, das
+  // Ziel), ruft ihr Eintrag es auf, unter eigenem Namen: Knopf und Zahlen
+  // des Blatts hängen an der Form (`_ND_FF_WEGE`, 31a `ambient`), und eine
+  // gespeicherte Karte mit dem alten Podest behielte sonst ihr altes Blatt
+  // nicht.
+
+  // ── 9. Die Serie: jedes Feld ein Sieg, die Bestmarke als Kante ──────
+  // Die Reihe reicht eine Stelle über die Bestmarke hinaus: man sieht, wie
+  // weit es bis dorthin ist und was danach käme.
+  serie(b){
+    if(!pmap()[b.p] || !(b.k > 0)) return '';
+    const k = b.k | 0, best = b.best | 0, len = Math.min(24, Math.max(k, best) + 1);
+    const zellen = Array.from({length:len}, (_, i) => `<i class="${i < k ? 'w' : ''}${i === best - 1 ? ' best' : ''}" style="--k:${i}"></i>`).join('');
+    const neu = k > best;
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
+      + `<span class="ff-wert${neu ? ' hoch' : ''}"><b class="num">${k}</b><small>Siege in Folge</small></span></div>`
+      + `<div class="ff-se" style="--n:${len}">${zellen}</div>`
+      + `<div class="ff-se-l num"><span>seit ${esc(datumFmt(b.ab, 'tm'))}</span><span>${neu ? 'davor ' + best : 'Bestmarke ' + best}</span></div>`;
+  },
+
+  // ── 10. Die Wende: jedes gedrehte Match als Reihe seiner Sätze ───────
+  // Ein verlorener Satz in Metall, ein gewonnener in der Farbe der Karte:
+  // keine Richtung, nur wer ihn holte [§C25].
+  wende(b){
+    if(!pmap()[b.p]) return '';
+    const l = (b.l || []).filter(x => x && Array.isArray(x[1]));
+    if(!l.length) return '';
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
+      + `<span class="ff-wert"><b class="num">${b.k | 0}</b><small>Matches gedreht</small></span></div>`
+      + `<div class="ff-wd">` + l.map((x, i) => `<div class="ff-wd-r" style="--k:${i}"><small class="num">${esc(datumFmt(x[0], 'tm'))}</small>`
+        + `<span class="ff-wd-s">${x[1].map(z => `<i class="num${z[0] > z[1] ? ' w' : ''}">${z[0] | 0}:${z[1] | 0}</i>`).join('')}</span></div>`).join('')
+      + `</div>`;
+  },
+
+  // ── 11. Knappe Sätze: zwei Quoten auf einer Achse, die Mitte markiert ─
+  knapp(b){
+    if(!pmap()[b.p] || !(b.kn > 0) || !(b.on > 0)) return '';
+    const q1 = Math.round(b.kw / b.kn * 100), q2 = Math.round(b.ow / b.on * 100);
+    const reihe = (wort, q, w, n, hl) => `<span class="ff-ew-k">${wort}</span>`
+      + `<span class="ff-kn-b${hl ? ' hl' : ''}"><i style="width:${q}%"></i><u></u></span>`
+      + `<b class="num">${q} %<small> ${w | 0} von ${n | 0}</small></b>`;
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
+      + `<span class="ff-wert"><b class="num">${q1}\u00a0%</b><small>Siegquote in knappen Sätzen</small></span></div>`
+      + `<div class="ff-kn">${reihe('knapp', q1, b.kw, b.kn, true)}${reihe('übrige', q2, b.ow, b.on, false)}</div>`;
+  },
+
+  // ── 12. Die Spitze einer Seite: das Podest, darüber die Seite ────────
+  // Die Zahl im Sockel ist die Wertung der Seiten-Rangliste [§C27].
+  seite(b){
+    const r = (b.r || []).filter(x => pmap()[x[0]]);
+    if(r.length < 3) return '';
+    const d = b.s === 'drive';
+    return `<div class="ff-sd-k">${svgI(d ? 'posDrive' : 'posReves')}<b>${d ? 'Drive' : 'Revés'}</b><small>${d ? 'rechts' : 'links'}</small></div>`
+      + _ffPodest({r:r.map(x => ({p:x[0], t:x[1]}))});
+  },
+
+  // ── 13. Das erfolgreichste Duo: das Podest der Paare ────────────────
+  duos(b){
+    const pm = pmap(), r = (b.r || []).filter(x => pm[x[0]] && pm[x[1]]);
+    if(r.length < 3) return '';
+    return `<div class="ff-pd ff-pd-duo">` + [1, 0, 2].map(k => `<span class="ff-pd-s p${k + 1}" style="--k:${k}">`
+      + `<span class="ff-duo-k">${_ffChip(r[k][0])}${_ffChip(r[k][1])}</span>`
+      + `<span class="ff-pd-n">${_ffNm(r[k][0])}${_ffNm(r[k][1])}</span>`
+      + `<em><b class="num">${r[k][2] | 0} %</b><small class="num">${k + 1}</small></em></span>`).join('') + `</div>`;
+  },
+
+  // ── 14. Ein neues Duo: die gemeinsamen Sätze je Woche ───────────────
+  duoneu(b){
+    const pm = pmap();
+    if(!pm[b.a] || !pm[b.b]) return '';
+    const v = (b.v || []).map(x => x | 0);
+    return `<div class="ff-kopf"><span class="ff-kopf-p"><span class="ff-duo-k">${_ffChip(b.a)}${_ffChip(b.b)}</span>`
+      + `<span class="ff-duo-n">${_ffNm(b.a)}<i>und</i>${_ffNm(b.b)}</span></span>`
+      + `<span class="ff-wert"><b class="num">${b.n | 0}</b><small>Sätze zusammen</small></span></div>`
+      + _ffSaeulen({v, hl:[v.length - 2, v.length - 1], l:'gemeinsame Sätze je Woche'}).replace('die letzten ' + v.length, v.length + ' Wochen');
+  },
+
+  // ── 15/16. Sätze gegeneinander: das Tauziehen und der Abstand ───────
+  // Die Linie ist der Abstand Satz für Satz, über der Mitte führt, wer
+  // links steht. Bei einer Wende sind die letzten Sätze hell.
+  rivalen(b){
+    const pm = pmap();
+    if(!pm[b.a] || !pm[b.b]) return '';
+    const v = (b.v || []).map(Number).filter(isFinite);
+    let linie = '';
+    if(v.length > 2){
+      const W = 260, H = 54, n = v.length - 1, m = Math.max(2, ...v.map(Math.abs));
+      const X = i => 4 + i * (W - 8) / n, Y = y => H / 2 - y / m * (H / 2 - 5), f = x => x.toFixed(1);
+      const pfad = (i0, i1) => v.slice(i0, i1 + 1).map((y, k) => (k ? 'L' : 'M') + f(X(i0 + k)) + ' ' + f(Y(y))).join('');
+      const ab = b.art === 'wende' ? Math.max(0, n - Math.round((b.l | 0) * n / Math.max(1, (b.wa | 0) + (b.wb | 0)))) : n;
+      linie = `<div class="ff-rv"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">`
+        + `<rect class="ff-rv-o" x="0" y="0" width="${W}" height="${H / 2}"/>`
+        + `<line class="ff-rv-m" x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}"/>`
+        + `<path class="ff-rv-l${b.art === 'wende' ? ' alt' : ''}" d="${pfad(0, ab)}"/>`
+        + (ab < n ? `<path class="ff-rv-l" d="${pfad(ab, n)}"/>` : '')
+        + `<circle class="ff-rv-p" cx="${f(X(n))}" cy="${f(Y(v[n]))}" r="3"/></svg>`
+        + `<span class="ff-rv-x num"><span>erster Satz</span><span>${b.art === 'wende' ? 'die letzten ' + (b.l | 0) : 'zuletzt'}</span></span></div>`;
+    }
+    return _ffDuell({a:b.a, b:b.b, wa:b.wa, wb:b.wb}) + linie;
+  },
+
+  // ── 17. Die Ewige Tafel: das Podest der Karriere-Elo ────────────────
+  // Gesichter statt Wappen: das Wappen zeichnete den Stand des Lesers,
+  // nicht den des Tages, an dem die Karte stand.
+  ewig(b){
+    const r = (b.r || []).filter(x => pmap()[x[0]]);
+    if(r.length < 3) return '';
+    return `<div class="ff-sd-k">${svgI('crown')}<b>Ewige Tafel</b><small>Karriere-Elo</small></div>`
+      + _ffPodest({r:r.map(x => ({p:x[0], t:x[1]}))})
+      .replace(/(<span class="ff-pd-s p(\d)"[^>]*>)/g, (m0, m1, k) => r[k - 1] && !r[k - 1][2] ? m1.replace('ff-pd-s', 'ff-pd-s neu') : m1);
+  },
+
+  // ── 18. Der Wettlauf: der Abstand der zwei, Monat für Monat ─────────
+  // Gezeichnet wird der Abstand und nicht die beiden Summen: zwei Linien,
+  // die bei 112 zu 112 enden, lagen aufeinander, und man sah weder, wer
+  // vorn war, noch wann es sich drehte. Über der Mitte führt der Erste.
+  wettlauf(b){
+    const pm = pmap(), r = (b.r || []).filter(x => pm[x[0]] && Array.isArray(x[1]));
+    const mon = b.mon || [];
+    if(r.length < 2 || mon.length < 2) return '';
+    const v = r[0][1].map((y, i) => (y | 0) - (r[1][1][i] | 0));
+    const W = 260, H = 54, n = v.length - 1, m = Math.max(2, ...v.map(Math.abs));
+    const X = i => 4 + i * (W - 8) / n, Y = y => H / 2 - y / m * (H / 2 - 5), f = x => x.toFixed(1);
+    const MON = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const wort = {siege:'Siege', saetze:'Sätze', games:'Games'}[b.art] || '';
+    const seite = (x, k) => `<span class="ff-wl-p${k ? ' re' : ' eins'}" data-pid="${esc(x[0])}">${k ? '' : rcpAvHtml(x[0], 24, {})}`
+      + `<span>${_ffNm(x[0])}<b class="num">${_ffZl(x[1][x[1].length - 1])}</b></span>${k ? rcpAvHtml(x[0], 24, {}) : ''}</span>`;
+    return `<div class="ff-kopf">${seite(r[0], 0)}<small>${esc(wort)}</small>${seite(r[1], 1)}</div>`
+      + `<div class="ff-rv"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">`
+      + `<rect class="ff-rv-o" x="0" y="0" width="${W}" height="${H / 2}"/>`
+      + `<line class="ff-rv-m" x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}"/>`
+      + `<path class="ff-rv-l" d="${v.map((y, i) => (i ? 'L' : 'M') + f(X(i)) + ' ' + f(Y(y))).join('')}"/>`
+      + `<circle class="ff-rv-p" cx="${f(X(n))}" cy="${f(Y(v[n]))}" r="3"/></svg>`
+      + `<div class="ff-wl-x num" style="grid-template-columns:repeat(${mon.length},1fr)">${mon.map(x => `<span>${MON[Number(String(x).slice(5, 7)) - 1] || ''}</span>`).join('')}</div></div>`;
+  },
+
+  // ── 19. Das Prestige: das Podest mit den Wappen ─────────────────────
+  // Hier ist das Wappen die Aussage, wie im Podest der Prestige-Rangliste.
+  prestige(b){
+    const r = (b.r || []).filter(x => pmap()[x[0]]);
+    return r.length < 3 ? '' : _ffPodest({ins:true, r:r.map(x => ({p:x[0], t:_ffZl(x[1])}))});
+  },
+
+  // ── 20. Die Spitze des Monats: die Tabelle mit ihrer Woche ──────────
+  // Grün und Rot nur für die Richtung des Platzes [§C25].
+  monat(b){
+    const r = (b.r || []).filter(x => pmap()[x[0]]);
+    if(r.length < 3) return '';
+    const pfeil = d => d == null ? '<em class="neu">neu</em>' : d > 0 ? `<em class="auf num">▲${d}</em>` : d < 0 ? `<em class="ab num">▼${-d}</em>` : '<em class="num">–</em>';
+    return `<div class="ff-sd-k">${svgI('chartBar')}<b>${esc(seasonLabel(b.sid || ''))}</b><small>gegen vor einer Woche</small></div>`
+      + `<div class="ff-mt">` + r.map((x, i) => `<div class="ff-mt-r${i ? '' : ' eins'}" data-pid="${esc(x[0])}" style="--k:${i}">`
+        + `<small class="num">${i + 1}</small>${_ffChip(x[0])}${_ffNm(x[0])}<b class="num">${x[1] | 0}</b>${pfeil(x[2])}</div>`).join('') + `</div>`;
+  },
+
+  // ── 21. Gegen den Vormonat: die Plätze beider Monate als Linien ─────
+  // Links der Vormonat, rechts der laufende; die Linie des Spielers in der
+  // Farbe der Karte, die übrigen in Metall, das Podest rechts getönt.
+  vormonat(b){
+    const pm = pmap(), r = (b.r || []).filter(x => pm[x[0]] && x[1] > 0 && x[2] > 0);
+    if(!pm[b.p] || r.length < 3) return '';
+    const n = Math.max(...r.flatMap(x => [x[1], x[2]])), W = 260, H = Math.max(70, 14 + n * 9);
+    const Y = p => 8 + (p - 1) * (H - 16) / Math.max(1, n - 1), L = 64, R = W - 64, f = x => x.toFixed(1);
+    const ich = r.find(x => x[0] === b.p);
+    // Die übrigen leise, mit einem Punkt an jedem Ende: als blosse Linien
+    // lagen sie wie ein Knäuel hinter der einen, um die es geht.
+    const linien = r.filter(x => x[0] !== b.p).map(x => `<path class="ff-vm-o" d="M${L} ${f(Y(x[1]))}L${R} ${f(Y(x[2]))}"/>`
+      + `<circle class="ff-vm-d" cx="${L}" cy="${f(Y(x[1]))}" r="2"/><circle class="ff-vm-d" cx="${R}" cy="${f(Y(x[2]))}" r="2"/>`).join('');
+    const pc = y => (y / H * 100).toFixed(2) + '%';
+    return `<div class="ff-vm-k"><span>${esc(seasonLabel(b.v))}</span><span>${esc(seasonLabel(b.m))}</span></div>`
+      + `<div class="ff-vm"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">`
+      + `<rect class="ff-vm-pd" x="${R - 8}" y="0" width="${W - R + 8}" height="${f(Y(3) + 5)}" rx="6"/>` + linien
+      + (ich ? `<path class="ff-vm-l" d="M${L} ${f(Y(ich[1]))}L${R} ${f(Y(ich[2]))}"/>` : '') + `</svg>`
+      + (ich ? `<span class="ff-vm-p l" style="top:${pc(Y(ich[1]))}"><b class="num">${ich[1]}.</b>${rcpAvHtml(b.p, 20, {})}</span>`
+        + `<span class="ff-vm-p r" data-pid="${esc(b.p)}" style="top:${pc(Y(ich[2]))}">${rcpAvHtml(b.p, 22, {})}<b class="num">${ich[2]}.</b></span>` : '')
+      + `</div><div class="ff-vm-n">${_ffNm(b.p)}</div>`;
+  },
+
+  // ── 22. Die Ergebnisse: Säulen des Monats, die Marke der Monate davor
+  ergebnisse(b){
+    const je = (b.je || []).map(x => x | 0), vor = (b.vor || []).map(x => (x | 0) / 1000);
+    if(je.length !== FF_SAETZE.length || vor.length !== FF_SAETZE.length) return '';
+    const n = Math.max(1, je.reduce((a, x) => a + x, 0)), q = je.map(x => x / n), max = Math.max(...q, ...vor, .01);
+    return `<span class="ff-vs" style="grid-template-columns:repeat(${je.length},minmax(0,1fr))">` + je.map((x, i) => `<span class="${i === b.hl ? 'hl' : ''}" style="--k:${i}">`
+      + `<b class="num">${Math.round(q[i] * 100)}</b><em><i style="height:${Math.max(x ? 4 : 0, q[i] / max * 100).toFixed(1)}%"></i>`
+      + `<u style="bottom:${(vor[i] / max * 100).toFixed(1)}%"></u></em><small class="num">${FF_SAETZE[i]}</small></span>`).join('') + `</span>`
+      + `<div class="ff-es-l"><span><i></i>${esc(seasonLabel(b.mk || '').replace(/\s*\d{4}$/, ''))} in %</span><span><u></u>Monate davor</span></div>`;
+  },
+
+  // ── 23. Das Tempo: Sätze je Spieltag, Monat für Monat ───────────────
+  tempo(b){
+    const mon = (b.mon || []).filter(x => x && x[0]);
+    if(mon.length < 2) return '';
+    const MON = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+    const max = Math.max(1, ...mon.map(x => x[1] | 0)), kurz = mon.length > 7;
+    return `<span class="ff-vs ff-tp" style="grid-template-columns:repeat(${mon.length},minmax(0,1fr))">` + mon.map((x, i) => `<span class="${i === b.hl ? 'hl' : ''}" style="--k:${i}">`
+      + `<b class="num">${esc(komma((x[1] | 0) / 10))}</b><em><i style="height:${Math.max(4, (x[1] | 0) / max * 100).toFixed(1)}%"></i></em>`
+      + `<small>${esc((MON[Number(x[0].slice(5, 7)) - 1] || '').slice(0, kurz ? 1 : 3))}</small></span>`).join('') + `</span>`
+      + `<div class="ff-sa-l"><span>Sätze je Spieltag</span><span>${mon.length} Monate</span></div>`;
+  },
+
+  // ── 24. Die Auszeichnungen des Monats: je Spieler eine Strichliste ──
+  // Gold die legendären, Lila die seltenen, Metall die übrigen [§C25].
+  awmonat(b){
+    const r = (b.r || []).filter(x => pmap()[x[0]]);
+    if(!r.length) return '';
+    return r.map((x, k) => {
+      const n = x[1] | 0, z = Math.min(n, 40), l = Math.min(z, x[2] | 0), s = Math.min(z - l, x[3] | 0);
+      const felder = Array.from({length:z}, (_, i) => `<i class="${i < l ? 'lg' : i < l + s ? 'rr' : 'w'}"></i>`).join('');
+      return `<div class="ff-sm ff-am${k === 0 ? ' eins' : ''}" style="--k:${k}">${_ffChip(x[0])}<span class="ff-r-m">${_ffNm(x[0])}`
+        + `<span class="ff-zl">${felder}${n > z ? '<i class="mehr"></i>' : ''}</span></span><b class="num">${n}</b></div>`;
+    }).join('');
+  },
+
+  // ── 25. Ein Rekord in Reichweite: der eigene Stand gegen den Rekord ─
+  rekordziel(b){
+    const z = _ffZiel(b);
+    return z ? `<div class="ff-sd-k">${svgI('trophy')}<b>${esc(b.name || '')}</b></div>` + z : '';
   }
+
 };
