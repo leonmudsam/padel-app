@@ -677,6 +677,18 @@ ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => 
   ok(fund.length === 0, 'Kein „Spieler des Tages", „Duell", „Begegnung" oder „Satzquote" in der App: ' + JSON.stringify([...new Set(fund)]));
 }
 
+// Der Stand in der Kapsel des Elo-Pegels steht in einer Spalte, die sich
+// nach ihrem Inhalt bemisst. Mit Schrift und Abstand in Container-Einheiten
+// (`cqi`) maß Safari die Spalte, bevor die Schrift ihre Größe hatte, und der
+// Stand lag als Ziffernknäuel über der Kapsel. Keine Regel der Kapsel trägt
+// deshalb eine Container-Einheit.
+{
+  const css = require('fs').readFileSync(require('./ziel.js'), 'utf8');
+  const regeln = (css.match(/\.sp-sm-m[^{]*\{[^}]*\}/g) || []);
+  ok(regeln.length >= 2 && !regeln.some(r => /cq[iwhb]|container/.test(r)),
+    'Die Kapsel des Elo-Pegels misst Schrift und Abstand nicht in Container-Einheiten: ' + JSON.stringify(regeln.filter(r => /cq/.test(r))));
+}
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 Promise.all([ANSCHLUSS, GERAET]).catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);

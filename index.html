@@ -5269,10 +5269,9 @@
 .sp-sm-s b{font:600 10px/12px 'Sometype Mono',monospace;color:var(--acid);white-space:nowrap}
 .sp-sm-s b.z2{font-size:8px}.sp-sm-s b.z3{font-size:6.5px}
 .sp-sm-s.ab b{color:var(--red)}
-.sp-sm{container-type:inline-size}
-.sp-sm-m{grid-column:3;grid-row:2/4;align-self:center;z-index:1;margin:0 min(14px,3cqi);padding:5px min(9px,3cqi);border-radius:11px;
+.sp-sm-m{grid-column:3;grid-row:2/4;align-self:center;z-index:1;margin:0 clamp(4px,3vw,14px);padding:5px clamp(4px,2vw,9px);border-radius:11px;
   background:rgba(10,12,11,.86);border:1px solid var(--line2);box-shadow:0 0 18px rgba(0,0,0,.55)}
-.sp-sm-m .sp-st{font-size:min(23px,8.5cqi)}
+.sp-sm-m .sp-st{font-size:clamp(16px,5.6vw,23px);white-space:nowrap}
 .sp-sm-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.35)}
 
 .sp-lb{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:8px}
@@ -6780,7 +6779,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.25.da3330bd';
+const BUILD_VERSION='2026.11.26.14066d7e';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());

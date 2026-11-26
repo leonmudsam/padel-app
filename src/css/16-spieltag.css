@@ -514,12 +514,15 @@
 .sp-sm-s b.z2{font-size:8px}.sp-sm-s b.z3{font-size:6.5px}
 .sp-sm-s.ab b{color:var(--red)}
 /* Auf dem schmalsten Telefon ist der Kopf gut 200 px breit. Stand und
-   Abstand gehen mit seiner Breite (`cqi`), damit vier Gesichter und ein
-   „12:10" nebeneinander passen; ab gut 270 px stehen sie in voller Größe. */
-.sp-sm{container-type:inline-size}
-.sp-sm-m{grid-column:3;grid-row:2/4;align-self:center;z-index:1;margin:0 min(14px,3cqi);padding:5px min(9px,3cqi);border-radius:11px;
+   Abstand gehen deshalb mit der Breite des Bildschirms (`vw`), damit vier
+   Gesichter und ein „12:10" nebeneinander passen; ab gut 400 px stehen sie
+   in voller Größe. Nicht mit der Breite des Kopfs (`cqi`): die Kapsel steht
+   in einer Spalte, die sich nach ihrem Inhalt bemisst, und Safari maß sie,
+   bevor die Schrift ihre Größe hatte — die Spalte blieb schmal, und der
+   Stand lag als Ziffernknäuel über dem Rand der Kapsel. */
+.sp-sm-m{grid-column:3;grid-row:2/4;align-self:center;z-index:1;margin:0 clamp(4px,3vw,14px);padding:5px clamp(4px,2vw,9px);border-radius:11px;
   background:rgba(10,12,11,.86);border:1px solid var(--line2);box-shadow:0 0 18px rgba(0,0,0,.55)}
-.sp-sm-m .sp-st{font-size:min(23px,8.5cqi)}
+.sp-sm-m .sp-st{font-size:clamp(16px,5.6vw,23px);white-space:nowrap}
 .sp-sm-m .sp-st em{color:var(--acid);text-shadow:0 0 16px rgba(228,242,74,.35)}
 
 /* Die Games-Balken: je Team ein Balken von außen zur Mitte, ein Feld je
