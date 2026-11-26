@@ -1781,6 +1781,175 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-zw-m>span.ff-zw-p{display:flex;align-items:center;gap:6px}
   .nd-ff{padding:4px 0 2px}
   .nd-ff .ff{margin:0}
+
+  /* ── Die acht Fragen [§C33] ────────────────────────────────────────
+     Ein Kopf je Bild: links wer, rechts die Zahl, um die es geht. Grün
+     (--acid) und Rot nur für eine Richtung [§C25], alles andere Metall
+     oder die leise Farbe der Karte. Keine Breite und keine Höhe wird
+     animiert; die Bilder gehen auf wie die übrigen, nur in der Deckkraft.
+     Gemessen ist bei 288 und 360 px Bildschirm: die Karte ist dort 191 und
+     263 px breit, und keine Zeile darf breiter werden als sie. */
+  .ff-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;min-width:0}
+  /* Der Name bricht nie um; wird es eng, bricht die Beschriftung der Zahl
+     (bei 288 px stand „Clara" Buchstabe für Buchstabe untereinander). */
+  .ff-kopf-p{display:flex;align-items:center;gap:7px;min-width:0;flex-shrink:0}
+  .ff-kopf-p .ff-nm,.ff-kopf>.ff-nm{white-space:nowrap}
+  .ff-wert{display:flex;flex-direction:column;align-items:flex-end;min-width:0;text-align:right}
+  .ff-wert b{font-family:'Archivo Black',sans-serif;font-size:19px;line-height:1;color:var(--ink);white-space:nowrap}
+  .ff-wert small{font-size:9px;letter-spacing:.02em;margin-top:3px;line-height:1.25}
+  .ff-wert.hoch b{color:var(--acid)}
+  .ff-wert.tief b{color:var(--red)}
+  .ff.gross .ff-wert b{font-size:24px}
+  .ff [data-pid]{cursor:pointer}
+
+  .ff-aw{position:relative}
+  .ff-aw svg{display:block;width:100%;height:auto;overflow:visible}
+  .ff-aw-g{stroke:var(--line2);stroke-width:1;stroke-dasharray:2 3}
+  .ff-aw-t{stroke:var(--line2);stroke-width:1;stroke-dasharray:3 3}
+  .ff-aw-v{fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;opacity:.8}
+  .ff-aw-l{fill:none;stroke:var(--acid);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+  .ff-aw-f stop{stop-color:var(--acid)}
+  .ff-aw-p{position:absolute;transform:translate(-50%,-50%);display:flex}
+  .ff-aw-p .rcp-av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--acid);border-radius:50%}
+  .ff-aw-x{display:grid;gap:6px;margin-top:5px;font-family:'Sometype Mono',monospace;font-size:9.5px;color:var(--muted);
+    padding-right:22px}
+  .ff-aw-x span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .ff-aw-x span:last-child{color:var(--ink2);text-align:right}
+
+  /* Ein Raster für beide Reihen, damit die Balken gleich lang sind. */
+  .ff-ew{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:18px 8px;align-items:center;padding-bottom:12px}
+  .ff-ew-k{font-family:'Sometype Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ff-ew-b{position:relative;height:9px;border-radius:5px;background:var(--surface3)}
+  .ff-ew-b i{position:absolute;top:0;bottom:0;left:0;border-radius:5px}
+  .ff-ew-b i.ist{background:var(--ink2);opacity:.55}
+  .ff-ew-b i.mehr{background:var(--acid);border-radius:0 5px 5px 0;box-shadow:0 0 8px rgba(228,242,74,.35)}
+  .ff-ew-b i.weniger{background:transparent;box-shadow:inset 0 0 0 1px rgba(240,86,106,.7);border-radius:0 5px 5px 0}
+  .ff-ew-b u{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:1px;background:var(--ink)}
+  .ff-ew>b{font-family:'Sometype Mono',monospace;font-size:12px;color:var(--ink);white-space:nowrap}
+  .ff-ew>b small{font-size:10px;color:var(--muted)}
+  /* Die Beschriftung steht unter der Marke im Balken; am Rand rückt sie
+     nach innen (die Vorlage begrenzt die Lage auf 12 bis 88 %). */
+  .ff-ew-b em{position:absolute;top:100%;margin-top:4px;font-style:normal;font-size:9px;color:var(--muted);
+    white-space:nowrap;transform:translateX(-50%)}
+
+  /* Ein Raster für alle Reihen und die Achse: die Spalte der Namen ist so
+     breit wie der längste, die Hanteln beginnen alle an derselben Stelle. */
+  .ff-ht{display:grid;grid-template-columns:auto minmax(56px,1fr) auto;gap:6px 8px;align-items:center}
+  .ff-ht-r{display:contents}
+  .ff-ht-p{display:flex;align-items:center;gap:6px;min-width:0}
+  .ff-ht-p .ff-nm{white-space:nowrap}
+  .ff-ht-r:not(.eins) .ff-nm{color:var(--muted);font-weight:500}
+  .ff-ht-b{position:relative;height:14px}
+  .ff-ht-b::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
+  .ff-ht-b i{position:absolute;top:50%}
+  .ff-ht-b i.steg{height:4px;margin-top:-2px;border-radius:2px;background:var(--muted)}
+  .ff-ht-r.eins .ff-ht-b i.steg.hoch{background:var(--acid)}
+  .ff-ht-b i.pkt{width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%}
+  .ff-ht-b i.l{background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink2)}
+  .ff-ht-b i.j{background:var(--ink2)}
+  .ff-ht-r.eins .ff-ht-b i.j.hoch{background:var(--acid);box-shadow:0 0 8px rgba(228,242,74,.5)}
+  .ff-ht-r>b{font-family:'Sometype Mono',monospace;font-size:11.5px;color:var(--muted);text-align:right;white-space:nowrap}
+  .ff-ht-r.eins>b{color:var(--acid);font-weight:700}
+  .ff-ht-s{display:flex;justify-content:space-between;font-family:'Sometype Mono',monospace;font-size:9px;color:var(--faint)}
+  .ff-ht-lg{grid-column:1/-1;display:flex;justify-content:center;flex-wrap:wrap;gap:2px 14px;font-family:'Sometype Mono',monospace;
+    font-size:9px;color:var(--muted);margin-top:2px}
+  .ff-ht-lg>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+  .ff-ht-lg i{display:inline-block;width:7px;height:7px;border-radius:50%}
+  .ff-ht-lg i.l{box-shadow:inset 0 0 0 1.5px var(--ink2)}
+  .ff-ht-lg i.j{background:var(--ink2)}
+
+  .ff-mk{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+  .ff-mk-r{position:relative;width:64px;height:64px;display:grid;place-items:center}
+  .ff-mk-r svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+  .ff-mk-h{fill:none;stroke:var(--surface3);stroke-width:5}
+  .ff-mk-v{fill:none;stroke:rgb(var(--story-rgb));stroke-width:5;stroke-linecap:round;
+    filter:drop-shadow(0 0 4px rgba(var(--story-rgb),.6))}
+  .ff-mk-r .rcp-av{--rav:44px}
+  .ff-mk-m{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .ff-mk-m>b{font-family:'Archivo Black',sans-serif;font-size:20px;line-height:1.05;color:var(--ink);margin-top:2px}
+  .ff-mk-m>small{font-family:inherit;font-size:11px;color:var(--ink2);line-height:1.25}
+  .ff-mk-s{font-family:'Sometype Mono',monospace;font-size:10px;color:var(--muted)}
+  .ff-mk-z svg{width:42px;height:42px;display:block;opacity:.85}
+  /* Auf dem schmalsten Telefon trägt die Karte Ring und Satz; das Zeichen
+     der nächsten Schwelle steht dann nur im Blatt. */
+  .ff-mk{container-type:inline-size}
+  @container (max-width:230px){.ff-mk-z{display:none}}
+  .ff.gross .ff-mk-r{width:80px;height:80px}
+  .ff.gross .ff-mk-r .rcp-av{--rav:56px}
+  .ff.gross .ff-mk-m>b{font-size:26px}
+  .ff.gross .ff-mk-z svg{width:54px;height:54px}
+
+  .ff-rh{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:3px}
+  .ff-rh-c{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;position:relative}
+  .ff-rh-c>i{width:100%;max-width:32px;aspect-ratio:1;border-radius:5px;display:grid;place-items:center;
+    background:transparent;box-shadow:inset 0 0 0 1px var(--surface3)}
+  .ff-rh-c.mit>i{background:rgba(var(--ttr),.2);box-shadow:inset 0 0 0 1px rgba(var(--ttr),.55);color:var(--tt)}
+  .ff-rh-c.mit[data-kl="legendaer"]>i{background:rgba(var(--ttr),.3);box-shadow:inset 0 0 0 1px rgba(var(--ttr),.8),0 0 8px rgba(var(--ttr),.35)}
+  .ff-rh-c.ohne>i::after{content:'';width:40%;height:1.5px;border-radius:1px;background:var(--faint)}
+  .ff-rh-c>i svg{width:62%;height:62%}
+  .ff-rh-c small{font-size:8.5px;line-height:1}
+  .ff-rh-c.serie::before{content:'';position:absolute;left:-1.5px;right:-1.5px;bottom:-5px;height:2px;background:rgb(var(--story-rgb));opacity:.8}
+  .ff-rh-j{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-family:'Sometype Mono',monospace;font-size:9px;color:var(--faint)}
+
+  .ff-ch{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:4px}
+  .ff-ch-p{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:76px;min-width:0;text-align:center}
+  .ff-ch-p .ff-nm{max-width:100%}
+  .ff-ch-m{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    min-width:0;height:64px;padding-top:8px;text-align:center}
+  .ff-ch-m svg{position:absolute;left:-6px;right:-6px;bottom:22px;width:calc(100% + 12px);height:44px;overflow:visible}
+  .ff-ch-l{fill:none;stroke:var(--acid);stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .ff-ch-gl{fill:none;stroke:rgba(228,242,74,.16);stroke-width:9;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .ff-ch-m b{position:relative;font-family:'Archivo Black',sans-serif;font-size:19px;line-height:1;color:var(--acid);margin-top:12px}
+  .ff-ch-m small{position:relative;font-size:8.5px;margin-top:3px;line-height:1.2;max-width:100%}
+  .ff-ch-u{margin-top:8px;text-align:center;font-family:'Sometype Mono',monospace;font-size:10px;color:var(--muted)}
+  .ff.gross .ff-ch-p .rcp-av{--rav:44px}
+
+  .ff-lk{position:relative}
+  .ff-lk svg{display:block;width:100%;height:auto}
+  .ff-lk-q{fill:rgba(var(--story-rgb),.1)}
+  .ff-lk-b{fill:rgba(238,242,247,.04)}
+  .ff-lk-m{stroke:var(--line2);stroke-width:1}
+  .ff-lk-r{fill:none;stroke:var(--line);stroke-width:1}
+  .ff-lk-o{fill:var(--faint)}
+  .ff-lk-alt{fill:none;stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:2.5 2.5}
+  .ff-lk-pf{stroke:var(--ink2);stroke-width:1.6;fill:none}
+  .ff-lk-pk{fill:var(--ink2)}
+  /* Der Name steht neben dem Gesicht, zur Mitte hin: unter ihm lief er
+     am Rand der Karte aus dem Bild. */
+  .ff-lk-p{position:absolute;transform:translate(-13px,-50%);display:flex;align-items:center;gap:5px}
+  .ff-lk-p.li{flex-direction:row-reverse;transform:translate(calc(-100% + 13px),-50%)}
+  .ff-lk-p .ff-nm{font-size:11px;white-space:nowrap;text-shadow:0 1px 3px var(--surface)}
+  .ff-lk-p .rcp-av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px rgb(var(--story-rgb));border-radius:50%}
+  .ff-lk-f{position:absolute;left:7px;font-family:'Sometype Mono',monospace;font-size:8.5px;color:var(--muted);pointer-events:none}
+  .ff-lk-f.o{top:5px}
+  .ff-lk-f.u{bottom:5px}
+  .ff-lk-x{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:5px;
+    font-family:'Sometype Mono',monospace;font-size:9px;color:var(--muted)}
+  .ff-lk-x>span{white-space:nowrap}
+
+  .ff-lb-k{display:flex;align-items:center;gap:10px;margin-bottom:8px;min-width:0}
+  .ff-lb-k .ff-zw-z i{font-size:18px;width:20px;height:30px}
+  .ff-lb-k .ff-zw-z em{font-style:normal;font-family:'Archivo Black',sans-serif;color:var(--muted);align-self:flex-end;margin:0 -1px}
+  .ff-lb-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .ff-lb-t b{font-size:12px;font-weight:600;color:var(--ink)}
+  .ff-lb-s{display:flex;margin-left:auto}
+  .ff-lb-s>span+span{margin-left:-5px}
+  .ff-lb-s .rcp-av{box-shadow:0 0 0 2px var(--surface);border-radius:50%}
+  .ff-lb{position:relative;display:flex;align-items:stretch;gap:4px;height:62px;padding-bottom:13px}
+  .ff-lb-m{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--ink2);opacity:.7;z-index:1;
+    bottom:calc(13px + (100% - 13px) * var(--h,1))}
+  .ff-lb-c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;position:relative}
+  .ff-lb-c i{width:100%;border-radius:3px 3px 0 0;background:var(--surface3)}
+  .ff-lb-c.drueber i{background:rgba(var(--story-rgb),.45)}
+  .ff-lb-c.hl i{background:rgb(var(--story-rgb));box-shadow:0 0 8px rgba(var(--story-rgb),.45)}
+  .ff-lb-c small{position:absolute;top:100%;margin-top:2px;font-size:8.5px;line-height:1}
+  .ff-lb-c.hl small{color:var(--ink)}
+  .ff.gross .ff-lb{height:84px}
+
+  @media (prefers-reduced-motion:no-preference){
+    .ff-ht-p,.ff-ht-b,.ff-rh-c,.ff-lb-c{animation:ffAuf .45s ease both;animation-delay:calc(var(--k,0) * 45ms)}
+    .ff-rh-c{animation-delay:calc(var(--k,0) * 30ms)}
+  }
   .ff-zw-m small b{color:var(--ink);font-weight:600}
 
 /* ── Die Ehrung [§11.6f] ───────────────────────────────────────────── */

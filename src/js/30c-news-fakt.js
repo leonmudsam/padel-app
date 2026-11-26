@@ -22,6 +22,10 @@
 
 function _ffChip(pid){ const p = pmap()[pid]; return p ? avHtml(p, '', {}) : ''; }
 function _ffNm(pid){ return `<span class="ff-nm">${esc(_spName(pid))}</span>`; }
+// Eine Zahl, wie sie im Satz steht: ganz, ab fünf Stellen mit Tausenderpunkt
+// (`tausender` [§C27]). `_spZahl` setzte den Punkt schon ab vier, und auf
+// der Karte stand „1.000" über „1000 Games" in der Schlagzeile.
+function _ffZl(v){ return tausender(String(Math.round(Number(v) || 0))); }
 function _ffPct(x){ return Math.max(0, Math.min(100, Math.round((Number(x) || 0) * 1000) / 10)); }
 
 function _faktBild(s, gross){
@@ -283,8 +287,202 @@ function _ffLauf(b){
   return `<div class="ff-lf">${_ffChip(b.p)}${_ffNm(b.p)}</div>${_newsSerienBand(b.n | 0, false, true)}`;
 }
 
+// ═══ Die acht Fragen [§C33] ═══════════════════════════════════════════
+// Ab hier zeichnet jede Form die Antwort auf genau eine Frage, mit den
+// Zahlen, aus denen sie entsteht. Die Formen darüber bleiben stehen, solange
+// eine gespeicherte Karte sie tragen kann: eine Karte ist ein Snapshot und
+// behält ihr Bild. Jedes Gesicht trägt `data-pid` und öffnet im Blatt das
+// Profil. Grün (`--acid`) und Rot stehen nur für eine Richtung [§C25]; was
+// keine hat, ist Metall oder die leise Farbe der Karte.
+//
+// Die Formen stehen als Einträge der Tafel und nicht als eigene Funktionen:
+// sie werden nur von hier aus gerufen, und jede Funktion auf oberster Ebene
+// teilt sich ihren Namen mit der ganzen App.
 const _FF_FORM = {
   rennen:_ffRennen, podest:_ffPodest, sammlung:_ffSammlung, sterne:_ffSterne, zahl:_ffZahl, duell:_ffDuell, duo:_ffDuo, vitrine:_ffVitrine, medaille:_ffMedaille,
   stufe:_ffStufe, ziel:_ffZiel, rolle:_ffRolle, verteilung:_ffVerteilung, saeulen:_ffSaeulen,
-  platz:_ffPlatz, tafel:_ffTafel, zaehler:_ffZaehler, lauf:_ffLauf, halbzeit:_ffHalbzeit
+  platz:_ffPlatz, tafel:_ffTafel, zaehler:_ffZaehler, lauf:_ffLauf, halbzeit:_ffHalbzeit,
+
+  // ── 1. Aufwind: die Elo der Sätze als Linie, die vierzehn Tage hell ──
+  // Die Summe Satz für Satz, nicht der Stand der Elo: die beginnt jeden
+  // Monat neu. Links die Wochen davor in Metall, rechts das Fenster in der
+  // Richtung seines Ergebnisses, am Ende das Gesicht. Gezeichnet in einer
+  // festen Fläche (260 × 76), die mit der Karte wächst; das Gesicht steht
+  // darüber im HTML, damit es rund bleibt, wie breit die Karte auch ist.
+  aufwind(b){
+    const pm = pmap(), v = (b.v || []).map(Number).filter(isFinite);
+    if(!pm[b.p] || v.length < 3) return '';
+    const W = 260, H = 76, L = 4, R = 22, O = 15, U = 6, n = v.length - 1;
+    const ab = Math.max(1, Math.min(n - 1, b.ab | 0));
+    let lo = Math.min(...v), hi = Math.max(...v); if(hi === lo){ hi += 1; lo -= 1; }
+    const X = i => L + i * (W - L - R) / n, Y = y => O + (hi - y) * (H - O - U) / (hi - lo);
+    const f = x => x.toFixed(1), pfad = (i0, i1) => v.slice(i0, i1 + 1).map((y, k) => (k ? 'L' : 'M') + f(X(i0 + k)) + ' ' + f(Y(y))).join('');
+    const hoch = (b.plus | 0) >= 0, id = 'ffa' + _spVisualHash(v.join() + '|' + b.p);
+    const flaeche = pfad(ab, n) + `L${f(X(n))} ${H}L${f(X(ab))} ${H}Z`;
+    const pc = (x, w) => (x / w * 100).toFixed(2) + '%';
+    return `<div class="ff-kopf">${_ffNm(b.p)}<span class="ff-wert${hoch ? ' hoch' : ' tief'}"><b class="num">${esc(_spVz(b.plus | 0))}</b><small>Elo in 14 Tagen</small></span></div>`
+      + `<div class="ff-aw"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`
+      + `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-opacity=".26"/><stop offset="1" stop-opacity="0"/></linearGradient></defs>`
+      + `<line class="ff-aw-g" x1="${L}" x2="${W - R}" y1="${f(Y(v[ab]))}" y2="${f(Y(v[ab]))}"/>`
+      + `<path class="ff-aw-f" fill="url(#${id})" d="${flaeche}"/>`
+      + `<path class="ff-aw-v" d="${pfad(0, ab)}"/><path class="ff-aw-l" d="${pfad(ab, n)}"/>`
+      + `<line class="ff-aw-t" x1="${f(X(ab))}" x2="${f(X(ab))}" y1="2" y2="${H}"/>`
+      + `</svg><span class="ff-aw-p" data-pid="${esc(b.p)}" style="left:${pc(X(n), W)};top:${pc(Y(v[n]), H)}">${rcpAvHtml(b.p, 24, {})}</span></div>`
+      + `<div class="ff-aw-x" style="grid-template-columns:${ab}fr ${n - ab}fr"><span>davor</span><span>14 Tage</span></div>`;
+  },
+
+  // ── 2. Über der Erwartung: Siege und Games, je mit ihrer Marke ───────
+  // Der Balken ist das Geholte, die Marke das Erwartete aus der Elo aller
+  // vier. Liegt der Balken über der Marke, ist das Stück darüber grün.
+  erwartung(b){
+    if(!pmap()[b.p] || !(b.n > 0) || !(b.g > 0)) return '';
+    const reihe = (wort, ist, erw, von) => {
+      const a = Math.max(0, Math.min(100, ist / von * 100)), e = Math.max(0, Math.min(100, erw / von * 100));
+      const lo = Math.min(a, e), hi = Math.max(a, e), mehr = a >= e;
+      return `<span class="ff-ew-k">${wort}</span>`
+        + `<span class="ff-ew-b"><i class="ist" style="width:${lo.toFixed(1)}%"></i>`
+        + `<i class="${mehr ? 'mehr' : 'weniger'}" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i>`
+        + `<u style="left:${e.toFixed(1)}%"></u><em class="num" style="left:${Math.max(12, Math.min(88, e)).toFixed(1)}%">erwartet ${esc(komma(erw))}</em></span>`
+        + `<b class="num">${_ffZl(ist)}<small> von ${_ffZl(von)}</small></b>`;
+    };
+    const plus = (b.s | 0) - Number(b.e || 0);
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
+      + `<span class="ff-wert${plus >= 0 ? ' hoch' : ' tief'}"><b class="num">${plus >= 0 ? '+' : '−'}${esc(komma(Math.abs(plus)))}</b><small>Siege über der Erwartung</small></span></div>`
+      + `<div class="ff-ew">${reihe('Siege', b.s | 0, Number(b.e) || 0, b.n | 0)}${reihe('Games', b.gf | 0, Number(b.ge) || 0, b.g | 0)}</div>`;
+  },
+
+  // ── 3. Form gegen Laufbahn: je Spieler eine Hantel ───────────────────
+  // Der leere Punkt ist die Laufbahn davor, der volle die vierzehn Tage,
+  // der Steg dazwischen die Richtung. Die Achse beginnt und endet auf vollen
+  // Zehnern um die Werte herum: bei 0 bis 100 lagen 59 und 83 % so nah, dass
+  // die Hantel ein Punkt war.
+  hantel(b){
+    const pm = pmap(), r = (b.r || []).filter(x => pm[x[0]]);
+    if(!r.length) return '';
+    const alle = r.flatMap(x => [x[1], x[2]]);
+    let lo = Math.floor(Math.min(...alle) / 10) * 10, hi = Math.ceil(Math.max(...alle) / 10) * 10;
+    if(hi - lo < 40){ const m = (lo + hi) / 2; lo = Math.max(0, Math.round((m - 20) / 10) * 10); hi = Math.min(100, lo + 40); lo = hi - 40; }
+    const P = x => ((x - lo) / (hi - lo) * 100).toFixed(1);
+    return `<div class="ff-ht">` + r.map((x, k) => {
+      const hoch = x[2] >= x[1], a = Math.min(x[1], x[2]), e = Math.max(x[1], x[2]);
+      return `<div class="ff-ht-r${k ? '' : ' eins'}"><span class="ff-ht-p" data-pid="${esc(x[0])}" style="--k:${k}">${rcpAvHtml(x[0], 22, {})}${_ffNm(x[0])}</span>`
+        + `<span class="ff-ht-b" style="--k:${k}"><i class="steg${hoch ? ' hoch' : ' tief'}" style="left:${P(a)}%;width:${(P(e) - P(a)).toFixed(1)}%"></i>`
+        + `<i class="pkt l" style="left:${P(x[1])}%"></i><i class="pkt j${hoch ? ' hoch' : ' tief'}" style="left:${P(x[2])}%"></i></span>`
+        + `<b class="num">${esc(_spVz(x[2] - x[1]))}</b></div>`;
+    }).join('')
+      + `<div class="ff-ht-r ff-ht-a"><span></span><span class="ff-ht-s num"><span>${lo}\u00a0%</span><span>${hi}\u00a0%</span></span><span></span></div>`
+      + `<div class="ff-ht-lg"><span><i class="l"></i>Laufbahn davor</span><span><i class="j"></i>14 Tage</span></div></div>`;
+  },
+
+  // ── 4. Marke in Sicht: ein Ring von der letzten Marke bis zur nächsten
+  // Das Gesicht in der Mitte, daneben der Rest groß und die Marke darunter.
+  // Beim Prestige steht das Zeichen der nächsten Schwelle dabei.
+  marke(b){
+    const pm = pmap();
+    if(!pm[b.p] || !(b.ziel > b.von)) return '';
+    const anteil = Math.max(0, Math.min(1, (b.ist - b.von) / (b.ziel - b.von)));
+    const R = 30, U = 2 * Math.PI * R, rest = Math.max(0, Math.round(b.ziel - b.ist));
+    const was = {saetze:`bis zum ${_ffZl(b.ziel)}. Satz`, siege:`bis zum ${_ffZl(b.ziel)}. Sieg`,
+      games:`bis zum ${_ffZl(b.ziel)}. gewonnenen Game`, prestige:`Prestige bis zum ${b.name || ''}`}[b.art] || '';
+    let zeichen = '';
+    if(b.art === 'prestige' && b.st){
+      try { zeichen = insigniumStufeSvg(b.st, (getPlayerRank(b.p) || {}).label, b.grad | 0, {bild:true}) || ''; } catch(e){ zeichen = ''; }
+    }
+    return `<div class="ff-mk"><span class="ff-mk-r" data-pid="${esc(b.p)}"><svg viewBox="0 0 72 72" aria-hidden="true">`
+      + `<circle class="ff-mk-h" cx="36" cy="36" r="${R}"/><circle class="ff-mk-v" cx="36" cy="36" r="${R}" stroke-dasharray="${(U * anteil).toFixed(1)} ${U.toFixed(1)}"/></svg>`
+      + `${rcpAvHtml(b.p, 44, {})}</span>`
+      + `<span class="ff-mk-m">${_ffNm(b.p)}<b class="num">noch ${_ffZl(rest)}</b><small>${esc(was)}</small>`
+      + `<span class="ff-mk-s num">${_ffZl(b.ist)} von ${_ffZl(b.ziel)}</span></span>`
+      + (zeichen ? `<span class="ff-mk-z">${zeichen}</span>` : '') + `</div>`;
+  },
+
+  // ── 5. Chronik einer Laufbahn: die Monate als Streifen ───────────────
+  // Jede Zelle in der Farbe ihrer Stufe wie in der Chronik-Tabelle [§C25]:
+  // Gold legendär, Lila selten, Metall besonders. Ein Strich heißt gewertet
+  // ohne Eintrag, ein leeres Feld nicht gewertet. Die Reihe ohne Pause trägt
+  // eine Klammer darunter.
+  reihe(b){
+    const pm = pmap(), z = (b.z || []).filter(x => x && x[0]);
+    if(!pm[b.p] || !z.length) return '';
+    const MON = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const n = Math.max(0, b.n | 0), von = b.art === 'serie' ? z.length - n : -1;
+    const zahl = {serie:'Monate ohne Pause', meiste:'Monate in der Chronik', neu:'Eintrag in der Chronik'}[b.art] || '';
+    const zellen = z.map((x, i) => {
+      const st = x[1], mit = st && st !== '-';
+      const t = mit ? titleTone(CHRONIK_STUFE_TON[st] || 'silver') : null;
+      return `<span class="ff-rh-c${mit ? ' mit' : st === '-' ? ' ohne' : ' leer'}${i >= von && von >= 0 ? ' serie' : ''}"`
+        + (t ? ` data-kl="${esc(st)}"` : '') + ` style="--k:${i}${t ? `;--tt:${t.c};--ttr:${t.rgb}` : ''}">`
+        + `<i>${mit ? svgI(x[2] || 'scroll') : ''}</i><small class="num">${MON[Number(String(x[0]).slice(5, 7)) - 1] || ''}</small></span>`;
+    }).join('');
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
+      + `<span class="ff-wert"><b class="num">${b.art === 'neu' ? '1.' : n}</b><small>${zahl}</small></span></div>`
+      + `<div class="ff-rh" style="--n:${z.length}">${zellen}</div>`
+      + `<div class="ff-rh-j"><span class="num">${esc(seasonLabel(z[0][0]))}</span><span class="num">${esc(seasonLabel(z[z.length - 1][0]))}</span></div>`;
+  },
+
+  // ── 6. Duo-Chemie: zwei Gesichter, ein Bogen, die Leistung darüber ───
+  // Der Bogen ist so dick, wie oft die beiden zusammen gespielt haben, und
+  // grün, weil sie zusammen über der Erwartung liegen.
+  chemie(b){
+    const pm = pmap();
+    if(!pm[b.a] || !pm[b.b]) return '';
+    const dick = (2 + Math.min(1, (b.g | 0) / 60) * 3).toFixed(1);
+    const seite = id => `<span class="ff-ch-p" data-pid="${esc(id)}">${rcpAvHtml(id, 36, {})}${_ffNm(id)}</span>`;
+    return `<div class="ff-ch">${seite(b.a)}<span class="ff-ch-m">`
+      + `<svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="ff-ch-gl" d="M2 38Q60 -8 118 38"/>`
+      + `<path class="ff-ch-l" d="M2 38Q60 -8 118 38" style="stroke-width:${dick}"/></svg>`
+      + `<b class="num">${esc(_spVz(b.v | 0))}</b><small>Prozentpunkte über der Erwartung</small></span>${seite(b.b)}</div>`
+      + `<div class="ff-ch-u num">${_ffZl(b.g)} Sätze zusammen</div>`;
+  },
+
+  // ── 7. Rolle: ein Ausschnitt der Seiten-Landkarte [§C44] ─────────────
+  // Waagerecht, wo jemand meist steht (Revés links, Drive rechts), senkrecht,
+  // wo die Leistung gegen den eigenen Schnitt höher ist, symmetrisch um null
+  // wie die Landkarte. Getönt sind die beiden Felder der schwächeren Seite.
+  // Die übrigen Spieler stehen als Punkte, das Gesicht an seiner Stelle; ein
+  // Wechsel zeigt mit einem Pfeil, woher er kam.
+  landkarte(b){
+    if(!pmap()[b.p]) return '';
+    const W = 260, H = 112, S = Math.max(.10, Number(b.S) || .1), m = W / 2, f = x => x.toFixed(1);
+    const X = a => 12 + Math.max(0, Math.min(1, a)) * (W - 24);
+    // Das Gesicht (26 px) bleibt ganz im Feld, auch wenn die Karte nur
+    // 191 px breit ist und das Feld damit 82 px hoch.
+    const Y = v => H / 2 - Math.max(-1, Math.min(1, v / S)) * (H / 2 - 19);
+    const yo = Y(.03), yu = Y(-.03);
+    const wechsel = b.art === 'wechsel', xp = wechsel ? X(b.x14) : X(b.x), yp = Y(b.y);
+    const pc = (x, w) => Math.max(7, Math.min(93, x / w * 100)).toFixed(2) + '%';
+    const pkt = (b.o || []).map(o => `<circle class="ff-lk-o" cx="${f(X(o[0]))}" cy="${f(Y(o[1]))}" r="3.2"/>`).join('');
+    const pfeil = wechsel ? `<circle class="ff-lk-alt" cx="${f(X(b.xv))}" cy="${f(yp)}" r="7"/>`
+      + `<path class="ff-lk-pf" d="M${f(X(b.xv) + (xp > X(b.xv) ? 9 : -9))} ${f(yp)}H${f(xp + (xp > X(b.xv) ? -15 : 15))}"/>`
+      + `<path class="ff-lk-pk" d="M${f(xp + (xp > X(b.xv) ? -15 : 15))} ${f(yp)}l${xp > X(b.xv) ? -6 : 6} -4.5v9z"/>` : '';
+    return `<div class="ff-lk"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`
+      + `<path class="ff-lk-q" d="M0 0H${m}V${f(yo)}H0Z"/><path class="ff-lk-q" d="M${m} ${f(yu)}H${W}V${H}H${m}Z"/>`
+      + `<rect class="ff-lk-b" x="0" y="${f(yo)}" width="${W}" height="${f(yu - yo)}"/>`
+      + `<line class="ff-lk-m" x1="${m}" x2="${m}" y1="0" y2="${H}"/><rect class="ff-lk-r" x=".5" y=".5" width="${W - 1}" height="${H - 1}" rx="8"/>`
+      + pkt + pfeil + `</svg>`
+      + `<span class="ff-lk-f o">Drive besser</span><span class="ff-lk-f u">Revés besser</span>`
+      + `<span class="ff-lk-p${xp > m ? ' li' : ''}" data-pid="${esc(b.p)}" style="left:${pc(xp, W)};top:${pc(yp, H)}">${rcpAvHtml(b.p, 26, {})}${_ffNm(b.p)}</span></div>`
+      + `<div class="ff-lk-x"><span>← meist Revés</span><span>meist Drive →</span></div>`;
+  },
+
+  // ── 8. Die Liga: der Stand am Ende jedes Monats, die Marke als Linie ─
+  // Jede Säule ist alles bis zum Ende ihres Monats, so wächst die Reihe auf
+  // die Marke zu; die Säule, in der sie fällt oder fallen wird, ist hell.
+  ligaband(b){
+    const mon = (b.mon || []).filter(x => x && x[0]);
+    if(!mon.length || !(b.m > 0)) return '';
+    const MON = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+    const max = Math.max(b.m, ...mon.map(x => x[1] | 0)), hoehe = v => Math.max(4, v / max * 100).toFixed(1);
+    const kurz = mon.length > 8;
+    const s = (b.sieger || []).filter(id => pmap()[id]);
+    const ziffern = String(_ffZl(b.m)).split('').map((z, i) => z === '.' ? `<em>.</em>` : `<i class="num" style="--k:${i}">${z}</i>`).join('');
+    const linie = Math.min(1, b.m / max);
+    return `<div class="ff-lb-k"><span class="ff-zw-z">${ziffern}</span><span class="ff-lb-t"><b>${b.art === 'saetze' ? 'Sätze der Liga' : 'Games der Liga'}</b>`
+      + `<small class="num">${b.erreicht ? `jetzt ${_ffZl(b.n)}` : `noch ${_ffZl(b.m - b.n)}`}</small></span>`
+      + (s.length ? `<span class="ff-lb-s">${s.map(id => `<span data-pid="${esc(id)}">${rcpAvHtml(id, 22, {})}</span>`).join('')}</span>` : '') + `</div>`
+      + `<div class="ff-lb" style="--h:${linie.toFixed(3)}"><span class="ff-lb-m"></span>`
+      + mon.map((x, i) => `<span class="ff-lb-c${i === b.hl ? ' hl' : ''}${(x[1] | 0) >= b.m ? ' drueber' : ''}" style="--k:${i}">`
+        + `<i style="height:${hoehe(x[1] | 0)}%"></i><small>${esc(kurz ? MON[Number(x[0].slice(5, 7)) - 1].charAt(0) : MON[Number(x[0].slice(5, 7)) - 1])}</small></span>`).join('')
+      + `</div>`;
+  }
 };

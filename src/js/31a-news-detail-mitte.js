@@ -543,6 +543,53 @@ function _ndMitteRoh(s){
           + _newsInsigniumBlock(d.pid, d.stufe);
       }
       case 'ambient': {
+        // ── Die acht Fragen [§C33] ──────────────────────────────────
+        // Unter der Bühne die Zahlen, aus denen das Bild entsteht, soweit
+        // Bild und Satz sie nicht schon nennen: was das Bild zeigt, steht
+        // hier nicht noch einmal [§C27]. Alles kommt aus dem gespeicherten
+        // Bild; die Karte erzählt vom Tag, an dem sie stand.
+        const ff = d.bild || {};
+        const pz = (x, y) => y > 0 ? Math.round(x / y * 100) + '\u00a0%' : '–';
+        const zahlen = {
+          aufwind:b => { const je = (x, n) => n ? (x >= 0 ? '+' : '−') + komma(Math.abs(x / n)) : '–';
+            return ['Die Elo je Satz', [{v:je(b.plus, b.n), l:'in 14 Tagen'}, {v:je(b.vor, b.nVor), l:'davor'},
+              {v:pz(b.w, b.n), l:'Siegquote in 14 Tagen'}]]; },
+          erwartung:b => ['Gegen die Erwartung', [{v:pz(b.e, b.n), l:'Siegchance im Schnitt'},
+            {v:pz(b.s, b.n), l:'Siegquote'}, {v:(b.l >= 0 ? '+' : '−') + komma(Math.abs(b.l)), l:'Prozentpunkte je Satz über der Erwartung'}]],
+          marke:b => b.art === 'prestige' ? null : ['Die Laufbahn', [{v:_ffZl(b.s), l:'Sätze'},
+            {v:_ffZl(b.w), l:'Siege'}, {v:_ffZl(b.g), l:'gewonnene Games'}].filter((z, i) => ['saetze', 'siege', 'games'][i] !== b.art)],
+          chemie:b => ['Woraus die Erwartung entsteht', [{v:pz(b.w, b.g), l:'Siegquote zusammen'}, {v:pz(b.e, b.g), l:'Siegchance im Schnitt'}]],
+          landkarte:b => b.art === 'wechsel'
+            ? ['Die Sätze dahinter', [{v:pz(b.x14, 1), l:'Drive in 14 Tagen'}, {v:pz(b.xv, 1), l:'Drive davor'}, {v:String(b.n14 | 0), l:'Sätze in 14 Tagen'}]]
+            : ['Die Sätze dahinter', [{v:String(b.dG | 0), l:'Sätze Revés'}, {v:String(b.aG | 0), l:'Sätze Drive'}]],
+          ligaband:b => b.jeMonat ? ['Die Monate', [{v:_ffZl(b.jeMonat), l:b.art === 'saetze' ? 'Sätze je Monat' : 'Games je Monat'},
+            {v:_ffZl(b.n), l:b.art === 'saetze' ? 'Sätze insgesamt' : 'Games insgesamt'}]] : null
+        }[ff.f];
+        // Die Hantel zeigt die Quoten nur als Punkte; ihr Blatt nennt sie je
+        // Spieler als Rangliste der vierzehn Tage, die Laufbahn daneben
+        // (`_spRangliste` [§C27]).
+        if(ff.f === 'hantel'){
+          const r = (ff.r || []).filter(x => pm[x[0]]);
+          return r.length ? `<div class="nd-section">Siegquote in 14 Tagen und in der Laufbahn davor</div>`
+            + _spRangliste(r.map(x => ({id:x[0], wert:x[2], zahl:x[2] + '\u00a0%', neben:x[1] + '\u00a0%'})),
+              {kopf:['14 Tage', 'davor'], max:100, hervor:r[0][0]}) : '';
+        }
+        // Die Reihe der Chronik: je Monat der Eintrag, der in der Zelle steht,
+        // der jüngste zuerst; ein Tippen öffnet ihn in seinem Monat.
+        if(ff.f === 'reihe'){
+          const z = (ff.z || []).filter(x => x[1] && x[1] !== '-' && x[3]).reverse();
+          return z.length ? `<div class="nd-section">Die Einträge</div>` + z.map(x => rcpZeileHtml({ic:x[2] || 'scroll', name:x[3],
+            sub:seasonLabel(x[0]), ton:CHRONIK_STUFE_TON[x[1]] || 'silver', attr:x[4] ? `data-disz="${esc(x[4] + '|' + x[0])}"` : ''})).join('') : '';
+        }
+        if(ff.f === 'marke' && ff.art === 'prestige') return pm[ff.p] ? `<div class="nd-section">Der Stand am Zeichen</div>` + _newsInsigniumBlock(ff.p) : '';
+        if(zahlen){
+          let z = null; try { z = zahlen(ff); } catch(e){ z = null; }
+          // Was Schlagzeile und Satz darüber schon sagen, steht hier nicht
+          // noch einmal (`_ndOben`).
+          const oben = ' ' + _ndOben + ' ';
+          const neu = z ? z[1].filter(c => oben.indexOf(' ' + _ndNormal(c.v) + ' ') < 0) : [];
+          return neu.length ? `<div class="nd-section">${esc(z[0])}</div>` + rcpZahlenHtml(neu) : '';
+        }
         // Vorher stand hier „Im Fokus: Stefan" — ein Wappen mit dem Namen, den
         // der Kopf zwei Zeilen darüber schon zeigt, und sonst NICHTS. Wer eine
         // Prestige-Karte öffnete, sah kein Zeichen, keine Leiter, keine Zahl.

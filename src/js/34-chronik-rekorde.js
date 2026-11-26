@@ -1059,17 +1059,6 @@ function _chronHolderNames(entry){
   return names.length > 1 ? names.slice(0, -1).join(', ') + ' & ' + names[names.length - 1] : names[0];
 }
 
-// Dieselben Namen, aber fuer einen Satz. Die Form mit „&" gehoert in die
-// Zelle des Rekorde-Reiters, wo sie schmal bleiben muss; im Fliesstext stand
-// damit „Martin & Julian haelt den Bestwert mit 84 %" — das Zeichen als
-// einziges im Satz, und dazu das Verb im Singular. Die Aufzaehlung fuer
-// Saetze hat die App schon [§C27], hier fehlte nur der Weg dorthin.
-function _chronHalterSatz(entry){
-  if(!entry) return '';
-  const names = (entry.pids || [entry.pid]).map(id => { const p = pmap()[id]; return p ? p.name : '?'; });
-  return _namenListe(names);
-}
-
 // Was fehlt einem Spieler ohne Rekord bis zum nächstgelegenen? Nur zählbare
 // Rekorde kommen infrage (`unit`) — und nichts Negatives: „noch drei
 // 0:10-Niederlagen" wäre ein Ziel, das niemand haben will, und „noch 5 %
@@ -1307,24 +1296,5 @@ function _stNahDef(sid, titleId){
   } catch(e){ raus = null; }
   _cache._stNah[titleId] = raus;
   return raus;
-}
-
-function seasonTitleRace(sid){
-  if(!sid) sid = currentSeason().id;
-  const t = seasonTitles(sid);
-  const C = _seasonTitleCtx(sid);
-  return SEASON_TITLES.map(def => {
-    const held = t.awarded.find(a => a.titleId === def.id);
-    if(held){
-      // Verfolger: der Zweitbeste dieses Eintrags. Früher war es der beste
-      // noch FREIE Spieler — „frei" gibt es nicht mehr, seit jeder Eintrag
-      // an seinen echten Halter geht [§C32].
-      const chase = def.pick(C, new Set(t.awarded.filter(a => a.titleId === def.id).map(a => a.pid)));
-      return {titleId:def.id, name:def.name, ic:def.ic, tone:def.tone, cond:def.cond,
-              pid:held.pid, ev:held.ev, chaser:chase || null};
-    }
-    return {titleId:def.id, name:def.name, ic:def.ic, tone:def.tone, cond:def.cond,
-            pid:null, ev:null, chaser:null};
-  });
 }
 

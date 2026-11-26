@@ -197,16 +197,6 @@ function _wurzelStapel(liste, breite){
   return summe;
 }
 
-function _wurzelZuwachs(werte, neuerWert, breite){
-  const summe = a => a.slice().sort((x, y) => y - x)
-    .reduce((n, x, i) => n + x / Math.sqrt(_wurzelStaffel(i + 1, breite)), 0);
-  return Math.max(0, summe((werte || []).concat([neuerWert])) - summe(werte || []));
-}
-
-// Wie nah ein Rekord sein muss, um noch als Ziel zu gelten: höchstens die
-// Hälfte des Bestwerts entfernt. Darüber ist der Hinweis entmutigend
-// statt hilfreich.
-const PRESTIGE_REICHWEITE = 0.5;
 
 // Die sieben Stufen. `min` ist die Schwelle, ab der die Stufe getragen wird.
 //
@@ -1214,109 +1204,6 @@ function _prestigeRunden(werte, ziel, schritt){
 //     Die nächsten Schritte werden GERECHNET, nicht behauptet: aus den
 //     eigenen Zahlen, mit der echten Distanz zum Bestwert bzw. zur
 //     Untergrenze, und mit dem Prestige, das dabei herausspringt.
-
-// Bis zu `n` erreichbare nächste Schritte, die günstigsten zuerst.
-function prestigeSchritte(pid, n){
-  n = n || 3;
-  const out = [];
-  const P = prestigeOf(pid);
-
-  // 1. Allzeitwertungen, die der Spieler noch nicht hält.
-  try {
-    const C = _chronicleCtx(), A = allChronicles(), p = C.P[pid];
-    if(p){
-      CHRONICLES.forEach(def => {
-        // ── Ein Ziel, das niemand haben will, ist kein Ziel ──────────
-        // Gefiltert wurde nur die Schattenseite, nicht die negative
-        // Fuegung. Damit stand „Alex kann ‚Die bitterste Pleite' holen"
-        // im Feed — die hoechste Siegchance, mit der je jemand verlor,
-        // als Aufgabe. `nextRecordFor` kennt die Regel seit jeher und
-        // nennt in seinem Kommentar genau diesen Fall [§C25].
-        // Der Katalog schreibt `negativ`, ein Rekord traegt es abgeleitet
-        // als `neg` — hier laeuft die Liste der Rekorde, nicht der Katalog.
-        if(def.art === 'schatten' || def.neg) return;
-        const halte = A.byId[def.id];
-        if(halte && halte.pids.includes(pid)) return;
-        let mein = null, ziel = null;
-        if(def.unit && def.raw){
-          mein = def.raw(p, C);
-          ziel = halte ? halte.val : (def.min || 0);
-        } else if(def.val){
-          mein = def.val(p, C);
-          ziel = halte ? halte.val : null;
-        }
-        if(mein == null || !isFinite(mein) || ziel == null || mein >= ziel) return;
-        const rel = (ziel - mein) / Math.max(1e-9, Math.abs(ziel));
-        const voll = _rekordBasis(def)
-          / Math.max(1, (halte ? halte.pids.length + 1 : 1));
-        const gewinn = _wurzelZuwachs(
-          P.quellen.filter(q => q.q === 'rekord').map(q => q.voll), voll, 3);
-        out.push({
-          art:'rekord', id:def.id, name:def.name, ic:def.ic, tone:def.tone, rel,
-          gewinn:Math.round(gewinn),
-          // Die Bedingung sagt, was zu tun ist. Sie stand hier nur im Fall
-          // „noch niemand haelt es"; sonst las die Karte sich als „Stefan
-          // haelt den Bestwert" und nannte weder die Aufgabe noch den
-          // Rueckstand. Der Gedankenstrich ist mit weg: er trennte einen
-          // Satz, der als zwei Saetze klarer ist [§C33].
-          cond: def.cond || '',
-          stand: halte ? _chronKurz(halte.ev) : '',
-          halter: halte ? _chronHalterSatz(halte) : '',
-          halterN: halte ? (halte.pids || []).length : 0,
-          // ── Der eigene Stand ist die Zahl, mit der man etwas anfangen
-          // kann ──────────────────────────────────────────────────────
-          // Die Karte nannte die Schwelle und den Bestwert des Halters —
-          // aber nicht, wo der Spieler selbst steht. „Martin haelt 84 %"
-          // sagt ohne die eigenen 71 % nichts darueber, wie weit es noch
-          // ist. Formatiert wird er wie der Bestwert, durch denselben
-          // Beleg des Katalogs: zwei Zahlen in zwei Einheiten waeren
-          // nicht vergleichbar.
-          mein: (function(){
-            try { return def.ev ? _chronKurz(def.ev(p, mein)) : ''; } catch(e){ return ''; }
-          })(),
-          txt: def.unit
-            ? `Noch ${Math.max(1, Math.ceil(ziel - mein))} ${def.unit}`
-              + (halte ? `. ${_chronHalterSatz(halte)} ${halte.pids.length > 1 ? 'halten' : 'hält'} ${Math.round(ziel)}` : '')
-            : (halte ? `${_chronHalterSatz(halte)} ${halte.pids.length > 1 ? 'halten' : 'hält'} den Bestwert mit ${_chronKurz(halte.ev)}`
-                     : def.cond)
-        });
-      });
-    }
-  } catch(e){ /* Kontext noch nicht da — dann eben ohne Rekorde */ }
-
-  // 2. Monatswertungen der laufenden Saison, die noch offen sind.
-  try {
-    const T = seasonTitles(currentSeason().id);
-    if(!T.awarded.some(a => a.pid === pid)){
-      seasonTitleRace(currentSeason().id).forEach(r => {
-        if(!r || r.pid === pid) return;
-        const d = DISZIPLINEN.find(x => x.id === r.id);
-        if(!d || d.art === 'schatten' || d.negativ) return;
-        out.push({
-          art:'monat', id:r.id, name:r.name || (d && d.name), ic:d.ic, tone:d.tone,
-          rel: 0.55,          // ein offener Monatseintrag ist immer „diesen Monat noch"
-          // Der Grundwert: was darüber kommt, hängt daran, wie weit die
-          // Schwelle am Ende überboten wird [§C39], und das steht noch aus.
-          gewinn: Math.round(_wurzelZuwachs(
-            P.quellen.filter(q => q.q === 'monat').map(q => q.voll),
-            chronikPunkte(r.id), 3)),
-          cond: (d.monat && d.monat.cond) || '',
-          stand: r.ev ? _chronKurz(r.ev) : '',
-          halter: r.pid ? pname(r.pid) : '',
-          txt: r.pid ? `${pname(r.pid)} führt mit ${_evSatz(r.ev) || (d.monat && d.monat.cond)}`
-                     : (d.monat && d.monat.cond) || ''
-        });
-      });
-    }
-  } catch(e){ /* dito */ }
-
-  // Ein Rekord, der weit weg ist, ist kein Schritt, sondern eine Absage.
-  // Wer wenig hält, bekommt sonst zwangsläufig die teuersten Ziele
-  // vorgeschlagen — es ist ja nichts Näheres da. Lieber gar nichts sagen.
-  return out.filter(x => x.gewinn > 0 && (x.art !== 'rekord' || x.rel <= PRESTIGE_REICHWEITE))
-    .sort((a, b) => a.rel - b.rel || b.gewinn - a.gewinn)
-    .slice(0, n);
-}
 
 // Die drei Klassen bleiben als schneller Vergleich nebeneinander. Die
 // vollstaendige Rechnung lebt aber in einem eigenen Blatt: Im Laufbahnbuch

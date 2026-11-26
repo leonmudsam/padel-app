@@ -194,6 +194,23 @@ function openNewsDetail(sid){
       sheetNav(() => { try { showLaufbahn(pid); } catch(e){} });
     };
   });
+  // Die Wege eines Fun Facts: das Duo über dem Feed, ein Reiter anstelle
+  // des Feeds. Der Einblick wird nach dem Wechsel gesetzt, weil der Wechsel
+  // ihn schließt (`_reiterSetzen`); gezeichnet wird erst im nächsten Bild.
+  nd.querySelectorAll('[data-ff-weg]').forEach(el => {
+    el.onclick = () => {
+      const [art, x, y] = String(el.dataset.ffWeg).split('|');
+      closeNewsDetail();
+      if(art === 'duo'){ sheetNav(() => { try { showTeam(x, y); } catch(e){} }); return; }
+      try {
+        closeSheet(true);
+        _reiterSetzen(x);
+        if(x === 'ranking') period = 'season';
+        if(x === 'awards') awView = y || 'awards';
+        else if(y) einblickOffen = y;
+      } catch(e){}
+    };
+  });
   nd.querySelectorAll('[data-chron]').forEach(el => {
     el.onclick = () => {
       const cid = el.dataset.chron;
@@ -208,8 +225,43 @@ function openNewsDetail(sid){
 // und die LETZTE Woche. Wer die Karte drei Tage später las, kam an die
 // Auswertung nicht mehr heran. Der Knopf öffnet den Rückblick IHRES Tages
 // oder IHRER Woche.
+// Ein Fun Fact führt zu dem Teil der App, von dem er erzählt [§C33]: zum
+// Profil, zur Laufbahn, zur Chronik, zum Duo, zur Seiten-Landkarte (der
+// Reiter mit aufgeklapptem Einblick) und zur Rangliste.
+// Höchstens zwei Knöpfe im Fuß des Blatts (`blattFussHtml`), der wichtigere
+// gefüllt. Vorher endete das Blatt beim Schließen, und wer wissen wollte,
+// wie die Landkarte aussieht, auf der die Karte einen Punkt zeigte, musste
+// sie selbst suchen.
+const _ND_FF_WEGE = {
+  aufwind:b => [['profil', b.p], ['reiter', 'ranking']],
+  erwartung:b => [['profil', b.p], ['reiter', 'ranking']],
+  hantel:b => [['profil', (b.r && b.r[0] || [])[0]], ['reiter', 'ranking']],
+  marke:b => [['profil', b.p], b.art === 'prestige' ? ['laufbahn', b.p] : null],
+  reihe:b => [['reiter', 'awards', 'chronik'], ['profil', b.p]],
+  // Das Duo und die Landkarte je mit einem Knopf: „Zum Netz der Duos" und
+  // „Zur Seiten-Landkarte" brachen neben einem zweiten auf 360 px in zwei
+  // Zeilen um, und das Gesicht im Bild öffnet das Profil ohnehin.
+  chemie:b => [['duo', b.a + '|' + b.b]],
+  landkarte:() => [['reiter', 'positions', 'rollen']],
+  ligaband:() => [['reiter', 'ranking']]
+};
 function _newsRueckblickKnopf(s){
   const d = (s && s.dataRef) || {};
+  if(d.type === 'ambient'){
+    const b = d.bild || {}, f = _ND_FF_WEGE[b.f], pm = pmap();
+    if(!f) return '';
+    const knopf = (w, i) => {
+      if(!w) return null;
+      const prim = i === 0;
+      if(w[0] === 'profil') return pm[w[1]] ? {label:'Zum Profil', ic:'user', prim, attr:`data-pid="${esc(w[1])}"`} : null;
+      if(w[0] === 'laufbahn') return pm[w[1]] ? {label:'Zur Laufbahn', ic:'leiterAuf', prim, attr:`data-laufbahn="${esc(w[1])}"`} : null;
+      if(w[0] === 'duo') return w[1].split('|').every(id => pm[id]) ? {label:'Zum Duo', ic:'duo', prim, attr:`data-ff-weg="${esc('duo|' + w[1])}"`} : null;
+      const ziel = {ranking:['Zur Rangliste', 'chartBar'], chronik:['Zur Chronik', 'scroll'],
+        rollen:['Zur Seiten-Landkarte', 'sideSwap']}[w[2] || w[1]];
+      return ziel ? {label:ziel[0], ic:ziel[1], prim, attr:`data-ff-weg="${esc(['reiter', w[1], w[2] || ''].join('|'))}"`} : null;
+    };
+    return blattFussHtml(f(b).map(knopf));
+  }
   if(d.type === 'karriereende' && d.pid && pmap()[d.pid])
     return `<button class="btn nd-rueck" type="button" data-rueckblick="${esc('abschied|' + d.pid)}">${svgI('hourglass')}Der ganze Abschied</button>`;
   const ziel = d.type === 'potd' && d.dayKey ? 'tag|' + d.dayKey
@@ -1728,6 +1780,10 @@ function _ndFaktBlatt(s){
   if(bild){
     const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
     const b = d.bild || {};
+    // Die acht Fragen [§C33] bringen nur ihre Bühne mit; die Zahlen darunter
+    // stehen in der Mitte ihres Typs (31a, `ambient`), die Knöpfe im Fuß
+    // (`_newsRueckblickKnopf`).
+    if(_ND_FF_WEGE[b.f]) return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>`, mitte:null};
     let mitte = '';
     if(d.type === 'dry_spell') mitte = ab('Der letzte Satz', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
     // Die Zeichnung trägt ihren Abschnitt selbst („Jeder Satz gegeneinander");

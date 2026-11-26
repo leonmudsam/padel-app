@@ -138,12 +138,21 @@ ok(voll != null && rand === voll,
 // Gemessen standen in der Kicker-Liga „Duell der Liga: Leon vs Maxi",
 // „Rekord im Fokus: …", „vor Maxi mit 218 Siege" und „Nummer 9 bei der
 // Siegquote" im Feed. Geprüft wird jede Vorlage an vielen Tagen.
+// Ein Fun Fact erzählt eine Entwicklung, keinen Einzeleintrag [§C33]: der
+// Pool trägt die acht Fragen, und jede muss an der Testliga ziehen. Dafür
+// trägt jeder Satz Elo und Erwartung, wie in der App (`exp_a`, `deltas`);
+// die Testliga lädt beides nicht mit.
 stand(Infinity, ms('2026-08-26', 21, 0));
+K(`(()=>{const h=new Map(simulateEloWithSliders(matches).history.map(x=>[x.matchId,x]));
+  matches.forEach(m=>{const x=h.get(m.id);m.deltas=x?x.deltas:{};m.exp_a=x?x.expA:.5;});invalidateCache();})();0`);
+const FF_FRAGEN = ['form_aufwind','form_erwartung','form_laufbahn','laufbahn_marke','chronik_reihe','duo_chemie','rolle_seite','liga_marke'];
 const ffs = J(`(()=>{const pm=pmap(), nameOf=pid=>(pm[pid]||{}).name||'?';
-  const falsch=[], gesehen=new Set();
-  for(let t=1;t<=40;t++){
+  const falsch=[], gesehen=new Set(), pool=new Set();
+  // Über die ganze Testliga, März bis August: „Über der Erwartung“ zieht
+  // nur an gut jedem sechsten Tag, die letzten zwei Monate allein trafen keinen.
+  for(let t=1;t<=90;t++){
     const now=new Date(${ms('2026-08-15', 15, 30)} - t*1.7*86400000); now.setHours(15,30,0,0);
-    _ambientTemplatePool(now, pm, nameOf).forEach(x=>{ let c=null; try{ c=x.make(_ambientRng(t)); }catch(e){ c=null; }
+    _ambientTemplatePool(now, pm, nameOf).forEach(x=>{ pool.add(x.key); let c=null; try{ c=x.make(_ambientRng(t)); }catch(e){ c=null; }
       if(!c) return; gesehen.add(x.key);
       const ti=String(c.title||''), de=String(c.desc||'');
       if(/^[^„"]*: /.test(ti)) falsch.push(x.key+' Titel mit Etikett: '+ti);
@@ -151,12 +160,39 @@ const ffs = J(`(()=>{const pm=pmap(), nameOf=pid=>(pm[pid]||{}).name||'?';
       if(/ vs\\.? /i.test(ti+' '+de)) falsch.push(x.key+' mit vs: '+ti);
       if(/\\bmit \\d+ (Siege|Niederlagen)\\b/.test(de)) falsch.push(x.key+' Dativ: '+de);
       if(de && !/[.)“]$/.test(de.trim())) falsch.push(x.key+' ohne Punkt: '+de);
-      if(x.key==='fun_random_stat' && !/Nummer [123] |führt/.test(ti+' '+de)) falsch.push(x.key+' nicht vorn: '+ti);
     });
   }
-  return {falsch:[...new Set(falsch)], n:gesehen.size};})()`);
-ok(ffs.n >= 25 && Array.isArray(ffs.falsch) && !ffs.falsch.length,
+  return {falsch:[...new Set(falsch)], n:gesehen.size, gesehen:[...gesehen], pool:[...pool]};})()`);
+ok(Array.isArray(ffs.pool) && ffs.pool.filter(k => !/^rueckblick_/.test(k)).sort().join() === FF_FRAGEN.slice().sort().join(),
+  `Der Pool der Fun Facts trägt genau die acht Fragen, dazu Halbzeit und Jahresrückblick (${(ffs.pool || []).join(', ')})`);
+ok(FF_FRAGEN.every(k => (ffs.gesehen || []).includes(k)),
+  `Jede der acht Fragen zieht an der Testliga (${FF_FRAGEN.filter(k => !(ffs.gesehen || []).includes(k)).join(', ') || 'alle'})`);
+ok(ffs.n >= 8 && Array.isArray(ffs.falsch) && !ffs.falsch.length,
   `Jeder Fun Fact spricht in ganzen Sätzen und nennt einen Platz nur auf dem Podest: ${(ffs.falsch || []).slice(0, 3).join(' · ') || ffs.fehler || ffs.n + ' Vorlagen'}`);
+
+// ── Keine These über dieselbe Person zweimal in 30 Tagen ────────────
+// Mit acht Fragen kommt dieselbe These eher wieder, und der letzte
+// Durchgang der Ziehung liess die Paar-Sperre fallen: dieselbe These über
+// dieselbe Person stand nach wenigen Tagen wieder da. Nachgespielt wird die
+// ganze Testliga Tag für Tag, mit dem Bestand der Tage davor.
+const thesen = J(`(()=>{const pm=pmap(), nameOf=id=>(pm[id]||{}).name||'?';
+  const bestand=[], wann={}, falsch=[]; let karten=0;
+  for(let t=new Date('2026-04-01T19:00:00').getTime(); t<=new Date('2026-08-15T19:00:00').getTime(); t+=86400000){
+    _cache._stories=bestand.map(s=>Object.assign({}, s));
+    let neu=[]; try{ neu=_buildAmbientStories(new Date(t), pm, nameOf) || []; }catch(e){ neu=[]; }
+    neu.forEach(x=>{
+      if(bestand.some(b=>b.id===x.id)) return;
+      karten++;
+      const d=x.dataRef||{}, pids=d.ambientPids||(d.ambientPid?[d.ambientPid]:['']), tag=Math.round(new Date(x.when).getTime()/864e5);
+      if(!/^rueckblick_/.test(d.sub)) pids.forEach(pid=>{ const k=d.sub+'|'+pid;
+        if(wann[k]!=null && tag-wann[k]<30) falsch.push(k.split('|')[0]+' '+((pm[pid]||{}).name||'')+' nach '+(tag-wann[k])+' Tagen'); wann[k]=tag; });
+      bestand.push({id:x.id, when:x.when, title:x.title, desc:x.desc, prio:20, cat:x.cat, ic:x.ic, dataRef:d});
+    });
+  }
+  _cache._stories=[];
+  return {karten, falsch};})()`);
+ok(thesen.karten >= 10 && Array.isArray(thesen.falsch) && !thesen.falsch.length,
+  `Keine These über dieselbe Person zweimal in 30 Tagen, auch wenn ein Slot dafür leer bleibt (${thesen.karten} Karten${(thesen.falsch || []).length ? ' — ' + thesen.falsch.slice(0, 3).join(' · ') : ''})`);
 
 // ── Die Halbzeit zeigt die beiden Seiten ────────────────────────────
 // Sie zeigte nur die Tafel der Monatschroniken, und ihr Blatt die letzten
