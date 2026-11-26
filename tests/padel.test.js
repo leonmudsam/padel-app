@@ -720,6 +720,17 @@ ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => 
     'Die Kapsel des Elo-Pegels misst Schrift und Abstand nicht in Container-Einheiten: ' + JSON.stringify(regeln.filter(r => /cq/.test(r))));
 }
 
+// Ein Rückblick mit festem Termin gilt nur an seinem Tag (`AMBIENT_TERMIN`):
+// die Halbzeit lag auch im gewöhnlichen Losverfahren, und am 26.11. stand
+// „Der November 2026 ist zur Hälfte gespielt" im Feed.
+{
+  const t = J(`[['ambient_2026-11-26_15','rueckblick_halbzeit'], ['ambient_2026-11-15_15','rueckblick_halbzeit'],
+    ['ambient_2027-03-02_15','rueckblick_jahr'], ['ambient_2027-01-01_15','rueckblick_jahr']]
+    .map(([id, sub]) => _storyAbgemeldet({id, dataRef:{type:'ambient', sub}}))`);
+  ok(t.join() === 'true,false,true,false',
+    'Halbzeit nur am 15., Jahresblick nur am 1. Januar, an jedem anderen Tag tritt die Karte zurück: ' + t.join());
+}
+
 // Der Anschluss läuft asynchron (Speichern); das Ergebnis erst danach.
 Promise.all([ANSCHLUSS, GERAET]).catch(e => ok(false, 'Anschluss abgebrochen: ' + (e && e.message))).then(() => {
   console.log(fails ? `\n${fails} von ${checks} CHECKS FEHLGESCHLAGEN` : `\nALLE ${checks} CHECKS BESTANDEN`);

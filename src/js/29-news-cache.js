@@ -188,12 +188,26 @@ function _storyWiderrufen(s){
 // (`dataRef.sub`). „Johannes im Aufschwung" stand als Bestwert der Liga im
 // Feed, nachdem es den Rekord nicht mehr gab.
 const AMBIENT_ABGEMELDET = ['personal_umsteiger', 'personal_aufschwung'];
+// Ein Rückblick mit festem Termin gilt nur an seinem Tag: die Halbzeit am
+// 15., der Jahresblick am 1. Januar. Sie lagen auch im gewöhnlichen
+// Losverfahren, und am 26.11. stand „Der November 2026 ist zur Hälfte
+// gespielt" im Feed. Abgemeldet an seiner Sorte und am Tag seines Slots,
+// wie eine gestrichene Karte: der Slot wird frei und bekommt einen anderen
+// Fun Fact.
+const AMBIENT_TERMIN = {
+  rueckblick_halbzeit: tag => tag.slice(8, 10) === '15',
+  rueckblick_jahr:     tag => tag.slice(5, 10) === '01-01',
+};
 function _storyAbgemeldet(s){
   const t = String((s && s.id) || '');
   for(let i = 0; i < STORY_ABGEMELDET.length; i++){
     if(t.indexOf(STORY_ABGEMELDET[i]) === 0) return true;
   }
   const sub = s && s.dataRef && s.dataRef.sub;
+  if(sub && AMBIENT_TERMIN[sub]){
+    const tag = /^ambient_(\d{4}-\d{2}-\d{2})_/.exec(t);
+    if(tag && !AMBIENT_TERMIN[sub](tag[1])) return true;
+  }
   return !!sub && AMBIENT_ABGEMELDET.indexOf(sub) >= 0;
 }
 

@@ -6930,7 +6930,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.26.8d309081';
+const BUILD_VERSION='2026.11.26.14c836a9';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -23516,12 +23516,20 @@ function _storyWiderrufen(s){
   return !p || !p.retired_at || ruhestandMs(p) !== Date.parse(d.retiredAt);
 }
 const AMBIENT_ABGEMELDET = ['personal_umsteiger', 'personal_aufschwung'];
+const AMBIENT_TERMIN = {
+  rueckblick_halbzeit: tag => tag.slice(8, 10) === '15',
+  rueckblick_jahr:     tag => tag.slice(5, 10) === '01-01',
+};
 function _storyAbgemeldet(s){
   const t = String((s && s.id) || '');
   for(let i = 0; i < STORY_ABGEMELDET.length; i++){
     if(t.indexOf(STORY_ABGEMELDET[i]) === 0) return true;
   }
   const sub = s && s.dataRef && s.dataRef.sub;
+  if(sub && AMBIENT_TERMIN[sub]){
+    const tag = /^ambient_(\d{4}-\d{2}-\d{2})_/.exec(t);
+    if(tag && !AMBIENT_TERMIN[sub](tag[1])) return true;
+  }
   return !!sub && AMBIENT_ABGEMELDET.indexOf(sub) >= 0;
 }
 
