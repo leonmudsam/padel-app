@@ -6930,7 +6930,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.26.e033f312';
+const BUILD_VERSION='2026.11.26.8d309081';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -13101,18 +13101,18 @@ function vPositions(){
 
 
 const AW_MIN = {
-  teamSpiele: 5,
-  teamEnge: 3,
-  teamUnter: 3,
-  teamPleiten: 5,
-  duell: 5,
-  spieler: 10,
-  tiebreaks: 3,
-  spielerSaldo: 10,
-  enge: 5,
-  favorit: 5,
-  unter: 3,
-  staerkster: 3,
+  teamSpiele: 3,
+  teamEnge: 2,
+  teamUnter: 2,
+  teamPleiten: 3,
+  duell: 3,
+  spieler: 5,
+  tiebreaks: 2,
+  spielerSaldo: 5,
+  enge: 3,
+  favorit: 3,
+  unter: 2,
+  staerkster: 2,
 };
 
 function awardRankings(period, sid){return getCachedAwardRankings(period, sid);}
@@ -15771,7 +15771,7 @@ const BG = {
   unschlagbar: 3,
   elo: [75, 150, 300],
 };
-const PERIODE_MIN_SIEGE = {tag:2, woche:5, monat:10};
+const PERIODE_MIN_SIEGE = {tag:2, woche:3, monat:6};
 const PERIODE_SAMMLER = {tag:3, woche:1};
 const WOCHE_MIN_SPIELTAGE = 2;
 function _wocheHatSpieltage(ms){
@@ -21406,7 +21406,7 @@ function _buildStories(){
     const pleiten = {}, duoPleiten = {}, letzterSieg = {}, duoSieg = {}, zuletzt = {};
     const vz = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(Math.round(v));
     const quote = (s, n) => Math.round(100 * s / Math.max(1, n));
-    const wochenErster = o => Object.keys(o).filter(id => o[id].s >= 5 && zeig(id))
+    const wochenErster = o => Object.keys(o).filter(id => o[id].s >= PERIODE_MIN_SIEGE.woche && zeig(id))
       .map(id => ({id, s:o[id].s, n:o[id].n, q:o[id].s / o[id].n}))
       .sort((a, b) => b.q - a.q || b.s - a.s)[0] || null;
     const freiMemo = new Map();

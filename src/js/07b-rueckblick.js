@@ -43,7 +43,7 @@ function showPotwRecap(opts){
     });
 
     // POTW ermitteln — gleiche Regel wie Achievement (countPeriodWins):
-    // Min 5 Siege in der Woche, höchste Winrate gewinnt.
+    // Ab PERIODE_MIN_SIEGE.woche Siegen in der Woche, höchste Winrate gewinnt.
     // Tiebreaker bei Gleichstand auf Winrate: mehr absolute Siege, dann mehr Elo-Delta.
     const candidates = _periodeRangliste(orderedMatchesForWeek, 'woche', true)
       .map(r => [r.id, ps[r.id], r.wr]);

@@ -34,9 +34,12 @@ Spielzeit, damit eine Stunde mit langen Sätzen so viel bewegt wie eine mit
 kurzen (bis 1 ein Zehntel, bis 2 ein Viertel, bis 3 40 %; bis 6 voll,
 je Game darüber +30 %, höchstens 150 %, `partieGewicht`) und nach der Deutlichkeit
 (`movMult`); wer einen Satz über sechs verliert, bekommt einen Ausgleich. Die Liga
-spielt etwa fünf Tage im Monat, ein Spieler kommt an einem Tag auf sechs
-bis zehn Sätze — alle Schwellen (Mindestzahlen, Serien, Fenster) sind
-darauf gesetzt, runde Zahlen, und stehen je System an einer Stelle: `BG`
+spielt etwa fünf Tage im Monat, ein Spieler kommt an einem Tag meist auf
+zwei bis drei Sätze, in einer Woche selten auf sechs bis acht. Die
+Quoten (Awards, Player of the Day, Week und Month) sind darauf gesetzt;
+eine Mindestzahl der Awards steigt nicht über fünf [§C37]. Alle Schwellen
+(Mindestzahlen, Serien, Fenster) sind runde Zahlen und stehen je System an
+einer Stelle: `BG`
 (Auszeichnungen), `AW_MIN` (Awards), `CHRONIK_MIN_SPIELE`/`ST_TEIL`/`ST_TAG`
 (Monatschronik), `CHRON_MIN_GAMES`/`RF` (Rekorde), `PERIODE_MIN_SIEGE`/`WOCHE_MIN_SPIELTAGE`,
 `FF_MIN` (Fun Facts).

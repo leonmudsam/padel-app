@@ -55,12 +55,15 @@ const BG = {
 };
 // Die Mindestzahl an Satzsiegen für den Spieler des Tages, der Woche und
 // des Monats [§7.3], und was der Award-Sammler davon in einer Saison
-// braucht. Ein Spieltag hat je Spieler sechs bis zehn Sätze: mit zwei
-// Siegen wäre schon ein einziges gewonnenes Match genug gewesen.
+// braucht. Ein Spieler kommt an einem Spieltag auf zwei bis drei Sätze, in
+// einer Woche mit zwei Spieltagen auf vier bis sechs, im Monat auf zehn bis
+// zwanzig. Die Woche verlangte fünf Siege und der Monat zehn, gesetzt für
+// sechs bis zehn Sätze am Tag: wer in der Woche vier von fünf Sätzen gewann,
+// war kein Player of the Week, und die Woche hatte oft keinen.
 // Der Spieler des Tages ab zwei gewonnenen Sätzen: an einem Tag mit drei
 // langen Sätzen (7:6, 7:5, 6:1) kam niemand auf drei, und der Tag hatte
 // keinen.
-const PERIODE_MIN_SIEGE = {tag:2, woche:5, monat:10};
+const PERIODE_MIN_SIEGE = {tag:2, woche:3, monat:6};
 const PERIODE_SAMMLER = {tag:3, woche:1};
 // Einen Player of the Week gibt es nur in einer Woche, in der die LIGA an
 // mindestens zwei Tagen gespielt hat, gleich wie viele Spieler dabei waren.
@@ -599,10 +602,10 @@ const _winnerCountsMemo = new WeakMap(); // msArray → { '<kind>_<curKey>': {pi
 // Wer einen Zeitraum gewinnt, an EINER Stelle. Die Regel stand viermal im
 // Code — hier, im Wochen- und im Tagesrückblick und im Feed —, und eine
 // Fassung verglich die Quote ohne die Toleranz der anderen.
-//   'tag'    mindestens 3 Siege; mehr Siege, dann mehr Elo am Tag
-//   'woche'  mindestens 5 Siege; höchste Quote (bis 0,001 gilt gleich),
-//            dann mehr Siege, dann mehr Elo
-//   'monat'  wie die Woche, mindestens 10 Siege
+//   'tag'    ab PERIODE_MIN_SIEGE.tag Siegen; mehr Siege, dann mehr Elo am Tag
+//   'woche'  ab PERIODE_MIN_SIEGE.woche Siegen; höchste Quote (bis 0,001
+//            gilt gleich), dann mehr Siege, dann mehr Elo
+//   'monat'  wie die Woche, ab PERIODE_MIN_SIEGE.monat Siegen
 // Liefert jeden, der die Mindestzahl erreicht, in dieser Reihenfolge, als
 // {id, wins, losses, eloDelta, wr}. Bei Gleichstand in allem bleibt die
 // Reihenfolge der ersten Partie, in der jemand auftaucht. `nurSichtbar`

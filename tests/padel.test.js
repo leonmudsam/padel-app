@@ -669,6 +669,37 @@ ok(bogen[0].sterne === 3 && bogen[0].zahl === null && bogen.slice(1).every(b => 
   ok(k.tag.length > 0 && Math.max(...k.tag) <= 3 && k.satz.every(t => !/\bab \d/.test(t)),
     'Tages- und Wochenkönig zählen ohne Mindestzahl, nach drei Spieltagen steht ein Tageskönig: ' + JSON.stringify(k));
 }
+// Die Quoten passen zu dem, was gespielt wird: an einem Spieltag zwei bis
+// drei Sätze, in einer Woche selten mehr als sechs bis acht. Die Woche
+// verlangte fünf Siege für den Player of the Week, die Awards zehn Sätze für
+// eine Quote — eine Woche mit zwei Spieltagen und fünf Sätzen, von denen p1
+// und p2 vier gewinnen, hatte weder einen Player of the Week noch eine Beste
+// Bilanz, einen Clutch-Player oder eine Schwächste Bilanz, weder in der
+// Woche noch im Monat.
+{
+  setNow(new Date(2026, 7, 10, 12, 0).getTime());
+  const q = J(`(()=>{const _m=matches,_p=players,_s=seasons;
+    players=['p1','p2','p3','p4'].map(id=>({id,name:id,hidden:false,elo:0,drive:.5}));seasons=[];
+    const mk=(id,tag,std,a,b)=>({id,a1:'p1',a2:'p2',b1:'p3',b2:'p4',a1_side:'reves',a2_side:'drive',b1_side:'reves',b2_side:'drive',
+      ...partieFelder([{a,b,art:'n'}]),deltas:a>b?{p1:5,p2:5,p3:-5,p4:-5}:{p1:-5,p2:-5,p3:5,p4:5},exp_a:.5,created_at:new Date(2026,7,tag,std).toISOString()});
+    matches=[mk('q1',4,18,6,4),mk('q2',4,19,6,4),mk('q3',4,20,4,6),mk('q4',6,18,6,4),mk('q5',6,19,6,3)];invalidateCache();
+    const wk=_wochenKey(matches[0].created_at);
+    const _ws=awWeekStart; awWeekStart=new Date(2026,7,3);
+    const woche=awardRankings('week'); awWeekStart=_ws;
+    const saison=awardRankings('season', currentSeason().id);
+    const hat=(R,k)=>awListe(k,R).length>0;
+    const r={potw:_periodWinnerMap(matches,'week')[wk]||null,
+      woche:['perfect','worstWr','clutch'].filter(k=>!hat(woche,k)),
+      saison:['perfect','worstWr','clutch','concreteWall','worstTeam'].filter(k=>!hat(saison,k)),
+      hoch:Object.keys(AW_MIN).filter(k=>AW_MIN[k]>5)};
+    matches=_m;players=_p;seasons=_s;invalidateCache();return r;})()`);
+  ok(q.potw === 'p1' || q.potw === 'p2',
+    'Vier Siege aus fünf Sätzen an zwei Spieltagen tragen den Player of the Week: ' + JSON.stringify(q.potw));
+  ok(!q.woche.length && !q.saison.length,
+    'Fünf Sätze tragen die Quoten-Awards in Woche und Saison, leer blieb: ' + JSON.stringify({woche: q.woche, saison: q.saison}));
+  ok(!q.hoch.length, 'Keine Mindestzahl der Awards über fünf: ' + JSON.stringify(q.hoch));
+  setNow(new Date(2026, 7, 26, 18, 40).getTime());
+}
 // Dieselbe Sache hat einen Namen: kein „Spieler des Tages" neben „Player of
 // the Day", kein „Duell" für Sätze gegeneinander — in keinem Text der App.
 {

@@ -13,26 +13,28 @@
 // der Juli ausgewählt ist. Ohne diesen Weg müsste jemand awSeasonId setzen,
 // rendern und zurücksetzen — und dabei die halbe Oberfläche mitverschieben.
 // ── Die Mindestzahlen ────────────────────────────────────────────────
-// Die Awards gibt es je Saison. Gezählt wird in Sätzen: ein Spieler kommt
-// im Monat auf dreißig bis sechzig, ein Duo auf zehn bis zwanzig, zwei Duos
-// gegeneinander auf ein, zwei Matches mit je zwei bis drei Sätzen. Die
-// Schwellen sind runde Zahlen in diesem Maß; vorher standen sie auf Partien
-// über mehrere Sätze, und ein einziges Match reichte für einen Schnitt.
+// Die Awards gibt es je Saison, und der Wochenrückblick fragt dieselbe
+// Rechnung für eine Woche. Gezählt wird in Sätzen: ein Spieler kommt an
+// einem Spieltag auf zwei bis drei, in einer Woche selten auf sechs bis
+// acht, im Monat auf zehn bis zwanzig; ein Duo auf ein paar gemeinsame.
+// Die Schwellen standen auf zehn Sätzen je Spieler, gesetzt für dreißig
+// bis sechzig im Monat: jede Quote blieb in einer Woche leer und in einem
+// Monat für die Hälfte der Liga. Keine steigt deshalb über fünf [§C37].
 // Sie stehen hier an EINER Stelle, damit sich das nicht wieder über die
 // Datei verteilt.
 const AW_MIN = {
-  teamSpiele: 5,     // Sätze eines Duos für einen Schnitt (Betonmauer, Käseteller, Bestes Team)
-  teamEnge: 3,       // knappe Sätze eines Duos (Glückspilze)
-  teamUnter: 3,      // Sätze eines Duos als Außenseiter (Giant Slayer)
-  teamPleiten: 5,    // verlorene Sätze eines Duos (Zirkus)
-  duell: 5,          // Sätze gegeneinander (Erzfeinde, Endgegner)
-  spieler: 10,       // Sätze eines Spielers, wenn ein Schnitt gebildet wird
-  tiebreaks: 3,      // Tiebreaks eines Spielers (Tiebreak-König, Tiebreak-Pech)
-  spielerSaldo: 10,  // Game-Saldo je Satz — ein einzelnes 6:0 verzerrt sonst zu stark
-  enge: 5,           // knappe Sätze eines Spielers (Clutch, Pechvogel)
-  favorit: 5,        // Sätze als Favorit (Favoriten-Versager)
-  unter: 3,          // Sätze als Außenseiter (Underdog-Held)
-  staerkster: 3,     // Sätze als Stärkster der vier (Leitwolf)
+  teamSpiele: 3,     // Sätze eines Duos für einen Schnitt (Betonmauer, Käseteller, Bestes Team)
+  teamEnge: 2,       // knappe Sätze eines Duos (Glückspilze)
+  teamUnter: 2,      // Sätze eines Duos als Außenseiter (Giant Slayer)
+  teamPleiten: 3,    // verlorene Sätze eines Duos (Zirkus)
+  duell: 3,          // Sätze gegeneinander (Erzfeinde, Endgegner)
+  spieler: 5,        // Sätze eines Spielers, wenn ein Schnitt gebildet wird
+  tiebreaks: 2,      // Tiebreaks eines Spielers (Tiebreak-König, Tiebreak-Pech)
+  spielerSaldo: 5,   // Game-Saldo je Satz — ein einzelnes 6:0 verzerrt sonst zu stark
+  enge: 3,           // knappe Sätze eines Spielers (Clutch, Pechvogel)
+  favorit: 3,        // Sätze als Favorit (Favoriten-Versager)
+  unter: 2,          // Sätze als Außenseiter (Underdog-Held)
+  staerkster: 2,     // Sätze als Stärkster der vier (Leitwolf)
 };
 
 function awardRankings(period, sid){return getCachedAwardRankings(period, sid);}

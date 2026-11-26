@@ -1048,8 +1048,11 @@ function _buildStories(){
     const pleiten = {}, duoPleiten = {}, letzterSieg = {}, duoSieg = {}, zuletzt = {};
     const vz = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(Math.round(v));
     const quote = (s, n) => Math.round(100 * s / Math.max(1, n));
-    // Die beste Siegquote der Woche ab fünf Siegen, bei Gleichstand mehr Siege.
-    const wochenErster = o => Object.keys(o).filter(id => o[id].s >= 5 && zeig(id))
+    // Die beste Siegquote der Woche, bei Gleichstand mehr Siege — ab der
+    // Mindestzahl des Player of the Week. Hier stand eine eigene Fünf: als
+    // die Woche drei Siege verlangte, meldete der Feed die Spitze einer
+    // Woche nicht, deren Player of the Week schon feststand.
+    const wochenErster = o => Object.keys(o).filter(id => o[id].s >= PERIODE_MIN_SIEGE.woche && zeig(id))
       .map(id => ({id, s:o[id].s, n:o[id].n, q:o[id].s / o[id].n}))
       .sort((a, b) => b.q - a.q || b.s - a.s)[0] || null;
     const freiMemo = new Map();
