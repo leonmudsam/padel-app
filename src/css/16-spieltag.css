@@ -1781,6 +1781,13 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-zw-m>span.ff-zw-p{display:flex;align-items:center;gap:6px}
   .nd-ff{padding:4px 0 2px}
   .nd-ff .ff{margin:0}
+  /* Der Satz eines Fun Facts steht im Blatt unter der Bühne [§C33]: zwei bis
+     drei Sätze, ein langer Absatz nicht unter 13 px. */
+  .nd-desc.nd-ff-erkl{font-size:13.5px;line-height:1.5;margin:-4px 0 12px}
+  /* Ein neues Duo: zwei Namen im Kopf. Im Blatt auf 288 px liefen sie unter
+     die Zahl der Sätze; sie brechen deshalb zwischen den Namen um, nie in
+     einem Namen. */
+  .ff-duoneu .ff-kopf-p{flex-shrink:1}
 
   /* ── Die acht Fragen [§C33] ────────────────────────────────────────
      Ein Kopf je Bild: links wer, rechts die Zahl, um die es geht. Grün
@@ -1887,7 +1894,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-rh-c.mit[data-kl="legendaer"]>i{background:rgba(var(--ttr),.3);box-shadow:inset 0 0 0 1px rgba(var(--ttr),.8),0 0 8px rgba(var(--ttr),.35)}
   .ff-rh-c.ohne>i::after{content:'';width:40%;height:1.5px;border-radius:1px;background:var(--faint)}
   .ff-rh-c>i svg{width:62%;height:62%}
-  .ff-rh-c small{font-size:8.5px;line-height:1}
+  .ff-rh-c small{font-size:9px;line-height:1}
   .ff-rh-c.serie::before{content:'';position:absolute;left:-1.5px;right:-1.5px;bottom:-5px;height:2px;background:rgb(var(--story-rgb));opacity:.8}
   .ff-rh-j{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-family:'Sometype Mono',monospace;font-size:9px;color:var(--faint)}
 
@@ -1900,7 +1907,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-ch-l{fill:none;stroke:var(--acid);stroke-linecap:round;vector-effect:non-scaling-stroke}
   .ff-ch-gl{fill:none;stroke:rgba(228,242,74,.16);stroke-width:9;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .ff-ch-m b{position:relative;font-family:'Archivo Black',sans-serif;font-size:19px;line-height:1;color:var(--acid);margin-top:12px}
-  .ff-ch-m small{position:relative;font-size:8.5px;margin-top:3px;line-height:1.2;max-width:100%}
+  .ff-ch-m small{position:relative;font-size:9px;margin-top:3px;line-height:1.2;max-width:100%}
   .ff-ch-ew{margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
   .ff.gross .ff-ch-p .rcp-av{--rav:44px}
 
@@ -1920,7 +1927,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-lk-p.li{flex-direction:row-reverse;transform:translate(calc(-100% + 13px),-50%)}
   .ff-lk-p .ff-nm{font-size:11px;white-space:nowrap;text-shadow:0 1px 3px var(--surface)}
   .ff-lk-p .rcp-av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px rgb(var(--story-rgb));border-radius:50%}
-  .ff-lk-f{position:absolute;left:7px;font-family:'Sometype Mono',monospace;font-size:8.5px;color:var(--muted);pointer-events:none}
+  .ff-lk-f{position:absolute;left:7px;font-family:'Sometype Mono',monospace;font-size:9px;color:var(--muted);pointer-events:none}
   .ff-lk-f.o{top:5px}
   .ff-lk-f.u{bottom:5px}
   .ff-lk-x{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:5px;
@@ -1942,7 +1949,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-lb-c i{width:100%;border-radius:3px 3px 0 0;background:var(--surface3)}
   .ff-lb-c.drueber i{background:rgba(var(--story-rgb),.45)}
   .ff-lb-c.hl i{background:rgb(var(--story-rgb));box-shadow:0 0 8px rgba(var(--story-rgb),.45)}
-  .ff-lb-c small{position:absolute;top:100%;margin-top:2px;font-size:8.5px;line-height:1}
+  .ff-lb-c small{position:absolute;top:100%;margin-top:2px;font-size:9px;line-height:1}
   .ff-lb-c.hl small{color:var(--ink)}
   .ff.gross .ff-lb{height:84px}
 
@@ -1983,7 +1990,8 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-kn-b u{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--ink2);opacity:.6}
   .ff-kn>b{font-family:'Sometype Mono',monospace;font-size:12px;color:var(--ink);white-space:nowrap}
   .ff-kn>b small{font-size:9.5px}
-  /* Auf der Karte stehen die Zahlen im Satz darunter; der Balken braucht die Breite. */
+  /* Auf der Karte trägt die Zeile nur die Quote, die Sätze dahinter stehen
+     im Blatt; der Balken braucht die Breite. */
   .ff:not(.gross) .ff-kn>b small{display:none}
   /* Das Podest der Duos: zwei Gesichter je Stufe, die Namen untereinander. */
   .ff-pd-duo .ff-duo-k .av{--av:24px}
@@ -1992,7 +2000,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-pd-n{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;max-width:100%}
   .ff-pd-n .ff-nm{font-size:11px;line-height:1.15}
   .ff-pd-s:not(.p1) .ff-pd-n .ff-nm{color:var(--muted);font-weight:500}
-  .ff-pd-s.neu .ff-nm::after{content:'neu';margin-left:4px;font-family:'Sometype Mono',monospace;font-size:8.5px;
+  .ff-pd-s.neu .ff-nm::after{content:'neu';margin-left:4px;font-family:'Sometype Mono',monospace;font-size:9px;
     font-weight:700;letter-spacing:.06em;color:var(--acid)}
   /* Sätze gegeneinander: der Abstand als Linie um die Mitte. */
   .ff-rv{margin-top:8px}
@@ -2013,7 +2021,7 @@ circle.sp-uo-w{fill:var(--acid)}circle.sp-uo-l{fill:rgba(240,86,106,.8)}
   .ff-wl-p.eins .rcp-av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px rgb(var(--story-rgb));border-radius:50%}
   .ff-wl-p.re .ff-nm{color:var(--muted);font-weight:500}
   .ff-kopf>small{align-self:flex-end;font-size:9px}
-  .ff-wl-x{display:grid;margin-top:3px;font-size:8.5px;color:var(--muted)}
+  .ff-wl-x{display:grid;margin-top:3px;font-size:9px;color:var(--muted)}
   .ff-wl-x span:last-child{color:var(--ink2)}
   /* Die Tabelle des Monats. */
   .ff-mt{display:flex;flex-direction:column;gap:2px}

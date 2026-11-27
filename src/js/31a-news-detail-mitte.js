@@ -589,7 +589,9 @@ function _ndMitteRoh(s){
         if(ff.f === 'ewig'){
           const r = (ff.r || []).filter(x => pm[x[0]]);
           return liste('Das Podest', r.map(x => ({id:x[0], wert:x[1], zahl:String(x[1]), neben:x[2] ? x[2] + '.' : 'neu'})),
-            {kopf:['Karriere-Elo', 'vor 14 Tagen'], max:Math.max(1, ...r.map(x => x[1])), hervor:(r[0] || [])[0]});
+            // „vor 14 Tagen" als Kopf der Spalte trug die Tabelle auf 288 px
+            // über den Rand des Blatts.
+            {kopf:['Karriere-Elo', 'vorher'], max:Math.max(1, ...r.map(x => x[1])), hervor:(r[0] || [])[0]});
         }
         if(ff.f === 'wettlauf'){
           const r = (ff.r || []).filter(x => pm[x[0]] && Array.isArray(x[1]));
@@ -637,9 +639,13 @@ function _ndMitteRoh(s){
         if(ff.f === 'marke' && ff.art === 'prestige') return pm[ff.p] ? `<div class="nd-section">Der Stand am Zeichen</div>` + _newsInsigniumBlock(ff.p) : '';
         if(zahlen){
           let z = null; try { z = zahlen(ff); } catch(e){ z = null; }
-          // Was Schlagzeile und Satz darüber schon sagen, steht hier nicht
-          // noch einmal (`_ndOben`).
-          const oben = ' ' + _ndOben + ' ';
+          // Was Schlagzeile, Bild und Satz darüber schon sagen, steht hier
+          // nicht noch einmal (`_ndOben`) [§C33]. Das Bild zählt mit, seit
+          // der Satz nicht mehr auf der Karte steht: was die Bühne als Zahl
+          // trägt, wiederholt keine Zeile darunter.
+          let bildText = '';
+          try { bildText = _ndNormal(String(_faktBild(s, true) || '').replace(/<svg[\s\S]*?<\/svg>/g, ' ')); } catch(e){ bildText = ''; }
+          const oben = ' ' + _ndOben + ' ' + bildText + ' ';
           const neu = z ? z[1].filter(c => oben.indexOf(' ' + _ndNormal(c.v) + ' ') < 0) : [];
           return neu.length ? `<div class="nd-section">${esc(z[0])}</div>` + rcpZahlenHtml(neu) : '';
         }

@@ -575,9 +575,12 @@ function _ambientTemplatePool(now, pm, nameOf){
     const N = nameOf(x.pid), seitErst = x.first > ab90;
     return {cat:'personal', ic:'trendUp', prio:5,
       title:`${N} holt in 14 Tagen ${Math.round(x.d14)} Elo`,
-      desc:`${N} gewann ${x.w14} von ${x.n14} Sätzen. `
-        + (seitErst ? `Davor kamen seit dem ersten Satz am ${datumFmt(x.first, 'tmx')} ${vz(x.d90)} Elo zusammen.`
-                    : `In den drei Monaten davor kamen ${vz(x.d90)} Elo zusammen.`),
+      // Die Karte trägt Schlagzeile und Bild, das Blatt diesen Satz [§C33]:
+      // er sagt, was gezählt ist, nicht noch einmal, wie viel. Unter der
+      // Karte standen Siege, Sätze und die Elo davor, und dieselben Zahlen
+      // zeigte das Bild daneben ein zweites Mal.
+      desc:`Gezählt ist die Elo, die jeder Satz gebracht hat, nicht der Stand der Rangliste. `
+        + `So zählt auch ein Zeitraum über den Monatswechsel ganz, obwohl die Elo jeden Monat neu beginnt.`,
       dataRef:{ambientPid:x.pid, bild:{f:'aufwind', p:x.pid, v:v.map(y => Math.round(y)), ab:abIdx,
         plus:Math.round(x.d14), n:x.n14, w:x.w14, vor:Math.round(x.d90), nVor:seitErst ? x.nVor : x.n90, seit:seitErst ? x.first : null}}};
   }});
@@ -596,8 +599,14 @@ function _ambientTemplatePool(now, pm, nameOf){
       // Erwartete Siege ganz, wie man sie sagt: „erwartet waren 10,3"
       // und „gewinnt mehr, als die Elo erwarten lässt" las niemand beim
       // ersten Mal [§C33].
-      title:`${N} gewinnt ${Math.round(x.w14 - x.e14)} Sätze mehr als erwartet`,
-      desc:`${x.w14} Siege aus ${x.n14} Sätzen in 14 Tagen. Nach Elo waren ${Math.round(x.e14)} zu erwarten.`,
+      // Die Zahl im Titel ist die Differenz der beiden Zahlen im Bild: aus
+      // „14 von 17, erwartet 10" las man 4, der Titel sagte aus 10,3 aber 3.
+      // Der Zeitraum steht im Blatt: „in 14 Tagen" im Titel stand über
+      // „14 von 17" im Bild, zwei Vierzehnen mit zwei Bedeutungen.
+      title:`${N} gewinnt ${x.w14 - Math.round(x.e14)} Sätze mehr als erwartet`,
+      // Der Zeitraum als Datum: als „14 Tage" stand er einmal neben „14 von
+      // 17" im Bild, und die Zahl der Karte schien sich zu wiederholen.
+      desc:`Gezählt sind die Sätze seit dem ${tagImSatz(ab)} Erwartet ist, was die Elo beider Duos vor jedem Satz voraussagt.`,
       dataRef:{ambientPid:x.pid, bild:{f:'erwartung', p:x.pid, n:x.n14, s:x.w14, e:+x.e14.toFixed(1),
         g:x.gt14, gf:x.gf14, ge:+x.ge14.toFixed(1),
         l:+(x.perf14 / x.n14 * 100).toFixed(1)}}};
@@ -615,8 +624,11 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!l.length || l[0].d < FF_MIN.abweichung) return null;
     const x = l[0].y, N = nameOf(x.pid);
     return {cat:'personal', ic:'chartBar', prio:5,
-      title:`${N} gewinnt in 14 Tagen ${pct(x.w14 / x.n14)}\u00a0% der Sätze`,
-      desc:`Das sind ${x.w14} von ${x.n14}. Davor gewann ${N} ${pct(x.wVor / x.nVor)}\u00a0% von ${x.nVor} Sätzen.`,
+      // „zuletzt" wie die Legende im Bild: „in 14 Tagen" stand dort über
+      // einer Zeile „+14" eines anderen Spielers [§C33].
+      title:`${N} gewinnt zuletzt ${pct(x.w14 / x.n14)}\u00a0% der Sätze`,
+      desc:`Verglichen werden die Sätze seit dem ${tagImSatz(ab)} mit der Siegquote der ganzen Laufbahn davor. `
+        + `Gezählt wird nur, wer zulegt.`,
       dataRef:{ambientPid:x.pid, bild:{f:'hantel',
         r:l.slice(0, 3).map(z => [z.y.pid, pct(z.y.wVor / z.y.nVor), pct(z.y.w14 / z.y.n14), z.y.n14, z.y.nVor])}}};
   }});
@@ -659,11 +671,16 @@ function _ambientTemplatePool(now, pm, nameOf){
     kand.sort((a, b) => a.r - b.r || (a.x.pid < b.x.pid ? -1 : 1));
     const k = kand[Math.floor(rng() * Math.min(3, kand.length))] || kand[0];
     const N = nameOf(k.x.pid), rest = Math.round(k.ziel - k.ist);
+    // Was fehlt, zeigt der Ring; der Satz im Blatt sagt, was als Marke gilt
+    // [§C33]. „Es fehlen 15 Prestige" stand unter „noch 15 · Prestige bis
+    // zum Reif III" und „185 von 200".
+    const inSicht = 'In Sicht heißt, ein Spieltag kann die Marke holen.';
     const satz = {
-      saetze:[`${N} steht vor dem ${k.ziel}. Satz`, `Es ${rest === 1 ? 'fehlt ein Satz' : 'fehlen ' + rest + ' Sätze'}. Der erste war am ${tagImSatz(k.x.first)}`],
-      siege:[`${N} steht vor dem ${k.ziel}. Sieg`, `Es ${rest === 1 ? 'fehlt ein Sieg' : 'fehlen ' + rest + ' Siege'}. ${k.ist} sind es aus ${k.x.n} Sätzen.`],
-      games:[`${N} steht vor dem ${k.ziel}. gewonnenen Game`, `Es ${rest === 1 ? 'fehlt ein Game' : 'fehlen ' + rest + ' Games'}. ${k.ist} sind es aus ${k.x.n} Sätzen.`],
-      prestige:[`${N} steht kurz vor dem ${k.name}`, `Es fehlen ${rest} Prestige. ${k.stufe ? 'Dann trägt das Wappen die nächste Stufe der Leiter.' : 'Dann steigt das Wappen um einen Grad.'}`]
+      saetze:[`${N} steht vor dem ${k.ziel}. Satz`, `${inSicht} Der erste Satz war am ${tagImSatz(k.x.first)}`],
+      siege:[`${N} steht vor dem ${k.ziel}. Sieg`, `${inSicht} Ein Sieg ist ein gewonnener Satz, gezählt über die ganze Laufbahn.`],
+      games:[`${N} steht vor dem ${k.ziel}. gewonnenen Game`, `${inSicht} Ein Satz bringt ${N} im Schnitt ${komma(k.x.gf / Math.max(1, k.x.n))} Games.`],
+      prestige:[`${N} steht kurz vor dem ${k.name}`, `Prestige kommt aus Auszeichnungen, Monatschroniken und Rekorden. `
+        + (k.stufe ? 'An der Schwelle trägt das Wappen die nächste Stufe der Leiter.' : 'An der Schwelle steigt das Wappen um einen Grad.')]
     }[k.art];
     return {cat:'personal', ic:k.art === 'prestige' ? 'leiterAuf' : 'peak', prio:5,
       title:satz[0], desc:satz[1],
@@ -713,14 +730,16 @@ function _ambientTemplatePool(now, pm, nameOf){
     const c = l[Math.floor(rng() * l.length)] || l[0], N = nameOf(c.pid);
     const zweiter = c.art === 'meiste' ? meiste[1] : null;
     const zuletzt = c.z.slice().reverse().find(x => x[1] && x[1] !== '-');
+    // Die Monate zeigt der Streifen, die Einträge das Blatt darunter; der
+    // Satz sagt, was zählt [§C33].
+    const zaehlt = 'Gezählt wird jeder geschlossene Monat mit einem Eintrag, der keine Schattenseite ist.';
     const text = {
-      serie:[`${N} steht seit ${c.k} Monaten ohne Pause in der Chronik`,
-        `Seit ${seasonLabel(c.z[c.z.length - c.k][0])} hat ${N} jeden Monat einen Eintrag. Zuletzt kam „${zuletzt[3]}“ dazu.`],
+      serie:[`${N} steht seit ${c.k} Monaten ohne Pause in der Chronik`, `${zaehlt} Zuletzt kam „${zuletzt[3]}“ dazu.`],
       neu:[`${N} steht zum ersten Mal in der Chronik`,
-        `Im ${seasonLabel(c.letzte[0])} kam „${c.letzte[3]}“ dazu.`
-          + (c.vorher ? ` ${N} spielte schon ${wort(c.vorher, 'einen Monat', 'Monate')} davor ohne Eintrag.` : '')],
+        `${zaehlt} ` + (c.vorher ? `${N} spielte schon ${wort(c.vorher, 'einen Monat', 'Monate')} davor ohne Eintrag.`
+          : `Im ${monatWort(c.letzte[0])} kam „${c.letzte[3]}“ dazu.`)],
       meiste:[`${N} steht in ${c.k} Monaten in der Chronik`,
-        zweiter ? `Das sind die meisten der Liga. ${nameOf(zweiter.pid)} folgt mit ${zweiter.k}.` : 'Das sind die meisten der Liga.']
+        `${zaehlt} ` + (zweiter ? `Das sind die meisten der Liga, ${nameOf(zweiter.pid)} folgt mit ${zweiter.k}.` : 'Das sind die meisten der Liga.')]
     }[c.art];
     return {cat:'history', ic:'scroll', prio:5, title:text[0], desc:text[1],
       dataRef:{ambientPid:c.pid, bild:{f:'reihe', p:c.pid, art:c.art, n:c.k,
@@ -754,11 +773,11 @@ function _ambientTemplatePool(now, pm, nameOf){
     const A = nameOf(x.a), Bn = nameOf(x.b);
     return {cat:'team', ic:'duo', prio:5,
       title:`${A} und ${Bn} gewinnen zusammen ${mehr(x)} Sätze mehr als erwartet`,
-      // Die Zahlen stehen in der Bahn darunter; der Satz sagt, woher die
+      // Die Zahlen stehen in der Bahn; der Satz im Blatt sagt, woher die
       // Erwartung kommt. „Die Elo der vier ließ 43,7 erwarten" warf die
       // Frage auf, was die Gegner damit zu tun haben.
       desc:`Erwartet ist, was die Elo beider Duos vor jedem Satz voraussagt.`
-        + (spitze ? ' Kein anderes Duo liegt so weit vorn.' : ''),
+        + (spitze ? ' Kein anderes Duo gewinnt so viel mehr als erwartet.' : ' Gezählt sind alle gemeinsamen Sätze.'),
       dataRef:{ambientPids:[x.a, x.b], pairKind:'team', bild:{f:'chemie', a:x.a, b:x.b, g:x.z.g, w:x.z.w,
         e:+x.z.e.toFixed(1), v:Math.round(x.v * 100)}}};
   }});
@@ -794,8 +813,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!schwach) return null;
     const L = schwach.L, N = nameOf(schwach.pid), meistDrive = L.anteil >= .5;
     return {cat:'personal', ic:'sideSwap', prio:4, title:`${N} spielt meist auf der schwächeren Seite`,
-      desc:`${N} spielt ${pct(meistDrive ? L.anteil : 1 - L.anteil)}\u00a0% der Sätze auf der ${seite(meistDrive)}-Seite. `
-        + `Auf der ${seite(!meistDrive)}-Seite gewinnt ${N} mehr Sätze als erwartet.`,
+      desc:`Besser heißt, auf dieser Seite gewinnt ${N} mehr Sätze und Games als erwartet. `
+        + `${N} spielt ${pct(meistDrive ? L.anteil : 1 - L.anteil)}\u00a0% der Sätze auf der ${seite(meistDrive)}-Seite.`,
       dataRef:{ambientPid:schwach.pid, bild:{f:'landkarte', p:schwach.pid, art:'schwach', x:+L.anteil.toFixed(3),
         y:+(L.rA - L.rD).toFixed(4), aG:L.aG, dG:L.dG, S:+S.toFixed(4), o:andere.filter(o => o[0] !== schwach.pid).map(o => [o[1], o[2]])}}};
   }});
@@ -830,15 +849,20 @@ function _ambientTemplatePool(now, pm, nameOf){
     const mitNamen = sieger.length && sieger.every(aktiv);
     const M = tausender(String(r.marke)), wo = tagImSatz(new Date(L2.saetze[0].t));
     const schnitt = komma(L2.games / L2.n);
+    // Was fehlt oder wie weit die Liga ist, steht im Bild; der Satz im
+    // Blatt sagt, was gezählt wird [§C33].
+    const seit = `seit dem ersten Satz am ${wo}`;
     const text = r.art === 'saetze'
       ? (r.erreicht
-        ? [`Die Liga hat ihren ${M}. Satz gespielt`, mitNamen
-            ? `Am ${tagImSatz(r.s.m.created_at)} gewannen ihn ${_namenListe(sieger.map(nameOf))} mit ${standFuer(r.s.m)}.`
-            : `Gespielt wurde er am ${tagImSatz(r.s.m.created_at)}`]
-        : [`Die Liga steht vor dem ${M}. Satz`, `Es ${r.marke - r.ist === 1 ? 'fehlt ein Satz' : 'fehlen ' + (r.marke - r.ist) + ' Sätze'}. Der erste war am ${wo}`])
+        // Erst der Satz der Marke, dann die Zählung: hinter „Gezählt wird
+        // jeder Satz …" bezog sich „ihn" auf jeden Satz.
+        ? [`Die Liga hat ihren ${M}. Satz gespielt`, (mitNamen
+            ? `Gewonnen haben ihn ${_namenListe(sieger.map(nameOf))} mit ${standFuer(r.s.m)} am ${tagImSatz(r.s.m.created_at)}`
+            : `Gespielt wurde er am ${tagImSatz(r.s.m.created_at)}`) + ` Gezählt wird jeder Satz der Liga ${seit}`]
+        : [`Die Liga steht vor dem ${M}. Satz`, `Gezählt wird jeder Satz der Liga ${seit} Im Schnitt sind es ${tausender(String(Math.round(r.ist / Object.keys(L2.monate).length)))} Sätze im Monat.`])
       : (r.erreicht
         ? [`Die Liga hat ${M} Games gespielt`, `Die Marke fiel am ${tagImSatz(r.s.m.created_at)} Ein Satz hat im Schnitt ${schnitt} Games.`]
-        : [`Die Liga steht vor dem ${M}. Game`, `Es fehlen ${r.marke - r.ist} Games. Ein Satz hat im Schnitt ${schnitt} Games.`]);
+        : [`Die Liga steht vor dem ${M}. Game`, `Gezählt wird jedes Game der Liga ${seit} Ein Satz hat im Schnitt ${schnitt} Games.`]);
     return {cat:'history', ic:'padelBall', prio:6, title:text[0], desc:tausender(text[1]),
       dataRef:{ambientPids:mitNamen ? sieger : [], bild:{f:'ligaband', art:r.art, m:r.marke, n:r.ist, erreicht:r.erreicht,
         mon:mon.map(k => [k, L2.monate[k][r.art === 'saetze' ? 'n' : 'games']]), hl, sieger:mitNamen ? sieger : [],
@@ -874,7 +898,6 @@ function _ambientTemplatePool(now, pm, nameOf){
   // August 2026" stand zweimal in einem Satz von zwölf Wörtern.
   const monatWort = sid => sid.slice(0, 4) === String(now.getFullYear()) ? seasonLabel(sid).replace(/\s*\d{4}$/, '') : seasonLabel(sid);
   const MON = monatWort(sidJetzt);
-  const ordnung = ['zweite', 'dritte', 'vierte', 'fünfte'];
 
   // ── 9. Die Serie: wer der eigenen Bestmarke nahekommt ──────────────
   // Eine laufende Serie meldet die Karte des Satzes, mit dem sie wächst.
@@ -888,15 +911,17 @@ function _ambientTemplatePool(now, pm, nameOf){
       .sort((a, b) => (a.bestVor - a.lauf) - (b.bestVor - b.lauf) || b.lauf - a.lauf || (a.pid < b.pid ? -1 : 1));
     const x = l[0];
     if(!x) return null;
-    const N = nameOf(x.pid), k = x.lauf, rest = x.bestVor - k, seit = tagImSatz(x.laufAb);
+    const N = nameOf(x.pid), k = x.lauf, rest = x.bestVor - k;
     const liga = Math.max(...alle.map(y => Math.max(y.bestVor, y.lauf)));
+    // Seit wann und wie lang die Serie ist, zeigt das Bild; der Satz im
+    // Blatt sagt, was eine Serie ist [§C33]. Die Serie der Liga steht in
+    // den Zahlen darunter.
+    const serieIst = 'Eine Serie sind gewonnene Sätze in Folge, über alle Spieltage hinweg.';
     const text = rest < 0
-      ? [`${N} gewinnt ${k} Sätze in Folge, so viele wie nie`, `Seit dem ${seit} ging kein Satz verloren. Die beste Serie davor waren ${x.bestVor}.`]
+      ? [`${N} gewinnt ${k} Sätze in Folge, so viele wie nie`, `${serieIst} Jeder weitere Sieg verlängert den Bestwert.`]
       : rest === 0
-        ? [`${N} gewinnt ${k} Sätze in Folge und erreicht die eigene Bestmarke`, `Seit dem ${seit} ging kein Satz verloren. Der nächste Sieg wäre ein neuer Bestwert.`]
-        : [`${N} braucht noch ${rest === 1 ? 'einen Sieg' : rest + ' Siege'} zur eigenen Bestmarke`, `${N} gewann seit dem ${seit} ${k} Sätze in Folge. Die beste Serie bisher sind ${x.bestVor}.`];
-    // Die Serie der Liga steht im Blatt: als dritter Satz war der Text
-    // länger als die Aussage [§C33].
+        ? [`${N} gewinnt ${k} Sätze in Folge und erreicht die eigene Bestmarke`, `${serieIst} Der nächste Sieg wäre ein neuer Bestwert.`]
+        : [`${N} braucht noch ${rest === 1 ? 'einen Sieg' : rest + ' Siege'} zur eigenen Bestmarke`, `${serieIst} Die Bestmarke ist die längste Serie der eigenen Laufbahn.`];
     return {cat:'personal', ic:'flame', prio:5, title:text[0], desc:text[1],
       dataRef:{ambientPid:x.pid, bild:{f:'serie', p:x.pid, k, best:x.bestVor, liga, ab:x.laufAb, n:x.n, w:x.w}}};
   }});
@@ -913,7 +938,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     const N = nameOf(x.pid), k = x.wenden.length;
     return {cat:'personal', ic:'comeback', prio:5,
       title:`${N} dreht ${k} Matches nach verlorenem ersten Satz`,
-      desc:`${N} gewann in den letzten 30 Tagen ${x.begW} von ${x.beg} Matches. Kein anderer Spieler drehte so viele.`,
+      desc:`Gedreht heißt, der erste Satz eines Matches ging verloren und das Match wurde trotzdem gewonnen. `
+        + `Gezählt sind die letzten 30 Tage, und kein anderer Spieler drehte so viele.`,
       dataRef:{ambientPid:x.pid, bild:{f:'wende', p:x.pid, k, beg:x.beg, begW:x.begW,
         l:x.wenden.slice(-4).map(w => [w.t, w.saetze])}}};
   }});
@@ -928,7 +954,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!l.length) return null;
     const x = l[0].x, N = nameOf(x.pid);
     return {cat:'personal', ic:'target', prio:4, title:`${N} gewinnt die knappen Sätze`,
-      desc:`${N} gewann ${x.kw} von ${x.kn} knappen Sätzen. Von den übrigen gewann ${N} ${pct(x.ow / x.on)}\u00a0%.`,
+      desc:`Knapp ist ein Satz mit höchstens zwei Games Abstand oder einer aus dem Tiebreak. `
+        + `Verglichen wird mit allen übrigen Sätzen der Laufbahn.`,
       dataRef:{ambientPid:x.pid, bild:{f:'knapp', p:x.pid, kn:x.kn, kw:x.kw, on:x.on, ow:x.ow}}};
   }});
 
@@ -952,7 +979,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     const N = nameOf(x.pid), S = o.side === 'drive' ? 'Drive' : 'Revés';
     return {cat:'personal', ic:o.side === 'drive' ? 'posDrive' : 'posReves', prio:5,
       title:`${N} führt die Rangliste der ${S}-Seite an`,
-      desc:`${N} gewann dort ${x.w} von ${x.g} Sätzen.` + (alt && alt !== x.pid && aktiv(alt) ? ` Vor 14 Tagen stand ${nameOf(alt)} vorn.` : ''),
+      desc:`Die Rangliste einer Seite wertet Siegquote und Leistung nur in den Sätzen auf dieser Seite.`
+        + (alt && alt !== x.pid && aktiv(alt) ? ` Vor 14 Tagen stand ${nameOf(alt)} vorn.` : ` ${N} gewann dort ${x.w} von ${x.g} Sätzen.`),
       dataRef:{ambientPid:x.pid, bild:{f:'seite', s:o.side, r:o.r.slice(0, 3).map(z => [z.pid, Math.round(z.score * 100), z.w, z.g])}}};
   }});
 
@@ -972,8 +1000,10 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(r.length < 3 || r[0].g < FF_MIN.duoRang) return null;
     const x = r[0], alt = rang(true)[0], A = nameOf(x.a), Bn = nameOf(x.b);
     return {cat:'team', ic:'duo', prio:5, title:`${A} und ${Bn} sind das erfolgreichste Duo der Liga`,
-      desc:`Zusammen gewannen sie ${x.w} von ${x.g} Sätzen.`
-        + (alt && alt.k !== x.k ? ` Vor 14 Tagen lagen ${nameOf(alt.a)} und ${nameOf(alt.b)} vorn.` : ''),
+      desc:`Gewertet wird wie in der Liste der Duos, zuerst nach Siegquote, dann nach Games je Satz.`
+        // „9 von 10 Sätzen" stand unter „90 %" im Podest: dieselbe Aussage
+        // in zweiter Form [§C33].
+        + (alt && alt.k !== x.k ? ` Vor 14 Tagen lagen ${nameOf(alt.a)} und ${nameOf(alt.b)} vorn.` : ` Ein Duo zählt ab ${DUO_MIN} gemeinsamen Sätzen.`),
       dataRef:{ambientPids:[x.a, x.b], pairKind:'team', bild:{f:'duos',
         r:r.slice(0, 3).map(z => [z.a, z.b, pct(z.w / z.g), z.w, z.g])}}};
   }});
@@ -989,7 +1019,7 @@ function _ambientTemplatePool(now, pm, nameOf){
     const A = nameOf(o.p[0]), Bn = nameOf(o.p[1]), z = o.z;
     const wochen = Array.from({length:10}, (_, i) => z.t.filter(t => t <= jetzt - (9 - i) * 7 * TAG && t > jetzt - (10 - i) * 7 * TAG).length);
     return {cat:'team', ic:'duo', prio:5, title:`${A} und ${Bn} bilden ein neues Duo`,
-      desc:`Sie spielten in 14 Tagen ${z.n14} Sätze zusammen und gewannen ${z.w14 === 1 ? 'einen' : z.w14}.`
+      desc:`Als neu gilt ein Duo, das in den letzten 14 Tagen an mehreren Spieltagen zusammen stand.`
         + (z.nVor ? ` Davor spielten sie einen einzigen Satz zusammen.` : ' Davor spielten sie nie zusammen.'),
       dataRef:{ambientPids:o.p, pairKind:'team', bild:{f:'duoneu', a:o.p[0], b:o.p[1], v:wochen, n:z.n14, w:z.w14}}};
   }});
@@ -1014,10 +1044,13 @@ function _ambientTemplatePool(now, pm, nameOf){
     const wv = Math.max(o.wa, o.wb), wh = Math.min(o.wa, o.wb), letzte = o.folge[o.folge.length - 1];
     const A = nameOf(vorn), Bn = nameOf(hinten);
     return {cat:'team', ic:'swords', prio:5,
-      title:wv === wh ? `${A} und ${Bn} stehen gegeneinander bei ${wv}:${wh} Sätzen`
-        : `${A} führt gegen ${Bn} knapp mit ${wv}:${wh} Sätzen`,
-      desc:`Zuletzt gewann ${nameOf(letzte.s)} am ${tagImSatz(letzte.m.created_at)} mit ${standFuer(letzte.m)}.`
-        + (l[0] === o ? ' Kein anderes Paar stand sich so oft gegenüber.' : ''),
+      // Den Stand zeigt das Tauziehen im Bild; im Titel stand er ein
+      // zweites Mal („bei 10:10 Sätzen" über „10 | 10") [§C33].
+      title:wv === wh ? `${A} und ${Bn} liegen in den Sätzen gegeneinander gleichauf`
+        : `${A} führt in den Sätzen gegen ${Bn} knapp`,
+      desc:`Gezählt wird jeder Satz gegeneinander, mit welchem Partner auch immer.`
+        + (l[0] === o ? ' Kein anderes Paar stand sich so oft gegenüber.'
+          : ` Zuletzt gewann ${nameOf(letzte.s)} am ${tagImSatz(letzte.m.created_at)} mit ${standFuer(letzte.m)}.`),
       dataRef:{ambientPids:[vorn, hinten], pairKind:'duell', bild:{f:'rivalen', art:'gleich', a:vorn, b:hinten, wa:wv, wb:wh, v:verlauf(o, vorn)}}};
   }});
 
@@ -1040,8 +1073,9 @@ function _ambientTemplatePool(now, pm, nameOf){
     const o = z.o, X = z.hinten, Y = X === o.a ? o.b : o.a, xv = X === o.a ? z.va : z.vb, yv = X === o.a ? z.vb : z.va;
     const N = nameOf(X), M = nameOf(Y);
     return {cat:'team', ic:'swords', prio:5,
-      title:`${N} gewinnt ${z.k} der letzten ${L} Sätze gegen ${M}`,
-      desc:`Davor stand es ${yv}:${xv} für ${M}.`,
+      // „gewinnt 6 der letzten 6" las sich wie ein Rechenfehler.
+      title:z.k === L ? `${N} gewinnt die letzten ${L} Sätze gegen ${M}` : `${N} gewinnt ${z.k} der letzten ${L} Sätze gegen ${M}`,
+      desc:`Gezählt wird jeder Satz gegeneinander, mit welchem Partner auch immer. Davor stand es ${yv}:${xv} für ${M}.`,
       dataRef:{ambientPids:[X, Y], pairKind:'duell', bild:{f:'rivalen', art:'wende', a:X, b:Y,
         wa:o.folge.filter(f => f.s === X).length, wb:o.folge.filter(f => f.s === Y).length, v:verlauf(o, X), l:Math.min(L, o.folge.length)}}};
   }});
@@ -1060,18 +1094,18 @@ function _ambientTemplatePool(now, pm, nameOf){
     const top = jetztR.slice(0, 3), alt = vorR.slice(0, 3).map(z => z.pid);
     const neu = top.find(z => alt.indexOf(z.pid) < 0);
     const E = z => Math.round(z.e);
+    // Die Karriere-Elo steht auf dem Podest im Bild; der Satz im Blatt sagt,
+    // wie sie entsteht und was sich bewegt hat [§C33].
+    const ist = 'Die Karriere-Elo ist der Schnitt aller Monatsstände, gewichtet nach Sätzen.';
     let x = top[0], text;
     if(alt[0] !== top[0].pid)
-      text = [`${nameOf(x.pid)} übernimmt die Spitze der Ewigen Tafel`,
-        `${nameOf(x.pid)} hat ${E(x)} Karriere-Elo. Vor 14 Tagen führte ${nameOf(alt[0])}.`];
+      text = [`${nameOf(x.pid)} übernimmt die Spitze der Ewigen Tafel`, `${ist} Vor 14 Tagen führte ${nameOf(alt[0])}.`];
     else if(neu){
       x = neu; const raus = alt.find(pid => !top.some(z => z.pid === pid));
-      text = [`${nameOf(x.pid)} steht neu auf dem Podest der Ewigen Tafel`,
-        `${nameOf(x.pid)} hat ${E(x)} Karriere-Elo und steht auf Platz ${top.indexOf(x) + 1}. Vor 14 Tagen stand noch ${nameOf(raus)} auf dem Podest.`];
+      text = [`${nameOf(x.pid)} steht neu auf dem Podest der Ewigen Tafel`, `${ist} Vor 14 Tagen stand noch ${nameOf(raus)} auf dem Podest.`];
     } else if(E(x) === E(top[1])) return null;
     else
-      text = [`${nameOf(x.pid)} führt die Ewige Tafel an`,
-        `${nameOf(x.pid)} hat ${E(x)} Karriere-Elo, ${E(x) - E(top[1])} mehr als ${nameOf(top[1].pid)}.`];
+      text = [`${nameOf(x.pid)} führt die Ewige Tafel an`, `${ist} Auch vor 14 Tagen stand ${nameOf(x.pid)} vorn.`];
     return {cat:'personal', ic:'crown', prio:5, title:text[0], desc:text[1],
       dataRef:{ambientPid:x.pid, bild:{f:'ewig', r:top.map(z => [z.pid, E(z), alt.indexOf(z.pid) < 0 ? 0 : alt.indexOf(z.pid) + 1])}}};
   }});
@@ -1101,8 +1135,9 @@ function _ambientTemplatePool(now, pm, nameOf){
     const mon = Object.keys(basis().liga.monate).sort().slice(-12);
     const reihe = x => { let v = 0; return mon.map(mk => (v = x.mon[mk] ? x.mon[mk][{w:'w', n:'n', gf:'g'}[c.k]] : v)); };
     return {cat:'personal', ic:'chartBar', prio:5, title,
-      desc:(c.gap === 0 ? `Beide haben ${c.x[c.k]}.` : `Es steht ${c.x[c.k]} zu ${c.y[c.k]}.`)
-        + (c.x[c.k14] || c.y[c.k14] ? ` In 14 Tagen kamen bei ${N} ${c.x[c.k14]} dazu, bei ${M} ${c.y[c.k14]}.` : ''),
+      // Den Stand tragen Kopf und Linie im Bild; im Satz stand er noch einmal.
+      desc:`Gezählt wird die ganze Laufbahn bis zum Tag der Karte.`
+        + (c.x[c.k14] || c.y[c.k14] ? ` In 14 Tagen kamen bei ${N} ${c.x[c.k14]} dazu, bei ${M} ${c.y[c.k14]}.` : ' In den letzten 14 Tagen kam bei beiden nichts dazu.'),
       dataRef:{ambientPids:[c.x.pid, c.y.pid], bild:{f:'wettlauf', art:c.art, mon, r:[[c.x.pid, reihe(c.x)], [c.y.pid, reihe(c.y)]]}}};
   }});
 
@@ -1116,7 +1151,9 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(r.length < 3) return null;
     const N = nameOf(r[0][0]);
     return {cat:'personal', ic:'leiterAuf', prio:5, title:`${N} führt die Prestige-Rangliste an`,
-      desc:`${N} hat ${r[0][1]} Prestige, ${r[0][1] - r[1][1]} mehr als ${nameOf(r[1][0])}.`,
+      // Kein Abstand im Satz: er traf die Ziffern der Plätze auf dem Podest
+      // („3 mehr" über Platz 3), und beide Stände stehen im Bild.
+      desc:`Prestige kommt aus Auszeichnungen, Monatschroniken und Rekorden. Mit jeder Schwelle steigt das Wappen auf der Leiter.`,
       dataRef:{ambientPid:r[0][0], prestige:true, bild:{f:'prestige', r:r.slice(0, 3)}}};
   }});
 
@@ -1132,10 +1169,17 @@ function _ambientTemplatePool(now, pm, nameOf){
     const x = r[0], N = nameOf(x.pid), alt = w[0], gap = x.elo - r[1].elo;
     if(monatsTag > 15 && (!alt || alt.pid === x.pid)) return null;
     const altGap = alt && alt.pid === x.pid && w[1] && w[1].pid === r[1].pid ? alt.elo - w[1].elo : null;
-    const desc = alt && alt.pid !== x.pid ? `Vor einer Woche stand ${nameOf(alt.pid)} vorn.`
-      : altGap != null && altGap !== gap ? `${nameOf(r[1].pid)} liegt ${gap} Elo dahinter. Vor einer Woche waren es ${altGap}.`
-      : `${nameOf(r[1].pid)} folgt mit ${r[1].elo} Elo.`;
-    return {cat:'season', ic:'chartBar', prio:5, title:`${N} führt den ${MON} mit ${x.elo} Elo an`, desc,
+    // Die Elo jedes Spielers steht in der Tabelle im Bild; der Titel nennt
+    // den Vorsprung, den sie nicht zeigt, statt die Zahl der ersten Zeile
+    // ein zweites Mal [§C33].
+    const wechsel = alt && alt.pid !== x.pid;
+    const desc = `Die Elo beginnt jeden Monat neu, die Tabelle zählt nur die Sätze des Monats. `
+      + (wechsel ? `Vor einer Woche stand ${nameOf(alt.pid)} vorn.`
+        : altGap != null && altGap !== gap ? `Vor einer Woche betrug der Vorsprung ${altGap} Elo.`
+        : `Verglichen wird mit dem Stand vor einer Woche.`);
+    const title = wechsel ? `${N} übernimmt im ${MON} die Spitze`
+      : gap > 0 ? `${N} führt den ${MON} mit ${gap} Elo Vorsprung an` : `${N} führt den ${MON} an`;
+    return {cat:'season', ic:'chartBar', prio:5, title, desc,
       dataRef:{ambientPid:x.pid, bild:{f:'monat', sid:sidJetzt, r:r.slice(0, 5).map((z, i) => {
         const j = w.findIndex(y => y.pid === z.pid); return [z.pid, z.elo, j < 0 ? null : j - i]; })}}};
   }});
@@ -1157,12 +1201,16 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!c) return null;
     const N = nameOf(c.z.pid), V = monatWort(sid0);
     const beide = r.filter(z => r0.some(y => y.pid === z.pid));
-    return {cat:'season', ic:'trendUp', prio:5, title:`${N} verbessert sich von Platz ${c.i0} im ${V} auf Platz ${c.i}`,
+    // Beide Plätze stehen an den Enden der Linie im Bild; der Titel nennt
+    // den Sprung, den sie zeigt, statt sie ein zweites Mal [§C33].
+    const sprung = c.i0 - c.i;
+    return {cat:'season', ic:'trendUp', prio:5, title:`${N} verbessert sich im ${MON} um ${sprung} Plätze`,
       // Die Quote nur, wenn sie sich bewegt hat; sonst die Elo, die den
       // Platz macht: „42 % im Mai, 42 % im April" erklärte nichts.
-      desc:Math.abs(c.z.w / c.z.n - c.z0.w / c.z0.n) >= .10
-        ? `Im ${MON} gewann ${N} ${pct(c.z.w / c.z.n)}\u00a0% der Sätze, im ${V} ${pct(c.z0.w / c.z0.n)}\u00a0%.`
-        : `Im ${MON} hat ${N} ${c.z.elo} Elo. Der ${V} endete bei ${c.z0.elo}.`,
+      desc:`Verglichen wird der Platz in der Tabelle des Monats mit dem im ${V}. `
+        + (Math.abs(c.z.w / c.z.n - c.z0.w / c.z0.n) >= .10
+          ? `Im ${MON} gewann ${N} ${pct(c.z.w / c.z.n)}\u00a0% der Sätze, im ${V} ${pct(c.z0.w / c.z0.n)}\u00a0%.`
+          : `Der ${V} endete für ${N} bei ${c.z0.elo} Elo, jetzt sind es ${c.z.elo}.`),
       dataRef:{ambientPid:c.z.pid, bild:{f:'vormonat', p:c.z.pid, v:sid0, m:sidJetzt,
         r:beide.map(z => [z.pid, platz0(z.pid), r.indexOf(z) + 1])}}};
   }});
@@ -1183,11 +1231,13 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(d[i] < FF_MIN.ergebnisPlus) return null;
     // „Jeder dritte" nur, wenn es einer von dreien ist (bis zwei Punkte
     // daneben), sonst der Anteil: 29 % als „jeder vierte" war geschönt.
-    const q = jetztE[i] / n, k = Math.round(1 / q), E = FF_SAETZE[i];
-    const bruch = k >= 2 && k <= 5 && Math.abs(q - 1 / k) <= .02;
+    // Den Anteil zeigt die Säule im Bild; der Titel sagt, was auffällt, und
+    // nannte die Zahl über der Säule vorher ein zweites Mal [§C33].
+    const E = FF_SAETZE[i];
     return {cat:'history', ic:'padelBall', prio:4,
-      title:bruch ? `Im ${MON} endet jeder ${ordnung[k - 2]} Satz ${E}` : `Im ${MON} enden ${pct(q)}\u00a0% der Sätze ${E}`,
-      desc:`Das sind ${jetztE[i]} von ${n} Sätzen. In den Monaten davor waren es ${pct(vor[i] / nVor)}\u00a0%.`,
+      title:`Im ${MON} enden mehr Sätze ${E} als sonst`,
+      desc:`Verglichen wird mit allen Monaten davor, ohne Match-Tiebreak und offene Sätze. `
+        + `Im ${MON} sind es ${jetztE[i]} von ${n} Sätzen, davor waren es ${pct(vor[i] / nVor)}\u00a0%.`,
       dataRef:{ambientPids:[], bild:{f:'ergebnisse', mk, je:jetztE, vor:vor.map(x => Math.round(x / nVor * 1000)), hl:i}}};
   }});
 
@@ -1205,9 +1255,12 @@ function _ambientTemplatePool(now, pm, nameOf){
     const hoeher = davor.filter(k => je(k) >= je(mk)).pop();
     const zeig = mon.filter(k => k <= mk).slice(-12);
     return {cat:'history', ic:'calendar', prio:4,
-      title:`Die Liga spielt im ${MON} ${komma(je(mk))} Sätze je Spieltag`,
-      desc:hoeher ? `So viele waren es zuletzt im ${monatWort(hoeher)}.`
-        : `So viele waren es in keinem Monat davor.`,
+      // Die Zahl steht über der Säule im Bild; der Titel sagt, was sie
+      // bedeutet [§C33].
+      title:hoeher ? `Im ${MON} spielt die Liga mehr Sätze je Spieltag als zuletzt`
+        : `Im ${MON} spielt die Liga so viele Sätze je Spieltag wie nie`,
+      desc:`Ein Spieltag ist jeder Tag mit mindestens einem Satz. `
+        + (hoeher ? `Mehr waren es zuletzt im ${monatWort(hoeher)}.` : `Verglichen wird mit jedem Monat davor.`),
       dataRef:{ambientPids:[], bild:{f:'tempo', mon:zeig.map(k => [k, Math.round(je(k) * 10)]), hl:zeig.length - 1}}};
   }});
 
@@ -1227,8 +1280,8 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(r.length < 2 || r[0].n < FF_MIN.awMonat || r[1].n === r[0].n) return null;
     const N = nameOf(r[0].pid);
     return {cat:'personal', ic:'medal', prio:5, title:`${N} holt im ${MON} die meisten Auszeichnungen`,
-      desc:`${N} hat ${r[0].n}, ${nameOf(r[1].pid)} folgt mit ${r[1].n}.`
-        + (r[0].l ? ` ${r[0].l === 1 ? 'Eine davon ist' : r[0].l + ' davon sind'} legendär.` : ''),
+      desc:`Gezählt wird jede Auszeichnung des Monats bis zum Tag der Karte. `
+        + (r[0].l ? `${r[0].l === 1 ? 'Eine davon ist' : r[0].l + ' davon sind'} legendär.` : 'Die Schattenseite zählt nicht mit.'),
       dataRef:{ambientPid:r[0].pid, bild:{f:'awmonat', r:r.slice(0, 3).map(z => [z.pid, z.n, z.l, z.r])}}};
   }});
 
@@ -1259,8 +1312,10 @@ function _ambientTemplatePool(now, pm, nameOf){
     if(!c) return null;
     const N = nameOf(c.pid), r = c.r, halter = ((A.byId[r.id] || {}).pids || []).filter(aktiv);
     return {cat:'history', ic:r.ic || 'trophy', prio:5, title:`${N} steht kurz vor dem Rekord „${r.name}“`,
-      desc:halter.length ? `${N} kommt auf ${r.have} ${r.unit}. Den Rekord ${halter.length === 1 ? 'hält' : 'halten'} ${_namenListe(halter.map(nameOf))} mit ${r.target}.`
-        : `${N} kommt auf ${r.have} ${r.unit}. Der Rekord beginnt bei ${r.target}.`,
+      // Beide Stände stehen im Bild; der Satz im Blatt sagt, was fehlt und
+      // was „kurz vor" heißt [§C33].
+      desc:`Es ${r.need === 1 ? 'fehlt' : 'fehlen'} noch ${r.need} ${r.unit}. `
+        + (halter.length ? `Kurz vor heißt, der Rest ist höchstens ${pct(FF_MIN.rekordNah)}\u00a0% des Rekords.` : `Der Rekord zählt ab ${r.target}.`),
       // Ohne `chronicle`: damit zeichnete das Blatt den Spieler als Halter
       // des Rekords, den er erst holen will.
       dataRef:{ambientPid:c.pid, bild:{f:'rekordziel', p:c.pid, id:r.id, ic:r.ic || 'trophy', name:r.name,
@@ -1301,7 +1356,9 @@ function _ambientTemplatePool(now, pm, nameOf){
       // Der Monat des Slots, nicht der des Lesers: ein nachgetragener 15.
       // erzählte sonst vom Monat, in dem die App geöffnet wurde.
       try { sid = seasonOf(now).id; T2 = seasonTitles(sid); } catch(e){ return null; }
-      if(!T2) return null;
+      // Ohne Satz im Monat ist nichts zur Hälfte gespielt: „0 Sätze an 0
+      // Spieltagen" stand sonst da, wenn die Liga nur im Vormonat spielte.
+      if(!T2 || !T2.matches) return null;
       const offen = SEASON_TITLES.length - T2.awarded.length;
       const fuehrend = T2.champ && pm[T2.champ.pid] ? T2.champ : null;
       // Je Seite die Sätze und Siege des Monats bis zum Slot, aus der
@@ -1319,22 +1376,18 @@ function _ambientTemplatePool(now, pm, nameOf){
         .sort((x, y) => (o[y].w / o[y].g) - (o[x].w / o[x].g) || o[y].g - o[x].g || nameOf(x).localeCompare(nameOf(y), 'de'))
         .slice(0, 3).map(pid => [pid, o[pid].w, o[pid].g]);
       const reves = drei(je.reves), drive = drei(je.drive);
-      const q = x => Math.round(x[1] / x[2] * 100);
       let tab = [];
       try { tab = saisonRang(sid).filter(e => pm[e.id]).slice(0, 5).map(e => [e.id, Math.round(e.elo), e.wins + e.losses]); } catch(e){ tab = []; }
       return { cat:'season', ic:'stopwatch', prio:6,
         title:`Der ${monatWort(sid)} ist zur Hälfte gespielt`,
-        // Kurz genug für die Karte: mit den Sätzen des Führenden, den
-        // vergebenen Chroniken und „Die zweite Monatshälfte entscheidet" war
-        // der Satz auf 288 px abgeschnitten. Die Chroniken stehen im Blatt,
-        // im Satz nur, wenn die Karte sie statt der Seiten zeigt. Vor „%" ein
-        // fester Abstand, sonst stand es allein am Anfang einer Zeile.
-        // Zwei Sätze, nicht drei: Menge und Spitze in einem, die Seiten im
-        // zweiten [§C33].
-        desc: `${T2.matches} Sätze an ${T2.days} Spieltagen` + (fuehrend ? `, ${nameOf(fuehrend.pid)} führt mit ${fuehrend.elo} Elo. ` : '. ')
+        // Der Satz steht im Blatt, nicht auf der Karte [§C33]. Er nannte die
+        // besten Quoten beider Seiten, die das Bild darüber schon zeigt; jetzt
+        // nennt er Menge und Spitze des Monats, die das Bild nicht zeigt, und
+        // wer auf eine Seite kommt. Zwei Sätze, nicht drei.
+        desc: `${T2.matches} Sätze an ${wort(T2.days, 'einem Spieltag', 'Spieltagen')}` + (fuehrend ? `, ${nameOf(fuehrend.pid)} führt mit ${fuehrend.elo} Elo. ` : '. ')
           + (reves.length && drive.length
-            ? `Auf Revés gewinnt ${nameOf(reves[0][0])} ${q(reves[0])} %, auf Drive ${nameOf(drive[0][0])} ${q(drive[0])} %.`
-            : `${T2.awarded.length} von ${SEASON_TITLES.length} Monatschroniken sind vergeben.`),
+            ? `Je Seite stehen die drei mit der besten Siegquote, ab ${HALBZEIT_MIN_SAETZE} Sätzen dort.`
+            : `Die Monatschroniken stehen erst fest, wenn der Monat endet.`),
         vv:String(offen), vl:'noch offen',
         dataRef:{ ambientPid: fuehrend ? fuehrend.pid : null, seasonTable:sid,
           bild:reves.length && drive.length
@@ -1364,8 +1417,10 @@ function _ambientTemplatePool(now, pm, nameOf){
       return { cat:'history', ic:'calendar', prio:7,
         // Ein Hauptsatz statt „2026 in Zahlen", darunter höchstens zwei
         // Sätze: vorher standen dort vier, einer davon „1527 Punkte, Zierkranz."
-        title:`${imJahr.length} Sätze spielte die Liga im Jahr ${jahr}`,
-        desc: `${tage} Spieltage mit ${tore} Games.`
+        // Die Zahl der Sätze steht groß links auf der Karte; der Titel nennt
+        // sie nicht ein zweites Mal [§C33].
+        title:`Die Liga spielte ${jahr} an ${tage} Spieltagen`,
+        desc: `Dabei fielen ${tore} Games.`
           + (bester ? ` ${nameOf(bester)} holte ${zaehler[bester]} von ${meister.length} Meistertiteln.`
             : spitze ? ` Im Prestige liegt ${nameOf(spitze)} vorn.` : ''),
         vv:String(imJahr.length), vl:'Sätze',

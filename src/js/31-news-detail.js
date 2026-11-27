@@ -79,6 +79,10 @@ function openNewsDetail(sid){
   if(body.indexOf('nd-mo') >= 0) lead = lead.split(/(?<=\.)\s+/)
     .filter(x => !/(Einträge? (gehen|geht|stehen|steht)|^Vorn steh)/.test(x)).join(' ');
   try { if(_newsSorte(s) === 'spiel') lead = _newsSpielSatz(lead, SP_ZEIGT_ALLES); } catch(e){}
+  // Ein Fun Fact erklärt sich unter seinem Bild [§C33]: die Karte trägt nur
+  // Schlagzeile und Bild, das Blatt darunter den Satz, was gezählt ist
+  // (`_ndFaktBlatt`). Über der Bühne stünde er vor dem, was er erklärt.
+  if((s.dataRef || {}).type === 'ambient' && body.indexOf('nd-ff-erkl') >= 0) lead = '';
   const nd = document.getElementById('nd');
   const bg = document.getElementById('ndBg');
   if(!nd || !bg) return;
@@ -1807,6 +1811,11 @@ function _ndMarkenBlatt(s){
 // um Prestige geht, sonst die letzten zehn Partien bis zum Tag der Karte.
 function _ndFaktBlatt(s){
   const d = s.dataRef || {}, pm = pmap(), pid = d.ambientPid;
+  // Der Satz eines Fun Facts steht unter der Bühne, nicht auf der Karte
+  // [§C33]: die Karte zeigt, das Blatt erklärt. Auch eine gespeicherte Karte
+  // mit ihrem alten Satz zeigt ihn hier und nicht mehr im Feed.
+  const erkl = d.type === 'ambient' && String(s.desc || '').trim()
+    ? `<div class="nd-desc nd-ff-erkl">${_newsBetont(s.desc)}</div>` : '';
   // Ein Fun Fact mit Bild trägt es groß als Bühne [30c-news-fakt] — dasselbe
   // Bild wie die Karte, sonst verlöre das Blatt, wegen dem man getippt hat.
   // Darunter steht, was das Bild nicht zeigt.
@@ -1817,7 +1826,7 @@ function _ndFaktBlatt(s){
     // Die acht Fragen [§C33] bringen nur ihre Bühne mit; die Zahlen darunter
     // stehen in der Mitte ihres Typs (31a, `ambient`), die Knöpfe im Fuß
     // (`_newsRueckblickKnopf`).
-    if(_ND_FF_WEGE[b.f]) return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>`, mitte:null};
+    if(_ND_FF_WEGE[b.f]) return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>` + erkl, mitte:null};
     let mitte = '';
     if(d.type === 'dry_spell') mitte = ab('Der letzte Satz', d.lastMatchId ? _newsBlattErgebnis(d.lastMatchId) : '');
     // Die Zeichnung trägt ihren Abschnitt selbst („Jeder Satz gegeneinander");
@@ -1833,10 +1842,10 @@ function _ndFaktBlatt(s){
     // Wessen Sätze es sind, steht dabei: „Die letzten zehn Sätze" unter
     // einer Karte über die ganze Liga las sich als die der Liga.
     else if(pid && pm[pid]) mitte = ab('Die letzten zehn Sätze von ' + pm[pid].name, _ndFaktLauf(pid, s));
-    return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>`, mitte};
+    return {kopf:`<div class="nd-buehne nd-ff">${bild}</div>` + erkl, mitte};
   }
   if(d.leiter || !pid || !pm[pid] || d.vv == null || d.vv === '') return null;
-  const kopf = _ndHeldBuehne(pid, d.vv, d.vl || '', false, '');
+  const kopf = _ndHeldBuehne(pid, d.vv, d.vl || '', false, '') + erkl;
   const ab = (t, html) => html ? `<div class="nd-section">${esc(t)}</div>${html}` : '';
   if(d.prestige) return {kopf, mitte:ab('Der Stand am Zeichen', _newsInsigniumBlock(pid))};
   if(d.chronicle) return {kopf, mitte:_newsVerfolger(d.chronicle, [pid], null)

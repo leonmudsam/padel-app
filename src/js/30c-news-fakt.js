@@ -37,8 +37,14 @@ function _faktBild(s, gross){
   if(!b || typeof b !== 'object') return '';
   const f = _FF_FORM[b.f];
   if(!f) return '';
+  // Jede Zahl steht auf der Karte genau einmal [§C33]: was die Schlagzeile
+  // nennt, schreibt das Bild nicht noch einmal daneben. Gefragt wird nach
+  // der Zahl als Ganzes („6" steht nicht in „16" und nicht in „6:4").
+  const imTitel = (() => { const z = new Set(String((s && s.title) || '').replace(/(\d)\.(\d{3})/g, '$1$2')
+    .replace(/\d+:\d+/g, ' ').match(/\d+(,\d+)?/g) || []);
+    return v => z.has(String(v)); })();
   let h = '';
-  try { h = f(b, d) || ''; } catch(e){ h = ''; }
+  try { h = f(b, d, imTitel) || ''; } catch(e){ h = ''; }
   return h ? `<div class="ff ff-${esc(b.f)}${gross ? ' gross' : ''}">${h}</div>` : '';
 }
 
@@ -329,10 +335,13 @@ const _FF_FORM = {
     let lo = Math.min(...v), hi = Math.max(...v); if(hi === lo){ hi += 1; lo -= 1; }
     const X = i => L + i * (W - L - R) / n, Y = y => O + (hi - y) * (H - O - U) / (hi - lo);
     const f = x => x.toFixed(1), pfad = (i0, i1) => v.slice(i0, i1 + 1).map((y, k) => (k ? 'L' : 'M') + f(X(i0 + k)) + ' ' + f(Y(y))).join('');
-    const hoch = (b.plus | 0) >= 0, id = 'ffa' + _spVisualHash(v.join() + '|' + b.p);
+    const id = 'ffa' + _spVisualHash(v.join() + '|' + b.p);
     const flaeche = pfad(ab, n) + `L${f(X(n))} ${H}L${f(X(ab))} ${H}Z`;
     const pc = (x, w) => (x / w * 100).toFixed(2) + '%';
-    return `<div class="ff-kopf">${_ffNm(b.p)}<span class="ff-wert${hoch ? ' hoch' : ' tief'}"><b class="num">${esc(_spVz(b.plus | 0))}</b><small>Elo in 14 Tagen</small></span></div>`
+    // Kein Wert neben dem Namen: „+287 · Elo in 14 Tagen" stand unter der
+    // Schlagzeile „holt in 14 Tagen 287 Elo" [§C33]. Die Achse nennt deshalb
+    // auch den Zeitraum nicht; die Schlagzeile trägt ihn.
+    return `<div class="ff-kopf">${_ffNm(b.p)}</div>`
       + `<div class="ff-aw"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`
       + `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-opacity=".26"/><stop offset="1" stop-opacity="0"/></linearGradient></defs>`
       + `<line class="ff-aw-g" x1="${L}" x2="${W - R}" y1="${f(Y(v[ab]))}" y2="${f(Y(v[ab]))}"/>`
@@ -340,7 +349,7 @@ const _FF_FORM = {
       + `<path class="ff-aw-v" d="${pfad(0, ab)}"/><path class="ff-aw-l" d="${pfad(ab, n)}"/>`
       + `<line class="ff-aw-t" x1="${f(X(ab))}" x2="${f(X(ab))}" y1="2" y2="${H}"/>`
       + `</svg><span class="ff-aw-p" data-pid="${esc(b.p)}" style="left:${pc(X(n), W)};top:${pc(Y(v[n]), H)}">${rcpAvHtml(b.p, 24, {})}</span></div>`
-      + `<div class="ff-aw-x" style="grid-template-columns:${ab}fr ${n - ab}fr"><span>davor</span><span>14 Tage</span></div>`;
+      + `<div class="ff-aw-x" style="grid-template-columns:${ab}fr ${n - ab}fr"><span>davor</span><span>zuletzt</span></div>`;
   },
 
   // ── 2. Über der Erwartung: Siege und Games, je mit ihrer Marke ───────
@@ -349,11 +358,10 @@ const _FF_FORM = {
   erwartung(b){
     if(!pmap()[b.p] || !(b.n > 0) || !(b.g > 0)) return '';
     const reihe = _ffErwartungReihe;
-    // Ganze Siege und eine Beschriftung, die zur Zahl passt: „+3,7 · Siege
-    // über der Erwartung" las sich wie eine Formel [§C33].
-    const plus = Math.round((b.s | 0) - Number(b.e || 0));
-    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
-      + `<span class="ff-wert${plus >= 0 ? ' hoch' : ' tief'}"><b class="num">${esc(_spVz(plus))}</b><small>Siege mehr als erwartet</small></span></div>`
+    // Wie viele Siege mehr, sagt die Schlagzeile; daneben stand dieselbe
+    // Zahl noch einmal als „+3 · Siege mehr als erwartet" [§C33]. Das Bild
+    // zeigt das Geholte gegen die Marke, die Differenz liest man ab.
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span></div>`
       + `<div class="ff-ew">${reihe('Siege', b.s | 0, Number(b.e) || 0, b.n | 0)}${reihe('Games', b.gf | 0, Number(b.ge) || 0, b.g | 0)}</div>`;
   },
 
@@ -376,8 +384,11 @@ const _FF_FORM = {
         + `<i class="pkt l" style="left:${P(x[1])}%"></i><i class="pkt j${hoch ? ' hoch' : ' tief'}" style="left:${P(x[2])}%"></i></span>`
         + `<b class="num">${esc(_spVz(x[2] - x[1]))}</b></div>`;
     }).join('')
-      + `<div class="ff-ht-r ff-ht-a"><span></span><span class="ff-ht-s num"><span>${lo}\u00a0%</span><span>${hi}\u00a0%</span></span><span></span></div>`
-      + `<div class="ff-ht-lg"><span><i class="l"></i>Laufbahn davor</span><span><i class="j"></i>14 Tage</span></div></div>`;
+      // Keine Zahlen an der Achse und kein Zeitraum in der Legende: „80 %"
+      // und „14 Tage" standen schon in der Schlagzeile [§C33]. Was die
+      // Achse misst, sagt die Legende; den Abstand je Spieler die Zahl
+      // am Ende der Zeile.
+      + `<div class="ff-ht-lg"><span><i class="l"></i>Laufbahn davor</span><span><i class="j"></i>zuletzt</span></div></div>`;
   },
 
   // ── 4. Marke in Sicht: ein Ring von der letzten Marke bis zur nächsten
@@ -388,8 +399,12 @@ const _FF_FORM = {
     if(!pm[b.p] || !(b.ziel > b.von)) return '';
     const anteil = Math.max(0, Math.min(1, (b.ist - b.von) / (b.ziel - b.von)));
     const R = 30, U = 2 * Math.PI * R, rest = Math.max(0, Math.round(b.ziel - b.ist));
-    const was = {saetze:`bis zum ${_ffZl(b.ziel)}. Satz`, siege:`bis zum ${_ffZl(b.ziel)}. Sieg`,
-      games:`bis zum ${_ffZl(b.ziel)}. gewonnenen Game`, prestige:`Prestige bis zum ${b.name || ''}`}[b.art] || '';
+    // Was fehlt, groß, darunter nur die Einheit: die Marke steht in der
+    // Schlagzeile, und „bis zum 100. Satz" und „99 von 100" nannten sie
+    // darunter zweimal [§C33]. Den Weg dorthin zeigt der Ring.
+    const eins = rest === 1;
+    const was = {saetze:eins ? 'Satz' : 'Sätze', siege:eins ? 'Sieg' : 'Siege',
+      games:eins ? 'Game' : 'Games', prestige:'Prestige'}[b.art] || '';
     let zeichen = '';
     if(b.art === 'prestige' && b.st){
       try { zeichen = insigniumStufeSvg(b.st, (getPlayerRank(b.p) || {}).label, b.grad | 0, {bild:true}) || ''; } catch(e){ zeichen = ''; }
@@ -397,8 +412,7 @@ const _FF_FORM = {
     return `<div class="ff-mk"><span class="ff-mk-r" data-pid="${esc(b.p)}"><svg viewBox="0 0 72 72" aria-hidden="true">`
       + `<circle class="ff-mk-h" cx="36" cy="36" r="${R}"/><circle class="ff-mk-v" cx="36" cy="36" r="${R}" stroke-dasharray="${(U * anteil).toFixed(1)} ${U.toFixed(1)}"/></svg>`
       + `${rcpAvHtml(b.p, 44, {})}</span>`
-      + `<span class="ff-mk-m">${_ffNm(b.p)}<b class="num">noch ${_ffZl(rest)}</b><small>${esc(was)}</small>`
-      + `<span class="ff-mk-s num">${_ffZl(b.ist)} von ${_ffZl(b.ziel)}</span></span>`
+      + `<span class="ff-mk-m">${_ffNm(b.p)}<b class="num">noch ${_ffZl(rest)}</b><small>${esc(was)}</small></span>`
       + (zeichen ? `<span class="ff-mk-z">${zeichen}</span>` : '') + `</div>`;
   },
 
@@ -412,7 +426,6 @@ const _FF_FORM = {
     if(!pm[b.p] || !z.length) return '';
     const MON = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
     const n = Math.max(0, b.n | 0), von = b.art === 'serie' ? z.length - n : -1;
-    const zahl = {serie:'Monate ohne Pause', meiste:'Monate in der Chronik', neu:'Eintrag in der Chronik'}[b.art] || '';
     const zellen = z.map((x, i) => {
       const st = x[1], mit = st && st !== '-';
       const t = mit ? titleTone(CHRONIK_STUFE_TON[st] || 'silver') : null;
@@ -420,8 +433,9 @@ const _FF_FORM = {
         + (t ? ` data-kl="${esc(st)}"` : '') + ` style="--k:${i}${t ? `;--tt:${t.c};--ttr:${t.rgb}` : ''}">`
         + `<i>${mit ? svgI(x[2] || 'scroll') : ''}</i><small class="num">${MON[Number(String(x[0]).slice(5, 7)) - 1] || ''}</small></span>`;
     }).join('');
-    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
-      + `<span class="ff-wert"><b class="num">${b.art === 'neu' ? '1.' : n}</b><small>${zahl}</small></span></div>`
+    // Die Zahl der Monate steht in der Schlagzeile, der Streifen zeigt sie;
+    // „3 · Monate ohne Pause" daneben sagte es ein drittes Mal [§C33].
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span></div>`
       + `<div class="ff-rh" style="--n:${z.length}">${zellen}</div>`
       + `<div class="ff-rh-j"><span class="num">${esc(seasonLabel(z[0][0]))}</span><span class="num">${esc(seasonLabel(z[z.length - 1][0]))}</span></div>`;
   },
@@ -440,7 +454,10 @@ const _FF_FORM = {
     return `<div class="ff-ch">${seite(b.a)}<span class="ff-ch-m">`
       + `<svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="ff-ch-gl" d="M2 38Q60 -8 118 38"/>`
       + `<path class="ff-ch-l" d="M2 38Q60 -8 118 38" style="stroke-width:${dick}"/></svg>`
-      + `<b class="num">${esc(_spVz(Math.round((b.w | 0) - Number(b.e || 0))))}</b><small>Siege mehr als erwartet</small></span>${seite(b.b)}</div>`
+      // Im Bogen stand „+2 · Siege mehr als erwartet" unter der Schlagzeile
+      // „gewinnen zusammen 2 Sätze mehr als erwartet" [§C33]; er verbindet
+      // jetzt nur die beiden, die Zahlen stehen in der Bahn darunter.
+      + `</span>${seite(b.b)}</div>`
       + (b.g > 0 ? `<div class="ff-ew ff-ch-ew">${_ffErwartungReihe('Siege', b.w | 0, Number(b.e) || 0, b.g | 0)}</div>` : '');
   },
 
@@ -484,9 +501,10 @@ const _FF_FORM = {
     const max = Math.max(b.m, ...mon.map(x => x[1] | 0)), hoehe = v => Math.max(4, v / max * 100).toFixed(1);
     const kurz = mon.length > 8;
     const s = (b.sieger || []).filter(id => pmap()[id]);
-    const ziffern = String(_ffZl(b.m)).split('').map((z, i) => z === '.' ? `<em>.</em>` : `<i class="num" style="--k:${i}">${z}</i>`).join('');
+    // Die Marke steht in der Schlagzeile; ihr Zählwerk darüber war dieselbe
+    // Zahl in großen Ziffern [§C33]. Die Linie über den Säulen zeigt sie.
     const linie = Math.min(1, b.m / max);
-    return `<div class="ff-lb-k"><span class="ff-zw-z">${ziffern}</span><span class="ff-lb-t"><b>${b.art === 'saetze' ? 'Sätze der Liga' : 'Games der Liga'}</b>`
+    return `<div class="ff-lb-k"><span class="ff-lb-t"><b>${b.art === 'saetze' ? 'Sätze der Liga' : 'Games der Liga'}</b>`
       + `<small class="num">${b.erreicht ? `jetzt ${_ffZl(b.n)}` : `noch ${_ffZl(b.m - b.n)}`}</small></span>`
       + (s.length ? `<span class="ff-lb-s">${s.map(id => `<span data-pid="${esc(id)}">${rcpAvHtml(id, 22, {})}</span>`).join('')}</span>` : '') + `</div>`
       + `<div class="ff-lb" style="--h:${linie.toFixed(3)}"><span class="ff-lb-m"></span>`
@@ -505,15 +523,19 @@ const _FF_FORM = {
   // ── 9. Die Serie: jedes Feld ein Sieg, die Bestmarke als Kante ──────
   // Die Reihe reicht eine Stelle über die Bestmarke hinaus: man sieht, wie
   // weit es bis dorthin ist und was danach käme.
-  serie(b){
+  serie(b, d, imTitel){
     if(!pmap()[b.p] || !(b.k > 0)) return '';
     const k = b.k | 0, best = b.best | 0, len = Math.min(24, Math.max(k, best) + 1);
     const zellen = Array.from({length:len}, (_, i) => `<i class="${i < k ? 'w' : ''}${i === best - 1 ? ' best' : ''}" style="--k:${i}"></i>`).join('');
     const neu = k > best;
-    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
-      + `<span class="ff-wert${neu ? ' hoch' : ''}"><b class="num">${k}</b><small>Siege in Folge</small></span></div>`
+    // Die Länge zeigen die Felder, die Schlagzeile nennt sie; „4 · Siege in
+    // Folge" daneben und „Bestmarke 4" darunter sagten es zweimal mehr
+    // [§C33]. Die Bestmarke trägt ihre Zahl nur, wenn die Schlagzeile sie
+    // nicht nennt.
+    const bz = imTitel && imTitel(best) ? '' : ' ' + best;
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span></div>`
       + `<div class="ff-se" style="--n:${len}">${zellen}</div>`
-      + `<div class="ff-se-l num"><span>seit ${esc(datumFmt(b.ab, 'tm'))}</span><span>${neu ? 'davor ' + best : 'Bestmarke ' + best}</span></div>`;
+      + `<div class="ff-se-l num"><span>seit ${esc(datumFmt(b.ab, 'tm'))}</span><span>${(neu ? 'davor' : 'Bestmarke') + bz}</span></div>`;
   },
 
   // ── 10. Die Wende: jedes gedrehte Match als Reihe seiner Sätze ───────
@@ -523,8 +545,8 @@ const _FF_FORM = {
     if(!pmap()[b.p]) return '';
     const l = (b.l || []).filter(x => x && Array.isArray(x[1]));
     if(!l.length) return '';
-    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
-      + `<span class="ff-wert"><b class="num">${b.k | 0}</b><small>Matches gedreht</small></span></div>`
+    // Wie viele, sagt die Schlagzeile; jede Reihe ist eines [§C33].
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span></div>`
       + `<div class="ff-wd">` + l.map((x, i) => `<div class="ff-wd-r" style="--k:${i}"><small class="num">${esc(datumFmt(x[0], 'tm'))}</small>`
         + `<span class="ff-wd-s">${x[1].map(z => `<i class="num${z[0] > z[1] ? ' w' : ''}">${z[0] | 0}:${z[1] | 0}</i>`).join('')}</span></div>`).join('')
       + `</div>`;
@@ -537,8 +559,9 @@ const _FF_FORM = {
     const reihe = (wort, q, w, n, hl) => `<span class="ff-ew-k">${wort}</span>`
       + `<span class="ff-kn-b${hl ? ' hl' : ''}"><i style="width:${q}%"></i><u></u></span>`
       + `<b class="num">${q} %<small> ${w | 0} von ${n | 0}</small></b>`;
-    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span>`
-      + `<span class="ff-wert"><b class="num">${q1}\u00a0%</b><small>Siegquote in knappen Sätzen</small></span></div>`
+    // Die Quote der knappen Sätze stand groß im Kopf und in ihrer Zeile
+    // darunter noch einmal [§C33]; sie steht jetzt nur in der Zeile.
+    return `<div class="ff-kopf"><span class="ff-kopf-p" data-pid="${esc(b.p)}">${rcpAvHtml(b.p, 24, {})}${_ffNm(b.p)}</span></div>`
       + `<div class="ff-kn">${reihe('knapp', q1, b.kw, b.kn, true)}${reihe('übrige', q2, b.ow, b.on, false)}</div>`;
   },
 
@@ -569,8 +592,11 @@ const _FF_FORM = {
     const v = (b.v || []).map(x => x | 0);
     return `<div class="ff-kopf"><span class="ff-kopf-p"><span class="ff-duo-k">${_ffChip(b.a)}${_ffChip(b.b)}</span>`
       + `<span class="ff-duo-n">${_ffNm(b.a)}<i>und</i>${_ffNm(b.b)}</span></span>`
-      + `<span class="ff-wert"><b class="num">${b.n | 0}</b><small>Sätze zusammen</small></span></div>`
-      + _ffSaeulen({v, hl:[v.length - 2, v.length - 1], l:'gemeinsame Sätze je Woche'}).replace('die letzten ' + v.length, v.length + ' Wochen');
+      // Kurze Beschriftungen: „Sätze zusammen" und „gemeinsame Sätze je
+      // Woche" brachen auf 288 px um. Dass es gemeinsame sind, sagen die
+      // beiden Gesichter davor.
+      + `<span class="ff-wert"><b class="num">${b.n | 0}</b><small>Sätze</small></span></div>`
+      + _ffSaeulen({v, hl:[v.length - 2, v.length - 1], l:'je Woche'}).replace('die letzten ' + v.length, v.length + ' Wochen');
   },
 
   // ── 15/16. Sätze gegeneinander: das Tauziehen und der Abstand ───────
@@ -592,7 +618,9 @@ const _FF_FORM = {
         + `<path class="ff-rv-l${b.art === 'wende' ? ' alt' : ''}" d="${pfad(0, ab)}"/>`
         + (ab < n ? `<path class="ff-rv-l" d="${pfad(ab, n)}"/>` : '')
         + `<circle class="ff-rv-p" cx="${f(X(n))}" cy="${f(Y(v[n]))}" r="3"/></svg>`
-        + `<span class="ff-rv-x num"><span>erster Satz</span><span>${b.art === 'wende' ? 'die letzten ' + (b.l | 0) : 'zuletzt'}</span></span></div>`;
+        // „die letzten 6" stand unter der Schlagzeile „gewinnt 5 der letzten
+        // 6 Sätze" [§C33]; die helle Strecke zeigt, welche es sind.
+        + `<span class="ff-rv-x num"><span>erster Satz</span><span>zuletzt</span></span></div>`;
     }
     return _ffDuell({a:b.a, b:b.b, wa:b.wa, wb:b.wb}) + linie;
   },
@@ -603,7 +631,9 @@ const _FF_FORM = {
   ewig(b){
     const r = (b.r || []).filter(x => pmap()[x[0]]);
     if(r.length < 3) return '';
-    return `<div class="ff-sd-k">${svgI('crown')}<b>Ewige Tafel</b><small>Karriere-Elo</small></div>`
+    // Nur die Einheit: „Ewige Tafel" nennt die Schlagzeile, und neben
+    // „Karriere-Elo" stand es auf 288 px als „EWIGE TAFE…" [§C33].
+    return `<div class="ff-sd-k">${svgI('crown')}<b>Karriere-Elo</b></div>`
       + _ffPodest({r:r.map(x => ({p:x[0], t:x[1]}))})
       .replace(/(<span class="ff-pd-s p(\d)"[^>]*>)/g, (m0, m1, k) => r[k - 1] && !r[k - 1][2] ? m1.replace('ff-pd-s', 'ff-pd-s neu') : m1);
   },
@@ -645,7 +675,9 @@ const _FF_FORM = {
     const r = (b.r || []).filter(x => pmap()[x[0]]);
     if(r.length < 3) return '';
     const pfeil = d => d == null ? '<em class="neu">neu</em>' : d > 0 ? `<em class="auf num">▲${d}</em>` : d < 0 ? `<em class="ab num">▼${-d}</em>` : '<em class="num">–</em>';
-    return `<div class="ff-sd-k">${svgI('chartBar')}<b>${esc(seasonLabel(b.sid || ''))}</b><small>gegen vor einer Woche</small></div>`
+    // Der Monat ohne Jahr und der Vergleich in zwei Wörtern: „August 2026"
+    // und „gegen vor einer Woche" überlappten auf 288 px.
+    return `<div class="ff-sd-k">${svgI('chartBar')}<b>${esc(seasonLabel(b.sid || '').replace(/\s*\d{4}$/, ''))}</b><small>zur Vorwoche</small></div>`
       + `<div class="ff-mt">` + r.map((x, i) => `<div class="ff-mt-r${i ? '' : ' eins'}" data-pid="${esc(x[0])}" style="--k:${i}">`
         + `<small class="num">${i + 1}</small>${_ffChip(x[0])}${_ffNm(x[0])}<b class="num">${x[1] | 0}</b>${pfeil(x[2])}</div>`).join('') + `</div>`;
   },
@@ -710,9 +742,9 @@ const _FF_FORM = {
   },
 
   // ── 25. Ein Rekord in Reichweite: der eigene Stand gegen den Rekord ─
+  // Ohne Kopf mit dem Namen des Rekords: den nennt die Schlagzeile [§C33].
   rekordziel(b){
-    const z = _ffZiel(b);
-    return z ? `<div class="ff-sd-k">${svgI('trophy')}<b>${esc(b.name || '')}</b></div>` + z : '';
+    return _ffZiel(b);
   }
 
 };

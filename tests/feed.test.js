@@ -149,7 +149,7 @@ const FF_FRAGEN = ['form_aufwind','form_erwartung','form_laufbahn','laufbahn_mar
   'form_serie','form_wende','spieler_knapp','seite_spitze','duo_spitze','duo_neu','duell_gleichauf','duell_wende','gesamt_tafel',
   'gesamt_wettlauf','gesamt_prestige','saison_stand','saison_vormonat','liga_ergebnisse','liga_tempo','auszeichnung_monat','rekord_reichweite'];
 const ffs = J(`(()=>{const pm=pmap(), nameOf=pid=>(pm[pid]||{}).name||'?';
-  const falsch=[], gesehen=new Set(), pool=new Set();
+  const falsch=[], gesehen=new Set(), pool=new Set(), karte_satz=[], doppelt=[], blatt=[]; let karten=0;
   // Über die ganze Testliga, März bis August: „Über der Erwartung“ zieht
   // nur an gut jedem sechsten Tag, die letzten zwei Monate allein trafen keinen.
   // Der Tag nach dem letzten Satz dazu: Prestige und Rekord in Reichweite
@@ -173,15 +173,34 @@ const ffs = J(`(()=>{const pm=pmap(), nameOf=pid=>(pm[pid]||{}).name||'?';
       if(/\\d,\\d+ (zu )?erwart/.test(de)) falsch.push(x.key+' erwartete Siege mit Komma: '+de);
       if(ti.split(/\\s+/).length > 12) falsch.push(x.key+' Titel zu lang: '+ti);
       if((de.replace(/\\d\\.\\d|\\d{2}\\.\\d{2}\\.(\\d{2,4}\\.?)?/g, '').match(/[.]( |$)/g) || []).length > 2) falsch.push(x.key+' mehr als zwei Sätze: '+de);
+      // Die Karte zeigt, das Blatt erklärt: auf der Karte stehen Titel und
+      // Grafik ohne Satz, und keine Zahl steht dort zweimal. „13 Siege aus
+      // 19" stand unter „13 von 19 · erwartet 10" und über „+3".
+      // Ein Stand („6:4") ist ein Name an der Achse, keine Zahl der Aussage.
+      const s={id:'ambient_t', cat:c.cat, ic:c.ic, title:ti, desc:de, when:now, dataRef:Object.assign({type:'ambient', sub:x.key}, c.dataRef)};
+      const karte=_newsCardHtmlM2(s,false,false,'')||'';
+      if(/class="nf-d"/.test(karte)) karte_satz.push(x.key);
+      const bildTxt=(_faktBild(s,false)||'').replace(/<svg[\\s\\S]*?<\\/svg>/g,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|\\u00a0/g,' ');
+      const zahlen=t=>{ t=String(t).replace(/(\\d)\\.(\\d{3})/g,'$1$2').replace(/\\d+:\\d+|\\d{1,2}\\.\\d{1,2}\\.(\\d{2,4})?/g,' '); return t.match(/\\d+(,\\d+)?/g)||[]; };
+      const zt=new Set(zahlen(ti)), dop=[...new Set(zahlen(bildTxt).filter(z=>zt.has(z)))];
+      karten++; if(dop.length) doppelt.push(x.key+' '+dop.join(',')+': '+ti);
+      const bl=_ndFaktBlatt(s)||{}, k=String(bl.kopf||'');
+      if(de && !(k.indexOf('nd-buehne')>=0 && k.indexOf('nd-ff-erkl')>k.indexOf('nd-buehne'))) blatt.push(x.key);
     });
   }
-  return {falsch:[...new Set(falsch)], n:gesehen.size, gesehen:[...gesehen], pool:[...pool]};})()`);
+  return {falsch:[...new Set(falsch)], n:gesehen.size, gesehen:[...gesehen], pool:[...pool],
+    karten, karte_satz:[...new Set(karte_satz)], doppelt:[...new Set(doppelt)], blatt:[...new Set(blatt)]};})()`);
 ok(Array.isArray(ffs.pool) && ffs.pool.filter(k => !/^rueckblick_/.test(k)).sort().join() === FF_FRAGEN.slice().sort().join(),
   `Der Pool der Fun Facts trägt genau die ${FF_FRAGEN.length} Fragen, dazu Halbzeit und Jahresrückblick (${(ffs.pool || []).join(', ')})`);
 ok(FF_FRAGEN.every(k => (ffs.gesehen || []).includes(k)),
   `Jede der ${FF_FRAGEN.length} Fragen zieht an der Testliga (${FF_FRAGEN.filter(k => !(ffs.gesehen || []).includes(k)).join(', ') || 'alle'})`);
 ok(ffs.n >= FF_FRAGEN.length && Array.isArray(ffs.falsch) && !ffs.falsch.length,
   `Jeder Fun Fact spricht in ganzen, einfachen Sätzen (Hauptsatz als Titel, höchstens zwei Sätze, keine Rechenwörter) und nennt einen Platz nur auf dem Podest: ${(ffs.falsch || []).slice(0, 3).join(' · ') || ffs.fehler || ffs.n + ' Vorlagen'}`);
+
+ok(ffs.karten > 100 && !ffs.karte_satz.length,
+  `Die Karte eines Fun Facts trägt Titel und Grafik ohne Satz darunter (${ffs.karte_satz.join(', ') || ffs.karten + ' Karten'})`);
+ok(!ffs.doppelt.length, `Keine Zahl steht auf der Karte zweimal, in Titel und Grafik (${ffs.doppelt.slice(0, 3).join(' · ') || 'keine'})`);
+ok(!ffs.blatt.length, `Das Blatt trägt den erklärenden Satz unter der Grafik (${ffs.blatt.join(', ') || 'alle'})`);
 
 // ── Keine These über dieselbe Person zweimal in 30 Tagen ────────────
 // Mit acht Fragen kommt dieselbe These eher wieder, und der letzte
