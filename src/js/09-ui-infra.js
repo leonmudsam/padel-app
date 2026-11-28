@@ -68,6 +68,11 @@ function avHtml(player, extraStyle, opts){
     if(r){ cls = r.cls; style = r.style; attr = r.attr; }
   }
   const em = player.avatar_id ? avatarEmoji(player.avatar_id) : null;
+  // Jedes Gesicht trägt, wessen es ist (`data-av-pid`): im Feed öffnete ein
+  // Tipp auf ein Gesicht die ganze Karte statt des Profils, weil die Karte
+  // nicht wusste, wer da abgebildet ist. Bewusst nicht `data-pid` — daran
+  // hängen in Blättern eigene Lauscher.
+  attr += ` data-av-pid="${esc(player.id)}"`;
   const inner = em
     ? `<span class="av av-emoji${cls}"${attr} style="${style}${extraStyle||''}"><span class="em">${em}</span></span>`
     : `<span class="av${cls}"${attr} style="${style}background:${avColor(player.id)};${extraStyle||''}">${initials(player.name)}</span>`;

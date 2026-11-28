@@ -1311,6 +1311,16 @@ function _renderNewsFeed(){
     // Der Faden öffnet die frühere Karte, nicht die, in der er steht.
     const f = ev.target.closest && ev.target.closest('.nf-faden[data-ziel]');
     if(f){ ev.stopPropagation(); openNewsDetail(f.dataset.ziel); return; }
+    // Ein Gesicht öffnet das Profil seines Spielers, nicht die Karte, in
+    // der es steht: wer auf ein Gesicht tippt, will zu der Person. Die Karte
+    // wird dabei nicht als gelesen markiert, gelesen ist sie nicht.
+    const g = ev.target.closest && ev.target.closest('[data-av-pid]');
+    if(g && liste.contains(g) && pmap()[g.dataset.avPid]){
+      ev.stopPropagation();
+      const pid = g.dataset.avPid;
+      sheetNav(() => { try { showPlayer(pid); } catch(e){} });
+      return;
+    }
     // Karten + Hero klickbar → Detail.
     const el = ev.target.closest && ev.target.closest('[data-sid]');
     if(!el || !liste.contains(el)) return;

@@ -130,6 +130,18 @@ const ok=(c,s)=>{checks++;if(!c)fails++;console.log((c?'  ok  ':'  ✗   ')+s);}
       return {gleich:html===window.__ergebnisFn(mid),calls:window.__ergebnisArbeit};})()`);
     ok(rueckfall.gleich && rueckfall.calls===1,'Ein unbekannter Typ behält den echten Ergebnis-Rückfall');
     await K(`_newsBlattErgebnis=window.__ergebnisFn;0;`);
+    // Ein Gesicht im Feed öffnet das Profil seines Spielers, nicht die Karte:
+    // die Karte wusste nicht, wer darauf abgebildet ist, und ein Tipp auf
+    // ein Gesicht öffnete die ganze Story.
+    const gesicht=await K(`(async()=>{const _sp=showPlayer,_od=openNewsDetail;const r={profil:null,karte:null,pid:null};
+      showPlayer=pid=>{r.profil=pid;};openNewsDetail=sid=>{r.karte=sid;};
+      try{closeNewsDetail();closeSheet(true);openNewsFeed();await new Promise(x=>setTimeout(x,400));
+        const av=document.querySelector('#sheet .nf-card [data-av-pid]');
+        if(!av) return {fehlt:true};
+        r.pid=av.dataset.avPid; av.click(); await new Promise(x=>setTimeout(x,700));
+        return r;}finally{showPlayer=_sp;openNewsDetail=_od;}})()`);
+    ok(!gesicht.fehlt && gesicht.profil===gesicht.pid && !gesicht.karte,
+      'Ein Tipp auf ein Gesicht im Feed öffnet das Profil, nicht die Karte: '+JSON.stringify(gesicht));
     await K(`getStoriesCache=window.__storiesFn;closeNewsDetail();closeSheet(true);0;`);
     ok(errors.length===0,'Keine Browserfehler bei Reset, Wechsel und Wiederöffnen');
   }finally{await browser.close();}

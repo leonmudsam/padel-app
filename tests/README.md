@@ -20,7 +20,7 @@ steht in [CLAUDE.md §5](../CLAUDE.md). Diese Datei nennt die Suiten.
 | `kalender` | Kalendergrenzen in Berliner Zeit: Woche über den Jahreswechsel, Zeitumstellung, Fortschritt im Monat und in der Woche (Sonntag nach der Umstellung auf die Winterzeit, eine Woche mit zwei Spieltagen) | 7 |
 | `prefix` | Präfixe und Reihenfolge der Quelldateien, Zusammensetzen ohne Kommentare | 82 |
 | `ruheliga` | Karriereende [§C40]: wer im Ruhestand ist, steht in keinem Vergleich der aktiven Liga | 18 |
-| `storyscroll` | Der Feed im Browser: Scrollen, Nachladen, Story-Detail | 20 |
+| `storyscroll` | Der Feed im Browser: Scrollen, Nachladen, Story-Detail ; ein Tipp auf ein Gesicht im Feed öffnet das Profil, nicht die Karte | 21 |
 
 Die Suiten im Browser (`bewegung`, `storyscroll`) brauchen Chromium
 (`npm install --no-save playwright-core`, danach

@@ -37,9 +37,11 @@ function rcpAvHtml(pid, px, o){
   const p = pmap()[pid];
   if(!p) return `<span class="rcp-av leer" style="--rav:${px}px">?</span>`;
   const em = p.avatar_id ? avatarEmoji(p.avatar_id) : null;
+  // Wessen Gesicht es ist, steht daran wie bei `avHtml` (`data-av-pid`).
+  const wer = ` data-av-pid="${esc(pid)}"`;
   const inner = em
-    ? `<span class="av av-emoji"><span class="em">${em}</span></span>`
-    : `<span class="av" style="background:${avColor(pid)}">${esc(initials(p.name))}</span>`;
+    ? `<span class="av av-emoji"${wer}><span class="em">${em}</span></span>`
+    : `<span class="av"${wer} style="background:${avColor(pid)}">${esc(initials(p.name))}</span>`;
   // Detail folgt der Größe: unter etwa 48 px bleibt vom Wappen nur ein Rand.
   if(px < 48) return `<span class="rcp-av" style="--rav:${px}px">${inner}</span>`;
   return insAvWrap(pid, inner, {px:px, band:!!o.band, pos:o.pos, titel:o.titel,

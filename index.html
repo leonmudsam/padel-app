@@ -7028,7 +7028,7 @@ document.getElementById('app').style.display='block';
 document.getElementById('botnav').style.display='flex';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BUILD_VERSION='2026.11.27.2e63187a';
+const BUILD_VERSION='2026.11.28.d781b939';
 function forceReload(nach){
   const u=new URL(location.href);
   u.searchParams.set('_cb',Date.now());
@@ -8624,9 +8624,10 @@ function rcpAvHtml(pid, px, o){
   const p = pmap()[pid];
   if(!p) return `<span class="rcp-av leer" style="--rav:${px}px">?</span>`;
   const em = p.avatar_id ? avatarEmoji(p.avatar_id) : null;
+  const wer = ` data-av-pid="${esc(pid)}"`;
   const inner = em
-    ? `<span class="av av-emoji"><span class="em">${em}</span></span>`
-    : `<span class="av" style="background:${avColor(pid)}">${esc(initials(p.name))}</span>`;
+    ? `<span class="av av-emoji"${wer}><span class="em">${em}</span></span>`
+    : `<span class="av"${wer} style="background:${avColor(pid)}">${esc(initials(p.name))}</span>`;
   if(px < 48) return `<span class="rcp-av" style="--rav:${px}px">${inner}</span>`;
   return insAvWrap(pid, inner, {px:px, band:!!o.band, pos:o.pos, titel:o.titel,
                                 feuer:0, klasse:o.klasse});
@@ -11207,6 +11208,7 @@ function avHtml(player, extraStyle, opts){
     if(r){ cls = r.cls; style = r.style; attr = r.attr; }
   }
   const em = player.avatar_id ? avatarEmoji(player.avatar_id) : null;
+  attr += ` data-av-pid="${esc(player.id)}"`;
   const inner = em
     ? `<span class="av av-emoji${cls}"${attr} style="${style}${extraStyle||''}"><span class="em">${em}</span></span>`
     : `<span class="av${cls}"${attr} style="${style}background:${avColor(player.id)};${extraStyle||''}">${initials(player.name)}</span>`;
@@ -26800,6 +26802,13 @@ function _renderNewsFeed(){
   if(liste) liste.onclick = ev => {
     const f = ev.target.closest && ev.target.closest('.nf-faden[data-ziel]');
     if(f){ ev.stopPropagation(); openNewsDetail(f.dataset.ziel); return; }
+    const g = ev.target.closest && ev.target.closest('[data-av-pid]');
+    if(g && liste.contains(g) && pmap()[g.dataset.avPid]){
+      ev.stopPropagation();
+      const pid = g.dataset.avPid;
+      sheetNav(() => { try { showPlayer(pid); } catch(e){} });
+      return;
+    }
     const el = ev.target.closest && ev.target.closest('[data-sid]');
     if(!el || !liste.contains(el)) return;
     const sid = el.dataset.sid;
